@@ -531,14 +531,10 @@ class KeyboardLoaderUtil private constructor() {
                         keyYPos += 0.15f
                     }
                 }
-                var left: Float
-                var right: Float
-                var top: Float
-                var bottom: Float
-                left = keyXPos
-                right = left + keyWidth
-                top = keyYPos
-                bottom = top + keyHeight
+                val left: Float = keyXPos
+                val right = left + keyWidth
+                val top: Float = keyYPos
+                val bottom = top + keyHeight
                 if (isNumberRow) {
                     keyBean.setKeyDimensions(left, top / 1.15f, right, bottom / 1.15f)
                 } else {
