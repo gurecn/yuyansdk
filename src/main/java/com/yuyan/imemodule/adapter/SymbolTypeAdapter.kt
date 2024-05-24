@@ -1,0 +1,95 @@
+package com.yuyan.imemodule.adapter
+
+import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.emoji.widget.EmojiAppCompatTextView
+import androidx.recyclerview.widget.RecyclerView
+import com.yuyan.imemodule.R
+import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
+import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.data.theme.ThemeManager.prefs
+import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.utils.DevicesUtils.dip2px
+
+/**
+ * 符号，表情底部导航栏Adapter
+ */
+class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, showType: Int) :
+    RecyclerView.Adapter<SymbolTypeAdapter.SymbolTypeHolder>() {
+    private val inflater: LayoutInflater
+    private val keyBackground: GradientDrawable
+    private val pressKeyBackground: GradientDrawable
+    private var mOnItemClickListener: OnRecyclerItemClickListener? = null
+    private var isClicks = 0
+    private val mTheme: Theme
+    private val itemWidth: Int
+
+    init {
+        inflater = LayoutInflater.from(context)
+        isClicks = showType
+        mTheme = activeTheme
+        itemWidth = (instance!!.skbWidth - dip2px(90f)) / 6
+        val isKeyBorder = prefs.keyBorder.getValue()
+        keyBackground = GradientDrawable()
+        pressKeyBackground = GradientDrawable()
+        if (isKeyBorder) {
+            val mActiveTheme = activeTheme
+            val keyRadius = prefs.keyRadius.getValue()
+            keyBackground.setColor(mActiveTheme.keyBackgroundColor)
+            keyBackground.setShape(GradientDrawable.RECTANGLE)
+            keyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+            pressKeyBackground.setColor(mActiveTheme.keyPressHighlightColor)
+            pressKeyBackground.setShape(GradientDrawable.RECTANGLE)
+            pressKeyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+        }
+    }
+
+    fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
+        mOnItemClickListener = mOnItemClickLitener
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolTypeHolder {
+        val view = inflater.inflate(
+            R.layout.sdk_item_recycler_symbol_type,
+            parent,
+            false
+        ) as EmojiAppCompatTextView
+        view.setMinimumWidth(itemWidth)
+        return SymbolTypeHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
+        val tvSymbolType = holder.itemView as EmojiAppCompatTextView
+        tvSymbolType.text = mDatas[position]
+        if (isClicks == position) {
+            tvSymbolType.setTextColor(mTheme.genericActiveBackgroundColor)
+            tvSymbolType.background = pressKeyBackground
+        } else {
+            tvSymbolType.setTextColor(mTheme.keyTextColor)
+            tvSymbolType.background = keyBackground
+        }
+        if (mOnItemClickListener != null) {
+            holder.itemView.setOnClickListener { v: View? ->
+                isClicks = holder.getBindingAdapterPosition()
+                notifyDataSetChanged()
+                mOnItemClickListener!!.onItemClick(
+                    this@SymbolTypeAdapter,
+                    v,
+                    isClicks
+                ) //索引即符号在SymbolsManager中的key
+            }
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return mDatas.size
+    }
+
+    class SymbolTypeHolder(view: EmojiAppCompatTextView?) : RecyclerView.ViewHolder(
+        view!!
+    )
+}

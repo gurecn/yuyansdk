@@ -1,0 +1,57 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Reply Preference -->
+    <attr name="useSimpleSummaryProvider" format="boolean" tools:ignore="PrivateResource" />
+    <declare-styleable name="DialogSeekBarPreference">
+        <attr name="min" format="integer" />
+        <attr name="max" format="integer" />
+        <attr name="step" format="integer" />
+        <attr name="unit" format="string" />
+        <attr name="useSimpleSummaryProvider" />
+    </declare-styleable>
+
+    <string-array name="symbolType">
+        <item>"中文"</item>
+        <item>"英文"</item>
+        <item>"数学"</item>
+        <item>"其他"</item>
+        <item>"😄"</item>
+        <item>"Ծ‸Ծ"</item>
+    </string-array>
+
+    <string-array name="SymbolRealNine">
+        <item>"，"</item>
+        <item>"。"</item>
+        <item>"？"</item>
+        <item>"@"</item>
+        <item>"！"</item>
+        <item>"…"</item>
+        <item>"："</item>
+        <item>"；"</item>
+        <item>"～"</item>
+        <item>"."</item>
+    </string-array>
+
+    <string-array name="SymbolLeftEng">
+        <item>","</item>
+        <item>"."</item>
+        <item>"?"</item>
+        <item>"@"</item>
+        <item>"!"</item>
+        <item>"…"</item>
+        <item>":"</item>
+        <item>";"</item>
+        <item>"~"</item>
+        <item>"@"</item>
+    </string-array>
+
+
+    <string-array name="SymbolRealNumber">
+        <item>"%"</item>
+        <item>"/"</item>
+        <item>"-"</item>
+        <item>"+"</item>
+        <item>"*"</item>
+        <item>"#"</item>
+        <item>"@"</item>
+    </string-array>
+</resources>

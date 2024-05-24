@@ -1,0 +1,108 @@
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+// kotlin
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlinx-serialization'
+
+def _VERSION = "2.0.16"  //项目（1：通用输入法；2：SIM密信，安全屋）.大版本.小版本
+
+android {
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 34
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+        lintOptions {
+            abortOnError false
+        }
+    }
+
+    //多渠道打包: app中多渠道配置要一致
+    flavorDimensions = ["default"]
+    productFlavors {
+        publishNonDefault true //唯一的不同
+        official {dimension "default"}
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
+            resValue("string", "app_name", "@string/ime_yuyan_name")
+        }
+        debug {
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
+            resValue("string", "app_name", "@string/ime_yuyan_name_debug")
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs', "src/main/jniLibs"]
+        }
+    }
+
+    //第三方库使用java1.8
+    compileOptions {
+        sourceCompatibility 17
+        targetCompatibility 17
+    }
+    namespace 'com.yuyan.imemodule'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.emoji:emoji:1.1.0'
+    implementation 'androidx.emoji:emoji-appcompat:1.1.0'
+    implementation 'androidx.emoji:emoji-bundled:1.1.0'
+    implementation 'com.github.promeg:tinypinyin:2.0.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
+    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
+    implementation 'com.louiscad.splitties:splitties-resources:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0'
+    implementation 'com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0'
+    implementation 'com.mikepenz:aboutlibraries-core:10.9.2'
+    implementation 'io.arrow-kt:arrow-core:1.2.1'
+    implementation 'com.vanniktech:android-image-cropper:4.5.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'org.mechdancer:dependency:0.1.2'
+}
+
+
+def _BASENAME = "imesdk";
+
+task makeaar(type: Copy) {
+    from('build/outputs/aar/')
+    into('build/outputs/aar/')
+    include('imeModule-dev-debug.aar')
+    rename ('imeModule-dev-debug.aar', _BASENAME + '_dev_V' +_VERSION + '.aar')
+}
+
+makeaar.dependsOn(build)

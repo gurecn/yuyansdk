@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="ime_yuyan_name">语燕输入法</string>
+    <string name="ime_yuyan_name_debug">语燕输入D</string>
+    <!--设置页面-->
+    <string name="setting_ime_sdk">输入法设置</string>
+    <string name="setting_ime_input">输入设置</string>
+    <string name="setting_ime_keyboard">键盘设置</string>
+    <string name="setting_ime_keyboard_height">键盘高度</string>
+    <string name="ime_settings_voice">语音识别</string>
+    <string name="ime_settings_handwriting">手写设置</string>
+    <string name="keypopup_input_settings">按键气泡提示</string>
+    <string name="keyboard_mnemonic_show">双拼布局显示</string>
+    <string name="keyboard_symbol_show">上滑符号</string>
+    <string name="candidate_size_input_setting">候选词字体大小</string>
+    <string name="changeKeyboard">切换键盘</string>
+    <string name="chinese_input_setting">中文输入</string>
+    <string name="chinese_association">中文联想</string>
+    <string name="setting_recovery">智能纠错</string>
+    <string name="space_lenovo_candidate">空格选择联想词</string>
+    <string name="search_english_cell">预测英文单词</string>
+    <string name="setting_jian_fan">繁体输入</string>
+    <string name="EnglishInput">英文输入</string>
+    <string name="engish_full_keyboard">数字行</string>
+    <string name="first_capital">自动首字母大写</string>
+    <string name="emoji_setting">表情输入</string>
+    <string name="emoji_input">候选词中显示Emoji表情</string>
+    <!-- Used by the toggle keys in soft keyboards. -->
+    <string name="toggle_cn_cand">1</string>
+    <string name="toggle_en_lower">2</string>
+    <string name="toggle_en_upper">3</string>
+    <string name="toggle_en_sym1">4</string>
+    <string name="toggle_en_sym2">5</string>
+    <string name="toggle_smiley">6</string>
+    <string name="toggle_enter_go">7</string>
+    <string name="toggle_enter_search">8</string>
+    <string name="toggle_enter_send">9</string>
+    <string name="toggle_enter_next">10</string>
+    <string name="toggle_enter_done">11</string>
+    <string name="toggle_row_cn">12</string>
+    <string name="toggle_row_en">13</string>
+    <string name="toggle_row_uri">14</string>
+    <string name="toggle_row_emailaddress">15</string>
+    <string name="toggle_phone_sym">3</string>
+    <string name="cancel">取消</string>
+    <!--键盘设置条目-->
+    <string name="skb_item_settings">设置</string>
+    <!--加解密相关-->
+    <!--布局部分文件提取文本-->
+    <string name="paint_thickness">笔画粗细</string>
+    <string name="discern_sensitive">识别灵敏度</string>
+    <string name="contact_title">联系人</string>
+    <!--视频录制相关页面-->
+    <!--加解密相关提示-->
+    <!--应用内抽取-->
+    <!--设备root对话框-->
+    <string name="direct_input">切换为直输模式</string>
+    <string name="spelling_pattern">切换为拼写模式</string>
+    <string name="conversation_time_format_year_month_date">%1$s年%2$s月%3$s日</string>
+    <string name="conversation_time_format_month_date">%1$s月%2$s日</string>
+    <string name="yesterday">昨天</string>
+    <string name="ok">OK</string>
+    <string name="keyboard_theme_night">深色模式</string>
+    <!--设置输入法高度-->
+    <string name="setting_ime_keyboard_height_reset">重置</string>
+    <string name="setting_ime_keyboard_height_sure">确认</string>
+
+    <!--手写模式-->
+    <string name="hand_writing_rc_mode">识别模式</string>
+    <string name="hand_writing_rc_mode_sentence">行写</string>
+    <string name="hand_writing_rc_mode_overlap">叠写</string>
+    <string name="hand_writing_rc_mode_sentence_overlap">自由</string>
+
+    <string name="keyboard_menu_lock_english">锁定英语键盘</string>
+    <string name="keyboard_menu_emoji_input">表情预测</string>
+
+    <string name="input_methods">输入法</string>
+    <string name="advanced">高级</string>
+    <string name="button_haptic_feedback">按键时振动</string>
+    <string name="button_vibration_milliseconds">按键振动时长</string>
+    <string name="button_press">短按</string>
+    <string name="button_long_press">长按</string>
+    <string name="button_vibration_amplitude">按键振动幅度</string>
+    <string name="clipboard_listening">记录剪贴板历史</string>
+    <string name="clipboard_limit">剪贴板历史记录上限</string>
+    <string name="about">关于</string>
+    <string name="current_version">当前版本</string>
+    <string name="clipboard">剪贴板</string>
+    <string name="keyboard">键盘</string>
+    <string name="keyboard_height">键盘高度</string>
+    <string name="keyboard_feedback">按键效果</string>
+    <string name="clipboard_suggestion_timeout">剪贴板提示超时</string>
+    <string name="version">版本</string>
+    <string name="build_time">构建时间</string>
+    <string name="build_git_hash">构建 Git 哈希</string>
+    <string name="source_code">源代码</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="license">许可</string>
+    <string name="open_source_licenses">开源软件许可</string>
+    <string name="licenses_of_third_party_libraries">第三方库许可证</string>
+    <string name="github_repo">GitHub 仓库</string>
+    <string name="reset">重置</string>
+    <string name="theme">主题</string>
+    <string name="portrait">竖屏</string>
+    <string name="landscape">横屏</string>
+    <string name="clipboard_suggestion">显示剪贴板提示</string>
+    <string name="disabled">禁用</string>
+    <string name="system_default">系统默认</string>
+    <string name="default_">默认</string>
+    <string name="toolbar_num_row_on_password">输入密码时在工具栏上显示数字行</string>
+    <string name="keyboard_one_handed_mod">单手模式</string>
+    <string name="keyboard_one_handed_mod_none">无</string>
+    <string name="keyboard_one_handed_mod_left">左手模式</string>
+    <string name="keyboard_one_handed_mod_right">右手模式</string>
+    <string name="lang_long_press_behavior">语言切换键长按行为</string>
+    <string name="space_behavior_none">无</string>
+    <string name="space_behavior_enumerate">轮换输入法</string>
+    <string name="space_behavior_activate">在当前输入法和第一个输入法之间切换</string>
+    <string name="space_behavior_picker">显示输入法选择对话框</string>
+    <string name="show_lang_switch_key">显示语言切换键</string>
+    <string name="plugins">插件</string>
+    <string name="show_voice_input_button">显示语音输入按钮</string>
+    <string name="whether_reset_switch_preference">是否要将此设置重置为默认值？</string>
+    <string name="enabled">启用</string>
+    <string name="following_system_settings">跟随系统设置</string>
+    <string name="button_sound">按键音</string>
+    <string name="button_sound_volume">按键音音量</string>
+    <string name="clipboard_return_after_paste">粘贴后返回</string>
+    <string name="lang_switch_key_behavior">语言切换键行为</string>
+    <string name="lang_switch_behavior_next_ime_app">切换至下一个输入法</string>
+
+    <string name="enable_ime">启用输入法</string>
+    <string name="enable_ime_hint">在“语言和输入法设置”中启用&lt;b>%1$s&lt;/b></string>
+    <string name="select_ime">选择输入法</string>
+    <string name="select_ime_hint">选择&lt;b>%1$s&lt;/b>作为默认输入法</string>
+    <string name="next">下一步</string>
+    <string name="prev">上一步</string>
+    <string name="done">完成</string>
+    <string name="setup_keyboard">请完成键盘设置</string>
+    <string name="setup_channel">设置向导</string>
+    <string name="skip">跳过</string>
+    <string name="number_500">500</string>
+
+    <string name="new_theme">新增主题</string>
+    <string name="exception_theme_json">找不到主题 JSON</string>
+    <string name="exception_theme_name_clash">主题名称与内置主题冲突</string>
+    <string name="exception_theme_src_image">无法保存主题背景原图片</string>
+    <string name="exception_theme_cropped_image">无法保存裁切后的主题背景图片</string>
+
+    <string name="follow_system_day_night_theme">跟随系统夜间模式</string>
+    <string name="follow_system_day_night_theme_summary">覆盖手动主题选择</string>
+    <string name="light_mode_theme">亮色模式主题</string>
+    <string name="dark_mode_theme">暗色模式主题</string>
+    <string name="key_radius">按键圆角半径</string>
+    <string name="key_ripple_effect">启用按键水波纹特效</string>
+    <string name="key_border">启用按键边框</string>
+    <string name="brightness">亮度</string>
+    <string name="keyboard_key_margin">按键间距</string>
+    <string name="key_horizontal_margin">按键横向间距</string>
+    <string name="key_vertical_margin">按键纵向间距</string>
+    <string name="configure">配置</string>
+    <string name="choose_image">选择图片…</string>
+    <string name="dark_keys">暗色按键</string>
+    <string name="recrop_image">重新裁剪图片</string>
+    <string name="navbar_background">导航栏背景</string>
+    <string name="navbar_bkg_none">无背景</string>
+    <string name="navbar_bkg_color_only">跟随键盘背景色</string>
+    <string name="navbar_bkg_full">键盘背景图片</string>
+    <string name="punctuation_position">标点位置</string>
+    <string name="punctuation_pos_bottom">底部（仅限竖屏）</string>
+    <string name="punctuation_pos_top_right">右上</string>
+    <string name="expand_toolbar_by_default">默认展开工具栏</string>
+    <string name="popup_on_key_press">按键时弹出显示字符</string>
+    <string name="disable_animation">禁用动画</string>
+    <string name="import_from_file">导入文件…</string>
+    <string name="duplicate_builtin_theme">复制内置主题…</string>
+    <string name="exception_logcat_created">Logcat 进程已创建</string>
+    <string name="exception_quickphrase_parse">无法解析快速输入条目： %1$s</string>
+    <string name="exception_quickphrase_filename">文件 %1$s 的拓展名不是快速输入</string>
+    <string name="exception_theme_filename">文件 %1$s 的拓展名不是主题</string>
+    <string name="exception_theme_unknown">未知主题 %1$s</string>
+    <string name="theme_migrated">主题已迁移到当前版本</string>
+    <string name="theme_message_follow_system_day_night_mode_enabled">“跟随系统夜间模式”已启用，不能手动更换主题。</string>
+    <string name="disable_it">禁用它</string>
+    <string name="reloading">重新加载中</string>
+    <string name="importing">正在导入</string>
+    <string name="import_error">导入错误</string>
+
+    <string name="edit_theme">编辑主题</string>
+    <string name="add">添加</string>
+    <string name="edit">编辑</string>
+    <string name="undo">撤销</string>
+    <string name="removed_x">已移除 %1$s</string>
+    <string name="added_x">已添加 %1$s</string>
+    <string name="edited_x">已编辑 %1$s</string>
+    <string name="removed_n_items">已移除 %1$d 个项目</string>
+    <string name="invalid_value">无效的值</string>
+    <string name="loading">加载中</string>
+
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="delete_all_except_pinned">要删除所有未置顶条目吗？</string>
+    <string name="num_items_deleted">已删除 %1$d 项</string>
+    <string name="delete_theme">删除主题</string>
+    <string name="delete_theme_msg">确定要删除主题“%1$s”吗？</string>
+
+    <string name="keyboard_name_t9">中文9键</string>
+    <string name="keyboard_name_cn26">拼音全键</string>
+    <string name="keyboard_name_hand">手写输入</string>
+    <string name="keyboard_name_pinyin_flypy_plus">小鹤双拼</string>
+    <string name="keyboard_name_pinyin_lx_17">乱序17</string>
+    <string name="keyboard_iv_menu_close">关闭键盘</string>
+    <string name="space_swipe_move_cursor">滑动空格键移动光标</string>
+</resources>

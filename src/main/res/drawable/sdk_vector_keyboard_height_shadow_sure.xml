@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="1024dp"
+    android:height="1024dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <path
+        android:fillColor="@color/skb_shadow_icon_color"
+        android:pathData="M384.044 759.713l486.49-486.49c17.573-17.573 46.065-17.573 63.639 0 17.573 17.575 17.573 46.067 0 63.64l-550.13 550.13L89.18 592.129c-17.573-17.574-17.573-46.066 0-63.64 17.574-17.573 46.066-17.573 63.64 0l231.224 231.224z" />
+</vector>

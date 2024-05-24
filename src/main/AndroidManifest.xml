@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:supportsRtl="true">
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.setup.SetupActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".ui.fragment.theme.CustomThemeActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:label="@string/edit_theme" />
+        <!-- don't export CropImageActivity -->
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CropActivityTheme"
+            tools:replace="android:exported" />
+    </application>
+
+</manifest>
