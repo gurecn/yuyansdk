@@ -10,7 +10,6 @@ import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.Kernel
-
 class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().input){
 
     private val chineseFanTi = AppPrefs.getInstance().input.chineseFanTi

@@ -21,6 +21,51 @@
         <item>"关闭"</item>
     </string-array>
 
+    <string-array name="symbolType">
+        <item>"中文"</item>
+        <item>"英文"</item>
+        <item>"数学"</item>
+        <item>"其他"</item>
+        <item>"😄"</item>
+        <item>"Ծ‸Ծ"</item>
+    </string-array>
+
+    <string-array name="SymbolRealNine">
+        <item>"，"</item>
+        <item>"。"</item>
+        <item>"？"</item>
+        <item>"@"</item>
+        <item>"！"</item>
+        <item>"…"</item>
+        <item>"："</item>
+        <item>"；"</item>
+        <item>"～"</item>
+        <item>"."</item>
+    </string-array>
+
+    <string-array name="SymbolLeftEng">
+        <item>","</item>
+        <item>"."</item>
+        <item>"?"</item>
+        <item>"@"</item>
+        <item>"!"</item>
+        <item>"…"</item>
+        <item>":"</item>
+        <item>";"</item>
+        <item>"~"</item>
+        <item>"@"</item>
+    </string-array>
+
+    <string-array name="SymbolRealNumber">
+        <item>"%"</item>
+        <item>"/"</item>
+        <item>"-"</item>
+        <item>"+"</item>
+        <item>"*"</item>
+        <item>"#"</item>
+        <item>"@"</item>
+    </string-array>
+
     <string-array name="vibrate_labels">
         <item>系统</item>
         <item>无</item>

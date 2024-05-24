@@ -60,7 +60,7 @@ object ThemeManager {
             fireChange()
         }
 
-    private var isDarkMode = false
+    private var isDarkMode = true
 
     private val onChangeListeners = WeakHashSet<OnThemeChangeListener>()
 
@@ -125,7 +125,7 @@ object ThemeManager {
     }
 
     fun init(configuration: Configuration) {
-        isDarkMode = configuration.isDarkMode()
+        isDarkMode = true
         // fire all `OnThemeChangedListener`s on theme preferences change
         prefs.managedPreferences.values.forEach {
             it.registerOnChangeListener(onThemePrefsChange)

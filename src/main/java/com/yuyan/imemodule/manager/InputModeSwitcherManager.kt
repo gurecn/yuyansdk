@@ -341,10 +341,8 @@ object InputModeSwitcherManager {
             EditorInfo.IME_ACTION_DONE -> enterState = 4
         }
         mToggleStates.mStateEnter = enterState
-        if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
-            saveInputMode(newInputMode)
-            KeyboardManager.instance.switchKeyboard()
-        }
+        saveInputMode(newInputMode)
+        
     }
 
     val isNumberSkb: Boolean
