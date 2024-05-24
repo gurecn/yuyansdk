@@ -95,6 +95,7 @@
     <string name="build_git_hash">构建 Git 哈希</string>
     <string name="source_code">源代码</string>
     <string name="privacy_policy">隐私政策</string>
+    <string name="privacy_policy_content">应用不联网，不获取任何权限，不搜集任何用户信息，请放心使用。</string>
     <string name="license">许可</string>
     <string name="open_source_licenses">开源软件许可</string>
     <string name="licenses_of_third_party_libraries">第三方库许可证</string>

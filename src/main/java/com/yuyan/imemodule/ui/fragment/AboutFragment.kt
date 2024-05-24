@@ -17,7 +17,7 @@ class AboutFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
             addPreference(R.string.privacy_policy) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.privacyPolicyUrl)))
+                findNavController().navigate(R.id.action_aboutFragment_to_privacyPolicyFragment)
             }
             addPreference(
                 R.string.open_source_licenses,
@@ -33,14 +33,14 @@ class AboutFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.version) {
                 isIconSpaceReserved = false
-                addPreference(R.string.current_version, "a8661f8e-debug")
+                addPreference(R.string.current_version, "a8661f8e")
                 addPreference(R.string.build_git_hash, "a8661f8e21e0a0f45da853571a3a8c6a75399b8b") {
                     val commit = "a8661f8e21e0a0f45da853571a3a8c6a75399b8b".substringBefore('-')
                     val uri = Uri.parse("${CustomConstant.githubRepo}/commit/${commit}")
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
                 addPreference(R.string.build_time, SimpleDateFormat.getDateTimeInstance().format(
-                    Date(1709106772785)
+                    Date(1716544537000)
                 ))
             }
         }
