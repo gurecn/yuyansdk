@@ -150,7 +150,7 @@ class KeyboardLoaderUtil private constructor() {
             keyBeans.add(t9Key)
             keyBeans.add(createT9Key(9, "ABC", "2"))
             keyBeans.add(createT9Key(10, "DEF", "3"))
-            t9Key = createT9Key(0, "0")
+            t9Key = createT9Key(0, "@")
             t9Key.widthF = 0.18f
             keyBeans.add(t9Key)
             rows.add(keyBeans)
@@ -200,7 +200,7 @@ class KeyboardLoaderUtil private constructor() {
                 t9Key.widthF = 0.147f
                 keyBeans.add(t9Key)
             }
-            t9Key = createT9Key(KeyEvent.KEYCODE_SPACE, "空格")
+            t9Key = createT9Key(KeyEvent.KEYCODE_SPACE, "空格", "0")
             t9Key.widthF = 0.336f
             keyBeans.add(t9Key)
             t9Key = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2, "中")
