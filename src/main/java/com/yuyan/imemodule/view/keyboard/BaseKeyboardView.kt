@@ -143,10 +143,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     distanceX: Float,
                     distanceY: Float
                 ): Boolean {
-                    if (mCurrentKey?.keyCode != KeyEvent.KEYCODE_SPACE) {
-                        onPopupAction(ChangeFocusAction(0, e2.x - e1!!.x, e2.y - e1.y))
+                    if(!mLongPressKey && mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE) {
+                        if(!dispatchGestureEvent(distanceX.toInt(), distanceY.toInt())){
+                            onPopupAction(ChangeFocusAction(0, e2.x - e1!!.x, e2.y - e1.y))
+                        }
                     } else {
-                        dispatchGestureEvent(distanceX.toInt(), distanceY.toInt())
+                        onPopupAction(ChangeFocusAction(0, e2.x - e1!!.x, e2.y - e1.y))
                     }
                     return true
                 }
@@ -238,8 +240,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if (pointerCount != mOldPointerCount) {
             if (pointerCount == 1) {
                 // Send a down event for the latest pointer
-                val down =
-                    MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, me.x, me.y, me.metaState)
+                val down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, me.x, me.y, me.metaState)
                 result = onModifiedTouchEvent(down)
                 down.recycle()
                 // If it's an up action, then deliver the up as well.
@@ -274,14 +275,11 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val touchY = me.y.toInt()
         val action = me.action
         val eventTime = me.eventTime
-        val keyIndex = getKeyIndices(touchX, touchY) ?: return false
-        // 点击非按键区域
-        // Track the last few movements to look for spurious swipes.
+        val keyIndex = getKeyIndices(touchX, touchY)
         if (action == MotionEvent.ACTION_DOWN) mSwipeTracker.clear()
         mSwipeTracker.addMovement(me)
-
         // Ignore all motion events until a DOWN.
-        if (mAbortKey && action != MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL) {
+        if (mAbortKey && action != MotionEvent.ACTION_DOWN) {
             return true
         }
         if (mGestureDetector!!.onTouchEvent(me)) {
@@ -293,6 +291,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             MotionEvent.ACTION_DOWN -> {
                 mAbortKey = false
                 mSwipeMoveKey = false
+                mLongPressKey = false
                 mLastCodeX = touchX
                 mLastCodeY = touchY
                 mLastKeyTime = 0
@@ -305,7 +304,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 // 播放按键声音和震动
                 tryPlayKeyDown(mCurrentKey)
                 tryVibrate(this)
-                mKeyboardActionListener!!.onPress(keyIndex)
+                if(keyIndex != null)mKeyboardActionListener!!.onPress(keyIndex)
                 if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
                     mRepeatKeyIndex = mCurrentKey
                     val msg = mHandler!!.obtainMessage(MSG_REPEAT)
@@ -358,7 +357,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return true
     }
 
-    private fun dispatchGestureEvent(countX: Int, countY: Int) {
+    private fun dispatchGestureEvent(countX: Int, countY: Int) : Boolean {
+        var result = false
         if (swipeEnabled) {
             val absCountX = abs(countX.toDouble()).toInt()
             val absCountY = abs(countY.toDouble()).toInt()
@@ -373,8 +373,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 }
                 mSwipeMoveKey = true
                 mService!!.responseKeyEvent(key)
+                result = true
             }
         }
+        return result
     }
 
     private fun repeatKey(): Boolean {
