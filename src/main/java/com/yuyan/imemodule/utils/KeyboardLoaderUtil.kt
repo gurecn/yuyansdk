@@ -167,7 +167,7 @@ class KeyboardLoaderUtil private constructor() {
             keyBeans = LinkedList()
             t9Key = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12)
             t9Key.mLeftF = 0.005f
-            t9Key.mTopF = 0.005f
+            t9Key.mTopF = 0f
             t9Key.widthF = 0.18f
             t9Key.heightF = 0.75f
             keyBeans.add(t9Key)
@@ -372,7 +372,7 @@ class KeyboardLoaderUtil private constructor() {
             keyBeans = LinkedList()
             t9Key = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12)
             t9Key.mLeftF = 0.005f
-            t9Key.mTopF = 0.005f
+            t9Key.mTopF = 0f
             t9Key.widthF = 0.18f
             t9Key.heightF = 0.75f
             keyBeans.add(t9Key)
