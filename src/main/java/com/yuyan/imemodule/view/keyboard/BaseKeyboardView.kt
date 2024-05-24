@@ -143,7 +143,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     distanceX: Float,
                     distanceY: Float
                 ): Boolean {
-                    if (!TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
+                    if (mCurrentKey?.keyCode != KeyEvent.KEYCODE_SPACE) {
                         onPopupAction(ChangeFocusAction(0, e2.x - e1!!.x, e2.y - e1.y))
                     } else {
                         dispatchGestureEvent(distanceX.toInt(), distanceY.toInt())
@@ -359,7 +359,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun dispatchGestureEvent(countX: Int, countY: Int) {
-        if (mCurrentKey!!.keyCode == KeyEvent.KEYCODE_SPACE && swipeEnabled) {
+        if (swipeEnabled) {
             val absCountX = abs(countX.toDouble()).toInt()
             val absCountY = abs(countY.toDouble()).toInt()
             if (absCountX > 1 || absCountY > 1) {
