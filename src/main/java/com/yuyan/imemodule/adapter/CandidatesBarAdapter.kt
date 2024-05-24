@@ -22,14 +22,14 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     private var mCandidateTextSize = 0
     private var mDatas: List<CandidateListItem?>
     private val inflater: LayoutInflater
-    private val textColor: Int
+    private var textColor: Int
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
 
-    fun updateCandidateTextSize() {
-        mCandidateTextSize = instance!!.candidateTextSize
+    fun updateTextColor(textColor: Int) {
+        this.textColor = textColor
     }
 
     init {
@@ -38,7 +38,7 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
         val theme = activeTheme
         textColor = theme.keyTextColor
         inflater = LayoutInflater.from(context)
-        updateCandidateTextSize()
+        mCandidateTextSize = instance!!.candidateTextSize
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {

@@ -168,18 +168,18 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         } else {
             val container = KeyboardManager.instance?.currentContainer
             if (container is CandidatesContainer) {
-                mRightArrowBtn!!.getDrawable().setLevel(0)
+                mRightArrowBtn?.getDrawable()?.setLevel(0)
                 var lastItemPosition = 0
                 val layoutManager1 = mRVCandidates!!.layoutManager
                 if (layoutManager1 is LinearLayoutManager) {
                     lastItemPosition = layoutManager1.findLastVisibleItemPosition()
                 }
-                mCvListener!!.onClickMore(0, lastItemPosition)
+                mCvListener?.onClickMore(0, lastItemPosition)
             } else {
-                mRightArrowBtn!!.getDrawable().setLevel(0)
+                mRightArrowBtn?.getDrawable()?.setLevel(0)
             }
         }
-        mCandidatesAdapter!!.notifyDataSetChanged()
+        mCandidatesAdapter?.notifyDataSetChanged()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -189,8 +189,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     }
 
     private fun showViewVisibility(candidatesContainer: View?) {
-        mCandidatesMenuContainer!!.visibility = GONE
-        mCandidatesDataContainer!!.visibility = GONE
+        mCandidatesMenuContainer?.visibility = GONE
+        mCandidatesDataContainer?.visibility = GONE
         candidatesContainer!!.visibility = VISIBLE
     }
 
@@ -200,5 +200,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         vectorDrawableCompat.setTint(textColor)
         val drawable = mRightArrowBtn!!.getDrawable() as LevelListDrawable
         drawable.setTint(textColor)
+        mCandidatesAdapter?.updateTextColor(textColor)
     }
 }
