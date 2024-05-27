@@ -19,6 +19,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 软件盘视图
@@ -204,7 +205,18 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
             bg.draw(canvas)
             textColor = mActiveTheme!!.popupTextColor
         } else if (isKeyBorder) {
-            bg.setColor(mActiveTheme!!.keyBackgroundColor)
+            val background = when (softKey.keyCode) {
+                KeyEvent.KEYCODE_ENTER -> {
+                    mActiveTheme!!.accentKeyBackgroundColor
+                }
+                KeyEvent.KEYCODE_SPACE -> {
+                    mActiveTheme!!.spaceBarColor
+                }
+                else -> {
+                    mActiveTheme!!.keyBackgroundColor
+                }
+            }
+            bg.setColor(background)
             bg.setShape(GradientDrawable.RECTANGLE)
             bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
             bg.setBounds(
@@ -214,6 +226,23 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
                 softKey.mBottom - keyYMargin
             )
             bg.draw(canvas)
+        } else {
+           if(softKey.keyCode == KeyEvent.KEYCODE_ENTER) {
+               bg.setColor(mActiveTheme!!.accentKeyBackgroundColor)
+               bg.setShape(GradientDrawable.OVAL)
+               val bgWidth = softKey.width() - 2 * keyXMargin
+               val bgHeight = softKey.height() - 2 * keyYMargin
+               val radius = min(bgWidth, bgHeight)*2/3
+               val keyMarginX = (bgWidth - radius)/2
+               val keyMarginY = (bgHeight - radius)/2
+                bg.setBounds(
+                    softKey.mLeft + keyMarginX,
+                    softKey.mTop + keyMarginY,
+                    softKey.mRight - keyMarginX,
+                    softKey.mBottom - keyMarginY
+                )
+                bg.draw(canvas)
+            }
         }
         val keyLabel = softKey.keyShowLabel
         val keyLabelSmall = softKey.getmKeyLabelSmall()
@@ -223,12 +252,11 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
         val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
-            //符号位于中上方
             mPaint.setColor(textColor)
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabelSmall)) / 2.0f
             val y = softKey.mTop + weightHeigth
-            canvas.drawText(keyLabelSmall!!, x, y, mPaint)
+            canvas.drawText(keyLabelSmall, x, y, mPaint)
         }
         if (null != keyIcon) {
             val marginLeft = (softKey.width() - keyIcon.intrinsicWidth) / 2
