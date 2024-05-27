@@ -12,7 +12,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.utils.LogUtil
 
 /**
  * 候选词界面适配器

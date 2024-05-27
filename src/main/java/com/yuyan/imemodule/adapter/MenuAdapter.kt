@@ -19,6 +19,7 @@ import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 
 class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>) : RecyclerView.Adapter<MenuAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater
@@ -42,9 +43,11 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
         init {
             entranceIconImageView = itemView.findViewById(R.id.entrance_image)
             entranceNameTextView = itemView.findViewById(R.id.entrance_name)
-            val screenWidth = ImeSdkApplication.context.resources.displayMetrics.widthPixels
-            val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (screenWidth.toFloat() / 4.0f).toInt())
-            itemView.setLayoutParams(layoutParams)
+            val skbHeight = EnvironmentSingleton.instance?.skbHeight
+            val skbWidth = EnvironmentSingleton.instance?.skbWidth
+            val layoutParams = itemView.layoutParams
+            layoutParams.height = skbHeight!!.div(2)
+            layoutParams.width = skbWidth!!.div(4)
         }
     }
 
