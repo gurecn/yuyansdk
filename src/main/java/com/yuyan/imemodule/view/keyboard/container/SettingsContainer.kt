@@ -2,8 +2,9 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.content.Context
 import android.view.View
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.Theme
@@ -39,9 +40,8 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         mRVMenuLayout = RecyclerView(context)
         mRVMenuLayout!!.setHasFixedSize(true)
         mRVMenuLayout!!.setItemAnimator(null)
-//        val manager = FlexboxLayoutManager(context)
-//        manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
-        val manager = GridLayoutManager(context, 4)
+        val manager = FlexboxLayoutManager(context)
+        manager.justifyContent = JustifyContent.FLEX_START
         mRVMenuLayout!!.setLayoutManager(manager)
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         mRVMenuLayout!!.setLayoutParams(layoutParams)
@@ -247,9 +247,5 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         getInstance().internal.pinyinModeRime.setValue(value)
         mInputModeSwitcher!!.saveInputMode(inputMode)
         KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
-    }
-
-    companion object {
-        private val TAG = SettingsContainer::class.java.getSimpleName()
     }
 }
