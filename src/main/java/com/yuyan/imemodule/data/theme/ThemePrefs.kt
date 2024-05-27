@@ -1,18 +1,12 @@
-/*
- * SPDX-License-Identifier: LGPL-2.1-or-later
- * SPDX-FileCopyrightText: Copyright 2023 Fcitx5 for Android Contributors
- */
+
 
 package com.yuyan.imemodule.data.theme
 
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.ManagedPreferenceCategory
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
-import com.yuyan.imemodule.prefs.behavior.LangSwitchBehavior
-import com.yuyan.imemodule.prefs.behavior.SpaceLongPressBehavior
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 class ThemePrefs(sharedPreferences: SharedPreferences) :

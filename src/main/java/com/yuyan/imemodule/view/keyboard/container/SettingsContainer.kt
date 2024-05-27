@@ -1,15 +1,10 @@
 package com.yuyan.imemodule.view.keyboard.container
 
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
@@ -25,21 +20,14 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil.launchSettings
 import com.yuyan.imemodule.ui.utils.AppUtil.launchSettingsToHandwriting
 import com.yuyan.imemodule.ui.utils.AppUtil.launchSettingsToKeyboard
-import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.view.skbitem.PageMenuLayout
-import com.yuyan.imemodule.view.skbitem.adapter.EntranceAdapter
-import com.yuyan.imemodule.view.skbitem.holder.AbstractHolder
-import com.yuyan.imemodule.view.skbitem.holder.PageMenuViewHolderCreator
-import com.yuyan.imemodule.view.skbitem.widget.IndicatorView
+import com.yuyan.imemodule.adapter.MenuAdapter
 import java.util.LinkedList
 
 class SettingsContainer(context: Context) : BaseContainer(context) {
-    private var mPageMenuLayout: PageMenuLayout<SkbFunItem>? = null
-    private var mIndicatorView: IndicatorView? = null
+    private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
 
     init {
@@ -48,27 +36,16 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
 
     private fun initView(context: Context) {
         mTheme = activeTheme
-        mPageMenuLayout = PageMenuLayout(context)
-        mPageMenuLayout!!.setRowCount(2)
-        mPageMenuLayout!!.setSpanCount(4)
-        mIndicatorView = IndicatorView(context)
-        mIndicatorView!!.setIndicatorWidth(10)
-        mIndicatorView!!.setIndicatorColor(mTheme!!.keyTextColor)
-        mIndicatorView!!.setIndicatorColorSelected(mTheme!!.genericActiveBackgroundColor)
-        val layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            dip2px(12f)
-        )
-        layoutParams.addRule(ALIGN_PARENT_BOTTOM)
-        mIndicatorView!!.setLayoutParams(layoutParams)
-        this.addView(mIndicatorView)
-        val layoutParams2 = LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT
-        )
-        layoutParams2.addRule(ABOVE, mIndicatorView!!.id)
-        mPageMenuLayout!!.setLayoutParams(layoutParams2)
-        this.addView(mPageMenuLayout)
+        mRVMenuLayout = RecyclerView(context)
+        mRVMenuLayout!!.setHasFixedSize(true)
+        mRVMenuLayout!!.setItemAnimator(null)
+//        val manager = FlexboxLayoutManager(context)
+//        manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
+        val manager = GridLayoutManager(context, 4)
+        mRVMenuLayout!!.setLayoutManager(manager)
+        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        mRVMenuLayout!!.setLayoutParams(layoutParams)
+        this.addView(mRVMenuLayout)
     }
 
     /**
@@ -78,139 +55,35 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         //获取键盘功能栏功能对象
         val funItems: MutableList<SkbFunItem> = LinkedList()
         //        funItems.add(new SkbFunItem(mContext.getString(R.string.emoji_setting), R.drawable.sdk_vector_menu_skb_emoji, SkbMenuMode.EmojiKeyboard));
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.changeKeyboard),
-                R.drawable.sdk_vector_menu_skb_keyboard,
-                SkbMenuMode.SwitchKeyboard
+        funItems.add(SkbFunItem(mContext.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
+        funItems.add(SkbFunItem(mContext.getString(R.string.setting_ime_keyboard_height), R.drawable.sdk_vector_menu_skb_height, SkbMenuMode.KeyboardHeight))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_feedback), R.drawable.sdk_vector_menu_skb_touch, SkbMenuMode.Feedback))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_one_handed_mod), R.drawable.sdk_vector_menu_skb_one_hand, SkbMenuMode.OneHanded))
+        funItems.add(SkbFunItem(mContext.getString(R.string.engish_full_keyboard), R.drawable.sdk_vector_menu_skb_shuzihang, SkbMenuMode.NumberRow))
+        funItems.add(SkbFunItem(mContext.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_mnemonic_show), R.drawable.sdk_vector_menu_skb_mnemonic, SkbMenuMode.Mnemonic))
+        funItems.add(SkbFunItem(mContext.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
+        val adapter = MenuAdapter(context, funItems)
+        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+            onSettingsMenuClick(
+                funItems[position]
             )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.setting_ime_keyboard_height),
-                R.drawable.sdk_vector_menu_skb_height,
-                SkbMenuMode.KeyboardHeight
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_theme_night),
-                R.drawable.sdk_vector_menu_skb_dark,
-                SkbMenuMode.DarkTheme
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_feedback),
-                R.drawable.sdk_vector_menu_skb_touch,
-                SkbMenuMode.Feedback
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_one_handed_mod),
-                R.drawable.sdk_vector_menu_skb_one_hand,
-                SkbMenuMode.OneHanded
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.engish_full_keyboard),
-                R.drawable.sdk_vector_menu_skb_shuzihang,
-                SkbMenuMode.NumberRow
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.setting_jian_fan),
-                R.drawable.sdk_vector_menu_skb_fanti,
-                SkbMenuMode.JianFan
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_mnemonic_show),
-                R.drawable.sdk_vector_menu_skb_mnemonic,
-                SkbMenuMode.Mnemonic
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.skb_item_settings),
-                R.drawable.sdk_vector_menu_skb_setting,
-                SkbMenuMode.Settings
-            )
-        )
-        mPageMenuLayout!!.setPageDatas(funItems, object : PageMenuViewHolderCreator<SkbFunItem> {
-            override fun createHolder(itemView: View?): AbstractHolder<SkbFunItem> {
-                return object : AbstractHolder<SkbFunItem>(itemView!!) {
-                    private var entranceNameTextView: TextView? = null
-                    private var entranceIconImageView: ImageView? = null
-                    override fun initView(itemView: View?) {
-                        entranceIconImageView = itemView!!.findViewById(R.id.entrance_image)
-                        entranceNameTextView = itemView.findViewById(R.id.entrance_name)
-                        val screenWidth =
-                            ImeSdkApplication.context.resources.displayMetrics.widthPixels
-                        val layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            (screenWidth.toFloat() / 4.0f).toInt()
-                        )
-                        itemView.setLayoutParams(layoutParams)
-                    }
-
-                    override fun bindView(
-                        adapter: EntranceAdapter<SkbFunItem>?,
-                        holder: RecyclerView.ViewHolder?,
-                        data: SkbFunItem,
-                        pos: Int
-                    ) {
-                        entranceNameTextView!!.text = data.funName
-                        entranceIconImageView!!.setImageResource(data.funImgRecource)
-                        val color =
-                            if (isSettingsMunuSelect(data)) mTheme!!.genericActiveBackgroundColor else mTheme!!.keyTextColor
-                        entranceNameTextView!!.setTextColor(color)
-                        val vectorDrawableCompat =
-                            entranceIconImageView!!.getDrawable() as VectorDrawable
-                        vectorDrawableCompat.setTint(color)
-                        holder!!.itemView.setOnClickListener { view: View? ->
-                            onSettingsMenuClick(
-                                data
-                            )
-                        }
-                    }
-                }
-            }
-
-            override fun getLayoutId(): Int {
-                return R.layout.sdk_item_skb_menu_entrance
-            }
-        })
-        mIndicatorView!!.setIndicatorCount(mPageMenuLayout!!.pageCount)
-        mIndicatorView!!.setCurrentIndicator(0)
-        mIndicatorView!!.setCurrentIndicator(0)
-        mPageMenuLayout!!.setOnPageListener(object : SimpleOnPageChangeListener() {
-            override fun onPageSelected(position: Int) {
-                mIndicatorView!!.setCurrentIndicator(position)
-            }
-        })
+        }
+        mRVMenuLayout!!.setAdapter(adapter)
     }
 
     private fun onSettingsMenuClick(data: SkbFunItem) {
         when (data.skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
-                val symbols =
-                    SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                val symbols = SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
                 inputView!!.showSymbols(symbols)
                 KeyboardManager.instance!!.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance!!.currentContainer as SymbolContainer?)!!.setSymbolsView(
-                    CustomConstant.EMOJI_TYPR_FACE_DATA
-                )
+                (KeyboardManager.instance!!.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             }
             SkbMenuMode.SwitchKeyboard -> (KeyboardManager.instance!!.currentContainer as SettingsContainer?)!!.showSkbSelelctModeView()
             SkbMenuMode.KeyboardHeight -> {
-                KeyboardManager.instance!!.switchKeyboard(
-                    mInputModeSwitcher!!.skbLayout
-                )
+                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
                 (KeyboardManager.instance!!.currentContainer as InputBaseContainer?)!!.setKeyboardHeight()
             }
             SkbMenuMode.DarkTheme -> {
@@ -294,25 +167,10 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         }
     }
 
-    private fun isSettingsMunuSelect(data: SkbFunItem): Boolean {
-        val result: Boolean = when (data.skbMenuMode) {
-            SkbMenuMode.DarkTheme -> activeTheme.isDark
-            SkbMenuMode.NumberRow -> prefs.abcNumberLine.getValue()
-            SkbMenuMode.JianFan -> getInstance().input.chineseFanTi.getValue()
-            SkbMenuMode.LockEnglish -> prefs.keyboardLockEnglish.getValue()
-            SkbMenuMode.SymbolShow -> prefs.keyboardSymbol.getValue()
-            SkbMenuMode.Mnemonic -> prefs.keyboardMnemonic.getValue()
-            SkbMenuMode.EmojiInput -> getInstance().input.emojiInput.getValue()
-            SkbMenuMode.OneHanded -> prefs.oneHandedMod.getValue() != KeyboardOneHandedMod.None
-            else -> false
-        }
-        return result
-    }
-
     /**
      * 弹出键盘界面
      */
-    fun showSkbSelelctModeView() {
+    private fun showSkbSelelctModeView() {
         val funItems: MutableList<SkbFunItem> = LinkedList()
         funItems.add(
             SkbFunItem(
@@ -349,58 +207,13 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 SkbMenuMode.PinyinLx17
             )
         )
-        mPageMenuLayout!!.setPageDatas(funItems, object : PageMenuViewHolderCreator<SkbFunItem> {
-            override fun createHolder(itemView: View?): AbstractHolder<SkbFunItem> {
-                return object : AbstractHolder<SkbFunItem>(itemView!!) {
-                    private var entranceNameTextView: TextView? = null
-                    private var entranceIconImageView: ImageView? = null
-                    override fun initView(itemView: View?) {
-                        entranceIconImageView = itemView!!.findViewById(R.id.entrance_image)
-                        entranceNameTextView = itemView.findViewById(R.id.entrance_name)
-                        val screenWidth =
-                            ImeSdkApplication.context.resources.displayMetrics.widthPixels
-                        val layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            (screenWidth.toFloat() / 4.0f).toInt()
-                        )
-                        itemView.setLayoutParams(layoutParams)
-                    }
-
-                    override fun bindView(
-                        adapter: EntranceAdapter<SkbFunItem>?,
-                        holder: RecyclerView.ViewHolder?,
-                        data: SkbFunItem,
-                        pos: Int
-                    ) {
-                        entranceNameTextView!!.text = data.funName
-                        entranceIconImageView!!.setImageResource(data.funImgRecource)
-                        val color =
-                            if (isKeyboardMunuSelect(data)) mTheme!!.genericActiveBackgroundColor else mTheme!!.keyTextColor
-                        entranceNameTextView!!.setTextColor(color)
-                        val vectorDrawableCompat =
-                            entranceIconImageView!!.getDrawable() as VectorDrawable
-                        vectorDrawableCompat.setTint(color)
-                        holder!!.itemView.setOnClickListener { view: View? ->
-                            onKeyboardMenuClick(
-                                data
-                            )
-                        }
-                    }
-                }
-            }
-
-            override fun getLayoutId(): Int {
-                return R.layout.sdk_item_skb_menu_entrance
-            }
-        })
-        mIndicatorView!!.setIndicatorCount(mPageMenuLayout!!.pageCount)
-        mIndicatorView!!.setCurrentIndicator(0)
-        mIndicatorView!!.setCurrentIndicator(0)
-        mPageMenuLayout!!.setOnPageListener(object : SimpleOnPageChangeListener() {
-            override fun onPageSelected(position: Int) {
-                mIndicatorView!!.setCurrentIndicator(position)
-            }
-        })
+        val adapter = MenuAdapter(context, funItems)
+        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+            onKeyboardMenuClick(
+                funItems[position]
+            )
+        }
+        mRVMenuLayout!!.setAdapter(adapter)
     }
 
     private fun onKeyboardMenuClick(data: SkbFunItem) {
@@ -429,26 +242,11 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
             else ->{
             }
         }
-        val inputMode =
-            keyboardValue or InputModeSwitcherManager.MASK_LANGUAGE_CN or InputModeSwitcherManager.MASK_CASE_UPPER
+        val inputMode = keyboardValue or InputModeSwitcherManager.MASK_LANGUAGE_CN or InputModeSwitcherManager.MASK_CASE_UPPER
         getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         getInstance().internal.pinyinModeRime.setValue(value)
         mInputModeSwitcher!!.saveInputMode(inputMode)
-        d(TAG, "onKeyboardMenuClick value：$value")
         KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
-    }
-
-    private fun isKeyboardMunuSelect(data: SkbFunItem): Boolean {
-        val rimeValue = getInstance().internal.pinyinModeRime.getValue()
-        val result: Boolean = when (data.skbMenuMode) {
-            SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
-            SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY
-            SkbMenuMode.PinyinHandWriting -> rimeValue == CustomConstant.SCHEMA_ZH_HANDWRITING
-            SkbMenuMode.Pinyin26Double -> rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY
-            SkbMenuMode.PinyinLx17 -> rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_LX17
-            else -> false
-        }
-        return result
     }
 
     companion object {
