@@ -156,15 +156,18 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
         } else if (sKey.isUserDefKey) { // 是用户定义的keycode
-            if (InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3 == keyCode || InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_EN_4 == keyCode || InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_NUM_5 == keyCode || InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6 == keyCode) {  // 点击标点、表情按钮
+            if (InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3 == keyCode || InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6 == keyCode) {  // 点击标点、表情按钮
                 if (!mDecInfo.isAssociate && !mDecInfo.isFinish) {
                     chooseAndUpdate(0)
                 }
-                val symbolType = when (keyCode) {
-                    InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_EN_4 -> 1
-                    InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_NUM_5 -> 2
-                    InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6 -> 4
-                    else -> 0
+                val symbolType = if (keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6) {
+                    4
+                } else if(mInputModeSwitcher.isEnglish) {
+                    1
+                } else if(mInputModeSwitcher.isNumberSkb) {
+                    2
+                } else {
+                    0
                 }
                 val symbols = SymbolsManager.instance!!.getmSymbols(symbolType)
                 showSymbols(symbols)
