@@ -21,7 +21,7 @@ object CustomConstant {
     const val SCHEMA_ZH_HANDWRITING = "handwriting" // 手写输入
     const val SCHEMA_ZH_DOUBLE_FLYPY = "double_pinyin_flypy" // 明月拼音+小鹤双拼
     const val SCHEMA_ZH_DOUBLE_LX17 = "double_pinyin_ls17" // 乱序17
-    const val CURRENT_RIME_DICT_DATA_VERSIOM = 20240524
+    const val CURRENT_RIME_DICT_DATA_VERSIOM = 20240528
     const val githubRepo = "https://github.com/gurecn/YuyanIme"
     const val licenseSpdxId = "LGPL-2.1-or-later"
     const val licenseUrl = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1"
