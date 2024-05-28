@@ -41,11 +41,6 @@ class SoftKeyToggle(code: Int) : SoftKey() {
             val state = toggleState
             return if (null != state) state.label else super.getkeyLabel()
         }
-    override val keyShowLabel: String?
-        get() {
-            val state = toggleState
-            return if (null != state) state.label else super.keyLabel
-        }
 
     override fun changeCase(lowerCase: Boolean) {
         val state = toggleState
@@ -58,7 +53,7 @@ class SoftKeyToggle(code: Int) : SoftKey() {
         }
     }
 
-    val toggleState: ToggleState?
+    private val toggleState: ToggleState?
         /**
          * 判断当前的ToggleState的mIdAndFlags &
          * KEYMASK_TOGGLE_STATE是否与stateId时相等的，如果不是就移动到下一个ToggleState再找

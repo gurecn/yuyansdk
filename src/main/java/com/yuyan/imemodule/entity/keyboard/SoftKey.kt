@@ -14,48 +14,32 @@ open class SoftKey {
      * should be reserved for SoftkeyToggle. 按键的属性和类型，最低的8位留给软键盘变换状态。
      */
     var stateId = 0
-    /**
-     * 获取按键的字符
-     */
+
     /** key的文本  */
     private var mkeyLabel: String = ""
 
-    /** key的显示文本  */
-    private var mKeyShowLabel: String = ""
-
     /** key角标符号文本  */
     private var mKeyLabelSmall: String = ""
-    /**
-     * 获取助记符
-     */
+
     /** key助记符号文本  */
     var keyMnemonic: String? = null
-    /**
-     * 获取按键的key code
-     */
+
     /** key的code  */
     var keyCode = 0
 
     /** 键盘上下左右位置百分比 ，mLeft = (int) (mLeftF * skbWidth);  */
     var mLeftF = -1f
-    var mRightF = 0f
+    private var mRightF = 0f
     var mTopF = -1f
-    var mBottomF = 0f
-
-    /** 键盘上下左右位置坐标边界;  */
-    @JvmField
-    var mLeft = 0
-
-    @JvmField
-    var mRight = 0
-
-    @JvmField
-    var mTop = 0
-
-    @JvmField
-    var mBottom = 0
+    private var mBottomF = 0f
     var widthF = 0f
     var heightF = 0f
+
+    /** 键盘上下左右位置坐标边界;  */
+    var mLeft = 0
+    var mRight = 0
+    var mTop = 0
+    var mBottom = 0
     var mRepeat = false
 
     /**
@@ -95,7 +79,6 @@ open class SoftKey {
         pressed = !pressed
     }
 
-    // The caller guarantees that all parameters are in [0, 1]
     fun setKeyDimensions(left: Float, top: Float, right: Float, bottom: Float) {
         mLeftF = left
         mTopF = top
@@ -125,14 +108,6 @@ open class SoftKey {
          */
         get() =  mkeyLabel
 
-    open val keyShowLabel: String?
-        /**
-         * 获取按键的显示字符
-         */
-        get() = if (TextUtils.isEmpty(mKeyShowLabel)) {
-            keyLabel
-        } else mKeyShowLabel
-
     /**
      * 获取按键角标字符
      */
@@ -151,14 +126,10 @@ open class SoftKey {
      * 大小写转换
      */
     open fun changeCase(upperCase: Boolean) {
-        if (upperCase) {
-            if (!TextUtils.isEmpty(keyLabel)) mkeyLabel = mkeyLabel.uppercase(Locale.getDefault())
-            if (!TextUtils.isEmpty(mKeyShowLabel)) mKeyShowLabel =
-                mKeyShowLabel.uppercase(Locale.getDefault())
+        mkeyLabel = if (upperCase) {
+            mkeyLabel.uppercase()
         } else {
-            if (!TextUtils.isEmpty(keyLabel)) mkeyLabel = mkeyLabel.lowercase(Locale.getDefault())
-            if (!TextUtils.isEmpty(mKeyShowLabel)) mKeyShowLabel =
-                mKeyShowLabel.lowercase(Locale.getDefault())
+            mkeyLabel.lowercase()
         }
     }
 

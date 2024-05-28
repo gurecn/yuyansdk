@@ -37,6 +37,7 @@ class KeyboardLoaderUtil private constructor() {
         shiftToggleStates.add(ToggleState(0))
         shiftToggleStates.add(ToggleState(1))
         shiftToggleStates.add(ToggleState(2))
+
         val softKeyboard: SoftKeyboard?
         val numberLine = prefs.abcNumberLine.getValue()
         d(TAG, "loadBaseSkb numberLine：$numberLine")
