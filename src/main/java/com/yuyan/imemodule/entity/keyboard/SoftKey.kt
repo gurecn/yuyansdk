@@ -2,6 +2,7 @@ package com.yuyan.imemodule.entity.keyboard
 
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
+import android.view.KeyEvent
 import com.yuyan.imemodule.manager.KeyIconManager.Companion.instance
 import java.util.Locale
 
@@ -33,14 +34,13 @@ open class SoftKey {
     var mTopF = -1f
     private var mBottomF = 0f
     var widthF = 0f
-    var heightF = 0f
+    var heightF = 0.25f
 
     /** 键盘上下左右位置坐标边界;  */
     var mLeft = 0
     var mRight = 0
     var mTop = 0
     var mBottom = 0
-    var mRepeat = false
 
     /**
      * The current pressed state of this key.
@@ -150,10 +150,10 @@ open class SoftKey {
         get() = keyCode == 0
 
     /**
-     * 是否有重复按下功能，即连续按这个按键是否执行不同的操作。
+     * 是否有重复按下功能，即连长按这个按键是否执行重复的操作。
      */
     fun repeatable(): Boolean {
-        return mRepeat
+        return keyCode == KeyEvent.KEYCODE_DEL
     }
 
     fun width(): Int {
