@@ -320,7 +320,7 @@ class KeyboardLoaderUtil private constructor() {
                         KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5))
                 } else {
                     createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
-                            KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
+                        KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
                 }
             }
             InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC -> {
@@ -332,7 +332,7 @@ class KeyboardLoaderUtil private constructor() {
                         InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5))
                 } else {
                     createQwertyKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
-                            InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
+                        InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
                 }
             }
             InputModeSwitcherManager.MASK_SKB_LAYOUT_NUMBER -> {
@@ -347,7 +347,7 @@ class KeyboardLoaderUtil private constructor() {
                         InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5))
                 } else {
                     createLX17Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
-                            InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
+                        InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
                 }
             }
             else -> { //0x1000 InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN
@@ -359,7 +359,7 @@ class KeyboardLoaderUtil private constructor() {
                         InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5))
                 } else {
                     createQwertyPYKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
-                            InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
+                        InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
                 }
             }
         }

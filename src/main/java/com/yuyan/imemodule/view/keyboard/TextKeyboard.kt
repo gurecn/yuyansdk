@@ -244,7 +244,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
                 bg.draw(canvas)
             }
         }
-        val keyLabel = softKey.keyShowLabel
+        val keyLabel = softKey.keyLabel
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon
