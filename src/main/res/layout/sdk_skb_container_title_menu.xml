@@ -24,10 +24,11 @@
         android:layout_marginEnd="10dp"
         android:focusable="true"
         android:contentDescription="@string/keyboard_iv_menu_close" />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_container_menu_list"
+    <LinearLayout
+        android:id="@+id/ll_container_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="horizontal"
         android:layout_toEndOf="@id/iv_container_menu_ime_setting"
         android:layout_toStartOf="@id/iv_container_menu_close_grey" />
 </RelativeLayout>

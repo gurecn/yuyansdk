@@ -15,6 +15,7 @@ import android.widget.RelativeLayout
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -27,6 +28,7 @@ import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.LogUtil
+import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
@@ -189,7 +191,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 chooseAndUpdate(0)
             }
             val selectSymbol = sKey.keyLabel
-            commitText(selectSymbol)
+            if(selectSymbol != null)commitText(selectSymbol)
         }
     }
 
@@ -204,9 +206,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             mDecInfo.reset()
         }
-        if (!TextUtils.isEmpty(showText)) {
-            commitText(showText)
-        }
+        if (showText != null)commitText(showText)
     }
 
     override fun responseHandwritingResultEvent(words: ArrayList<CandidateListItem?>) {
@@ -616,6 +616,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     }
 
     /**
+     * 点击花漾字菜单
+     */
+    fun showFlowerTypeface() {
+        mSkbCandidatesBarView?.showFlowerTypeface()
+    }
+
+    /**
      * 选择拼音
      */
     fun selectPrefix(position: Int) {
@@ -671,22 +678,30 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     /**
      * 发送字符串给编辑框
      */
-    private fun commitText(resultText: String?) {
+    private fun commitText(resultText: String) {
         val inputConnection = service.getCurrentInputConnection()
-        inputConnection?.commitText(resultText, 1)
+        if(CustomConstant.flowerTypeface == "火星文"){
+            inputConnection.commitText(StringUtils.converted2Hot(resultText), 1)
+        } else {
+            inputConnection.commitText(resultText, 1)
+        }
     }
 
     /**
      * 发送候选词字符串给编辑框
      */
     private fun commitDecInfoText(resultText: String?) {
+        if(resultText == null) return
         val inputConnection = service.getCurrentInputConnection()
-        if (null != inputConnection) {
-            if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish) {
-                inputConnection.commitText("$resultText ", 1)
-            } else {
-                inputConnection.commitText(resultText, 1)
-            }
+        val text = if(CustomConstant.flowerTypeface == "火星文"){
+            StringUtils.converted2Hot(resultText)
+        } else {
+            resultText
+        }
+        if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish) {
+            inputConnection.commitText("$text ", 1)
+        } else {
+            inputConnection.commitText(text, 1)
         }
     }
 

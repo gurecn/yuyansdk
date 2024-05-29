@@ -63,6 +63,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         funItems.add(SkbFunItem(mContext.getString(R.string.engish_full_keyboard), R.drawable.sdk_vector_menu_skb_shuzihang, SkbMenuMode.NumberRow))
         funItems.add(SkbFunItem(mContext.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_mnemonic_show), R.drawable.sdk_vector_menu_skb_mnemonic, SkbMenuMode.Mnemonic))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
         funItems.add(SkbFunItem(mContext.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
         val adapter = MenuAdapter(context, funItems)
         adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -147,9 +148,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 val emojiInput = getInstance().input.emojiInput.getValue()
                 getInstance().input.emojiInput.setValue(!emojiInput)
                 Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance!!.switchKeyboard(
-                    mInputModeSwitcher!!.skbLayout
-                )
+                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             SkbMenuMode.Handwriting -> launchSettingsToHandwriting(mContext)
             SkbMenuMode.Settings -> launchSettings(mContext)
@@ -162,6 +161,10 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 KeyboardManager.instance!!.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
+            }
+            SkbMenuMode.FlowerTypeface -> {
+                inputView?.showFlowerTypeface()
+                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             else ->{}
         }
