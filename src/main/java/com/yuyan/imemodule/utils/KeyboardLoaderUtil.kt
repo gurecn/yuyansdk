@@ -29,13 +29,6 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun loadBaseSkb(skbValue: Int): SoftKeyboard {
         d(TAG, "loadBaseSkb")
-        // enter键状态
-        val enterToggleStates = LinkedList<ToggleState>()
-        enterToggleStates.add(ToggleState("去往", 0))
-        enterToggleStates.add(ToggleState("搜索", 1))
-        enterToggleStates.add(ToggleState("发送", 2))
-        enterToggleStates.add(ToggleState("下一个", 3))
-        enterToggleStates.add(ToggleState("完成", 4))
         // shift键状态
         val shiftToggleStates = LinkedList<ToggleState>()
         shiftToggleStates.add(ToggleState(0))
@@ -58,192 +51,161 @@ class KeyboardLoaderUtil private constructor() {
         if (numberLine) {
             rows.add(skbNumberRow)
         }
-        // 1000  拼音全键
-        if (skbValue == 0x1000) {
-            var keyBeans = mutableListOf<SoftKey>()
-            var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
-            qwertyKeys.first().apply {
-                mLeftF = 0.005f
+        when(skbValue){
+            0x1000 -> {  // 1000  拼音全键
+                var keyBeans = mutableListOf<SoftKey>()
+                var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
+                qwertyKeys.first().apply {
+                    mLeftF = 0.005f
+                }
+                keyBeans.addAll(qwertyKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                qwertyKeys = createQwertyKeys(arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40))
+                qwertyKeys.first().apply {
+                    mLeftF = 0.06f
+                }
+                keyBeans.addAll(qwertyKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                qwertyKeys = createQwertyKeys(arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL))
+                qwertyKeys.first().apply {
+                    mLeftF = 0.005f
+                    widthF = 0.147f
+                }
+                qwertyKeys.last().apply {
+                    widthF = 0.147f
+                }
+                keyBeans.addAll(qwertyKeys)
+                rows.add(keyBeans)
+                keyBeans = lastRows(numberLine)
+                rows.add(keyBeans)
             }
-            keyBeans.addAll(qwertyKeys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            qwertyKeys = createQwertyKeys(arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40))
-            qwertyKeys.first().apply {
-                mLeftF = 0.06f
+            0x2000 -> {  // 2000  T9键键
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                var t9Key = createT9Keys(arrayOf(75, 9, 10, KeyEvent.KEYCODE_AT))
+                t9Key.first().mLeftF = 0.185f
+                t9Key.last().widthF = 0.18f
+                keyBeans.addAll(t9Key)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                t9Key = createT9Keys(arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR))
+                t9Key.first().mLeftF = 0.185f
+                t9Key.last().widthF = 0.18f
+                keyBeans.addAll(t9Key)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
+                t9Key.first().apply {
+                    mLeftF = 0.005f
+                    mTopF = 0.005f
+                    widthF = 0.18f
+                    heightF = 0.745f
+                }
+                t9Key.last().widthF = 0.18f
+                keyBeans.addAll(t9Key)
+                rows.add(keyBeans)
+                keyBeans = lastRows(numberLine)
+                rows.add(keyBeans)
             }
-            keyBeans.addAll(qwertyKeys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            qwertyKeys = createQwertyKeys(arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL))
-            qwertyKeys.first().apply {
-                mLeftF = 0.005f
-                widthF = 0.147f
+            0x3000 -> {// 3000 手写键盘
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                var handwritingKey = createHandwritingKey(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12) // 符号站位
+                handwritingKey.mLeftF = 0.815f
+                handwritingKey.heightF = 0.50f
+                keyBeans.add(handwritingKey)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                handwritingKey = createHandwritingKey(KeyEvent.KEYCODE_DEL)
+                handwritingKey.mLeftF = 0.815f
+                keyBeans.add(handwritingKey)
+                rows.add(keyBeans)
+                keyBeans = lastRows(numberLine)
+                rows.add(keyBeans)
             }
-            qwertyKeys.last().apply {
-                widthF = 0.147f
+            0x4000 -> {// 4000 英文全键
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
+                qwertyKeys.first().apply {
+                    mLeftF = 0.005f
+                }
+                keyBeans.addAll(qwertyKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                qwertyKeys = createQwertyKeys(arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40))
+                qwertyKeys.first().apply {
+                    mLeftF = 0.06f
+                }
+                keyBeans.addAll(qwertyKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                val softKeyToggle = createKeyToggle(-1)
+                softKeyToggle.mLeftF = 0.005f
+                softKeyToggle.widthF = 0.147f
+                softKeyToggle.setToggleStates(shiftToggleStates)
+                keyBeans.add(softKeyToggle)
+                keyBeans.addAll(createQwertyKeys(arrayOf(54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL)))
+                keyBeans.last().apply {
+                    widthF = 0.147f
+                }
+                rows.add(keyBeans)
+                keyBeans = lastRows(numberLine)
+                rows.add(keyBeans)
             }
-            keyBeans.addAll(qwertyKeys)
-            rows.add(keyBeans)
-            keyBeans = lastRows(numberLine, enterToggleStates)
-            rows.add(keyBeans)
-        }
+            0x5000 -> {  // 5000 数字键盘
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                var t9Keys = createT9NumberKeys(arrayOf(8, 9, 10, KeyEvent.KEYCODE_AT))
+                t9Keys.first().mLeftF = 0.185f
+                t9Keys.last().widthF = 0.18f
+                keyBeans.addAll(t9Keys)
+                rows.add(keyBeans)
 
-        // 2000  T9键键
-        if (skbValue == 0x2000) {
-            var keyBeans: MutableList<SoftKey> = LinkedList()
-            var t9Key = createT9Keys(arrayOf(75, 9, 10, KeyEvent.KEYCODE_AT))
-            t9Key.first().mLeftF = 0.185f
-            t9Key.last().widthF = 0.18f
-            keyBeans.addAll(t9Key)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            t9Key = createT9Keys(arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR))
-            t9Key.first().mLeftF = 0.185f
-            t9Key.last().widthF = 0.18f
-            keyBeans.addAll(t9Key)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
-            t9Key.first().apply {
-                mLeftF = 0.005f
-                mTopF = 0f
-                widthF = 0.18f
-                heightF = 0.75f
-            }
-            t9Key.last().widthF = 0.18f
-            keyBeans.addAll(t9Key)
-            rows.add(keyBeans)
-            keyBeans = lastRows(numberLine, enterToggleStates)
-            rows.add(keyBeans)
-        }
+                keyBeans = LinkedList()
+                t9Keys = createT9NumberKeys(arrayOf(11, 12, 13, 0))
+                t9Keys.first().mLeftF = 0.185f
+                t9Keys.last().widthF = 0.18f
+                keyBeans.addAll(t9Keys)
+                rows.add(keyBeans)
 
-        // 3000 手写键盘
-        if (skbValue == 0x3000) {
-            var keyBeans: MutableList<SoftKey> = LinkedList()
-            var handwritingKey = createHandwritingKey(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12) // 符号站位
-            handwritingKey.mLeftF = 0.815f
-            handwritingKey.heightF = 0.50f
-            keyBeans.add(handwritingKey)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            handwritingKey = createHandwritingKey(KeyEvent.KEYCODE_DEL)
-            handwritingKey.mLeftF = 0.815f
-            keyBeans.add(handwritingKey)
-            rows.add(keyBeans)
-            keyBeans = lastRows(numberLine, enterToggleStates)
-            rows.add(keyBeans)
-        }
-
-        // 4000  英文全键
-        if (skbValue == 0x4000) {
-            var keyBeans: MutableList<SoftKey> = LinkedList()
-            var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
-            qwertyKeys.first().apply {
-                mLeftF = 0.005f
+                keyBeans = LinkedList()
+                t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
+                t9Keys.first().apply {
+                    mLeftF = 0.005f
+                    mTopF = 0f
+                    widthF = 0.18f
+                    heightF = 0.75f
+                }
+                t9Keys.last().widthF = 0.18f
+                keyBeans.addAll(t9Keys)
+                rows.add(keyBeans)
+                keyBeans = lastRows(numberLine, true)
+                rows.add(keyBeans)
             }
-            keyBeans.addAll(qwertyKeys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            qwertyKeys = createQwertyKeys(arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40))
-            qwertyKeys.first().apply {
-                mLeftF = 0.06f
+            0x6000 -> {     // 6000 乱序17键盘
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                var lX17Keys = createLX17Keys(arrayOf(36, 47, 54, 30, 52, 41))
+                lX17Keys.first().apply {
+                    mLeftF = 0.005f
+                }
+                keyBeans.addAll(lX17Keys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                lX17Keys = createLX17Keys(arrayOf(40, 32, 53, 51, 38, 42))
+                lX17Keys.first().apply {
+                    mLeftF = 0.005f
+                }
+                keyBeans.addAll(lX17Keys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                lX17Keys = createLX17Keys(arrayOf(31, 45, 35, 34, 48, 42, 67))
+                lX17Keys.first().apply {
+                    mLeftF = 0.005f
+                }
+                keyBeans.addAll(lX17Keys)
+                rows.add(keyBeans)
+                keyBeans = lastRows(numberLine)
+                rows.add(keyBeans)
             }
-            keyBeans.addAll(qwertyKeys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            val softKeyToggle = createKeyToggle(-1)
-            softKeyToggle.mLeftF = 0.005f
-            softKeyToggle.widthF = 0.147f
-            softKeyToggle.setToggleStates(shiftToggleStates)
-            keyBeans.add(softKeyToggle)
-            keyBeans.addAll(createQwertyKeys(arrayOf(54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL)))
-            keyBeans.last().apply {
-                widthF = 0.147f
-            }
-            rows.add(keyBeans)
-            keyBeans = lastRows(numberLine, enterToggleStates)
-            rows.add(keyBeans)
-        }
-
-        // 5000 数字键盘
-        if (skbValue == 0x5000) {
-
-            var keyBeans: MutableList<SoftKey> = LinkedList()
-            var t9Keys = createT9NumberKeys(arrayOf(8, 9, 10, KeyEvent.KEYCODE_AT))
-            t9Keys.first().mLeftF = 0.185f
-            t9Keys.last().widthF = 0.18f
-            keyBeans.addAll(t9Keys)
-            rows.add(keyBeans)
-
-            keyBeans = LinkedList()
-            t9Keys = createT9NumberKeys(arrayOf(11, 12, 13, 0))
-            t9Keys.first().mLeftF = 0.185f
-            t9Keys.last().widthF = 0.18f
-            keyBeans.addAll(t9Keys)
-            rows.add(keyBeans)
-
-            keyBeans = LinkedList()
-            t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
-            t9Keys.first().apply {
-                mLeftF = 0.005f
-                mTopF = 0f
-                widthF = 0.18f
-                heightF = 0.75f
-            }
-            t9Keys.last().widthF = 0.18f
-            keyBeans.addAll(t9Keys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            var t9Key = createT9NumberKey(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3)
-            t9Key.mLeftF = 0.005f
-            t9Key.widthF = 0.09f
-            keyBeans.add(t9Key)
-            t9Key = createT9NumberKey(InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6)
-            t9Key.widthF = 0.09f
-            keyBeans.add(t9Key)
-            t9Key = createT9NumberKey(InputModeSwitcherManager.USERDEF_KEYCODE_RETURN_8)
-            t9Key.widthF = 0.147f
-            keyBeans.add(t9Key)
-            t9Key = createT9NumberKey(7)
-            t9Key.widthF = 0.336f
-            keyBeans.add(t9Key)
-            t9Key = createT9NumberKey(KeyEvent.KEYCODE_SPACE)
-            t9Key.widthF = 0.147f
-            keyBeans.add(t9Key)
-            val softKeyToggle = createKeyToggle(KeyEvent.KEYCODE_ENTER)
-            softKeyToggle.widthF = 0.18f
-            softKeyToggle.stateId = 0
-            softKeyToggle.setToggleStates(enterToggleStates)
-            keyBeans.add(softKeyToggle)
-            rows.add(keyBeans)
-        }
-
-        // 6000 乱序17键盘
-        if (skbValue == 0x6000) {
-            var keyBeans: MutableList<SoftKey> = LinkedList()
-            var lX17Keys = createLX17Keys(arrayOf(36, 47, 54, 30, 52, 41))
-            lX17Keys.first().apply {
-                mLeftF = 0.005f
-            }
-            keyBeans.addAll(lX17Keys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            lX17Keys = createLX17Keys(arrayOf(40, 32, 53, 51, 38, 42))
-            lX17Keys.first().apply {
-                mLeftF = 0.005f
-            }
-            keyBeans.addAll(lX17Keys)
-            rows.add(keyBeans)
-            keyBeans = LinkedList()
-            lX17Keys = createLX17Keys(arrayOf(31, 45, 35, 34, 48, 42, 67))
-            lX17Keys.first().apply {
-                mLeftF = 0.005f
-            }
-            keyBeans.addAll(lX17Keys)
-            rows.add(keyBeans)
-            keyBeans = lastRows(numberLine, enterToggleStates)
-            rows.add(keyBeans)
         }
         softKeyboard = getSoftKeyboard(skbValue, rows, numberLine)
         mSoftKeyboardMap[skbValue] = softKeyboard
@@ -251,35 +213,41 @@ class KeyboardLoaderUtil private constructor() {
         return softKeyboard
     }
 
-    private fun lastRows(numberLine: Boolean, enterToggleStates: LinkedList<ToggleState>): MutableList<SoftKey> {
+    // 键盘最后一行（各键盘统一，数字键盘稍微不同）
+    private fun lastRows(numberLine: Boolean, isNumKeyboard: Boolean = false): MutableList<SoftKey> {
+        // enter键状态
+        val enterToggleStates = LinkedList<ToggleState>()
+        enterToggleStates.add(ToggleState("去往", 0))
+        enterToggleStates.add(ToggleState("搜索", 1))
+        enterToggleStates.add(ToggleState("发送", 2))
+        enterToggleStates.add(ToggleState("下一个", 3))
+        enterToggleStates.add(ToggleState("完成", 4))
         val keyBeans = mutableListOf<SoftKey>()
-        if (!numberLine) {
-           var qwertyKey = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3)
-            qwertyKey.mLeftF = 0.005f
-            qwertyKey.widthF = 0.09f
-            keyBeans.add(qwertyKey)
-            qwertyKey = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6)
-            qwertyKey.widthF = 0.09f
-            keyBeans.add(qwertyKey)
-            qwertyKey = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_NUMBER_7)
-            qwertyKey.widthF = 0.147f
-            keyBeans.add(qwertyKey)
+        val t9Keys =
+        if(isNumKeyboard){
+            createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
+                InputModeSwitcherManager.USERDEF_KEYCODE_RETURN_8, 7, KeyEvent.KEYCODE_SPACE))
+        } else if(!numberLine){
+            createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
+                InputModeSwitcherManager.USERDEF_KEYCODE_NUMBER_7, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2))
         } else {
-            var qwertyKey = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3)
-            qwertyKey.mLeftF = 0.005f
-            qwertyKey.widthF = 0.18f
-            keyBeans.add(qwertyKey)
-            qwertyKey = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6)
-            qwertyKey.widthF = 0.147f
-            keyBeans.add(qwertyKey)
+            createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
+                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2))
         }
-        var qwertyKey = createT9Key(KeyEvent.KEYCODE_SPACE)
-        qwertyKey.widthF = 0.336f
-        keyBeans.add(qwertyKey)
-        qwertyKey = createT9Key(InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2)
-        qwertyKey.widthF = 0.147f
-        qwertyKey.stateId = 0
-        keyBeans.add(qwertyKey)
+        t9Keys[0].mLeftF = 0.005f
+        if(t9Keys.size == 5){
+            t9Keys[0].widthF = 0.09f
+            t9Keys[1].widthF = 0.09f
+            t9Keys[2].widthF = 0.147f
+            t9Keys[3].widthF = 0.336f
+            t9Keys[4].widthF = 0.147f
+        } else {
+            t9Keys[0].widthF = 0.18f
+            t9Keys[1].widthF = 0.147f
+            t9Keys[2].widthF = 0.336f
+            t9Keys[3].widthF = 0.147f
+        }
+        keyBeans.addAll(t9Keys)
         val softKeyToggle = createKeyToggle(KeyEvent.KEYCODE_ENTER)
         softKeyToggle.widthF = 0.18f
         softKeyToggle.stateId = 0
@@ -350,11 +318,6 @@ class KeyboardLoaderUtil private constructor() {
         return softKeyboard
     }
 
-    private fun createT9Key(code: Int): SoftKey {
-        val labels = t9PYKeyPreset[code]
-        return SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "")
-    }
-
     private fun createT9Keys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
@@ -364,11 +327,6 @@ class KeyboardLoaderUtil private constructor() {
             })
         }
         return softKeys.toTypedArray()
-    }
-
-    private fun createT9NumberKey(code: Int): SoftKey {
-        val labels = t9NumberKeyPreset[code]
-        return SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "")
     }
 
     private fun createT9NumberKeys(codes: Array<Int>): Array<SoftKey> {
@@ -403,9 +361,10 @@ class KeyboardLoaderUtil private constructor() {
     private fun createNumberLineKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes) {
-            val softKey = SoftKey(code)
-            softKey.widthF = 0.099f
-            softKey.heightF = 0.15f
+            val softKey = SoftKey(code.toString()).apply {
+                widthF = 0.099f
+                heightF = 0.15f
+            }
             softKeys.add(softKey)
         }
         return softKeys.toTypedArray()

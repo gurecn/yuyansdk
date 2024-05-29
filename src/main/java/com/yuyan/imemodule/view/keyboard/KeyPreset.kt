@@ -57,7 +57,7 @@ val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
 )
 
 val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
-    77 to arrayOf("@"),
+    7 to arrayOf("0"),  // 数字键盘使用
     9 to arrayOf("ABC", "2"),
     10 to arrayOf("DEF", "3"),
     11 to arrayOf("GHI", "4"),
@@ -68,12 +68,14 @@ val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     16 to arrayOf("WXYZ", "9"),
     28 to arrayOf("重输"),
     75 to arrayOf("分词", "1"),
-    -3 to arrayOf("符"),
+    77 to arrayOf("@"),
     -3 to arrayOf("符"),
     -7 to arrayOf("123"),
+    -8 to arrayOf("返回"),
 )
 
 val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
+    7 to arrayOf("0"),
     8 to arrayOf("1"),
     9 to arrayOf("2"),
     10 to arrayOf("3"),
@@ -83,11 +85,6 @@ val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
     14 to arrayOf("7"),
     15 to arrayOf("8"),
     16 to arrayOf("9"),
-    7 to arrayOf("0"),
-    75 to arrayOf("分词", "1"),
     77 to arrayOf("@"),
     0 to arrayOf("."),
-    -3 to arrayOf("符"),
-    -7 to arrayOf("123"),
-    -8 to arrayOf("返回"),
 )
