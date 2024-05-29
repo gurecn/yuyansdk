@@ -6,20 +6,29 @@ import android.graphics.drawable.LevelListDrawable
 import android.graphics.drawable.VectorDrawable
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Spinner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
+import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.callback.CandidateViewListener
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
@@ -48,6 +57,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private var mRVCandidates: RecyclerView? = null
     private var mIvMenuCloseSKB: ImageView? = null
     private var mCandidatesAdapter: CandidatesBarAdapter? = null
+    private var mLLContainerMenu:LinearLayout?= null
     @SuppressLint("ClickableViewAccessibility")
     fun initialize(cvListener: CandidateViewListener?, decInfo: DecodingInfo?) {
         mDecInfo = decInfo
@@ -148,6 +158,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         ivMenuSetting.setOnClickListener { view: View? -> mCvListener!!.onClickSetting() }
         mIvMenuCloseSKB = findViewById(R.id.iv_container_menu_close_grey)
         mIvMenuCloseSKB?.setOnClickListener { _: View? -> mCvListener!!.onClickCloseKeyboard() }
+        mLLContainerMenu = findViewById(R.id.ll_container_menu)
     }
 
     /**
@@ -176,6 +187,42 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
         }
         mCandidatesAdapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * 选择花漾字
+     */
+    fun showFlowerTypeface() {
+        showViewVisibility(mCandidatesMenuContainer)
+        if(CustomConstant.flowerTypeface.isBlank()) {
+            val spinner = Spinner(context)
+            val layoutParam = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
+            spinner.layoutParams = layoutParam
+            val flowerTypefaces = resources.getStringArray(R.array.FlowerTypeface)
+            val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, flowerTypefaces)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+            spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val select = flowerTypefaces[position]
+                    if(select == "关闭"){
+                        CustomConstant.flowerTypeface = ""
+                        mLLContainerMenu?.removeAllViews()
+                    } else {
+                        CustomConstant.flowerTypeface = select
+                    }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    CustomConstant.flowerTypeface = ""
+                }
+            }
+            mLLContainerMenu?.gravity = Gravity.CENTER
+            CustomConstant.flowerTypeface = "火星文"
+            mLLContainerMenu?.addView(spinner)
+        } else {
+            mLLContainerMenu?.removeAllViews()
+            CustomConstant.flowerTypeface = ""
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

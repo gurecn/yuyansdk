@@ -52,4 +52,9 @@
         <item>"#"</item>
         <item>"@"</item>
     </string-array>
+
+    <string-array name="FlowerTypeface">
+        <item>"火星文"</item>
+        <item>"关闭"</item>
+    </string-array>
 </resources>

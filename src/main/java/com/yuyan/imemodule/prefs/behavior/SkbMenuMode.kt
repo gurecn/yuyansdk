@@ -11,6 +11,7 @@ enum class SkbMenuMode {
     LockEnglish,
     SymbolShow,
     Mnemonic,
+    FlowerTypeface,
     EmojiInput,
     Handwriting,
     Settings,

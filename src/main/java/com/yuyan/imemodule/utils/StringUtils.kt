@@ -118,4 +118,15 @@ object StringUtils {
         val c = src[0]
         return c.code in 32..47 || c.code in 58..64 || c.code in 91..96 || c.code in 123..126
     }
+
+    /**
+     * 字符串转火星文
+     */
+    fun converted2Hot(src: String): String {
+        var result = String()
+        for(char in src) {
+            result += simplified2HotPreset[char] ?: char
+        }
+        return result
+    }
 }

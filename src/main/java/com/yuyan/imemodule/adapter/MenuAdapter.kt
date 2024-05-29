@@ -6,11 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.Theme
@@ -64,7 +62,7 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
         val item = data[position]
         holder.entranceNameTextView?.text = item.funName
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
-        val color = if (isSettingsMunuSelect(item)) mTheme!!.genericActiveBackgroundColor else mTheme!!.keyTextColor
+        val color = if (isSettingsMenuSelect(item)) mTheme!!.genericActiveBackgroundColor else mTheme!!.keyTextColor
         holder.entranceNameTextView?.setTextColor(color)
         val vectorDrawableCompat = holder.entranceIconImageView?.getDrawable() as VectorDrawable
         vectorDrawableCompat.setTint(color)
@@ -75,7 +73,7 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
         }
     }
 
-    private fun isSettingsMunuSelect(data: SkbFunItem): Boolean {
+    private fun isSettingsMenuSelect(data: SkbFunItem): Boolean {
         val rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()
         val result: Boolean = when (data.skbMenuMode) {
             // Setting Menu
@@ -87,6 +85,7 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
             SkbMenuMode.Mnemonic -> ThemeManager.prefs.keyboardMnemonic.getValue()
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
             SkbMenuMode.OneHanded -> ThemeManager.prefs.oneHandedMod.getValue() != KeyboardOneHandedMod.None
+            SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface.isNotBlank()
 
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
