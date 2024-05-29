@@ -7,7 +7,6 @@ import android.graphics.drawable.VectorDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.callback.CandidateViewListener
-import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
@@ -54,11 +52,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     fun initialize(cvListener: CandidateViewListener?, decInfo: DecodingInfo?) {
         mDecInfo = decInfo
         mCvListener = cvListener
+        initMenuView()
         initCandidateView()
-        mCandidatesMenuContainer = findViewById(R.id.ll_candidates_menu)
-        initTabView()
-        invalidate()
-        requestLayout()
     }
 
     /**
@@ -144,7 +139,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     }
 
     //初始化标题栏
-    private fun initTabView() {
+    private fun initMenuView() {
+        mCandidatesMenuContainer = findViewById(R.id.ll_candidates_menu)
         val ivMenuSetting = findViewById<ImageView>(R.id.iv_container_menu_ime_setting)
         val layoutParams: ViewGroup.LayoutParams = ivMenuSetting.layoutParams as LayoutParams
         layoutParams.width = instance!!.heightForCandidates
