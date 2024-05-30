@@ -1,6 +1,9 @@
 package com.yuyan.imemodule.utils
 
 import android.text.TextUtils
+import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
+import com.yuyan.imemodule.data.flower.simplified2HotPreset
 import java.util.regex.Pattern
 
 object StringUtils {
@@ -120,13 +123,40 @@ object StringUtils {
     }
 
     /**
-     * 字符串转火星文
+     * 字符串转花漾字
      */
-    fun converted2Hot(src: String): String {
-        var result = String()
-        for(char in src) {
-            result += simplified2HotPreset[char] ?: char
+    fun converted2FlowerTypeface(src: String): String {
+         return  when(CustomConstant.flowerTypeface) {
+            FlowerTypefaceMode.Mars -> {  //焱暒妏
+                 src.map {
+                    simplified2HotPreset[it]?:it
+                }.joinToString("")
+            }
+            FlowerTypefaceMode.FlowerVine -> {   // ζั͡花ั͡藤ั͡字ั͡✾
+                "ζั͡" + src.map { it }.joinToString("ั͡").plus("ั͡✾")
+            }
+            FlowerTypefaceMode.Messy -> {  //"҉҉҉凌҉҉҉乱҉҉҉字҉҉҉"
+                "҉҉҉" + src.map { it }.joinToString("҉҉҉").plus("҉҉҉")
+            }
+            FlowerTypefaceMode.Germinate -> {  //ོ发ོ芽ོ字ོ
+                "ོ" + src.map { it }.joinToString("ོ").plus("ོ")
+            }
+            FlowerTypefaceMode.Fog -> {  //"҈҈҈҈雾҈҈҈҈霾҈҈҈҈字҈҈҈҈"
+                "҈҈҈҈" + src.map { it }.joinToString( "҈҈҈҈").plus("҈҈҈҈")
+            }
+            FlowerTypefaceMode.ProhibitAccess -> {  //禁⃠止⃠查⃠看
+               src.map { it }.joinToString( "⃠").plus("⃠")
+            }
+            FlowerTypefaceMode.Grass -> {  // 长҉҉҈草҉҉҈字҉҉҈
+                "҈҈҈" + src.map { it }.joinToString( "҈҈҈").plus("҈҈҈")
+            }
+
+            FlowerTypefaceMode.Wind -> {  // =͟͟起=͟风͟͞͞=͟了͟͞͞͞͞
+             "=͟͟͞͞" + src.map { it }.joinToString( "=͟͟͞͞")
+            }
+            else -> {
+                src
+            }
         }
-        return result
     }
 }

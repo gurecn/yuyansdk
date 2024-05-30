@@ -54,7 +54,14 @@
     </string-array>
 
     <string-array name="FlowerTypeface">
-        <item>"火星文"</item>
+        <item>"焱暒妏"</item>
+        <item>"ζั͡花ั͡藤ั͡字ั͡✾"</item>
+        <item>"҉҉҉凌҉҉҉乱҉҉҉字҉҉҉"</item>
+        <item>"ོ发ོ芽ོ字ོ"</item>
+        <item>"҈҈҈҈雾҈҈҈҈霾҈҈҈҈字҈҈҈҈"</item>
+        <item>"禁⃠止⃠查⃠看⃠"</item>
+        <item>"҈长҉҉҈草҉҉҈字҉"</item>
+        <item>"͟=͟͟起=͟风͟͞͞=͟了͟͞͞͞͞"</item>
         <item>"关闭"</item>
     </string-array>
 </resources>

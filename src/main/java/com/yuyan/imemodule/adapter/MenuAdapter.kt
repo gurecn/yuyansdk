@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.SkbFunItem
@@ -85,7 +86,7 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
             SkbMenuMode.Mnemonic -> ThemeManager.prefs.keyboardMnemonic.getValue()
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
             SkbMenuMode.OneHanded -> ThemeManager.prefs.oneHandedMod.getValue() != KeyboardOneHandedMod.None
-            SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface.isNotBlank()
+            SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface != FlowerTypefaceMode.Disabled
 
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
