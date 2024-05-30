@@ -12,7 +12,6 @@ import com.yuyan.imemodule.database.table.ClipboardTable
 import com.yuyan.imemodule.database.table.UsedCharacterTable
 import com.yuyan.imemodule.database.table.UsedEmojiTable
 import com.yuyan.imemodule.database.table.UsedEmoticonsTable
-import com.yuyan.imemodule.manager.KeyIconManager
 import com.yuyan.imemodule.manager.LocalRepository
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.init
 
