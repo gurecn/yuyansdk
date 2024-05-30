@@ -1,10 +1,9 @@
 package com.yuyan.imemodule.entity.keyboard
 
 import android.graphics.drawable.Drawable
-import android.text.TextUtils
 import android.view.KeyEvent
-import com.yuyan.imemodule.manager.KeyIconManager.Companion.instance
-import java.util.Locale
+import com.yuyan.imemodule.view.keyboard.keyIconRecords
+import java.util.Objects
 
 /**
  * 按键的属性
@@ -100,7 +99,7 @@ open class SoftKey {
     }
 
     open val keyIcon: Drawable?
-        get() = instance.getDefaultKeyIcon(keyCode, stateId)
+        get() = keyIconRecords[Objects.hash(keyCode, stateId)]
 
     open val keyLabel: String?
         /**
@@ -126,11 +125,7 @@ open class SoftKey {
      * 大小写转换
      */
     open fun changeCase(upperCase: Boolean) {
-        mkeyLabel = if (upperCase) {
-            mkeyLabel.uppercase()
-        } else {
-            mkeyLabel.lowercase()
-        }
+        mkeyLabel = if (upperCase) mkeyLabel.uppercase() else mkeyLabel.lowercase()
     }
 
     val isKeyCodeKey: Boolean

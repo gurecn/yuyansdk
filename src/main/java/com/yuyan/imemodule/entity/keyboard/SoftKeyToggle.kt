@@ -1,8 +1,9 @@
 package com.yuyan.imemodule.entity.keyboard
 
 import android.graphics.drawable.Drawable
-import com.yuyan.imemodule.manager.KeyIconManager.Companion.instance
+import com.yuyan.imemodule.view.keyboard.keyIconRecords
 import java.util.Locale
+import java.util.Objects
 
 /**
  * 可以变换状态的按键。See [com.yuyan.imemodule.entity.keyboard.ToggleState] 按键状态
@@ -33,7 +34,7 @@ class SoftKeyToggle(code: Int) : SoftKey() {
         get() {
             val state = toggleState
             return if (null != state) {
-                instance.getDefaultKeyIcon(super.keyCode, state.stateId)
+                keyIconRecords[Objects.hash(keyCode, stateId)]
             } else super.keyIcon
         }
     override val keyLabel: String?
@@ -42,14 +43,11 @@ class SoftKeyToggle(code: Int) : SoftKey() {
             return if (null != state) state.label else super.getkeyLabel()
         }
 
-    override fun changeCase(lowerCase: Boolean) {
+    override fun changeCase(upperCase: Boolean) {
         val state = toggleState
         if (state?.label != null) {
-            if (lowerCase) state.label =
-                state.label!!.lowercase(Locale.getDefault()) else state.label =
-                state.label!!.uppercase(
-                    Locale.getDefault()
-                )
+            state.label = if (upperCase) state.label!!.lowercase(Locale.getDefault())
+            else state.label!!.uppercase(Locale.getDefault())
         }
     }
 
