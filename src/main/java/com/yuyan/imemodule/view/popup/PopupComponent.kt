@@ -80,7 +80,7 @@ class PopupComponent private constructor():
         root.apply {
             add(popup.root, lParams(bounds.right - bounds.left, popupHeight) {
                 // align popup bottom with key border bottom [^1]
-                topMargin = bounds.top - popupHeight + EnvironmentSingleton.instance!!.screenHeight - EnvironmentSingleton.instance!!.skbHeight
+                topMargin = bounds.top - popupHeight + EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.skbHeight
                 leftMargin = bounds.left
             })
         }
@@ -119,7 +119,7 @@ class PopupComponent private constructor():
         root.apply {
             add(keyboardUi.root, lParams {
                 leftMargin = bounds.left + keyboardUi.offsetX
-                topMargin = bounds.top + keyboardUi.offsetY + EnvironmentSingleton.instance!!.screenHeight - EnvironmentSingleton.instance!!.skbHeight
+                topMargin = bounds.top + keyboardUi.offsetY + EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.skbHeight
             })
         }
         showingContainerUi[viewId] = keyboardUi

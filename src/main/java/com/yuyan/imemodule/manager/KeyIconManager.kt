@@ -50,12 +50,12 @@ class KeyIconManager {
     companion object {
         private var mInstance: KeyIconManager? = null
         @JvmStatic
-		val instance: KeyIconManager?
+		val instance: KeyIconManager
             get() {
                 if (mInstance == null) {
                     mInstance = KeyIconManager()
                 }
-                return mInstance
+                return mInstance!!
             }
     }
 }

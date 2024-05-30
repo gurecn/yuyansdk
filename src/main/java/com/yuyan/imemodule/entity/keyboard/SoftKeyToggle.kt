@@ -33,7 +33,7 @@ class SoftKeyToggle(code: Int) : SoftKey() {
         get() {
             val state = toggleState
             return if (null != state) {
-                instance!!.getDefaultKeyIcon(super.keyCode, state.stateId)
+                instance.getDefaultKeyIcon(super.keyCode, state.stateId)
             } else super.keyIcon
         }
     override val keyLabel: String?

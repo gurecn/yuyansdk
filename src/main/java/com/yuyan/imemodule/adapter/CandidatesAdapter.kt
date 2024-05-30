@@ -29,7 +29,7 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
     }
 
     private fun updateCandidateTextSize() {
-        mCandidateTextSize = EnvironmentSingleton.instance!!.candidateTextSize
+        mCandidateTextSize = EnvironmentSingleton.instance.candidateTextSize
     }
 
     init {

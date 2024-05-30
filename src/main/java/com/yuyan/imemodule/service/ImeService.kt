@@ -68,7 +68,7 @@ class ImeService : InputMethodService() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         LogUtil.d(TAG, "onConfigurationChanged")
-        EnvironmentSingleton.instance!!.initData()
+        EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance!!.clearKeyboardMap()
         KeyboardManager.instance?.clearKeyboard()
         if (mInputView != null) mInputView!!.resetToIdleState()

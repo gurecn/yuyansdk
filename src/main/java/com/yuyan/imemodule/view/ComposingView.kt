@@ -65,7 +65,7 @@ class ComposingView(context: Context, attrs: AttributeSet?) : View(context, attr
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var width: Float
-        val height = instance!!.heightForComposingView
+        val height = instance.heightForComposingView
         if (null == mDecInfo || mDecInfo!!.isFinish) {
             width = 0f
         } else {

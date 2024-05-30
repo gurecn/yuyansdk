@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.view.View
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import splitties.views.dsl.core.Ui
 import kotlin.math.roundToInt
 
@@ -33,7 +34,7 @@ abstract class PopupContainerUi(
 
     fun calcInitialFocusedColumn(columnCount: Int, columnWidth: Int, bounds: Rect): Int {
         val leftSpace = bounds.left
-        val rightSpace = ctx.resources.displayMetrics.widthPixels - bounds.right
+        val rightSpace = EnvironmentSingleton.instance.mScreenWidth - bounds.right
         var col = (columnCount - 1) / 2
         while (columnWidth * col > leftSpace) col--
         while (columnWidth * (columnCount - col - 1) > rightSpace) col++

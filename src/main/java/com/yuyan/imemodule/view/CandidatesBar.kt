@@ -94,7 +94,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mRightArrowBtn!!.setImageResource(R.drawable.sdk_level_list_candidates_display)
-            val candidatesAreaHeight = instance!!.heightForCandidates
+            val candidatesAreaHeight = instance.heightForCandidates
             val layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -149,7 +149,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mCandidatesMenuContainer = findViewById(R.id.ll_candidates_menu)
         val ivMenuSetting = findViewById<ImageView>(R.id.iv_container_menu_ime_setting)
         val layoutParams: ViewGroup.LayoutParams = ivMenuSetting.layoutParams as LayoutParams
-        layoutParams.width = instance!!.heightForCandidates
+        layoutParams.width = instance.heightForCandidates
         ivMenuSetting.setVisibility(VISIBLE)
         ivMenuSetting.setOnClickListener { view: View? -> mCvListener!!.onClickSetting() }
         mIvMenuCloseSKB = findViewById(R.id.iv_container_menu_close_grey)
@@ -222,9 +222,11 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val measuredHeight = instance!!.heightForCandidates
+        val measuredHeight = instance.heightForCandidates
+        val skbWidth = instance.skbWidth
         val heightMeasure = MeasureSpec.makeMeasureSpec(measuredHeight, MeasureSpec.EXACTLY)
-        super.onMeasure(widthMeasureSpec, heightMeasure)
+        val widthMeasure = MeasureSpec.makeMeasureSpec(skbWidth, MeasureSpec.EXACTLY)
+        super.onMeasure(widthMeasure, heightMeasure)
     }
 
     private fun showViewVisibility(candidatesContainer: View?) {

@@ -21,7 +21,7 @@ class LocalRepository private constructor() {
     companion object {
         private var sInstance: LocalRepository? = null
         @JvmStatic
-        val instance: LocalRepository?
+        val instance: LocalRepository
             /**
              * 获取实例<br></br>
              */
@@ -30,7 +30,7 @@ class LocalRepository private constructor() {
                     sInstance = LocalRepository()
                     sInstance!!.init()
                 }
-                return sInstance
+                return sInstance!!
             }
     }
 }

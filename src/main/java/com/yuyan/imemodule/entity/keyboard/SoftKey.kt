@@ -100,7 +100,7 @@ open class SoftKey {
     }
 
     open val keyIcon: Drawable?
-        get() = instance!!.getDefaultKeyIcon(keyCode, stateId)
+        get() = instance.getDefaultKeyIcon(keyCode, stateId)
 
     open val keyLabel: String?
         /**
