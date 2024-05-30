@@ -47,7 +47,7 @@ class LauncherModel private constructor() {
         unLoginTables.add(UsedEmojiTable.CREATE_TABLE)
         unLoginTables.add(UsedEmoticonsTable.CREATE_TABLE)
         unLoginTables.add(ClipboardTable.CREATE_TABLE)
-        val mDataProvider = LocalRepository.instance!!.dataProvider
+        val mDataProvider = LocalRepository.instance.dataProvider
         mDataProvider!!.createTable(unLoginTables)
         usedCharacterDao = UsedCharacterDao(mDataProvider)
         usedEmojiDao = UsedEmojiDao(mDataProvider)

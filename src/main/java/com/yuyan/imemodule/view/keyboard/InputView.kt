@@ -74,8 +74,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mIvcSkbContainer = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance?.setData(mIvcSkbContainer, this, mDecInfo, mInputModeSwitcher)
             mComposingView = mSkbRoot?.findViewById(R.id.cmv_container)
-            var layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            var layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
+            layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
             addView(mSkbRoot, layoutParams)
             val popupComponent = get()
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -94,21 +95,19 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mIbOneHandNone?.setOnClickListener { view: View -> onClick(view) }
             mIbOneHand = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_left)
             mIbOneHand?.setOnClickListener { view: View -> onClick(view) }
-            val margin = EnvironmentSingleton.instance!!.heightForCandidates + EnvironmentSingleton.instance!!.heightForComposingView
+            val margin = EnvironmentSingleton.instance.heightForCandidates + EnvironmentSingleton.instance.heightForComposingView
             val layoutParamsHoder = LayoutParams(
-                EnvironmentSingleton.instance!!.holderWidth,
-                EnvironmentSingleton.instance!!.skbHeight + margin
-            )
+                EnvironmentSingleton.instance.holderWidth, EnvironmentSingleton.instance.skbHeight + margin)
             mHoderLayout?.setPadding(0, margin, 0 ,0)
             layoutParamsHoder.addRule(ALIGN_PARENT_BOTTOM, TRUE)
             val layoutParams = mSkbRoot?.layoutParams as LayoutParams
             if (oneHandedMod == KeyboardOneHandedMod.LEFT) {
                 mIbOneHand?.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand_right)
-                layoutParams.setMargins(0, 0, EnvironmentSingleton.instance!!.holderWidth, 0)
+                layoutParams.setMargins(0, 0, EnvironmentSingleton.instance.holderWidth, 0)
                 layoutParamsHoder.addRule(ALIGN_PARENT_RIGHT, TRUE)
             } else if (oneHandedMod == KeyboardOneHandedMod.RIGHT) {
                 mIbOneHand?.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand)
-                layoutParams.setMargins(EnvironmentSingleton.instance!!.holderWidth, 0, 0, 0)
+                layoutParams.setMargins(EnvironmentSingleton.instance.holderWidth, 0, 0, 0)
                 layoutParamsHoder.addRule(ALIGN_PARENT_LEFT, mSkbRoot!!.id)
             }
             mSkbRoot?.setLayoutParams(layoutParams)
@@ -140,7 +139,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val oneHandedMod = prefs.oneHandedMod.getValue()
             prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)
         }
-        EnvironmentSingleton.instance!!.initData()
+        EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance!!.clearKeyboardMap()
         KeyboardManager.instance!!.clearKeyboard()
         KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher.skbLayout)

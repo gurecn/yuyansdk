@@ -13,7 +13,7 @@ import java.util.Collections
  * 标点符号管理类和表情
  */
 class SymbolsManager private constructor(private val mContext: Context) {
-    private val mSymbolsEmoji : HashMap<Int, Array<String>>
+    private val mSymbolsEmoji : HashMap<Int, Array<String>> = HashMap()
 
     private fun convertValues(list: List<String>): Array<String> {
         return convertListToString(list)
@@ -69,7 +69,6 @@ class SymbolsManager private constructor(private val mContext: Context) {
     }
 
     init {
-        mSymbolsEmoji = HashMap()
         try {
             mSymbolsEmoji[0] = CHINESE_DATA
             mSymbolsEmoji[1] = ENGLISH_DATA
