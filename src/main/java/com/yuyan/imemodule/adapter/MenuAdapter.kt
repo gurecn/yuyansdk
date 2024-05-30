@@ -42,10 +42,8 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
         init {
             entranceIconImageView = itemView.findViewById(R.id.entrance_image)
             entranceNameTextView = itemView.findViewById(R.id.entrance_name)
-            val skbHeight = EnvironmentSingleton.instance?.skbHeight
             val skbWidth = EnvironmentSingleton.instance?.skbWidth
             val layoutParams = itemView.layoutParams
-            layoutParams.height = skbHeight!!.div(2)
             layoutParams.width = skbWidth!!.div(4)
         }
     }
