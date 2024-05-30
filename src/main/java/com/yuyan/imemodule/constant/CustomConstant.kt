@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.constant
 
 import com.yuyan.imemodule.application.ImeSdkApplication
+import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import java.io.File
 
 /**
@@ -25,5 +26,5 @@ object CustomConstant {
     const val githubRepo = "https://github.com/gurecn/YuyanIme"
     const val licenseSpdxId = "LGPL-2.1-or-later"
     const val licenseUrl = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1"
-    var flowerTypeface = ""  // 花漾字，为空时未开启
+    var flowerTypeface = FlowerTypefaceMode.Disabled
 }

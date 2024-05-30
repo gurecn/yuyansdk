@@ -680,11 +680,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     private fun commitText(resultText: String) {
         val inputConnection = service.getCurrentInputConnection()
-        if(CustomConstant.flowerTypeface == "火星文"){
-            inputConnection.commitText(StringUtils.converted2Hot(resultText), 1)
-        } else {
-            inputConnection.commitText(resultText, 1)
-        }
+        inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
     }
 
     /**
@@ -693,15 +689,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun commitDecInfoText(resultText: String?) {
         if(resultText == null) return
         val inputConnection = service.getCurrentInputConnection()
-        val text = if(CustomConstant.flowerTypeface == "火星文"){
-            StringUtils.converted2Hot(resultText)
-        } else {
-            resultText
-        }
+        inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
         if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish) {
-            inputConnection.commitText("$text ", 1)
-        } else {
-            inputConnection.commitText(text, 1)
+            inputConnection.commitText(" ", 1)
         }
     }
 
