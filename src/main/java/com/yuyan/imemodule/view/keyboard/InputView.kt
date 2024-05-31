@@ -103,12 +103,16 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val layoutParams = mSkbRoot?.layoutParams as LayoutParams
             if (oneHandedMod == KeyboardOneHandedMod.LEFT) {
                 mIbOneHand?.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand_right)
-                layoutParams.setMargins(0, 0, EnvironmentSingleton.instance.holderWidth, 0)
-                layoutParamsHoder.addRule(ALIGN_PARENT_RIGHT, TRUE)
+                layoutParams.addRule(ALIGN_PARENT_LEFT, TRUE)
+                layoutParams.addRule(ALIGN_PARENT_RIGHT, 0)
+                layoutParamsHoder.addRule(RIGHT_OF,  mSkbRoot!!.id)
+                layoutParamsHoder.addRule(LEFT_OF, 0)
             } else if (oneHandedMod == KeyboardOneHandedMod.RIGHT) {
                 mIbOneHand?.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand)
-                layoutParams.setMargins(EnvironmentSingleton.instance.holderWidth, 0, 0, 0)
-                layoutParamsHoder.addRule(ALIGN_PARENT_LEFT, mSkbRoot!!.id)
+                layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
+                layoutParams.addRule(ALIGN_PARENT_LEFT, 0)
+                layoutParamsHoder.addRule(LEFT_OF, mSkbRoot!!.id)
+                layoutParamsHoder.addRule(RIGHT_OF,  0)
             }
             mSkbRoot?.setLayoutParams(layoutParams)
             addView(mHoderLayout, layoutParamsHoder)
@@ -116,7 +120,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             if (mHoderLayout != null) {
                 removeParentView(mHoderLayout!!)
                 val layoutParams = mSkbRoot?.layoutParams as LayoutParams
-                layoutParams.setMargins(0, 0, 0, 0)
+                layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
+                layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
+                layoutParams.addRule(ALIGN_PARENT_LEFT, 0)
             }
         }
         updateTheme()
