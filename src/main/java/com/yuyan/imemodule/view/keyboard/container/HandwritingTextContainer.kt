@@ -57,7 +57,7 @@ class HandwritingTextContainer(context: Context?) : InputBaseContainer(context) 
         addView(mRVRightSymbols, createLayoutParams())
         val strs = resources.getStringArray(R.array.SymbolRealNine)
         val adapter = PrefixAdapter(context, strs)
-        adapter.setOnItemClickLitener { view: RecyclerView.Adapter<*>?, v: View?, position: Int ->
+        adapter.setOnItemClickLitener { _, _, position ->
             val softKey = SoftKey(strs[position])
             inputView!!.responseKeyEvent(softKey)
             tryPlayKeyDown()

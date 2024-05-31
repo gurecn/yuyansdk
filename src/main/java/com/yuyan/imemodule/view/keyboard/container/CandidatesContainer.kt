@@ -43,8 +43,8 @@ class CandidatesContainer(context: Context) : BaseContainer(context) {
         mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
         val prefixLayoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
         mRVLeftPrefix!!.setLayoutManager(prefixLayoutManager)
-        val skbWidth = instance!!.skbWidth
-        val skbHeight = instance!!.skbHeight
+        val skbWidth = instance.skbWidth
+        val skbHeight = instance.skbHeight
         val prefixLayoutParams = LayoutParams((skbWidth * 0.18).toInt(), LayoutParams.MATCH_PARENT)
         prefixLayoutParams.setMargins(0, (skbHeight * 0.01).toInt(), 0, (skbHeight * 0.01).toInt())
         addView(mRVLeftPrefix, prefixLayoutParams)

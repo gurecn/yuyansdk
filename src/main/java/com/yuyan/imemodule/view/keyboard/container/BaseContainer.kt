@@ -35,8 +35,8 @@ open class BaseContainer(@JvmField var mContext: Context) : RelativeLayout(mCont
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val measuredWidth = instance!!.skbWidth
-        val measuredHeight = instance!!.skbHeight
+        val measuredWidth = instance.skbWidth
+        val measuredHeight = instance.skbHeight
         val widthMeasure = MeasureSpec.makeMeasureSpec(measuredWidth, MeasureSpec.EXACTLY)
         val heightMeasure = MeasureSpec.makeMeasureSpec(measuredHeight, MeasureSpec.EXACTLY)
         super.onMeasure(widthMeasure, heightMeasure)

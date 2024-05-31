@@ -78,7 +78,7 @@ class T9TextContainer(context: Context?) : InputBaseContainer(context) {
             isPrefixs = true
         }
         val adapter = PrefixAdapter(context, prefixs)
-        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, v: View?, position: Int ->
+        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             val symbol = (parent as PrefixAdapter?)!!.getSymbolData(position)
             tryPlayKeyDown()
             tryVibrate(this)
