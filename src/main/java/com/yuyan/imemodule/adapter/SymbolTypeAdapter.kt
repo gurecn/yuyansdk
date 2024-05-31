@@ -32,7 +32,7 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
         inflater = LayoutInflater.from(context)
         isClicks = showType
         mTheme = activeTheme
-        itemWidth = (instance!!.skbWidth - dip2px(90f)) / 6
+        itemWidth = (instance.skbWidth - dip2px(90f)) / 6
         val isKeyBorder = prefs.keyBorder.getValue()
         keyBackground = GradientDrawable()
         pressKeyBackground = GradientDrawable()

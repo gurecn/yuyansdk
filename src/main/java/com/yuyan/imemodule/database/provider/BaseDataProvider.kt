@@ -15,19 +15,9 @@ import com.yuyan.imemodule.database.pamas.UpdatePamas
  * Date:2018/1/16
  * I'm glad to share my knowledge with you all.
  */
-class BaseDataProvider {
-    protected var mLock: Any
-    protected var mDBHelper: BaseDatabaseHelper?
-
-    constructor(databaseHelper: BaseDatabaseHelper?) {
-        mDBHelper = databaseHelper
-        mLock = Any()
-    }
-
-    constructor(databaseHelper: BaseDatabaseHelper?, isBackup: Boolean, dataVersion: Int) {
-        mDBHelper = databaseHelper
-        mLock = Any()
-    }
+class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
+    private var mLock: Any = Any()
+    private var mDBHelper: BaseDatabaseHelper? = databaseHelper
 
     fun query(
         table: String?,

@@ -61,7 +61,6 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     }
 
     fun getSymbolData(position: Int): String {
-        return if (mDatas.size > position) mDatas[position]!!
-        else ""
+        return mDatas[position]
     }
 }

@@ -72,6 +72,6 @@ class SymbolAdapter(context: Context?, private val mDatas: Array<String>, val vi
     }
 
     fun getItem(position: Int): String {
-        return mDatas[position]!!
+        return mDatas[position]
     }
 }

@@ -151,7 +151,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         val layoutParams: ViewGroup.LayoutParams = ivMenuSetting.layoutParams as LayoutParams
         layoutParams.width = instance.heightForCandidates
         ivMenuSetting.setVisibility(VISIBLE)
-        ivMenuSetting.setOnClickListener { view: View? -> mCvListener!!.onClickSetting() }
+        ivMenuSetting.setOnClickListener { mCvListener!!.onClickSetting() }
         mIvMenuCloseSKB = findViewById(R.id.iv_container_menu_close_grey)
         mIvMenuCloseSKB?.setOnClickListener { _: View? -> mCvListener!!.onClickCloseKeyboard() }
         mLLContainerMenu = findViewById(R.id.ll_container_menu)

@@ -10,9 +10,9 @@ object AssetUtils {
     @JvmStatic
     fun copyFileOrDir(
         context: Context,
-        parent: String?,
-        path: String?,
-        destParent: String?,
+        parent: String,
+        path: String,
+        destParent: String,
         overwrite: Boolean
     ) {
         val assetManager = context.assets
@@ -40,14 +40,14 @@ object AssetUtils {
 
     private fun copyFile(
         context: Context,
-        parentAssetPath: String?,
-        filename: String?,
-        destParent: String?,
+        parentAssetPath: String,
+        filename: String,
+        destParent: String,
         overwrite: Boolean
     ) {
         val assetManager = context.assets
-        var `in`: InputStream? = null
-        var out: OutputStream? = null
+        val `in`: InputStream?
+        val out: OutputStream?
         try {
             val assetPath = File(parentAssetPath, filename).path
             `in` = assetManager.open(assetPath)

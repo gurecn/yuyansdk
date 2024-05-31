@@ -276,8 +276,8 @@ class KeyboardLoaderUtil private constructor() {
      * 生成键盘布局，主要用于计算键盘边界
      */
     private fun getSoftKeyboard(skbValue: Int, rows: List<List<SoftKey>>, isNumberRow: Boolean): SoftKeyboard {
-        val skbWidth = EnvironmentSingleton.instance!!.skbWidth
-        val softKeyboardHeight = EnvironmentSingleton.instance!!.skbHeight
+        val skbWidth = EnvironmentSingleton.instance.skbWidth
+        val softKeyboardHeight = EnvironmentSingleton.instance.skbHeight
         val softKeyboard = SoftKeyboard(skbWidth, softKeyboardHeight)
         var rowBeanYPos = 0f
         var mKeyXPos: Float

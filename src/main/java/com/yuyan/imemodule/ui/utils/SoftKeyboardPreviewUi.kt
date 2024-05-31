@@ -39,19 +39,19 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
             val mHoderLayout = LayoutInflater.from(context)
                 .inflate(R.layout.sdk_skb_holder_layout, this, false) as LinearLayout
             val mIbOneHand = mHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_left)
-            val margin = instance!!.heightForCandidates * 2
+            val margin = instance.heightForCandidates * 2
             val layoutParamsHoder = LayoutParams(
-                instance!!.holderWidth, instance!!.skbHeight - margin
+                instance.holderWidth, instance.skbHeight - margin
             )
             layoutParamsHoder.setMargins(0, margin, 0, margin)
             val layoutParams = mSkbRoot.layoutParams as LayoutParams
             if (oneHandedMod == KeyboardOneHandedMod.LEFT) {
                 mIbOneHand.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand_right)
-                layoutParams.setMargins(0, 0, instance!!.holderWidth, 0)
+                layoutParams.setMargins(0, 0, instance.holderWidth, 0)
                 layoutParamsHoder.addRule(ALIGN_PARENT_RIGHT, TRUE)
             } else if (oneHandedMod == KeyboardOneHandedMod.RIGHT) {
                 mIbOneHand.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand)
-                layoutParams.setMargins(instance!!.holderWidth, 0, 0, 0)
+                layoutParams.setMargins(instance.holderWidth, 0, 0, 0)
                 layoutParamsHoder.addRule(ALIGN_PARENT_LEFT, mSkbRoot.id)
             }
             mSkbRoot.setLayoutParams(layoutParams)
@@ -60,8 +60,8 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
             val layoutParams = mSkbRoot.layoutParams as LayoutParams
             layoutParams.setMargins(0, 0, 0, 0)
         }
-        intrinsicWidth = instance!!.skbWidth
-        intrinsicHeight = instance!!.skbHeight
+        intrinsicWidth = instance.skbWidth
+        intrinsicHeight = instance.skbHeight
         previewUi.requestLayout()
     }
 

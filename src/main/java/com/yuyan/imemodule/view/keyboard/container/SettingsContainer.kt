@@ -155,7 +155,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
             SkbMenuMode.OneHanded -> {
                 val oneHandedMod = prefs.oneHandedMod.getValue()
                 prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.None) KeyboardOneHandedMod.LEFT else KeyboardOneHandedMod.None)
-                EnvironmentSingleton.instance!!.initData()
+                EnvironmentSingleton.instance.initData()
                 KeyboardLoaderUtil.instance!!.clearKeyboardMap()
                 KeyboardManager.instance!!.clearKeyboard()
                 KeyboardManager.instance!!.switchKeyboard(

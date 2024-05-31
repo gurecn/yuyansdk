@@ -28,4 +28,4 @@ inline fun SpannableStringBuilder.underline(
     builderAction: SpannableStringBuilder.() -> Unit
 ): SpannableStringBuilder = inSpans(UnderlineSpan(), builderAction = builderAction)
 
-inline fun CharSequence.isDigitsOnly(): Boolean = TextUtils.isDigitsOnly(this)
+fun CharSequence.isDigitsOnly(): Boolean = TextUtils.isDigitsOnly(this)

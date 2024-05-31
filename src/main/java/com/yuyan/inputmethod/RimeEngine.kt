@@ -43,7 +43,7 @@ object RimeEngine {
         return preCommitText.isEmpty()
     }
 
-    fun onNormalKey(keyCode: Int, event: KeyEvent) {
+    fun onNormalKey(keyCode: Int) {
         val keyCodeA = 29
         val keyCodeZ = 54
         val keyChar = when (keyCode) {
@@ -77,8 +77,7 @@ object RimeEngine {
     fun selectCandidateAndForceCommit(index: Int) {
         Rime.selectCandidate(index)
         val rimeCommit = Rime.getRimeCommit()
-        val text = rimeCommit?.commitText   //Rime.composingText
-            ?: (Rime.compositionText?: "")
+        val text = rimeCommit?.commitText?: Rime.compositionText
         reset()
         preCommitText = text
     }
@@ -129,12 +128,8 @@ object RimeEngine {
 
     fun destroy() = Rime.destroy()
 
-    private fun setRuntimeOptions(options: IntArray) {
-    }
-
     private fun processDelAction() {
-        val lastKey = keyRecordStack.pop()
-        when (lastKey) {
+        when (val lastKey = keyRecordStack.pop()) {
             is InputKey.PinyinKey -> {
                 val pinyinKey = keyRecordStack.restorePinyinToT9Key(lastKey) ?: return
                 replacePinyinWithT9Keys(pinyinKey)
@@ -174,7 +169,7 @@ object RimeEngine {
         }
         val candidates = Rime.getRimeContext()?.candidates ?: emptyArray()
         val composition = getCurrentComposition(candidates)
-        var count = Rime.compositionText?.count { it in '1'..'9' } ?: 0
+        var count = Rime.compositionText.count { it in '1'..'9' }
         val pyCandidates =
             if (count > 0) {
                 val remainT9Keys = ArrayList<InputKey>(count)
@@ -193,7 +188,7 @@ object RimeEngine {
             }
         pinyinCandidates = pyCandidates
         showCandidates = candidates.asList()
-        showComposition = composition ?: ""
+        showComposition = composition
         preCommitText = ""
         return null
     }
@@ -202,7 +197,7 @@ object RimeEngine {
      * 拿到候选词拼音组合
      */
     fun getPrefixs(): Array<String> {
-        var count = Rime.compositionText?.count { it in '1'..'9' } ?: 0
+        var count = Rime.compositionText.count { it in '1'..'9' }
         val pyCandidates =
             if (count > 0) {
                 val remainT9Keys = ArrayList<InputKey>(count)
@@ -222,11 +217,11 @@ object RimeEngine {
         return pyCandidates.toTypedArray()
     }
 
-    private fun getCurrentComposition(candidates: Array<CandidateListItem>): CharSequence? {
+    private fun getCurrentComposition(candidates: Array<CandidateListItem>): CharSequence {
         val compositionText = Rime.compositionText
         return when {
             candidates.isEmpty() -> compositionText
-            compositionText.isNullOrEmpty() -> compositionText
+            compositionText.isEmpty() -> compositionText
             Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_T9  -> {
                 val compositionList: List<String> =
                     compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())

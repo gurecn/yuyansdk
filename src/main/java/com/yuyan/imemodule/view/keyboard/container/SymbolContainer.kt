@@ -47,7 +47,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
             bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
             ivDelete.background = bg
         }
-        ivDelete.setOnClickListener { v: View? ->
+        ivDelete.setOnClickListener {
             inputView!!.sendKeyEvent(KeyEvent.KEYCODE_DEL)
             val softKey = SoftKey()
             softKey.keyCode = KeyEvent.KEYCODE_DEL
@@ -70,35 +70,33 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         this.addView(mRVSymbolsView)
     }
 
-    private fun onItemClickOperate(parent: RecyclerView.Adapter<*>?, view: View?, position: Int) {
+    private fun onItemClickOperate(parent: RecyclerView.Adapter<*>?, position: Int) {
         val adapter = parent as SymbolAdapter?
         val s = adapter!!.getItem(position)
-        if (s != null) {
-            tryPlayKeyDown()
-            tryVibrate(this)
-            val result = s.replace("[ \\r]".toRegex(), "")
-            val viewType = adapter.viewType
-            if (viewType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
-                LauncherModel.instance!!.usedCharacterDao!!.insertUsedCharacter(
-                    result,
-                    System.currentTimeMillis()
-                )
-                inputView!!.resetToIdleState()
-                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
-            } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
-                LauncherModel.instance!!.usedEmojiDao!!.insertUsedEmoji(
-                    result,
-                    System.currentTimeMillis()
-                )
-            } else if (viewType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
-                LauncherModel.instance!!.usedEmoticonsDao!!.insertUsedEmoticons(
-                    result,
-                    System.currentTimeMillis()
-                )
-            }
-            val softKey = SoftKey(result)
-            inputView!!.responseKeyEvent(softKey)
+        tryPlayKeyDown()
+        tryVibrate(this)
+        val result = s.replace("[ \\r]".toRegex(), "")
+        val viewType = adapter.viewType
+        if (viewType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
+            LauncherModel.instance!!.usedCharacterDao!!.insertUsedCharacter(
+                result,
+                System.currentTimeMillis()
+            )
+            inputView!!.resetToIdleState()
+            KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+        } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
+            LauncherModel.instance!!.usedEmojiDao!!.insertUsedEmoji(
+                result,
+                System.currentTimeMillis()
+            )
+        } else if (viewType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
+            LauncherModel.instance!!.usedEmoticonsDao!!.insertUsedEmoticons(
+                result,
+                System.currentTimeMillis()
+            )
         }
+        val softKey = SoftKey(result)
+        inputView!!.responseKeyEvent(softKey)
     }
 
     var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
@@ -107,22 +105,12 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         initView(context)
     }
 
-    private fun onTypeItemClickOperate(
-        parent: RecyclerView.Adapter<*>?,
-        view: View?,
-        position: Int
-    ) {
+    private fun onTypeItemClickOperate(position: Int) {
         if (position < 0) return
         if (lastPosition != position) {
             val symbols = SymbolsManager.instance!!.getmSymbols(position)
             inputView!!.showSymbols(symbols)
-            updateSymbols({ parent: RecyclerView.Adapter<*>?, view: View?, position: Int ->
-                onItemClickOperate(
-                    parent,
-                    view,
-                    position
-                )
-            }, position)
+            updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int -> onItemClickOperate(parent, position) }, position)
         } else {
             inputView!!.resetToIdleState()
             KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
@@ -149,7 +137,6 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         updateSymbols({ parent: RecyclerView.Adapter<*>?, view: View?, position: Int ->
             onItemClickOperate(
                 parent,
-                view,
                 position
             )
         }, showType)
@@ -157,8 +144,6 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         val adapter = SymbolTypeAdapter(context, data, showType)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, view: View?, position: Int ->
             onTypeItemClickOperate(
-                parent,
-                view,
                 position
             )
         }

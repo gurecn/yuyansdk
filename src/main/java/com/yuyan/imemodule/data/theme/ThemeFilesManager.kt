@@ -47,7 +47,7 @@ object ThemeFilesManager {
             .mapNotNull decode@{
                 val (theme, migrated) = runCatching {
                     Json.decodeFromString(CustomThemeSerializer.WithMigrationStatus, it.readText())
-                }.getOrElse { e ->
+                }.getOrElse {
                     return@decode null
                 }
                 if (theme.backgroundImage != null) {

@@ -163,7 +163,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
         }
         canvas?.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
         val env = instance
-        mNormalKeyTextSize = env!!.keyTextSize
+        mNormalKeyTextSize = env.keyTextSize
         mNormalKeyTextSizeSmall = env.keyTextSmallSize
         val keyXMargin = mSoftKeyboard!!.keyXMargin
         val keyYMargin = mSoftKeyboard!!.keyYMargin

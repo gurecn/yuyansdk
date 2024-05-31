@@ -53,7 +53,7 @@ object Kernel {
      */
     fun inputKeyCode(keyCode: Int, event: KeyEvent) {
         d("Kernel", "1inputKeyCode: keyCode:$keyCode")
-        onNormalKey(keyCode, event)
+        onNormalKey(keyCode)
     }
 
     val isFinish: Boolean

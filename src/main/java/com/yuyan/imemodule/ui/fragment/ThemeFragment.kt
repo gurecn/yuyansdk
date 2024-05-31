@@ -50,7 +50,7 @@ class ThemeFragment : Fragment() {
     private val onThemeChangeListener = ThemeManager.OnThemeChangeListener {
         lifecycleScope.launch {
             LogUtil.d("ThemeFragment", "onThemeChangeListener")
-            EnvironmentSingleton.instance?.initData()
+            EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance?.clearKeyboardMap()
             KeyboardManager.instance?.clearKeyboard();
             previewUi.setTheme(it)

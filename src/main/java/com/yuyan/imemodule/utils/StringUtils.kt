@@ -16,7 +16,7 @@ object StringUtils {
     @JvmStatic
     fun isLetter(str: String?): Boolean {
         val pattern = Pattern.compile("[a-zA-Z]*")
-        return pattern.matcher(str).matches()
+        return pattern.matcher(str.toString()).matches()
     }
 
     /**

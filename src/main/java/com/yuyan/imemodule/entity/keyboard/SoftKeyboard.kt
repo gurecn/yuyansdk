@@ -87,12 +87,12 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
         /**
          * 按键左右间隔距离
          */
-        get() = (instance!!.keyXMargin * skbCoreWidth).toInt()
+        get() = (instance.keyXMargin * skbCoreWidth).toInt()
     val keyYMargin: Int
         /**
          * 按键上下间隔距离
          */
-        get() = (instance!!.keyYMargin * skbCoreHeight).toInt()
+        get() = (instance.keyYMargin * skbCoreHeight).toInt()
     val row: List<MutableList<SoftKey>>
         get() = mKeyRows
 
