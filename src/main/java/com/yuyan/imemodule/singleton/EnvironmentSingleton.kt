@@ -49,10 +49,12 @@ class EnvironmentSingleton private constructor() {
         mScreenHeight = dm.heightPixels
         LogUtil.d(TAG, "initData  mScreenWidth:$mScreenWidth  screenHeight:$mScreenHeight")
         isLandscape = mScreenHeight <= mScreenWidth
-
-        val screenWidthVertical = min(dm.widthPixels, dm.heightPixels)
-        val screenHeightVertical = max(dm.widthPixels, dm.heightPixels)
-
+        var screenWidthVertical = min(dm.widthPixels, dm.heightPixels)
+        var screenHeightVertical = max(dm.widthPixels, dm.heightPixels)
+        if(isLandscape){
+            screenWidthVertical = (screenWidthVertical*3f/4).toInt()
+            screenHeightVertical = (screenHeightVertical*3f/4).toInt()
+        }
         val oneHandedMod = ThemeManager.prefs.oneHandedMod.getValue()
         // 按键 + 后续高度，值是相对于竖屏宽度，横屏高度。
         keyboardHeightRatio = AppPrefs.getInstance().internal.keyboardHeightRatio.getValue()
