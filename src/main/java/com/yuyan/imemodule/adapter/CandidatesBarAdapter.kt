@@ -19,7 +19,7 @@ import com.yuyan.inputmethod.core.CandidateListItem
  */
 class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     RecyclerView.Adapter<CandidatesBarAdapter.SymbolHolder>() {
-    private var mCandidateTextSize = 0
+//    private var mCandidateTextSize = 0
     private var mDatas: List<CandidateListItem?>
     private val inflater: LayoutInflater
     private var textColor: Int
@@ -38,7 +38,7 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
         val theme = activeTheme
         textColor = theme.keyTextColor
         inflater = LayoutInflater.from(context)
-        mCandidateTextSize = instance!!.candidateTextSize
+//        mCandidateTextSize = instance.candidateTextSize
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
@@ -69,7 +69,7 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)
-            textView.textSize = px2dip(mCandidateTextSize.toFloat()).toFloat()
+            textView.textSize = px2dip(instance.candidateTextSize.toFloat()).toFloat()
         }
     }
 }
