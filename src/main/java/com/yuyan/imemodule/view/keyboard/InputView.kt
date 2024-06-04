@@ -87,16 +87,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if (oneHandedMod != KeyboardOneHandedMod.None) {
             if (mHoderLayout == null) {
                 mHoderLayout = LayoutInflater.from(context).inflate(R.layout.sdk_skb_holder_layout, this, false) as LinearLayout
+                mIbOneHandNone = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_none)
+                mIbOneHandNone?.setOnClickListener { view: View -> onClick(view) }
+                mIbOneHand = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_left)
+                mIbOneHand?.setOnClickListener { view: View -> onClick(view) }
             } else {
                 removeParentView(mHoderLayout!!)
             }
-            mIbOneHandNone = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_none)
-            mIbOneHandNone?.setOnClickListener { view: View -> onClick(view) }
-            mIbOneHand = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_left)
-            mIbOneHand?.setOnClickListener { view: View -> onClick(view) }
             val margin = EnvironmentSingleton.instance.heightForCandidates + EnvironmentSingleton.instance.heightForComposingView
-            val layoutParamsHoder = LayoutParams(
-                EnvironmentSingleton.instance.holderWidth, EnvironmentSingleton.instance.skbHeight + margin)
+            val layoutParamsHoder = LayoutParams(EnvironmentSingleton.instance.holderWidth, EnvironmentSingleton.instance.skbHeight + margin)
             mHoderLayout?.setPadding(0, margin, 0 ,0)
             layoutParamsHoder.addRule(ALIGN_PARENT_BOTTOM, TRUE)
             val layoutParams = mSkbRoot?.layoutParams as LayoutParams
@@ -166,15 +165,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 if (!mDecInfo.isAssociate && !mDecInfo.isFinish) {
                     chooseAndUpdate(0)
                 }
-                val symbolType = if (keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6) {
-                    4
-                } else if(mInputModeSwitcher.isEnglish) {
-                    1
-                } else if(mInputModeSwitcher.isNumberSkb) {
-                    2
-                } else {
-                    0
-                }
+                val symbolType = if (keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6) { 4 } else if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
                 val symbols = SymbolsManager.instance!!.getmSymbols(symbolType)
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
