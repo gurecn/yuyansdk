@@ -25,9 +25,10 @@ import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.adapter.MenuAdapter
+import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.LinkedList
 
-class SettingsContainer(context: Context) : BaseContainer(context) {
+class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer(context, inputView) {
     private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
 

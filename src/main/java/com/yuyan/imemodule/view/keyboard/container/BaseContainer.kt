@@ -10,7 +10,7 @@ import com.yuyan.imemodule.view.keyboard.InputView
 /**
  * 软键盘View的集装箱，主持一个软件盘View。
  */
-open class BaseContainer(@JvmField var mContext: Context) : RelativeLayout(mContext) {
+open class BaseContainer(@JvmField var mContext: Context, inputView: InputView?) : RelativeLayout(mContext) {
     //输入法服务
     @JvmField
     protected var inputView: InputView? = null
@@ -24,14 +24,17 @@ open class BaseContainer(@JvmField var mContext: Context) : RelativeLayout(mCont
      */
     @JvmField
     protected var mDecInfo: DecodingInfo? = null
-    fun setService(
-        inputView: InputView?,
-        decInfo: DecodingInfo?,
-        inputModeSwitcher: InputModeSwitcherManager?
-    ) {
+
+    /**
+     * 更新软键盘布局
+     */
+    open fun updateSkbLayout(){
+    }
+
+    init {
         this.inputView = inputView
-        mDecInfo = decInfo
-        mInputModeSwitcher = inputModeSwitcher
+        mDecInfo = inputView?.mDecInfo
+        mInputModeSwitcher = inputView?.mInputModeSwitcher
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

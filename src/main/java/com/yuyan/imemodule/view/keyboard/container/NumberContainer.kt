@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.view.keyboard.container
 
 import android.content.Context
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,16 +11,17 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
+import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
-class NumberContainer(context: Context?) : InputBaseContainer(context) {
+class NumberContainer(context: Context?, inputView: InputView?) : InputBaseContainer(context, inputView) {
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private var mRVLeftPrefix : RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
     /**
      * 更新软键盘布局
      */
-    override fun updateSkbLayout(skbValue: Int) {
+    override fun updateSkbLayout() {
         if (null == mMajorView) {
             mMajorView = TextKeyboard(context)
             val params: ViewGroup.LayoutParams = LayoutParams(
@@ -31,7 +31,7 @@ class NumberContainer(context: Context?) : InputBaseContainer(context) {
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance.getSoftKeyboard(skbValue)
+        val softKeyboard = instance.getSoftKeyboard(InputModeSwitcherManager.MASK_SKB_LAYOUT_NUMBER)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()
