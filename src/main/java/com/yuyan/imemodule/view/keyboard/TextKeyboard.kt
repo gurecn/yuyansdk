@@ -259,13 +259,18 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
             canvas.drawText(keyLabelSmall, x, y, mPaint)
         }
         if (null != keyIcon) {
-            val marginLeft = (softKey.width() - keyIcon.intrinsicWidth) / 2
-            val marginRight = softKey.width() - keyIcon.intrinsicWidth - marginLeft
-            val marginTop = (softKey.height() - keyIcon.intrinsicHeight) / 2
-            val marginBottom = softKey.height() - keyIcon.intrinsicHeight - marginTop
+            var  intrinsicWidth = keyIcon.intrinsicWidth
+            var  intrinsicHeight = keyIcon.intrinsicHeight
+            while(softKey.width() < intrinsicWidth || softKey.height() < intrinsicHeight){
+                intrinsicWidth /= 2
+                intrinsicHeight /= 2
+            }
+            val marginLeft = (softKey.width() - intrinsicWidth) / 2
+            val marginRight = softKey.width() - intrinsicWidth - marginLeft
+            val marginTop = (softKey.height() - intrinsicHeight) / 2
+            val marginBottom = softKey.height() - intrinsicHeight - marginTop
             (keyIcon as? VectorDrawable)?.setTint(mActiveTheme!!.keyTextColor)
-            keyIcon.setBounds(softKey.mLeft + marginLeft, softKey.mTop + marginTop,
-                softKey.mRight - marginRight, softKey.mBottom - marginBottom)
+            keyIcon.setBounds(softKey.mLeft + marginLeft, softKey.mTop + marginTop, softKey.mRight - marginRight, softKey.mBottom - marginBottom)
             keyIcon.draw(canvas)
         } else if (!TextUtils.isEmpty(keyLabel)) {
             //Label位于中间
