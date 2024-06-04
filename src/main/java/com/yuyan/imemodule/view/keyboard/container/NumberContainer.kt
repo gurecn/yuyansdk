@@ -31,14 +31,14 @@ class NumberContainer(context: Context?) : InputBaseContainer(context) {
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance!!.getSoftKeyboard(skbValue)
+        val softKeyboard = instance.getSoftKeyboard(skbValue)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()
     }
 
     // 更新键盘上侧边符号列表
-    protected fun updateKeyboardView() {
+    private fun updateKeyboardView() {
         val prefixLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         mRVLeftPrefix.setLayoutManager(prefixLayoutManager)
         if (mRVLeftPrefix.parent != null) {

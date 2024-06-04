@@ -107,7 +107,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 val abcNumberLine = prefs.abcNumberLine.getValue()
                 prefs.abcNumberLine.setValue(!abcNumberLine)
                 //更换键盘模式后 重亲加载键盘
-                KeyboardLoaderUtil.instance!!.changeSKBNumberRow(!abcNumberLine)
+                KeyboardLoaderUtil.instance.changeSKBNumberRow(!abcNumberLine)
                 KeyboardManager.instance!!.clearKeyboard()
                 KeyboardManager.instance!!.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
@@ -156,7 +156,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 val oneHandedMod = prefs.oneHandedMod.getValue()
                 prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.None) KeyboardOneHandedMod.LEFT else KeyboardOneHandedMod.None)
                 EnvironmentSingleton.instance.initData()
-                KeyboardLoaderUtil.instance!!.clearKeyboardMap()
+                KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance!!.clearKeyboard()
                 KeyboardManager.instance!!.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout

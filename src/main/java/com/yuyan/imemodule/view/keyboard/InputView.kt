@@ -146,7 +146,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)
         }
         EnvironmentSingleton.instance.initData()
-        KeyboardLoaderUtil.instance!!.clearKeyboardMap()
+        KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance!!.clearKeyboard()
         KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher.skbLayout)
     }

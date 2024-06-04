@@ -41,7 +41,7 @@ open class InputBaseContainer(context: Context?) : BaseContainer(context!!) {
         rootView.findViewById<View>(R.id.ll_keyboard_height_reset).setOnClickListener { _: View? ->
             EnvironmentSingleton.instance.keyBoardHeightRatio = 0.3f
             EnvironmentSingleton.instance.initData()
-            KeyboardLoaderUtil.instance!!.clearKeyboardMap()
+            KeyboardLoaderUtil.instance.clearKeyboardMap()
             updateSkbLayout(mInputModeSwitcher!!.skbLayout)
             rootView.setLayoutParams(lp)
         }
@@ -63,7 +63,7 @@ open class InputBaseContainer(context: Context?) : BaseContainer(context!!) {
                             lastY[0] = y
                             EnvironmentSingleton.instance.keyBoardHeightRatio = rat
                             EnvironmentSingleton.instance.initData()
-                            KeyboardLoaderUtil.instance!!.clearKeyboardMap()
+                            KeyboardLoaderUtil.instance.clearKeyboardMap()
                             updateSkbLayout(mInputModeSwitcher!!.skbLayout)
                             val l = LayoutParams(
                                 LayoutParams.MATCH_PARENT,
