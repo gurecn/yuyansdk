@@ -79,13 +79,13 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
             SkbMenuMode.EmojiKeyboard -> {
                 val symbols = SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
                 inputView!!.showSymbols(symbols)
-                KeyboardManager.instance!!.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance!!.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             }
-            SkbMenuMode.SwitchKeyboard -> (KeyboardManager.instance!!.currentContainer as SettingsContainer?)!!.showSkbSelelctModeView()
+            SkbMenuMode.SwitchKeyboard -> (KeyboardManager.instance.currentContainer as SettingsContainer?)!!.showSkbSelelctModeView()
             SkbMenuMode.KeyboardHeight -> {
-                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
-                (KeyboardManager.instance!!.currentContainer as InputBaseContainer?)!!.setKeyboardHeight()
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                (KeyboardManager.instance.currentContainer as InputBaseContainer?)!!.setKeyboardHeight()
             }
             SkbMenuMode.DarkTheme -> {
                 val isDark = activeTheme.isDark
@@ -95,8 +95,8 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                     prefs.darkModeTheme.getValue()
                 }
                 setNormalModeTheme(theme)
-                KeyboardManager.instance!!.clearKeyboard()
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.clearKeyboard()
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
@@ -108,8 +108,8 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 prefs.abcNumberLine.setValue(!abcNumberLine)
                 //更换键盘模式后 重亲加载键盘
                 KeyboardLoaderUtil.instance.changeSKBNumberRow(!abcNumberLine)
-                KeyboardManager.instance!!.clearKeyboard()
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.clearKeyboard()
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
@@ -117,30 +117,30 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 val chineseFanTi = getInstance().input.chineseFanTi.getValue()
                 getInstance().input.chineseFanTi.setValue(!chineseFanTi)
                 Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
             SkbMenuMode.LockEnglish -> {
                 val keyboardLockEnglish = prefs.keyboardLockEnglish.getValue()
                 prefs.keyboardLockEnglish.setValue(!keyboardLockEnglish)
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
             SkbMenuMode.SymbolShow -> {
                 val keyboardSymbol = prefs.keyboardSymbol.getValue()
                 prefs.keyboardSymbol.setValue(!keyboardSymbol)
-                KeyboardManager.instance!!.clearKeyboard()
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.clearKeyboard()
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
             SkbMenuMode.Mnemonic -> {
                 val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
                 prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
-                KeyboardManager.instance!!.clearKeyboard()
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.clearKeyboard()
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
@@ -148,7 +148,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 val emojiInput = getInstance().input.emojiInput.getValue()
                 getInstance().input.emojiInput.setValue(!emojiInput)
                 Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             SkbMenuMode.Handwriting -> launchSettingsToHandwriting(mContext)
             SkbMenuMode.Settings -> launchSettings(mContext)
@@ -157,14 +157,14 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.None) KeyboardOneHandedMod.LEFT else KeyboardOneHandedMod.None)
                 EnvironmentSingleton.instance.initData()
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
-                KeyboardManager.instance!!.clearKeyboard()
-                KeyboardManager.instance!!.switchKeyboard(
+                KeyboardManager.instance.clearKeyboard()
+                KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
             }
             SkbMenuMode.FlowerTypeface -> {
                 inputView?.showFlowerTypeface()
-                KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             else ->{}
         }
@@ -249,6 +249,6 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         getInstance().internal.pinyinModeRime.setValue(value)
         mInputModeSwitcher!!.saveInputMode(inputMode)
-        KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
     }
 }

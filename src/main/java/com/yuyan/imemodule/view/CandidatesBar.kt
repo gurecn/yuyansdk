@@ -169,7 +169,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         if (mDecInfo!!.isAssociate) {
             mRightArrowBtn!!.getDrawable().setLevel(3)
         } else {
-            val container = KeyboardManager.instance?.currentContainer
+            val container = KeyboardManager.instance.currentContainer
             if (container is CandidatesContainer) {
                 mRightArrowBtn?.getDrawable()?.setLevel(0)
                 var lastItemPosition = 0

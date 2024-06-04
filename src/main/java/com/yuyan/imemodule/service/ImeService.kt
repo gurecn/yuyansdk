@@ -70,7 +70,7 @@ class ImeService : InputMethodService() {
         LogUtil.d(TAG, "onConfigurationChanged")
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
-        KeyboardManager.instance?.clearKeyboard()
+        KeyboardManager.instance.clearKeyboard()
         if (mInputView != null) mInputView!!.resetToIdleState()
     }
 

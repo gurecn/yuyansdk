@@ -14,7 +14,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.theme.ThemeSettingsFragment
 import com.yuyan.imemodule.ui.utils.SoftKeyboardPreviewUi
@@ -23,7 +22,6 @@ import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.view.preference.ManagedPreference
 import splitties.dimensions.dp
 import splitties.resources.styledColor
 import splitties.views.backgroundColor
@@ -52,7 +50,7 @@ class ThemeFragment : Fragment() {
             LogUtil.d("ThemeFragment", "onThemeChangeListener")
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
-            KeyboardManager.instance?.clearKeyboard();
+            KeyboardManager.instance.clearKeyboard();
             previewUi.setTheme(it)
         }
     }

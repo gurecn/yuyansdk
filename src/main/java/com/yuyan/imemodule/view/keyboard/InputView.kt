@@ -15,7 +15,6 @@ import android.widget.RelativeLayout
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
-import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -72,7 +71,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mSkbPinyinView = mSkbRoot?.findViewById(R.id.sdk_pinyin_title_view_ll)
             mSkbCandidatesBarView = mSkbRoot?.findViewById(R.id.candidates_bar)
             mIvcSkbContainer = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
-            KeyboardManager.instance?.setData(mIvcSkbContainer, this, mDecInfo, mInputModeSwitcher)
+            KeyboardManager.instance.setData(mIvcSkbContainer, this, mDecInfo, mInputModeSwitcher)
             mComposingView = mSkbRoot?.findViewById(R.id.cmv_container)
             var layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
@@ -147,8 +146,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
-        KeyboardManager.instance!!.clearKeyboard()
-        KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher.skbLayout)
+        KeyboardManager.instance.clearKeyboard()
+        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
     }
 
     /**
@@ -178,8 +177,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 }
                 val symbols = SymbolsManager.instance!!.getmSymbols(symbolType)
                 showSymbols(symbols)
-                KeyboardManager.instance!!.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance!!.currentContainer as SymbolContainer?)!!.setSymbolsView(
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(
                     symbolType
                 )
             } else {
@@ -256,7 +255,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 if (keyCode in KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) {
                     //切换为英文小写键盘
                     mInputModeSwitcher.saveInputMode(InputModeSwitcherManager.MODE_SKB_ENGLISH_LOWER)
-                    KeyboardManager.instance?.switchKeyboard(mInputModeSwitcher.skbLayout)
+                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                 }
             }
         } else { // 数字、符号处理 && 英语、未开启智能英文
@@ -474,8 +473,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if (mInputModeSwitcher.isEnglish) setComposingText("") // 清除预选词
         resetCandidateWindow()
         // 从候选词、符号界面切换到输入键盘
-        KeyboardManager.instance?.switchKeyboard(mInputModeSwitcher.skbLayout)
-        val container = KeyboardManager.instance?.currentContainer
+        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+        val container = KeyboardManager.instance.currentContainer
         (container as? T9TextContainer)?.updateSymbolListView()
         mComposingView?.setDecodingInfo(mDecInfo)
         mImeState = ImeState.STATE_IDLE
@@ -509,7 +508,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     }
                     changeToStateComposing()
                     updateCandidateBar()
-                    val container = KeyboardManager.instance?.currentContainer
+                    val container = KeyboardManager.instance.currentContainer
                     (container as? T9TextContainer)?.updateSymbolListView()
                 } else {
                     resetToIdleState()
@@ -530,7 +529,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             changeToStateComposing()
             updateCandidateBar()
-            val container = KeyboardManager.instance?.currentContainer
+            val container = KeyboardManager.instance.currentContainer
             (container as? T9TextContainer)?.updateSymbolListView()
         } else {
             resetToIdleState()
@@ -580,22 +579,22 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 changeToStateInput()
             }
             if (level == 0) {
-                KeyboardManager.instance?.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
-                val candidatesContainer = KeyboardManager.instance?.currentContainer as CandidatesContainer?
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
+                val candidatesContainer = KeyboardManager.instance.currentContainer as CandidatesContainer?
                 candidatesContainer?.showCandidatesView(position)
             } else {
-                val container = KeyboardManager.instance?.currentContainer
+                val container = KeyboardManager.instance.currentContainer
                 (container as? T9TextContainer)?.updateSymbolListView()
-                KeyboardManager.instance?.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
         }
 
         override fun onClickSetting() {
-            if (KeyboardManager.instance!!.isInputKeyboard) {
-                KeyboardManager.instance?.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance?.currentContainer as SettingsContainer?)?.showSettingsView()
+            if (KeyboardManager.instance.isInputKeyboard) {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
+                (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
             } else {
-                KeyboardManager.instance?.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
         }
 
@@ -605,7 +604,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
         override fun onClickClearCandidate() {
             resetToIdleState()
-            KeyboardManager.instance?.switchKeyboard(mInputModeSwitcher.skbLayout)
+            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         }
     }
 
@@ -658,7 +657,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun onStartInputView(editorInfo: EditorInfo) {
         LogUtil.d(TAG, "onStartInputView")
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
-        KeyboardManager.instance?.switchKeyboard(mInputModeSwitcher.skbLayout)
+        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
     }
 
     /**

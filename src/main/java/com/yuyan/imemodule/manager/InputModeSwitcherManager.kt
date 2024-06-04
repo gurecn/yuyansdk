@@ -106,7 +106,7 @@ class InputModeSwitcherManager {
             // 保存新的输入法模式
             saveInputMode(newInputMode)
             LogUtil.d(TAG, "switchModeForUserKey")
-            KeyboardManager.instance?.switchKeyboard(skbLayout)
+            KeyboardManager.instance.switchKeyboard(skbLayout)
         }
     }
 
