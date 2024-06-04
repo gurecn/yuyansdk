@@ -21,8 +21,9 @@ import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
+import com.yuyan.imemodule.view.keyboard.InputView
 
-class CandidatesContainer(context: Context) : BaseContainer(context) {
+class CandidatesContainer(context: Context, inputView: InputView?) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVLeftPrefix: RecyclerView? = null
     private var isLoadingMore = false // 正在加载更多

@@ -13,15 +13,16 @@ import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
+import com.yuyan.imemodule.view.keyboard.InputView
 
-class HandwritingTextContainer(context: Context?) : InputBaseContainer(context) {
+class HandwritingTextContainer(context: Context?, inputView: InputView?) : InputBaseContainer(context, inputView) {
     // 键盘界面上符号(T9左侧、手写右侧)
-    var mRVRightSymbols: RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
+    private var mRVRightSymbols: RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
     /**
      * 更新软键盘布局
      */
-    override fun updateSkbLayout(skbValue: Int) {
+    override fun updateSkbLayout() {
         if (null == mMajorView) {
             mMajorView = HandwritingKeyboard(context)
             val params: ViewGroup.LayoutParams = LayoutParams(
@@ -31,7 +32,7 @@ class HandwritingTextContainer(context: Context?) : InputBaseContainer(context) 
             addView(mMajorView, params)
             (mMajorView as HandwritingKeyboard).setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance.getSoftKeyboard(skbValue)
+        val softKeyboard = instance.getSoftKeyboard(InputModeSwitcherManager.MASK_SKB_LAYOUT_HANDWRITING)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()

@@ -28,8 +28,8 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
         removeAllViews()
         val mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false)
         val previewUi = mSkbRoot.findViewById<RelativeLayout>(R.id.skb_input_keyboard_view)
-        qwerTextContainer = QwertyTextContainer(context)
-        qwerTextContainer!!.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
+        qwerTextContainer = QwertyTextContainer(context, null, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
+        qwerTextContainer!!.updateSkbLayout()
         val skbCandidatesBarView = mSkbRoot.findViewById<CandidatesBar>(R.id.candidates_bar)
         skbCandidatesBarView.initialize(null, null) // 刷新下拉箭头位置
         previewUi.addView(qwerTextContainer)

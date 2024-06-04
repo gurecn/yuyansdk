@@ -43,9 +43,9 @@ import com.yuyan.inputmethod.core.CandidateListItem
 class InputView(context: Context, service: ImeService) : RelativeLayout(context),
     IResponseKeyEvent {
     private var service: ImeService
-    private val mInputModeSwitcher = InputModeSwitcherManager()
+    val mInputModeSwitcher = InputModeSwitcherManager()
     // 词库解码操作对象
-    private val mDecInfo = DecodingInfo()
+    val mDecInfo = DecodingInfo()
     private var isSkipEngineMode = false //选择候选词栏时，为true则不进行引擎操作。当为切板模式或常用符号模式时为true。
     // 当前的输入法状态
     private var mImeState = ImeState.STATE_IDLE
@@ -71,7 +71,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mSkbPinyinView = mSkbRoot?.findViewById(R.id.sdk_pinyin_title_view_ll)
             mSkbCandidatesBarView = mSkbRoot?.findViewById(R.id.candidates_bar)
             mIvcSkbContainer = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
-            KeyboardManager.instance.setData(mIvcSkbContainer, this, mDecInfo, mInputModeSwitcher)
+            KeyboardManager.instance.setData(mIvcSkbContainer, this)
             mComposingView = mSkbRoot?.findViewById(R.id.cmv_container)
             var layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
