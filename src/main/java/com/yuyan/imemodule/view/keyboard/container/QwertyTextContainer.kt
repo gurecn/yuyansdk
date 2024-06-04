@@ -28,7 +28,7 @@ class QwertyTextContainer(context: Context?) : InputBaseContainer(context) {
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance!!.getSoftKeyboard(skbValue)
+        val softKeyboard = instance.getSoftKeyboard(skbValue)
         d(TAG, "updateSkbLayout  softKeyboard.getRow().size():" + softKeyboard.row.size)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         mMajorView!!.invalidate()

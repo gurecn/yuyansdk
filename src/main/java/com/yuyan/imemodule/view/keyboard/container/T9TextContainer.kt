@@ -32,7 +32,7 @@ class T9TextContainer(context: Context?) : InputBaseContainer(context) {
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance!!.getSoftKeyboard(skbValue)
+        val softKeyboard = instance.getSoftKeyboard(skbValue)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()

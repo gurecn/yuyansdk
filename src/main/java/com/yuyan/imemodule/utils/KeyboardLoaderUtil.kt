@@ -390,10 +390,10 @@ class KeyboardLoaderUtil private constructor() {
         private var mInstance: KeyboardLoaderUtil? = null
         private val mSoftKeyboardMap = HashMap<Int, SoftKeyboard?>() //缓存所有可用键盘
         @JvmStatic
-        val instance: KeyboardLoaderUtil?
+        val instance: KeyboardLoaderUtil
             get() {
                 if (null == mInstance) mInstance = KeyboardLoaderUtil()
-                return mInstance
+                return mInstance!!
             }
     }
 }

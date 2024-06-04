@@ -51,7 +51,7 @@ class ThemeFragment : Fragment() {
         lifecycleScope.launch {
             LogUtil.d("ThemeFragment", "onThemeChangeListener")
             EnvironmentSingleton.instance.initData()
-            KeyboardLoaderUtil.instance?.clearKeyboardMap()
+            KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance?.clearKeyboard();
             previewUi.setTheme(it)
         }

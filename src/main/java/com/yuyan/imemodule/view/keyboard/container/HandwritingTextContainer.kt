@@ -16,11 +16,7 @@ import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 
 class HandwritingTextContainer(context: Context?) : InputBaseContainer(context) {
     // 键盘界面上符号(T9左侧、手写右侧)
-    var mRVRightSymbols: RecyclerView
-
-    init {
-        mRVRightSymbols = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
-    }
+    var mRVRightSymbols: RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
     /**
      * 更新软键盘布局
@@ -35,7 +31,7 @@ class HandwritingTextContainer(context: Context?) : InputBaseContainer(context) 
             addView(mMajorView, params)
             (mMajorView as HandwritingKeyboard).setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance!!.getSoftKeyboard(skbValue)
+        val softKeyboard = instance.getSoftKeyboard(skbValue)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()
