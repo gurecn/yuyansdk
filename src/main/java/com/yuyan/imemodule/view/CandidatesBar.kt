@@ -33,23 +33,14 @@ import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
  * 候选词集装箱
  */
 class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
-    /**
-     * Listener used to notify IME that user clicks a candidate, or navigate
-     * between them. 候选词视图监听器
-     */
+    // 候选词视图监听器
     private var mCvListener: CandidateViewListener? = null
-
-    /**
-     * The right arrow button used to show next page. 右边箭头按钮
-     */
+    // 右边箭头按钮
     private var mRightArrowBtn: ImageView? = null
-
-    /**
-     * Decoding result to show. 词库解码对象
-     */
+    // 词库解码对象
     private var mDecInfo: DecodingInfo? = null
     private var mCandidatesDataContainer: LinearLayout? = null //候选词视图
-    private var mCandidatesMenuContainer: RelativeLayout? = null //控制菜单视图
+    private var mCandidatesMenuContainer: LinearLayout? = null //控制菜单视图
     private var mRVCandidates: RecyclerView? = null
     private var mIvMenuCloseSKB: ImageView? = null
     private var mCandidatesAdapter: CandidatesBarAdapter? = null
@@ -79,9 +70,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     val level = v.getDrawable().level
                     if(level == 0) {
                         var lastItemPosition = 0
-                        val layoutManager1 = mRVCandidates!!.layoutManager
-                        if (layoutManager1 is LinearLayoutManager) {
-                            lastItemPosition = layoutManager1.findLastVisibleItemPosition()
+                        val layoutManager = mRVCandidates!!.layoutManager
+                        if (layoutManager is LinearLayoutManager) {
+                            lastItemPosition = layoutManager.findLastVisibleItemPosition()
                         }
                         if(mDecInfo!!.mCandidatesList.size > lastItemPosition + 1) {
                             mCvListener!!.onClickMore(level, lastItemPosition)
@@ -95,11 +86,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mRightArrowBtn!!.setImageResource(R.drawable.sdk_level_list_candidates_display)
             val candidatesAreaHeight = instance.heightForCandidates
-            val layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                0f
-            )
+            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
             val margin = dip2px(10f)
             val size = (candidatesAreaHeight * 0.2).toInt()
             mRightArrowBtn!!.setPadding(margin, size, margin, size)
@@ -117,17 +104,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             if (mDecInfo != null) {
                 mCandidatesAdapter = CandidatesBarAdapter(context, mDecInfo!!.mCandidatesList)
                 mCandidatesAdapter!!.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-                    mCvListener!!.onClickChoice(
-                        position
-                    )
+                    mCvListener!!.onClickChoice(position)
                 }
                 mRVCandidates!!.setAdapter(mCandidatesAdapter)
             }
             mCandidatesDataContainer!!.visibility = GONE
-            val layoutParam = LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
+            val layoutParam = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             mCandidatesDataContainer!!.setLayoutParams(layoutParam)
             this.addView(mCandidatesDataContainer)
         } else {
@@ -146,15 +128,42 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     //初始化标题栏
     private fun initMenuView() {
-        mCandidatesMenuContainer = findViewById(R.id.ll_candidates_menu)
-        val ivMenuSetting = findViewById<ImageView>(R.id.iv_container_menu_ime_setting)
-        val layoutParams: ViewGroup.LayoutParams = ivMenuSetting.layoutParams as LayoutParams
-        layoutParams.width = instance.heightForCandidates
-        ivMenuSetting.setVisibility(VISIBLE)
-        ivMenuSetting.setOnClickListener { mCvListener!!.onClickSetting() }
-        mIvMenuCloseSKB = findViewById(R.id.iv_container_menu_close_grey)
-        mIvMenuCloseSKB?.setOnClickListener { _: View? -> mCvListener!!.onClickCloseKeyboard() }
-        mLLContainerMenu = findViewById(R.id.ll_container_menu)
+        if(mCandidatesMenuContainer == null) {
+            mCandidatesMenuContainer = LinearLayout(context)
+            mCandidatesMenuContainer!!.gravity = Gravity.CENTER_VERTICAL
+            val layoutParam = LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            mCandidatesMenuContainer!!.setLayoutParams(layoutParam)
+            val ivMenuSetting = ImageView(context)
+            ivMenuSetting.setImageResource(R.drawable.app_icon)
+            ivMenuSetting.isClickable = true
+            ivMenuSetting.setEnabled(true)
+            val layoutParams = LinearLayout.LayoutParams(
+                instance.heightForCandidates,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0f
+            )
+            layoutParam.leftMargin = dip2px(10f)
+            layoutParam.rightMargin = dip2px(10f)
+            ivMenuSetting.setLayoutParams(layoutParams)
+            ivMenuSetting.setOnClickListener { mCvListener!!.onClickSetting() }
+            mCandidatesMenuContainer!!.addView(ivMenuSetting)
+            val layoutParamsLL =
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+            mLLContainerMenu = LinearLayout(context)
+            mLLContainerMenu?.layoutParams = layoutParamsLL
+            mCandidatesMenuContainer!!.addView(mLLContainerMenu)
+            mIvMenuCloseSKB = ImageView(context)
+            mIvMenuCloseSKB?.setImageResource(R.drawable.sdk_skb_close_icon)
+            mIvMenuCloseSKB?.isClickable = true
+            mIvMenuCloseSKB?.setEnabled(true)
+            mIvMenuCloseSKB?.setLayoutParams(layoutParams)
+            mIvMenuCloseSKB?.setOnClickListener { mCvListener!!.onClickCloseKeyboard() }
+            mCandidatesMenuContainer!!.addView(mIvMenuCloseSKB)
+            this.addView(mCandidatesMenuContainer)
+        }
     }
 
     /**

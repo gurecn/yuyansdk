@@ -24,11 +24,7 @@
             android:id="@+id/candidates_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <!--键盘标题栏-->
-            <include layout="@layout/sdk_skb_container_title_menu" />
-        </com.yuyan.imemodule.view.CandidatesBar>
-
+            android:orientation="horizontal"/>
     </LinearLayout>
     <!--除顶部外的下面其他容器视图，当标点符号视图显示时会遮挡住此视图-->
     <com.yuyan.imemodule.view.keyboard.container.InputViewParent
