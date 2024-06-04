@@ -83,7 +83,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
                 System.currentTimeMillis()
             )
             inputView!!.resetToIdleState()
-            KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
         } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
             LauncherModel.instance!!.usedEmojiDao!!.insertUsedEmoji(
                 result,
@@ -99,7 +99,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         inputView!!.responseKeyEvent(softKey)
     }
 
-    var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
+    private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
 
     init {
         initView(context)
@@ -110,10 +110,10 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         if (lastPosition != position) {
             val symbols = SymbolsManager.instance!!.getmSymbols(position)
             inputView!!.showSymbols(symbols)
-            updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int -> onItemClickOperate(parent, position) }, position)
+            updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)
         } else {
             inputView!!.resetToIdleState()
-            KeyboardManager.instance!!.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
         }
     }
 
@@ -134,7 +134,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
      */
     fun setSymbolsView(showType: Int) {
         lastPosition = showType
-        updateSymbols({ parent: RecyclerView.Adapter<*>?, view: View?, position: Int ->
+        updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             onItemClickOperate(
                 parent,
                 position
@@ -142,7 +142,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
         }, showType)
         val data = resources.getStringArray(R.array.symbolType)
         val adapter = SymbolTypeAdapter(context, data, showType)
-        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, view: View?, position: Int ->
+        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             onTypeItemClickOperate(
                 position
             )

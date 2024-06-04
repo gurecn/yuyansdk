@@ -112,7 +112,7 @@ class KeyboardManager {
                 KeyboardType.CANDIDATES -> {
                     val mCandidatesContainer = CandidatesContainer(ImeSdkApplication.context)
                     mCandidatesContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
-                    instance!!.addKeyboard(KeyboardType.CANDIDATES, mCandidatesContainer)
+                    instance.addKeyboard(KeyboardType.CANDIDATES, mCandidatesContainer)
                     mCandidatesContainer
                 }
 
@@ -120,7 +120,7 @@ class KeyboardManager {
                     val mHandwritingTextContainer = HandwritingTextContainer(ImeSdkApplication.context)
                     mHandwritingTextContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
                     mHandwritingTextContainer.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_HANDWRITING)
-                    instance!!.addKeyboard(KeyboardType.HANDWRITING, mHandwritingTextContainer)
+                    instance.addKeyboard(KeyboardType.HANDWRITING, mHandwritingTextContainer)
                     mHandwritingTextContainer
                 }
 
@@ -128,7 +128,7 @@ class KeyboardManager {
                     val mNumberContainer = NumberContainer(ImeSdkApplication.context)
                     mNumberContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
                     mNumberContainer.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_NUMBER)
-                    instance!!.addKeyboard(KeyboardType.NUMBER, mNumberContainer)
+                    instance.addKeyboard(KeyboardType.NUMBER, mNumberContainer)
                     mNumberContainer
                 }
 
@@ -136,21 +136,21 @@ class KeyboardManager {
                     val mQwertyTextContainer = QwertyTextContainer(ImeSdkApplication.context)
                     mQwertyTextContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
                     mQwertyTextContainer.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
-                    instance!!.addKeyboard(KeyboardType.QWERTY, mQwertyTextContainer)
+                    instance.addKeyboard(KeyboardType.QWERTY, mQwertyTextContainer)
                     mQwertyTextContainer
                 }
 
                 KeyboardType.SETTINGS -> {
                     val mSettingsContainer = SettingsContainer(ImeSdkApplication.context)
                     mSettingsContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
-                    instance!!.addKeyboard(KeyboardType.SETTINGS, mSettingsContainer)
+                    instance.addKeyboard(KeyboardType.SETTINGS, mSettingsContainer)
                     mSettingsContainer
                 }
 
                 KeyboardType.SYMBOL -> {
                     val mSymbolContainer = SymbolContainer(ImeSdkApplication.context)
                     mSymbolContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
-                    instance!!.addKeyboard(KeyboardType.SYMBOL, mSymbolContainer)
+                    instance.addKeyboard(KeyboardType.SYMBOL, mSymbolContainer)
                     mSymbolContainer
                 }
 
@@ -158,7 +158,7 @@ class KeyboardManager {
                     val mQwertyABCTextContainer = QwertyTextContainer(ImeSdkApplication.context)
                     mQwertyABCTextContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
                     mQwertyABCTextContainer.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC)
-                    instance!!.addKeyboard(KeyboardType.QWERTYABC, mQwertyABCTextContainer)
+                    instance.addKeyboard(KeyboardType.QWERTYABC, mQwertyABCTextContainer)
                     mQwertyABCTextContainer
                 }
 
@@ -166,7 +166,7 @@ class KeyboardManager {
                     val mQwertyABCTextContainer = QwertyTextContainer(ImeSdkApplication.context)
                     mQwertyABCTextContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
                     mQwertyABCTextContainer.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_LX17)
-                    instance!!.addKeyboard(KeyboardType.LX17, mQwertyABCTextContainer)
+                    instance.addKeyboard(KeyboardType.LX17, mQwertyABCTextContainer)
                     mQwertyABCTextContainer
                 }
 
@@ -174,7 +174,7 @@ class KeyboardManager {
                     val mT9TextContainer = T9TextContainer(ImeSdkApplication.context)
                     mT9TextContainer.setService(mInputView, mDecInfo, mInputModeSwitcher)
                     mT9TextContainer.updateSkbLayout(InputModeSwitcherManager.MASK_SKB_LAYOUT_T9_PINYIN)
-                    instance!!.addKeyboard(KeyboardType.T9, mT9TextContainer)
+                    instance.addKeyboard(KeyboardType.T9, mT9TextContainer)
                     mT9TextContainer
                 }
             }
@@ -187,12 +187,12 @@ class KeyboardManager {
         private val TAG = KeyboardManager::class.java.getSimpleName()
         private var mInstance: KeyboardManager? = null
         @JvmStatic
-        val instance: KeyboardManager?
+        val instance: KeyboardManager
             get() {
                 if (null == mInstance) {
                     mInstance = KeyboardManager()
                 }
-                return mInstance
+                return mInstance!!
             }
     }
 }
