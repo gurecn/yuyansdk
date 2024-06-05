@@ -64,6 +64,7 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
         funItems.add(SkbFunItem(mContext.getString(R.string.engish_full_keyboard), R.drawable.sdk_vector_menu_skb_shuzihang, SkbMenuMode.NumberRow))
         funItems.add(SkbFunItem(mContext.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_mnemonic_show), R.drawable.sdk_vector_menu_skb_mnemonic, SkbMenuMode.Mnemonic))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_menu_float), R.drawable.sdk_vector_menu_skb_float, SkbMenuMode.FloatKeyboard))
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
         funItems.add(SkbFunItem(mContext.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
         val adapter = MenuAdapter(context, funItems)
@@ -166,6 +167,16 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
             SkbMenuMode.FlowerTypeface -> {
                 inputView?.showFlowerTypeface()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+            }
+            SkbMenuMode.FloatKeyboard -> {
+                val keyboardModeFloat = prefs.keyboardModeFloat.getValue()
+                prefs.keyboardModeFloat.setValue(!keyboardModeFloat)
+                EnvironmentSingleton.instance.initData()
+                KeyboardLoaderUtil.instance.clearKeyboardMap()
+                KeyboardManager.instance.clearKeyboard()
+                KeyboardManager.instance.switchKeyboard(
+                    mInputModeSwitcher!!.skbLayout
+                )
             }
             else ->{}
         }
