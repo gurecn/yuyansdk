@@ -50,90 +50,82 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     // 当前的输入法状态
     private var mImeState = ImeState.STATE_IDLE
     private var mChoiceNotifier = ChoiceNotifier()
-    var mSkbPinyinView: LinearLayout? = null //拼音显示根View
     private var mComposingView: ComposingView? = null // 组成字符串的View，用于显示输入的拼音。
     private var mSkbCandidatesBarView: CandidatesBar? = null //候选词栏根View
     private var mIbOneHand: ImageButton? = null
     private var mIbOneHandNone: ImageButton? = null
-    private var mSkbRoot: RelativeLayout? = null
+    var mSkbRoot: LinearLayout? = null
+    private var mHoderLayoutLeft: LinearLayout? = null
+    private var mHoderLayoutRight: LinearLayout? = null
     private var mHoderLayout: LinearLayout? = null
-    private var mIvcSkbContainer: InputViewParent? = null
 
     init {
-        initView(context)
         this.service = service
+        initView(context)
     }
 
     fun initView(context: Context?) {
         LogUtil.d(TAG, "initView")
         if (mSkbRoot == null) {
-            mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
-            mSkbPinyinView = mSkbRoot?.findViewById(R.id.sdk_pinyin_title_view_ll)
-            mSkbCandidatesBarView = mSkbRoot?.findViewById(R.id.candidates_bar)
-            mIvcSkbContainer = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
-            KeyboardManager.instance.setData(mIvcSkbContainer, this)
+            mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as LinearLayout
             mComposingView = mSkbRoot?.findViewById(R.id.cmv_container)
+            mSkbCandidatesBarView = mSkbRoot?.findViewById(R.id.candidates_bar)
+            mHoderLayoutLeft = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_left)
+            mHoderLayoutRight = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_right)
+            val mIvcSkbContainer:InputViewParent? = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
+            KeyboardManager.instance.setData(mIvcSkbContainer, this)
             var layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-            layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
             addView(mSkbRoot, layoutParams)
             val popupComponent = get()
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            removeParentView(popupComponent.root)
+            val viewParent = popupComponent.root.parent
+            if (viewParent != null) {
+                (viewParent as ViewGroup).removeView(popupComponent.root)
+            }
             addView(popupComponent.root, layoutParams)
         }
-        mSkbCandidatesBarView?.initialize(mChoiceNotifier, mDecInfo) // 刷新下拉箭头位置
+        mSkbCandidatesBarView?.initialize(mChoiceNotifier, mDecInfo)
         val oneHandedMod = prefs.oneHandedMod.getValue()
+        mHoderLayout?.visibility = GONE
+        mHoderLayout = when(oneHandedMod){
+            KeyboardOneHandedMod.LEFT -> mHoderLayoutLeft
+            KeyboardOneHandedMod.RIGHT ->  mHoderLayoutRight
+            else -> null
+        }
         if (oneHandedMod != KeyboardOneHandedMod.None) {
-            if (mHoderLayout == null) {
-                mHoderLayout = LayoutInflater.from(context).inflate(R.layout.sdk_skb_holder_layout, this, false) as LinearLayout
-                mIbOneHandNone = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_none)
-                mIbOneHandNone?.setOnClickListener { view: View -> onClick(view) }
-                mIbOneHand = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_left)
-                mIbOneHand?.setOnClickListener { view: View -> onClick(view) }
-            } else {
-                removeParentView(mHoderLayout!!)
-            }
+            mHoderLayout?.visibility = VISIBLE
+            mIbOneHandNone = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_none)
+            mIbOneHandNone?.setOnClickListener { view: View -> onClick(view) }
+            mIbOneHand = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_left)
+            mIbOneHand?.setOnClickListener { view: View -> onClick(view) }
+            val layoutParamsHoder = mHoderLayout?.layoutParams
             val margin = EnvironmentSingleton.instance.heightForCandidates + EnvironmentSingleton.instance.heightForComposingView
-            val layoutParamsHoder = LayoutParams(EnvironmentSingleton.instance.holderWidth, EnvironmentSingleton.instance.skbHeight + margin)
-            mHoderLayout?.setPadding(0, margin, 0 ,0)
-            layoutParamsHoder.addRule(ALIGN_PARENT_BOTTOM, TRUE)
+            layoutParamsHoder?.width = EnvironmentSingleton.instance.holderWidth
+            layoutParamsHoder?.height = EnvironmentSingleton.instance.skbHeight + margin
+        }
+        if(EnvironmentSingleton.instance.isLandscape){
             val layoutParams = mSkbRoot?.layoutParams as LayoutParams
-            if (oneHandedMod == KeyboardOneHandedMod.LEFT) {
-                mIbOneHand?.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand_right)
-                layoutParams.addRule(ALIGN_PARENT_LEFT, TRUE)
-                layoutParams.addRule(ALIGN_PARENT_RIGHT, 0)
-                layoutParamsHoder.addRule(RIGHT_OF,  mSkbRoot!!.id)
-                layoutParamsHoder.addRule(LEFT_OF, 0)
-            } else if (oneHandedMod == KeyboardOneHandedMod.RIGHT) {
-                mIbOneHand?.setImageResource(R.drawable.sdk_vector_menu_skb_one_hand)
-                layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
-                layoutParams.addRule(ALIGN_PARENT_LEFT, 0)
-                layoutParamsHoder.addRule(LEFT_OF, mSkbRoot!!.id)
-                layoutParamsHoder.addRule(RIGHT_OF,  0)
-            }
-            mSkbRoot?.setLayoutParams(layoutParams)
-            addView(mHoderLayout, layoutParamsHoder)
+            layoutParams.addRule(ALIGN_PARENT_BOTTOM, 0)
+            layoutParams.addRule(CENTER_VERTICAL, TRUE)
+            layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
         } else {
-            if (mHoderLayout != null) {
-                removeParentView(mHoderLayout!!)
-                val layoutParams = mSkbRoot?.layoutParams as LayoutParams
-                layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-                layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
-                layoutParams.addRule(ALIGN_PARENT_LEFT, 0)
-            }
+            val layoutParams = mSkbRoot?.layoutParams as LayoutParams
+            layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
+            layoutParams.addRule(CENTER_VERTICAL, 0)
+            layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
         }
         updateTheme()
     }
 
-    /**
-     * 从父布局移除自身
-     */
-    private fun removeParentView(child: View) {
-        val viewParent = child.parent
-        if (viewParent != null) {
-            (viewParent as ViewGroup).removeView(child)
-        }
+    // 刷新主题
+    fun updateTheme() {
+        setBackgroundResource(android.R.color.transparent)
+        val isKeyBorder = prefs.keyBorder.getValue()
+        mSkbRoot?.background = activeTheme.backgroundDrawable(isKeyBorder)
+        mComposingView?.updateTheme(activeTheme.keyTextColor)
+        mSkbCandidatesBarView?.updateTheme(activeTheme.keyTextColor)
+        mIbOneHandNone?.getDrawable()?.setTint(activeTheme.keyTextColor)
+        mIbOneHand?.getDrawable()?.setTint(activeTheme.keyTextColor)
     }
 
     private fun onClick(view: View) {
@@ -208,20 +200,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mDecInfo.isAssociate = false
         mDecInfo.cacheCandidates(words)
         changeToStateInput()
-    }
-
-    // 刷新主题
-    fun updateTheme() {
-        setBackgroundResource(android.R.color.transparent)
-        val theme = activeTheme
-        val isKeyBorder = prefs.keyBorder.getValue()
-        mSkbRoot?.background = theme.backgroundDrawable(isKeyBorder)
-        mHoderLayout?.background = theme.backgroundDrawable(isKeyBorder)
-        mSkbPinyinView?.background = theme.backgroundDrawable(isKeyBorder)
-        if (mComposingView != null) mComposingView?.updateTheme(theme.keyTextColor)
-        if (mSkbCandidatesBarView != null) mSkbCandidatesBarView?.updateTheme(theme.keyTextColor)
-        if (mIbOneHandNone != null) mIbOneHandNone?.getDrawable()!!.setTint(theme.keyTextColor)
-        if (mIbOneHand != null) mIbOneHand?.getDrawable()!!.setTint(theme.keyTextColor)
     }
 
     /**
