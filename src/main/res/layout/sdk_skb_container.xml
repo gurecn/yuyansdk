@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/inputView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:gravity="bottom"
-    android:hardwareAccelerated="true">
-    <!--拼音标题栏view-->
+    android:orientation="horizontal">
+    <include
+        android:id="@+id/ll_skb_holder_layout_left"
+        layout="@layout/sdk_skb_holder_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
     <LinearLayout
-        android:id="@+id/sdk_pinyin_title_view_ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -23,14 +25,18 @@
         <com.yuyan.imemodule.view.CandidatesBar
             android:id="@+id/candidates_bar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"/>
+            android:layout_height="wrap_content"/>
+        <!--除顶部外的下面其他容器视图，当标点符号视图显示时会遮挡住此视图-->
+        <com.yuyan.imemodule.view.keyboard.container.InputViewParent
+            android:id="@+id/skb_input_keyboard_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </com.yuyan.imemodule.view.keyboard.container.InputViewParent>
     </LinearLayout>
-    <!--除顶部外的下面其他容器视图，当标点符号视图显示时会遮挡住此视图-->
-    <com.yuyan.imemodule.view.keyboard.container.InputViewParent
-        android:id="@+id/skb_input_keyboard_view"
+    <include
+        android:id="@+id/ll_skb_holder_layout_right"
+        layout="@layout/sdk_skb_holder_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sdk_pinyin_title_view_ll">
-    </com.yuyan.imemodule.view.keyboard.container.InputViewParent>
-</RelativeLayout>
+        android:visibility="gone"/>
+</LinearLayout>

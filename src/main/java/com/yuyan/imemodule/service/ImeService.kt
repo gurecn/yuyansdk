@@ -46,14 +46,6 @@ class ImeService : InputMethodService() {
         }
     }
 
-    // // todo 悬浮功能，待实现
-    //    private void showFloatingWindow() {
-    //        Dialog dialog = getWindow();
-    //        Window window = dialog.getWindow();
-    //        WindowManager.LayoutParams params = window.getAttributes();
-    //        params.y = 500;
-    //        window.setAttributes(params);
-    //    }
     override fun onDestroy() {
         super.onDestroy()
         LogUtil.d(TAG, "onDestroy")
@@ -101,7 +93,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onComputeInsets(outInsets: Insets) {
-        val (_, y) = intArrayOf(0, 0).also { mInputView?.mSkbPinyinView?.getLocationInWindow(it) }
+        val (_, y) = intArrayOf(0, 0).also { mInputView?.mSkbRoot?.getLocationInWindow(it) }
         outInsets.apply {
             contentTopInsets = y
             touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
