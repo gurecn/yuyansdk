@@ -37,6 +37,7 @@ import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import com.yuyan.inputmethod.core.CandidateListItem
+import splitties.views.bottomPadding
 
 @SuppressLint("ViewConstructor") // 禁用构造方法警告，不创建含AttributeSet的构造方法，为了实现代码混淆效果
 
@@ -74,8 +75,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mHoderLayoutRight = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_right)
             val mIvcSkbContainer:InputViewParent? = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            var layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            addView(mSkbRoot, layoutParams)
+            addView(mSkbRoot)
             val popupComponent = get()
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             val viewParent = popupComponent.root.parent
@@ -103,17 +103,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             layoutParamsHoder?.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder?.height = EnvironmentSingleton.instance.skbHeight + margin
         }
-        if(EnvironmentSingleton.instance.isLandscape){
-            val layoutParams = mSkbRoot?.layoutParams as LayoutParams
-            layoutParams.addRule(ALIGN_PARENT_BOTTOM, 0)
-            layoutParams.addRule(CENTER_VERTICAL, TRUE)
-            layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
-        } else {
-            val layoutParams = mSkbRoot?.layoutParams as LayoutParams
-            layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-            layoutParams.addRule(CENTER_VERTICAL, 0)
-            layoutParams.addRule(ALIGN_PARENT_RIGHT, TRUE)
-        }
+        bottomPadding = if(EnvironmentSingleton.instance.isLandscape)
+                (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
+            else 0
         updateTheme()
     }
 

@@ -22,6 +22,7 @@ class EnvironmentSingleton private constructor() {
     var mScreenHeight = 0 // 屏幕的高度
     var skbWidth = 0 // 键盘区域、候选词区域宽度
         private set
+    var inputAreaHeight = 0 // 键盘区域高度
     var skbHeight = 0 // 键盘区域高度
         private set
     var holderWidth = 0 // 单手模式下键盘占位区域宽度
@@ -71,6 +72,7 @@ class EnvironmentSingleton private constructor() {
         keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
         keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
         candidateTextSize = keyTextSize + ThemeManager.prefs.candidateTextSize.getValue()
+        inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
     }
 
     var keyBoardHeightRatio: Float

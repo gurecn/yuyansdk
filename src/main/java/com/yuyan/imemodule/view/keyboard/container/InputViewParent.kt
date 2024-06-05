@@ -7,12 +7,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 
 // 根布局集装箱，此为所有键盘布局共享对象
-class InputViewParent @JvmOverloads constructor(
-    context: Context?,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
-) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
+class InputViewParent @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private var mLastContainer: View? = null
     fun showView(child: View?) {
         if (child == null) return
@@ -32,7 +27,7 @@ class InputViewParent @JvmOverloads constructor(
         mLastContainer = child
     }
 
-    fun hideView(child: View) {
+    private fun hideView(child: View) {
         child.visibility = GONE
     }
 }
