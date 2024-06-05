@@ -85,6 +85,7 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
             SkbMenuMode.OneHanded -> ThemeManager.prefs.oneHandedMod.getValue() != KeyboardOneHandedMod.None
             SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface != FlowerTypefaceMode.Disabled
+            SkbMenuMode.FloatKeyboard -> ThemeManager.prefs.keyboardModeFloat.getValue()
 
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9

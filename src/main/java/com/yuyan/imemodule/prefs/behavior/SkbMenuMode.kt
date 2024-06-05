@@ -15,6 +15,7 @@ enum class SkbMenuMode {
     EmojiInput,
     Handwriting,
     Settings,
+    FloatKeyboard,
     OneHanded,
     PinyinT9,
     Pinyin26Jian,

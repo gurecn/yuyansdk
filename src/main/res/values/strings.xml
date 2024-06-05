@@ -213,4 +213,5 @@
     <string name="keyboard_name_pinyin_lx_17">乱序17</string>
     <string name="keyboard_iv_menu_close">关闭键盘</string>
     <string name="space_swipe_move_cursor">滑动空格键移动光标</string>
+    <string name="keyboard_menu_float">悬浮键盘</string>
 </resources>
