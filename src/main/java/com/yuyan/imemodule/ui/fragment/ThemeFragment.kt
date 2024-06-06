@@ -91,7 +91,7 @@ class ThemeFragment : Fragment() {
         }.attach()
 
         val previewWrapper = constraintLayout {
-            add(preview, lParams(wrapContent, wrapContent) {
+            add(preview, lParams(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight) {
                 topOfParent(dp(-52))
                 startOfParent()
                 endOfParent()
