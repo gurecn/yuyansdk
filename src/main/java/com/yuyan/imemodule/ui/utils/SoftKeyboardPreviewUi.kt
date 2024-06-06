@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.CandidatesBar
@@ -82,6 +84,9 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
         qwerTextContainer!!.setTheme(theme)
         val keyBorder = prefs.keyBorder.getValue()
         background = theme.backgroundDrawable(keyBorder)
+        val layoutParams = layoutParams as (ConstraintLayout.LayoutParams)?
+        layoutParams?.width = EnvironmentSingleton.instance.skbWidth
+        layoutParams?.height = EnvironmentSingleton.instance.inputAreaHeight
     }
 
     override fun onAttachedToWindow() {
