@@ -23,6 +23,11 @@ object DevicesUtils {
         val scale = ImeSdkApplication.context.resources.displayMetrics.density
         return (dpValue * scale + 0.5f).toInt()
     }
+    @JvmStatic
+    fun dip2px(dpValue: Int): Int {
+        val scale = ImeSdkApplication.context.resources.displayMetrics.density
+        return (dpValue * scale + 0.5f).toInt()
+    }
 
     /**
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp

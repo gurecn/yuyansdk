@@ -55,8 +55,10 @@ sealed class Theme : Parcelable {
         return GradientDrawable().apply {
             setColor(if (keyBorder) backgroundColor else keyboardColor)
             setShape(GradientDrawable.RECTANGLE)
-//            setStroke(2, dividerColor)
             setCornerRadius(20f) // 设置圆角半径
+            if(ThemeManager.prefs.keyboardModeFloat.getValue()){
+                setStroke(2, dividerColor)
+            }
         }
     }
 

@@ -34,6 +34,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         </com.yuyan.imemodule.view.keyboard.container.InputViewParent>
+        <ImageView
+            android:id="@+id/iv_keyboard_move"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/sdk_vector_keyboard_horizontal_line"/>
     </LinearLayout>
     <include
         android:id="@+id/ll_skb_holder_layout_right"

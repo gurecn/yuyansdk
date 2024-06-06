@@ -13,6 +13,7 @@ import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.WritingRCMode
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.vibrator
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
@@ -31,10 +32,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardHeightRatio = float("keyboard_height_ratio", 0.3f)     //键盘高度比例
         val keyboardHolderWidthRatio = float("keyboard_holder_width_ratio", 0.2f)     //键盘占位宽度比例，单手模式
 
-        val keyboardBottomPadding = float("keyboard_padding_bottom", 100f)     //竖屏悬浮模式底边距
-        val keyboardRightPadding = float("keyboard_padding_right", 20f)     //竖屏悬浮模式右边距
-        val keyboardBottomPaddingLandscape = float("keyboard_padding_bottom_landscape", 50f)     //横屏悬浮模式底边距
-        val keyboardRightPaddingLandscape = float("keyboard_padding_right_landscape", 20f)     //横屏悬浮模式右边距
+        val keyboardBottomPadding = int("keyboard_padding_bottom", DevicesUtils.dip2px(100))     //竖屏悬浮模式底边距
+        val keyboardRightPadding = int("keyboard_padding_right", DevicesUtils.dip2px(20))     //竖屏悬浮模式右边距
+        val keyboardBottomPaddingLandscape = int("keyboard_padding_bottom_landscape", DevicesUtils.dip2px(50))     //横屏悬浮模式底边距
+        val keyboardRightPaddingLandscape = int("keyboard_padding_right_landscape", DevicesUtils.dip2px(20))     //横屏悬浮模式右边距
     }
 
     inner class Advanced : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {

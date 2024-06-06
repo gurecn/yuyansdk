@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.service
 
 import android.content.res.Configuration
-import android.graphics.Region
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
 import android.view.View
@@ -107,7 +106,7 @@ class ImeService : InputMethodService() {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 touchableInsets = Insets.TOUCHABLE_INSETS_REGION
-                touchableRegion.set(x, y, x + EnvironmentSingleton.instance.skbWidth, y + EnvironmentSingleton.instance.inputAreaHeight)
+                touchableRegion.set(x, y, x + mInputView!!.mSkbRoot!!.width, y + mInputView!!.mSkbRoot!!.height)
             }
         }
     }
