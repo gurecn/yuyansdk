@@ -30,6 +30,11 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val openCandidatesEncryBtn = bool("open_candidates_encry_btn", false)     // 是否添加候选词加密按键
         val keyboardHeightRatio = float("keyboard_height_ratio", 0.3f)     //键盘高度比例
         val keyboardHolderWidthRatio = float("keyboard_holder_width_ratio", 0.2f)     //键盘占位宽度比例，单手模式
+
+        val keyboardBottomPadding = float("keyboard_padding_bottom", 100f)     //竖屏悬浮模式底边距
+        val keyboardRightPadding = float("keyboard_padding_right", 20f)     //竖屏悬浮模式右边距
+        val keyboardBottomPaddingLandscape = float("keyboard_padding_bottom_landscape", 50f)     //横屏悬浮模式底边距
+        val keyboardRightPaddingLandscape = float("keyboard_padding_right_landscape", 20f)     //横屏悬浮模式右边距
     }
 
     inner class Advanced : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {

@@ -20,11 +20,13 @@ import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
@@ -38,6 +40,7 @@ import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
+import splitties.views.rightPadding
 
 @SuppressLint("ViewConstructor") // 禁用构造方法警告，不创建含AttributeSet的构造方法，为了实现代码混淆效果
 
@@ -103,9 +106,20 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             layoutParamsHoder?.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder?.height = EnvironmentSingleton.instance.skbHeight + margin
         }
-        bottomPadding = if(EnvironmentSingleton.instance.isLandscape)
-                (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
-            else 0
+
+        if(prefs.keyboardModeFloat.getValue()){
+            bottomPadding = DevicesUtils.dip2px(if(EnvironmentSingleton.instance.isLandscape)
+                getInstance().internal.keyboardBottomPaddingLandscape.getValue() else getInstance().internal.keyboardBottomPadding.getValue())
+            rightPadding = DevicesUtils.dip2px(if(EnvironmentSingleton.instance.isLandscape)
+                getInstance().internal.keyboardRightPaddingLandscape.getValue() else getInstance().internal.keyboardRightPadding.getValue())
+        } else {
+            bottomPadding = DevicesUtils.dip2px(if(EnvironmentSingleton.instance.isLandscape)
+                (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2f
+            else 0f)
+            rightPadding = DevicesUtils.dip2px(if(EnvironmentSingleton.instance.isLandscape)
+                getInstance().internal.keyboardRightPaddingLandscape.getValue()
+            else 0f)
+        }
         updateTheme()
     }
 

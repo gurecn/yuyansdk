@@ -52,7 +52,7 @@ class EnvironmentSingleton private constructor() {
         isLandscape = mScreenHeight <= mScreenWidth
         var screenWidthVertical = min(dm.widthPixels, dm.heightPixels)
         var screenHeightVertical = max(dm.widthPixels, dm.heightPixels)
-        if(isLandscape){
+        if(isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()){
             screenWidthVertical = (screenWidthVertical*3f/4).toInt()
             screenHeightVertical = (screenHeightVertical*3f/4).toInt()
         }

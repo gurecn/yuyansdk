@@ -1,12 +1,14 @@
 package com.yuyan.imemodule.service
 
 import android.content.res.Configuration
+import android.graphics.Region
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
 import com.yuyan.imemodule.data.theme.ThemeManager.removeOnChangedListener
@@ -76,6 +78,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        LogUtil.d(TAG, "ImeService   onKeyUp:" + event.keyCode)
         return if (isInputViewShown) {
             mInputView!!.processKey(event) || super.onKeyUp(keyCode, event)
         } else {
@@ -93,12 +96,19 @@ class ImeService : InputMethodService() {
     }
 
     override fun onComputeInsets(outInsets: Insets) {
-        val (_, y) = intArrayOf(0, 0).also { mInputView?.mSkbRoot?.getLocationInWindow(it) }
+        val (x, y) = intArrayOf(0, 0).also { mInputView?.mSkbRoot?.getLocationInWindow(it) }
         outInsets.apply {
-            contentTopInsets = y
-            touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
-            touchableRegion.setEmpty()
-            visibleTopInsets = y
+            if(!ThemeManager.prefs.keyboardModeFloat.getValue()) {
+                contentTopInsets = y
+                touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
+                touchableRegion.setEmpty()
+                visibleTopInsets = y
+            } else {
+                contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
+                visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
+                touchableInsets = Insets.TOUCHABLE_INSETS_REGION
+                touchableRegion.set(x, y, x + EnvironmentSingleton.instance.skbWidth, y + EnvironmentSingleton.instance.inputAreaHeight)
+            }
         }
     }
 
