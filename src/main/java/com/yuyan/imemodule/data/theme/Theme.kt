@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Parcelable
 import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.application.Launcher
@@ -44,6 +45,15 @@ sealed class Theme : Parcelable {
             ContextCompat.getDrawable(Launcher.instance.context, keyboardResources)!!
         } else {
             ColorDrawable(keyboardColor)
+        }
+    }
+
+    open fun backgroundGradientDrawable(keyBorder: Boolean = false): Drawable {
+        return GradientDrawable().apply {
+            setColor(if (keyBorder) backgroundColor else keyboardColor)
+            setShape(GradientDrawable.RECTANGLE)
+//            setStroke(2, dividerColor)
+            setCornerRadius(20f) // 设置圆角半径
         }
     }
 
