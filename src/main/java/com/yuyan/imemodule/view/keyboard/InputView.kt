@@ -127,7 +127,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
         val isKeyBorder = prefs.keyBorder.getValue()
-        mSkbRoot?.background = activeTheme.backgroundDrawable(isKeyBorder)
+        mSkbRoot?.background = activeTheme.backgroundGradientDrawable(isKeyBorder)
         mComposingView?.updateTheme(activeTheme.keyTextColor)
         mSkbCandidatesBarView?.updateTheme(activeTheme.keyTextColor)
         mIbOneHandNone?.getDrawable()?.setTint(activeTheme.keyTextColor)

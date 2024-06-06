@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Parcelable
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.ui.utils.DarkenColorFilter
@@ -48,6 +49,15 @@ sealed class Theme : Parcelable {
 
     open fun backgroundDrawable(keyBorder: Boolean = false): Drawable {
         return ColorDrawable(if (keyBorder) backgroundColor else keyboardColor)
+    }
+
+    open fun backgroundGradientDrawable(keyBorder: Boolean = false): Drawable {
+        return GradientDrawable().apply {
+            setColor(if (keyBorder) backgroundColor else keyboardColor)
+            setShape(GradientDrawable.RECTANGLE)
+//            setStroke(2, dividerColor)
+            setCornerRadius(20f) // 设置圆角半径
+        }
     }
 
     @Serializable

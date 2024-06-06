@@ -74,7 +74,7 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
             setBackground(background)
         } else {
             val keyBorder = prefs.keyBorder.getValue()
-            setBackground(theme.backgroundDrawable(keyBorder))
+            setBackground(theme.backgroundGradientDrawable(keyBorder))
         }
     }
 
@@ -83,10 +83,10 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
         initView()
         qwerTextContainer!!.setTheme(theme)
         val keyBorder = prefs.keyBorder.getValue()
-        background = theme.backgroundDrawable(keyBorder)
+        background = theme.backgroundGradientDrawable(keyBorder)
         val layoutParams = layoutParams as (ConstraintLayout.LayoutParams)?
-        layoutParams?.width = EnvironmentSingleton.instance.skbWidth
-        layoutParams?.height = EnvironmentSingleton.instance.inputAreaHeight
+        layoutParams?.width = instance.skbWidth
+        layoutParams?.height = instance.inputAreaHeight
     }
 
     override fun onAttachedToWindow() {
