@@ -5,12 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceFragmentCompat
+import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.ui.utils.addCategory
 import com.yuyan.imemodule.ui.utils.addPreference
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class AboutFragment : PreferenceFragmentCompat() {
 
@@ -26,22 +25,21 @@ class AboutFragment : PreferenceFragmentCompat() {
                 findNavController().navigate(R.id.action_aboutFragment_to_licensesFragment)
             }
             addPreference(R.string.source_code, R.string.github_repo) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.githubRepo)))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.YuyanIMERepo)))
             }
             addPreference(R.string.license, CustomConstant.licenseSpdxId) {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.licenseUrl)))
             }
             addCategory(R.string.version) {
                 isIconSpaceReserved = false
-                addPreference(R.string.current_version, "a8661f8e")
-                addPreference(R.string.build_git_hash, "a8661f8e21e0a0f45da853571a3a8c6a75399b8b") {
-                    val commit = "a8661f8e21e0a0f45da853571a3a8c6a75399b8b".substringBefore('-')
-                    val uri = Uri.parse("${CustomConstant.githubRepo}/commit/${commit}")
+                addPreference(R.string.app_version, BuildConfig.AppCommitId)
+                addPreference(R.string.app_build_git_hash, BuildConfig.AppCommitHead) {
+                    val commit = BuildConfig.AppCommitHead.substringBefore('-')
+                    val uri = Uri.parse("${CustomConstant.YuyanSDKRepo}/commit/${commit}")
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
-                addPreference(R.string.build_time, SimpleDateFormat.getDateTimeInstance().format(
-                    Date(1716544537000)
-                ))
+                addPreference(R.string.app_build_time, BuildConfig.AppBuildTime)
+                addPreference(R.string.sdk_version, BuildConfig.SdkCommitId)
             }
         }
 

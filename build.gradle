@@ -8,6 +8,20 @@ apply plugin: 'kotlinx-serialization'
 
 def _VERSION = "2.0.16"  //项目（1：通用输入法；2：SIM密信，安全屋）.大版本.小版本
 
+def getSDKGitRevision() {
+    return "git --git-dir=/home/gure/devproject/YuyanIme/yuyansdk/.git rev-parse --short HEAD".execute().text.trim()
+}
+def getAPPGitHead() {
+    return "git rev-parse HEAD".execute().text.trim()
+}
+def getAPPGitRevision() {
+    return "git rev-parse --short HEAD".execute().text.trim()
+}
+def getAPPBuildTime() {
+    return "git log -1 --pretty=%ai".execute().text.trim()
+}
+
+
 android {
     compileSdk 34
 
@@ -46,10 +60,27 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
             resValue("string", "app_name", "@string/ime_yuyan_name")
+            SDK_GIT_COMMIT_ID = getSDKGitRevision()
+            buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
+            APP_GIT_COMMIT_ID = getAPPGitRevision()
+            buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
+            APP_GIT_COMMIT_HEAD = getAPPGitHead()
+            buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
+            APP_GIT_COMMIT_TIME = getAPPBuildTime()
+            buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
+
         }
         debug {
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
             resValue("string", "app_name", "@string/ime_yuyan_name_debug")
+            SDK_GIT_COMMIT_ID = getSDKGitRevision()
+            buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
+            APP_GIT_COMMIT_ID = getAPPGitRevision()
+            buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
+            APP_GIT_COMMIT_HEAD = getAPPGitHead()
+            buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
+            APP_GIT_COMMIT_TIME = getAPPBuildTime()
+            buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
         }
     }
     sourceSets {
