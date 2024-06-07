@@ -66,6 +66,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private var mHoderLayout: LinearLayout? = null
     private var mRightPaddingKey: ManagedPreference.PInt? = null
     private var mBottomPaddingKey: ManagedPreference.PInt? = null
+    private var mIvSkbMove: ImageView? = null
 
     init {
         this.service = service
@@ -84,7 +85,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val mRLSkbInputContainer:RelativeLayout? = mSkbRoot?.findViewById(R.id.ll_input_keyboard_container)
             val mIvcSkbContainer:InputViewParent? = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            val mIvSkbMove:ImageView? = mSkbRoot?.findViewById(R.id.iv_keyboard_move)
+            mIvSkbMove = mSkbRoot?.findViewById(R.id.iv_keyboard_move)
             mIvSkbMove?.isClickable = true
             mIvSkbMove?.setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
             addView(mSkbRoot)
@@ -122,7 +123,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(prefs.keyboardModeFloat.getValue()){
             bottomPadding = mBottomPaddingKey!!.getValue()
             rightPadding = mRightPaddingKey!!.getValue()
+            mIvSkbMove?.visibility = VISIBLE
         } else {
+            mIvSkbMove?.visibility = GONE
             bottomPadding = if(EnvironmentSingleton.instance.isLandscape) (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
             else 0
             rightPadding = if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscape.getValue()
