@@ -5,7 +5,6 @@ import android.graphics.Rect
 import android.view.View
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.LogUtil
 import kotlinx.coroutines.Job
 import org.mechdancer.dependency.Dependent
@@ -29,12 +28,6 @@ class PopupComponent private constructor():
 
     private val popupWidth by lazy {
         ImeSdkApplication.context.dp(38)
-    }
-    private val popupHeight by lazy {
-        ImeSdkApplication.context.dp(116)
-    }
-    private val popupKeyHeight by lazy {
-        ImeSdkApplication.context.dp(48)
     }
     private val popupRadius by lazy {
         ThemeManager.prefs.keyRadius.getValue().toFloat()
@@ -73,14 +66,13 @@ class PopupComponent private constructor():
             return
         }
         val popup = (freeEntryUi.poll()
-            ?: PopupEntryUi(ImeSdkApplication.context, ThemeManager.activeTheme, popupKeyHeight, popupRadius)).apply {
+            ?: PopupEntryUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds.height(), popupRadius)).apply {
             lastShowTime = System.currentTimeMillis()
             setText(content)
         }
         root.apply {
-            add(popup.root, lParams(bounds.right - bounds.left, popupHeight) {
-                // align popup bottom with key border bottom [^1]
-                topMargin = bounds.top - popupHeight + EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.skbHeight
+            add(popup.root, lParams(bounds.width(), bounds.height()) {
+                topMargin = bounds.top
                 leftMargin = bounds.left
             })
         }
@@ -93,33 +85,20 @@ class PopupComponent private constructor():
 
     private fun showKeyboard(viewId: Int, keyboard: KeyDef.Popup.Keyboard, bounds: Rect) {
         val keys = PopupPreset[keyboard.label] ?: return
-        // clear popup preview text         OR create empty popup preview
         showingEntryUi[viewId]?.setText("") ?: showPopup(viewId, "", bounds)
         reallyShowKeyboard(viewId, keys, bounds)
     }
 
     private fun reallyShowKeyboard(viewId: Int, keys: Array<String>, bounds: Rect) {
-//        val labels = if (punctuation.enabled) {
-//            Array(keys.size) { punctuation.transform(keys[it]) }
-//        } else keys
-        LogUtil.d("PopupComponent", "reallyShowKeyboard   viewId:$viewId  keys:${keys.size}")
         val keyboardUi = PopupKeyboardUi(
             ImeSdkApplication.context,
             ThemeManager.activeTheme,
-            bounds,
-            { dismissPopup(viewId) },
-            popupRadius,
-            popupWidth,
-            popupKeyHeight,
-            // position popup keyboard higher, because of [^1]
-            popupHeight,
-            keys,
-            keys
-        )
+            bounds, { dismissPopup(viewId) },
+            popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
         root.apply {
             add(keyboardUi.root, lParams {
-                leftMargin = bounds.left + keyboardUi.offsetX
-                topMargin = bounds.top + keyboardUi.offsetY + EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.skbHeight
+                topMargin = bounds.top + keyboardUi.offsetY
+                leftMargin = bounds.left+ keyboardUi.offsetX
             })
         }
         showingContainerUi[viewId] = keyboardUi

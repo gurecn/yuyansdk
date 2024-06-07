@@ -37,7 +37,7 @@ import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
-import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
+import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
@@ -60,7 +60,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private var mSkbCandidatesBarView: CandidatesBar? = null //候选词栏根View
     private var mIbOneHand: ImageButton? = null
     private var mIbOneHandNone: ImageButton? = null
-    var mSkbRoot: LinearLayout? = null
+    var mSkbRoot: RelativeLayout? = null
     private var mHoderLayoutLeft: LinearLayout? = null
     private var mHoderLayoutRight: LinearLayout? = null
     private var mHoderLayout: LinearLayout? = null
@@ -76,24 +76,25 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun initView(context: Context?) {
         LogUtil.d(TAG, "initView")
         if (mSkbRoot == null) {
-            mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as LinearLayout
+            mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
             mComposingView = mSkbRoot?.findViewById(R.id.cmv_container)
             mSkbCandidatesBarView = mSkbRoot?.findViewById(R.id.candidates_bar)
             mHoderLayoutLeft = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_left)
             mHoderLayoutRight = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_right)
+            val mRLSkbInputContainer:RelativeLayout? = mSkbRoot?.findViewById(R.id.ll_input_keyboard_container)
             val mIvcSkbContainer:InputViewParent? = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
             val mIvSkbMove:ImageView? = mSkbRoot?.findViewById(R.id.iv_keyboard_move)
             mIvSkbMove?.isClickable = true
             mIvSkbMove?.setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
             addView(mSkbRoot)
-            val popupComponent = get()
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            val popupComponent = PopupComponent.get()
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             val viewParent = popupComponent.root.parent
             if (viewParent != null) {
                 (viewParent as ViewGroup).removeView(popupComponent.root)
             }
-            addView(popupComponent.root, layoutParams)
+            mRLSkbInputContainer?.addView(popupComponent.root, layoutParams)
         }
         mSkbCandidatesBarView?.initialize(mChoiceNotifier, mDecInfo)
         val oneHandedMod = prefs.oneHandedMod.getValue()
