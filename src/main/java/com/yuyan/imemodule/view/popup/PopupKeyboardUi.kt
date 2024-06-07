@@ -4,8 +4,10 @@ package com.yuyan.imemodule.view.popup
 import android.content.Context
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
 import android.view.ViewOutlineProvider
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.StringUtils
 import splitties.dimensions.dp
 import splitties.views.dsl.core.Ui
@@ -57,7 +59,7 @@ class PopupKeyboardUi(
         val textView = view(::AutoScaleTextView) {
             text = this@PopupKeyUi.text
             scaleMode = AutoScaleTextView.Mode.Proportional
-            textSize = 23f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, EnvironmentSingleton.instance.keyTextSize * 1.2f)
             setTextColor(theme.keyTextColor)
         }
 
@@ -65,7 +67,7 @@ class PopupKeyboardUi(
             text = "半"
             padding = dp(3)
             scaleMode = AutoScaleTextView.Mode.Proportional
-            textSize = 8f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, EnvironmentSingleton.instance.keyTextSmallSize * 1.2f)
             setTextColor(theme.keyTextColor)
         }
 

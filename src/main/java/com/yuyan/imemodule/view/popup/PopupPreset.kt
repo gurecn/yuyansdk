@@ -1,23 +1,19 @@
 
 package com.yuyan.imemodule.view.popup
 
-/**
- * based on
- * [fcitx5/src/im/keyboard/longpress.cpp](https://github.com/fcitx/fcitx5/blob/5.0.18/src/im/keyboard/longpress.cpp#L15)
- */
 val PopupPreset: Map<String, Array<String>> = hashMapOf(
     //
     // Latin
     //
     "q" to arrayOf("[", "【", "〔", "Q"),
     "w" to arrayOf("]", "】", "〕", "W"),
-    "e" to arrayOf("<", "《", "〈", "«", "E", "ē", "é", "ě", "è"),
+    "e" to arrayOf("<", "《", "〈", "«", "E"),
     "r" to arrayOf(">", "》", "〉", "»", "R"),
     "t" to arrayOf("(", "（", "T"),
-    "y" to arrayOf(")", "）", "Y", "ÿ", "ұ", "ү", "ӯ", "ў"),
-    "u" to arrayOf("{", "『", "〖", "U", "ū", "ú", "ǔ", "ù"),
-    "i" to arrayOf("}", "』", "〗", "I", "ī", "í", "ǐ", "ì"),
-    "o" to arrayOf("|", "·", "｜", "§", "¦", "O", "ō", "ó", "ǒ", "ò"),
+    "y" to arrayOf(")", "）", "Y",),
+    "u" to arrayOf("{", "『", "〖", "U"),
+    "i" to arrayOf("}", "』", "〗", "I"),
+    "o" to arrayOf("|", "｜", "§", "¦", "O"),
     "p" to arrayOf("-", "_", "——", "～", "P"),
     "a" to arrayOf("-", "A", "ā", "á", "ǎ", "à"),
     "s" to arrayOf("/", "$", "¥", "S", "ß", "ś", "š", "ş"),
@@ -41,13 +37,13 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     //
     "Q" to arrayOf("[", "【", "〔", "q"),
     "W" to arrayOf("]", "】", "〕", "w"),
-    "E" to arrayOf("<", "《", "〈", "«", "e", "ē", "é", "ě", "è"),
+    "E" to arrayOf("<", "《", "〈", "«", "e"),
     "R" to arrayOf(">", "》", "〉", "»", "r"),
     "T" to arrayOf("(", "（",  "t"),
-    "Y" to arrayOf(")", "）", "y", "Ÿ", "Ұ", "Ү", "Ӯ", "Ў"),
-    "U" to arrayOf("{", "『", "〖", "u", "ū", "ú", "ǔ", "ù"),
-    "I" to arrayOf("}", "』", "〗",  "i", "ī", "í", "ǐ", "ì"),
-    "O" to arrayOf("|", "·", "｜", "§", "¦", "o", "ō", "ó", "ǒ", "ò"),
+    "Y" to arrayOf(")", "）", "y"),
+    "U" to arrayOf("{", "『", "〖", "u"),
+    "I" to arrayOf("}", "』", "〗",  "i"),
+    "O" to arrayOf("|", "｜", "§", "¦", "o"),
     "P" to arrayOf("-", "_", "——", "～", "p"),
     "A" to arrayOf("-", "a", "ā", "á", "ǎ", "à"),
     "S" to arrayOf("/", "s", "ẞ", "Ś", "Š", "Ş"),

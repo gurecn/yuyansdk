@@ -5,13 +5,12 @@ import android.graphics.Rect
 import android.view.View
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.utils.LogUtil
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import kotlinx.coroutines.Job
 import org.mechdancer.dependency.Dependent
 import org.mechdancer.dependency.UniqueComponent
 import org.mechdancer.dependency.manager.ManagedHandler
 import org.mechdancer.dependency.manager.managedHandler
-import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.frameLayout
 import splitties.views.dsl.core.lParams
@@ -27,7 +26,7 @@ class PopupComponent private constructor():
     private val showingContainerUi = HashMap<Int, PopupContainerUi>()
 
     private val popupWidth by lazy {
-        ImeSdkApplication.context.dp(38)
+        EnvironmentSingleton.instance.skbWidth.div(10)
     }
     private val popupRadius by lazy {
         ThemeManager.prefs.keyRadius.getValue().toFloat()
@@ -90,17 +89,14 @@ class PopupComponent private constructor():
     }
 
     private fun reallyShowKeyboard(viewId: Int, keys: Array<String>, bounds: Rect) {
-        val keyboardUi = PopupKeyboardUi(
-            ImeSdkApplication.context,
-            ThemeManager.activeTheme,
-            bounds, { dismissPopup(viewId) },
-            popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
+        val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup(viewId) }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
         root.apply {
             add(keyboardUi.root, lParams {
                 topMargin = bounds.top + keyboardUi.offsetY
-                leftMargin = bounds.left+ keyboardUi.offsetX
+                leftMargin = bounds.left + keyboardUi.offsetX
             })
         }
+        dismissPopup(viewId)
         showingContainerUi[viewId] = keyboardUi
     }
 
@@ -113,7 +109,6 @@ class PopupComponent private constructor():
     }
 
     private fun dismissPopup(viewId: Int) {
-        LogUtil.d("PopupComponent", "dismissPopup   viewId:$viewId")
         dismissPopupContainer(viewId)
         showingEntryUi[viewId]?.also {
             val timeLeft = it.lastShowTime + hideThreshold - System.currentTimeMillis()
@@ -139,25 +134,6 @@ class PopupComponent private constructor():
         freeEntryUi.add(popup)
     }
 
-    fun dismissAll() {
-        // avoid modifying collection while iterating
-        dismissJobs.forEach { (_, job) ->
-            job.cancel()
-        }
-        dismissJobs.clear()
-        // too
-        showingContainerUi.forEach { (_, container) ->
-            root.removeView(container.root)
-        }
-        showingContainerUi.clear()
-        // too too
-        showingEntryUi.forEach { (_, entry) ->
-            root.removeView(entry.root)
-            freeEntryUi.add(entry)
-        }
-        showingEntryUi.clear()
-    }
-
     val listener = PopupActionListener { action ->
         with(action) {
             when (this) {
@@ -168,7 +144,6 @@ class PopupComponent private constructor():
                 is PopupAction.ShowKeyboardAction -> showKeyboard(viewId, keyboard, bounds)
                 is PopupAction.TriggerAction -> {
                     val text = triggerFocused(viewId)
-                    LogUtil.d("PopupActionListener", "text：$text")
                     service?.apply {
                         responseLongKeyEvent(text)
                     }

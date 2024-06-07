@@ -3,16 +3,15 @@ package com.yuyan.imemodule.view.popup
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
 import android.view.ViewOutlineProvider
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import splitties.dimensions.dp
-import splitties.views.dsl.constraintlayout.centerHorizontally
-import splitties.views.dsl.constraintlayout.constraintLayout
-import splitties.views.dsl.constraintlayout.lParams
-import splitties.views.dsl.constraintlayout.topOfParent
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.add
-import splitties.views.dsl.core.matchParent
+import splitties.views.dsl.core.frameLayout
+import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.view
 import splitties.views.gravityCenter
 
@@ -21,21 +20,20 @@ class PopupEntryUi(override val ctx: Context, theme: Theme, keyHeight: Int, radi
     var lastShowTime = -1L
 
     val textView = view(::AutoScaleTextView) {
-        textSize = 23f
-        gravity = gravityCenter
-        setTextColor(theme.popupTextColor)
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, EnvironmentSingleton.instance.keyTextSize * 1.2f)
+        scaleMode = AutoScaleTextView.Mode.Proportional
+        setTextColor(theme.genericActiveForegroundColor)
     }
 
-    override val root = constraintLayout {
+    override val root = frameLayout {
         background = GradientDrawable().apply {
             cornerRadius = radius
-            setColor(theme.popupBackgroundColor)
+            setColor(theme.genericActiveBackgroundColor)
         }
         outlineProvider = ViewOutlineProvider.BACKGROUND
         elevation = dp(2f)
-        add(textView, lParams(matchParent, keyHeight) {
-            topOfParent()
-            centerHorizontally()
+        add(textView, lParams {
+            gravity = gravityCenter
         })
     }
 
