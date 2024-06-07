@@ -21,6 +21,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.popup.KeyDef
 import com.yuyan.imemodule.view.popup.PopupAction
@@ -505,15 +506,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
      * @return true if the long press is handled, false otherwise. Subclasses should call the
      * method on the base class if the subclass doesn't wish to handle the call.
      */
-    protected fun onLongPress(key: SoftKey?) {
+    private fun onLongPress(key: SoftKey?) {
         if (!TextUtils.isEmpty(key!!.getkeyLabel())) {
-            val bounds = Rect(key.mLeft, key.mBottom, key.mRight, key.mBottom)
+            val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
+            LogUtil.d("PopupActionListener", "key.mTop：${key.mTop}    key.mBottom:${key.mBottom}")
             onPopupAction(
-                ShowKeyboardAction(
-                    0, KeyDef.Popup.Keyboard(
-                        key.getkeyLabel()
-                    ), bounds
-                )
+                ShowKeyboardAction(0, KeyDef.Popup.Keyboard(key.getkeyLabel()), bounds)
             )
             mLongPressKey = true
         }
@@ -532,10 +530,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
      *
      * @param key 按下按键
      */
-    fun showBalloonText(key: SoftKey) {
+    private fun showBalloonText(key: SoftKey) {
         val keyboardBalloonShow = prefs.keyboardBalloonShow.getValue()
         if (keyboardBalloonShow && !TextUtils.isEmpty(key.getkeyLabel())) {
-            val bounds = Rect(key.mLeft, key.mBottom, key.mRight, key.mBottom)
+            val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
             onPopupAction(PreviewAction(0, key.getkeyLabel(), bounds))
         }
     }
