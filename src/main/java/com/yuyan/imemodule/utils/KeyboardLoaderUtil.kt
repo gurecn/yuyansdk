@@ -98,9 +98,9 @@ class KeyboardLoaderUtil private constructor() {
                 t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
                 t9Key.first().apply {
                     mLeftF = 0.005f
-                    mTopF = 0.005f
+                    mTopF = -2f  // 九宫格左侧符号单独处理
                     widthF = 0.18f
-                    heightF = 0.745f
+                    heightF = 0.75f
                 }
                 t9Key.last().widthF = 0.18f
                 keyBeans.addAll(t9Key)
@@ -294,9 +294,11 @@ class KeyboardLoaderUtil private constructor() {
                 if (keyXPos == -1f) keyXPos = mKeyXPos
                 if (keyYPos == -1f) {
                     keyYPos = mKeyYPos
-                } else if (keyYPos == 0.005f) { //拼音九键左侧符号栏
+                } else if (keyYPos == -2f) { //拼音九键左侧符号栏
                     if (isNumberRow) { //数字行高度
-                        keyYPos += 0.15f
+                        keyYPos = 0.15f
+                    } else {
+                        keyYPos = 0f
                     }
                 }
                 val left: Float = keyXPos
