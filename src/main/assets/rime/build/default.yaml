@@ -1,8 +1,8 @@
 __build_info:
   rime_version: 1.11.1
   timestamps:
-    default: 1714987702
-    default.custom: 1714986767
+    default: 1717741756
+    default.custom: 1717741756
 ascii_composer:
   good_old_caps_lock: true
   switch_key:
@@ -116,12 +116,7 @@ recognizer:
 schema_list:
   - schema: rime_ice
   - schema: t9
-  - schema: double_pinyin
-  - schema: double_pinyin_abc
-  - schema: double_pinyin_mspy
-  - schema: double_pinyin_sogou
   - schema: double_pinyin_flypy
-  - schema: double_pinyin_ziguang
   - schema: double_pinyin_ls17
 switcher:
   abbreviate_options: true
