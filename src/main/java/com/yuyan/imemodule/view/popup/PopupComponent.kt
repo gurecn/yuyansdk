@@ -25,9 +25,6 @@ class PopupComponent private constructor():
 
     private val showingContainerUi = HashMap<Int, PopupContainerUi>()
 
-    private val popupWidth by lazy {
-        EnvironmentSingleton.instance.skbWidth.div(10)
-    }
     private val popupRadius by lazy {
         ThemeManager.prefs.keyRadius.getValue().toFloat()
     }
@@ -89,6 +86,7 @@ class PopupComponent private constructor():
     }
 
     private fun reallyShowKeyboard(viewId: Int, keys: Array<String>, bounds: Rect) {
+        val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup(viewId) }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
         root.apply {
             add(keyboardUi.root, lParams {
