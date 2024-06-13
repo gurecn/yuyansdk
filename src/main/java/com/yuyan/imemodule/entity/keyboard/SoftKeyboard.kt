@@ -26,34 +26,15 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
      * Rows in this soft keyboard. Each row has a id. Only matched rows will be
      * enabled. 按键排列的行的链表，每个元素都是一行。
      */
-    private val mKeyRows: MutableList<MutableList<SoftKey>> = LinkedList()
+    private var mKeyRows = listOf<List<SoftKey>>()
 
     fun setSkbValue(skbValue: Int) {
         this.skbValue = skbValue
     }
 
-    /**
-     * 重置软键盘，只做了清除mKeyRows列表的操作。
-     */
-    fun reset() {
-        mKeyRows.clear()
-    }
 
-    /**
-     * 开始新的一行
-     */
-    fun beginNewRow() {
-        mKeyRows.add(LinkedList())
-    }
-
-    /**
-     * 添加一个按键，按键是添加在最后一行中。
-     */
-    fun addSoftKey(softKey: SoftKey) {
-        if (mKeyRows.isEmpty()) return
-        val keyRow = mKeyRows[mKeyRows.size - 1]
-        softKey.setSkbCoreSize(skbCoreWidth, skbCoreHeight)
-        keyRow.add(softKey)
+    fun setSoftKeys(rows: List<List<SoftKey>>) {
+        mKeyRows = rows
     }
 
     /**
@@ -74,13 +55,9 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
         if (skbCoreWidth == this.skbCoreWidth && skbCoreHeight == this.skbCoreHeight) {
             return
         }
-        for (keyRow in mKeyRows) {
-            for (softKey in keyRow) {
-                softKey.setSkbCoreSize(skbCoreWidth, skbCoreHeight)
-            }
-        }
         this.skbCoreWidth = skbCoreWidth
         this.skbCoreHeight = skbCoreHeight
+        setSkbCoreSize()
     }
 
     val keyXMargin: Int
@@ -93,7 +70,7 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
          * 按键上下间隔距离
          */
         get() = (instance.keyYMargin * skbCoreHeight).toInt()
-    val row: List<MutableList<SoftKey>>
+    val row: List<List<SoftKey>>
         get() = mKeyRows
 
     /**

@@ -9,10 +9,10 @@ import java.util.Objects
  * 按键的属性
  */
 open class SoftKey {
-    /**
-     * Used to indicate the type and attributes of this key. the lowest 8 bits
-     * should be reserved for SoftkeyToggle. 按键的属性和类型，最低的8位留给软键盘变换状态。
-     */
+
+    /** key的code  */
+    var keyCode = 0
+    /** 按键的属性和类型，最低的8位留给软键盘变换状态。*/
     var stateId = 0
 
     /** key的文本  */
@@ -24,14 +24,10 @@ open class SoftKey {
     /** key助记符号文本  */
     var keyMnemonic: String? = null
 
-    /** key的code  */
-    var keyCode = 0
 
     /** 键盘上下左右位置百分比 ，mLeft = (int) (mLeftF * skbWidth);  */
     var mLeftF = -1f
-    private var mRightF = 0f
     var mTopF = -1f
-    private var mBottomF = 0f
     var widthF = 0f
     var heightF = 0.25f
 
@@ -41,10 +37,7 @@ open class SoftKey {
     var mTop = 0
     var mBottom = 0
 
-    /**
-     * The current pressed state of this key.
-     * 键盘布局点击时设置状态，非初始化设置。 See [com.yuyan.imemodule.view.keyboard.TextKeyboard] */
-    @JvmField
+    /** 键盘布局点击时设置状态，非初始化设置。 See [com.yuyan.imemodule.view.keyboard.TextKeyboard] */
     var pressed = false
 
     constructor(label: String = "", labelSmall: String = "") {
@@ -62,27 +55,21 @@ open class SoftKey {
         this.keyMnemonic = keyMnemonic
     }
 
-    /**
-     * Informs the key that it has been pressed, in case it needs to change its appearance or
-     * state.
-     */
     fun onPressed() {
         pressed = !pressed
     }
 
-    /**
-     * Changes the pressed state of the key.
-     * @see .onPressed
-     */
     fun onReleased() {
         pressed = !pressed
     }
 
-    fun setKeyDimensions(left: Float, top: Float, right: Float, bottom: Float) {
+    fun setKeyDimensions(left: Float, top: Float) {
         mLeftF = left
         mTopF = top
-        mRightF = right
-        mBottomF = bottom
+    }
+    fun setKeyDimensions(left: Float, top: Float, height:Float) {
+        setKeyDimensions(left, top)
+        heightF = height
     }
 
     /**
@@ -93,30 +80,21 @@ open class SoftKey {
      */
     fun setSkbCoreSize(skbWidth: Int, skbHeight: Int) {
         mLeft = (mLeftF * skbWidth).toInt()
-        mRight = (mRightF * skbWidth).toInt()
+        mRight = ((mLeftF + widthF) * skbWidth).toInt()
         mTop = (mTopF * skbHeight).toInt()
-        mBottom = (mBottomF * skbHeight).toInt()
+        mBottom = ((mTopF + heightF) * skbHeight).toInt()
     }
 
     open val keyIcon: Drawable?
         get() = keyIconRecords[Objects.hash(keyCode, stateId)]
 
     open val keyLabel: String?
-        /**
-         * 获取按键的显示字符
-         */
         get() =  mkeyLabel
 
-    /**
-     * 获取按键角标字符
-     */
     fun getmKeyLabelSmall(): String {
         return mKeyLabelSmall
     }
 
-    /**
-     * 获取按键角标字符
-     */
     fun getkeyLabel(): String {
         return mkeyLabel
     }
@@ -128,20 +106,15 @@ open class SoftKey {
         mkeyLabel = if (upperCase) mkeyLabel.uppercase() else mkeyLabel.lowercase()
     }
 
+    /** 是否是系统的keycode */
     val isKeyCodeKey: Boolean
-        /**
-         * 是否是系统的keycode
-         */
         get() = keyCode > 0
+    /** 是否是用户定义的keycode */
     val isUserDefKey: Boolean
-        /**
-         * 是否是用户定义的keycode
-         */
         get() = keyCode < 0
+
+    /** 是否是字符按键 */
     val isUniStrKey: Boolean
-        /**
-         * 是否是字符按键
-         */
         get() = keyCode == 0
 
     /**

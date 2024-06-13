@@ -14,14 +14,12 @@ import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9NumberKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9PYKeyPreset
 import java.util.LinkedList
-import kotlin.math.max
 
 /**
  * 键盘加载类  包括中文9键  中文26键 英文26键
  */
 class KeyboardLoaderUtil private constructor() {
-    // 数字行
-    private var skbNumberRow: MutableList<SoftKey> = LinkedList()
+
     fun clearKeyboardMap() {
         d(TAG, "clearKeyboardMap")
         mSoftKeyboardMap.clear()
@@ -38,26 +36,15 @@ class KeyboardLoaderUtil private constructor() {
         val softKeyboard: SoftKeyboard?
         val numberLine = prefs.abcNumberLine.getValue()
         d(TAG, "loadBaseSkb numberLine：$numberLine")
-        if (numberLine && skbNumberRow.isEmpty()) {
-            run {
-                val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
-                qwertyKeys.first().apply {
-                    mLeftF = 0.005f
-                }
-                skbNumberRow.addAll(qwertyKeys)
-            }
-        }
         val rows: MutableList<List<SoftKey>> = LinkedList()
         if (numberLine) {
-            rows.add(skbNumberRow)
+            val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
+            rows.add(qwertyKeys.asList())
         }
         when(skbValue){
             0x1000 -> {  // 1000  拼音全键
                 var keyBeans = mutableListOf<SoftKey>()
                 var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
-                qwertyKeys.first().apply {
-                    mLeftF = 0.005f
-                }
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
@@ -70,7 +57,6 @@ class KeyboardLoaderUtil private constructor() {
                 keyBeans = LinkedList()
                 qwertyKeys = createQwertyKeys(arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL))
                 qwertyKeys.first().apply {
-                    mLeftF = 0.005f
                     widthF = 0.147f
                 }
                 qwertyKeys.last().apply {
@@ -83,8 +69,11 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x2000 -> {  // 2000  T9键键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var t9Key = createT9Keys(arrayOf(75, 9, 10, KeyEvent.KEYCODE_AT))
-                t9Key.first().mLeftF = 0.185f
+                var t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_AT))
+                t9Key.first().apply {
+                    widthF = 0.18f
+                    heightF = 0.75f
+                }
                 t9Key.last().widthF = 0.18f
                 keyBeans.addAll(t9Key)
                 rows.add(keyBeans)
@@ -95,13 +84,8 @@ class KeyboardLoaderUtil private constructor() {
                 keyBeans.addAll(t9Key)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
-                t9Key.first().apply {
-                    mLeftF = 0.005f
-                    mTopF = -2f  // 九宫格左侧符号单独处理
-                    widthF = 0.18f
-                    heightF = 0.75f
-                }
+                t9Key = createT9Keys(arrayOf(14, 15, 16, KeyEvent.KEYCODE_DEL))
+                t9Key.first().mLeftF = 0.185f
                 t9Key.last().widthF = 0.18f
                 keyBeans.addAll(t9Key)
                 rows.add(keyBeans)
@@ -126,9 +110,6 @@ class KeyboardLoaderUtil private constructor() {
             0x4000 -> {// 4000 英文全键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
-                qwertyKeys.first().apply {
-                    mLeftF = 0.005f
-                }
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
@@ -140,7 +121,6 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
                 val softKeyToggle = createKeyToggle(-1)
-                softKeyToggle.mLeftF = 0.005f
                 softKeyToggle.widthF = 0.147f
                 softKeyToggle.setToggleStates(shiftToggleStates)
                 keyBeans.add(softKeyToggle)
@@ -154,8 +134,11 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x5000 -> {  // 5000 数字键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var t9Keys = createT9NumberKeys(arrayOf(8, 9, 10, KeyEvent.KEYCODE_AT))
-                t9Keys.first().mLeftF = 0.185f
+                var t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12,8, 9, 10, KeyEvent.KEYCODE_AT))
+                t9Keys.first().apply {
+                    widthF = 0.18f
+                    heightF = 0.75f
+                }
                 t9Keys.last().widthF = 0.18f
                 keyBeans.addAll(t9Keys)
                 rows.add(keyBeans)
@@ -168,13 +151,8 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
 
                 keyBeans = LinkedList()
-                t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 14, 15, 16, KeyEvent.KEYCODE_DEL))
-                t9Keys.first().apply {
-                    mLeftF = 0.005f
-                    mTopF = 0f
-                    widthF = 0.18f
-                    heightF = 0.75f
-                }
+                t9Keys = createT9NumberKeys(arrayOf( 14, 15, 16, KeyEvent.KEYCODE_DEL))
+                t9Keys.first().mLeftF = 0.185f
                 t9Keys.last().widthF = 0.18f
                 keyBeans.addAll(t9Keys)
                 rows.add(keyBeans)
@@ -184,23 +162,14 @@ class KeyboardLoaderUtil private constructor() {
             0x6000 -> {     // 6000 乱序17键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 var lX17Keys = createLX17Keys(arrayOf(36, 47, 54, 30, 52, 41))
-                lX17Keys.first().apply {
-                    mLeftF = 0.005f
-                }
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
                 lX17Keys = createLX17Keys(arrayOf(40, 32, 53, 51, 38, 42))
-                lX17Keys.first().apply {
-                    mLeftF = 0.005f
-                }
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
                 lX17Keys = createLX17Keys(arrayOf(31, 45, 35, 34, 48, 42, 67))
-                lX17Keys.first().apply {
-                    mLeftF = 0.005f
-                }
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = lastRows(numberLine)
@@ -234,7 +203,6 @@ class KeyboardLoaderUtil private constructor() {
             createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
                 KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2))
         }
-        t9Keys[0].mLeftF = 0.005f
         if(t9Keys.size == 5){
             t9Keys[0].widthF = 0.09f
             t9Keys[1].widthF = 0.09f
@@ -272,49 +240,37 @@ class KeyboardLoaderUtil private constructor() {
         return softKeyboard
     }
 
-    /**
-     * 生成键盘布局，主要用于计算键盘边界
-     */
+    /** 生成键盘布局，主要用于计算键盘边界 */
     private fun getSoftKeyboard(skbValue: Int, rows: List<List<SoftKey>>, isNumberRow: Boolean): SoftKeyboard {
         val skbWidth = EnvironmentSingleton.instance.skbWidth
         val softKeyboardHeight = EnvironmentSingleton.instance.skbHeight
         val softKeyboard = SoftKeyboard(skbWidth, softKeyboardHeight)
-        var rowBeanYPos = 0f
-        var mKeyXPos: Float
-        var mKeyYPos = 0f
+        var lastKeyBottom = 0f
+        var lastKeyRight: Float
+        var lastKeyTop: Float
         for (rowBean in rows) {
-            mKeyYPos = max(mKeyYPos.toDouble(), rowBeanYPos.toDouble()).toFloat()
-            mKeyXPos = 0f // 新行重新x从0开始
-            softKeyboard.beginNewRow()
+            lastKeyTop = lastKeyBottom  // 新行top为上一行bottom
+            lastKeyRight = 0f // 新行x从0.005开始
             for (keyBean in rowBean) {
                 var keyXPos = keyBean.mLeftF
                 var keyYPos = keyBean.mTopF
                 val keyWidth = keyBean.widthF
                 val keyHeight = keyBean.heightF
-                if (keyXPos == -1f) keyXPos = mKeyXPos
-                if (keyYPos == -1f) {
-                    keyYPos = mKeyYPos
-                } else if (keyYPos == -2f) { //拼音九键左侧符号栏
-                    if (isNumberRow) { //数字行高度
-                        keyYPos = 0.15f
+                if(keyXPos == -1f || keyYPos == -1f || isNumberRow) {
+                    if (keyXPos == -1f) keyXPos = lastKeyRight
+                    if (keyYPos == -1f) keyYPos = lastKeyTop
+                    if (isNumberRow) {
+                        keyBean.setKeyDimensions(keyXPos, keyYPos/1.15f, keyHeight/1.15f)
                     } else {
-                        keyYPos = 0f
+                        keyBean.setKeyDimensions(keyXPos, keyYPos)
                     }
                 }
-                val left: Float = keyXPos
-                val right = left + keyWidth
-                val top: Float = keyYPos
-                val bottom = top + keyHeight
-                if (isNumberRow) {
-                    keyBean.setKeyDimensions(left, top / 1.15f, right, bottom / 1.15f)
-                } else {
-                    keyBean.setKeyDimensions(left, top, right, bottom)
-                }
-                mKeyXPos = right
-                rowBeanYPos = max(rowBeanYPos.toDouble(), bottom.toDouble()).toFloat()
-                softKeyboard.addSoftKey(keyBean)
+                lastKeyRight = keyXPos + keyWidth
+                lastKeyTop = keyYPos
+                lastKeyBottom = keyYPos + keyHeight
             }
         }
+        softKeyboard.setSoftKeys(rows)
         softKeyboard.setSkbCoreSize()
         softKeyboard.setSkbValue(skbValue)
         return softKeyboard
