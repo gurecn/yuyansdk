@@ -87,7 +87,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             500,
             300,
             1300,
-            "ms",
+            "毫秒",
             100,
             defaultLabel = R.string.number_500
         )
@@ -171,7 +171,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 0,
                 0,
                 100,
-                "ms",
+                "毫秒",
                 defaultLabel = R.string.system_default
             ) { hapticOnKeyPress.getValue() != InputFeedbackMode.Disabled }
             buttonPressVibrationMilliseconds = primary
@@ -236,6 +236,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             R.string.clipboard_limit,
             "clipboard_limit",
             10,
+            1,
+            100,
+            "条",
+            defaultLabel = R.string.system_default
         ) { clipboardListening.getValue() }
         val clipboardSuggestion = switch(
             R.string.clipboard_suggestion, "clipboard_suggestion", true
@@ -244,13 +248,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             R.string.clipboard_suggestion_timeout,
             "clipboard_item_timeout",
             30,
-            -1,
-            Int.MAX_VALUE,
-            "s"
+            10,
+            200,
+            "秒"
         ) { clipboardListening.getValue() && clipboardSuggestion.getValue() }
-        val clipboardReturnAfterPaste = switch(
-            R.string.clipboard_return_after_paste, "clipboard_return_after_paste", false
-        ) { clipboardListening.getValue() }
     }
 
     private val providers = mutableListOf<ManagedPreferenceProvider>()

@@ -8,7 +8,7 @@ import com.yuyan.imemodule.database.pamas.UpdatePamas
 import com.yuyan.imemodule.database.provider.BaseDataProvider
 import com.yuyan.imemodule.database.table.ClipboardTable
 import com.yuyan.imemodule.entity.ClipBoardDataBean
-import com.yuyan.imemodule.utils.LogUtil
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.TimeUtils
 import com.yuyan.imemodule.utils.TimeUtils.getCurrentTimeInString
 import com.yuyan.imemodule.utils.TimeUtils.getTime
@@ -54,7 +54,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
             val list = ArrayList<InsertParams>()
             val insert = InsertParams(ClipboardTable.TABLE_NAME, contentValues)
             list.add(insert)
-            if (!list.isEmpty()) {
+            if (list.isNotEmpty()) {
                 result = mHelper.insert(list)
             }
         } else {
@@ -62,18 +62,12 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
             val values = ContentValues()
             values.put(ClipboardTable.COPY_CONTENT, copyContentBean.copyContent)
             if (isKeepClick) { //如果是点击收藏就更新时间，如果是编辑就不修改时间
-                values.put(
-                    ClipboardTable.COPY_TIME,
-                    getCurrentTimeInString(TimeUtils.DEFAULT_DATE_FORMATTER)
-                )
+                values.put(ClipboardTable.COPY_TIME, getCurrentTimeInString(TimeUtils.DEFAULT_DATE_FORMATTER))
             }
             values.put(ClipboardTable.IS_KEEP, copyContentBean.isKeep)
-            val updatePamas = UpdatePamas(
-                ClipboardTable.TABLE_NAME, values,
-                ClipboardTable.CONTENT_ID + " = ? ", arrayOf(copyContentBean.copyContentId)
-            )
+            val updatePamas = UpdatePamas(ClipboardTable.TABLE_NAME, values, ClipboardTable.CONTENT_ID + " = ? ", arrayOf(copyContentBean.copyContentId))
             list.add(updatePamas)
-            if (!list.isEmpty()) {
+            if (list.isNotEmpty()) {
                 result = mHelper.update(list)
             }
         }
@@ -97,10 +91,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
      * @return 时间
      */
     private fun checkExist(copyContent: String?): Int {
-        val cursor = mHelper.query(
-            ClipboardTable.TABLE_NAME, null,
-            ClipboardTable.COPY_CONTENT + " = ?", arrayOf(copyContent), null
-        )
+        val cursor = mHelper.query(ClipboardTable.TABLE_NAME, null, ClipboardTable.COPY_CONTENT + " = ?", arrayOf(copyContent), null)
         if (null != cursor) {
             try {
                 if (cursor.moveToNext()) {
@@ -132,9 +123,8 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
             mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy, "0,$maxNumber")
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                val copyContent =
-                    cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
-                //				String copyTime = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TIME));
+                val copyContent = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
+                val copyTime = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TIME));
                 copyContents.add(copyContent)
             } while (cursor.moveToNext())
             cursor.close()
@@ -151,15 +141,8 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
         deleteOverTimeItems()
         val copyContents = ArrayList<ClipBoardDataBean>()
         val orderBy = ClipboardTable.COPY_TIME + " DESC"
-        val cursor: Cursor?
-        cursor = if (!TextUtils.isEmpty(minTimes)) {
-            mHelper.query(
-                ClipboardTable.TABLE_NAME,
-                null,
-                ClipboardTable.COPY_TIME + " >= ?",
-                arrayOf(minTimes),
-                orderBy
-            )
+        val cursor: Cursor? = if (!TextUtils.isEmpty(minTimes)) {
+            mHelper.query(ClipboardTable.TABLE_NAME, null, ClipboardTable.COPY_TIME + " >= ?", arrayOf(minTimes), orderBy)
         } else {
             mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy)
         }
@@ -167,10 +150,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
             do {
                 val contentId = cursor.getString(cursor.getColumnIndex(ClipboardTable.CONTENT_ID))
                 val copyContent = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
-                val copyTime = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TIME))
                 val isKeep = cursor.getInt(cursor.getColumnIndex(ClipboardTable.IS_KEEP))
-
-                LogUtil.d("111111111111", "getAllClipboardContent   contentId$contentId  copyContent$copyContent isKeep$isKeep")
                 val clipBoardDataBean = ClipBoardDataBean(contentId, copyContent, isKeep == 1)
                 copyContents.add(clipBoardDataBean)
             } while (cursor.moveToNext())
@@ -188,22 +168,14 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
         deleteOverTimeItems()
         val copyContents = ArrayList<String>()
         val orderBy = ClipboardTable.COPY_TIME + " DESC"
-        val cursor: Cursor?
-        cursor = if (!TextUtils.isEmpty(minTimes)) {
-            mHelper.query(
-                ClipboardTable.TABLE_NAME,
-                null,
-                ClipboardTable.COPY_TIME + " >= ?",
-                arrayOf(minTimes),
-                orderBy
-            )
+        val cursor = if (!TextUtils.isEmpty(minTimes)) {
+            mHelper.query(ClipboardTable.TABLE_NAME, null, ClipboardTable.COPY_TIME + " >= ?", arrayOf(minTimes), orderBy)
         } else {
             mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy)
         }
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                val copyContent =
-                    cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
+                val copyContent = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
                 copyContents.add(copyContent)
             } while (cursor.moveToNext())
             cursor.close()
@@ -211,52 +183,29 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
         return copyContents
     }
 
-    val lastClipboardContent: ClipBoardDataBean?
-        /**
-         * 查询最后刚复制的一条剪贴板内容
-         */
-        get() {
-            var clipBoardDataBean: ClipBoardDataBean? = null
-            val orderBy = ClipboardTable.COPY_TIME + " DESC"
-            val cursor: Cursor?
-            cursor = mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy, "0,1")
-            if (cursor != null && cursor.moveToFirst()) {
-                val contentId = cursor.getString(cursor.getColumnIndex(ClipboardTable.CONTENT_ID))
-                val copyContent =
-                    cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
-                //			String copyTime = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TIME));
-                val isKeep = cursor.getInt(cursor.getColumnIndex(ClipboardTable.IS_KEEP))
-                clipBoardDataBean =
-                    ClipBoardDataBean(contentId, copyContent, isKeep == 1)
-                cursor.close()
-            }
-            return clipBoardDataBean
-        }
 
-    //	/**
-    //	 * 测试
-    //	 */
-    //	public ClipBoardDataBean getTestContent() {
-    //		ClipBoardDataBean clipBoardDataBean = null;
-    //		String orderBy = ClipboardTable.COPY_TIME + " DESC";
-    //		Cursor cursor;
-    //		cursor = mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy, "0,1");
-    //		if (cursor != null && cursor.moveToFirst()) {
-    //			String contentId = cursor.getString(cursor.getColumnIndex(ClipboardTable.CONTENT_ID));
-    //			String copyContent = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT));
-    ////			String copyTime = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TIME));
-    //			int isKeep = cursor.getInt(cursor.getColumnIndex(ClipboardTable.IS_KEEP));
-    //			String copyExtends = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_EXTENDS));
-    //			String copyTest = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TEST));
-    //			LogUtil.d(TAG, "---getTestContent==" + copyTest);
-    //			clipBoardDataBean = new ClipBoardDataBean(contentId, copyContent, isKeep == 1, copyExtends);
-    //			cursor.close();
-    //		}
-    //		return clipBoardDataBean;
-    //	}
+    /**
+     * 获取最新一条剪切内容
+     */
+    fun getLastClipboardContent(): ClipBoardDataBean? {
+        deleteOverTimeItems()
+        var clipBoardDataBean: ClipBoardDataBean? = null
+        val orderBy = ClipboardTable.COPY_TIME + " DESC"
+        val cursor = mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy, "0,1")
+        if (cursor != null && cursor.moveToFirst()) {
+            val contentId = cursor.getString(cursor.getColumnIndex(ClipboardTable.CONTENT_ID))
+            val copyContent = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_CONTENT))
+            val isKeep = cursor.getInt(cursor.getColumnIndex(ClipboardTable.IS_KEEP))
+            val copyTime = cursor.getString(cursor.getColumnIndex(ClipboardTable.COPY_TIME))
+            clipBoardDataBean = ClipBoardDataBean(contentId, copyContent, isKeep == 1, copyTime)
+            cursor.close()
+        }
+        return clipBoardDataBean
+    }
+
     private fun deleteOverageItems() {
-        val commonWhere =
-            ClipboardTable.CONTENT_ID + " not in (select " + ClipboardTable.CONTENT_ID + " from " + ClipboardTable.TABLE_NAME + " order by " + ClipboardTable.COPY_TIME + " desc limit 99)"
+        val clipboardHistoryLimit = AppPrefs.getInstance().clipboard.clipboardHistoryLimit.getValue() - 1
+        val commonWhere = ClipboardTable.CONTENT_ID + " not in (select " + ClipboardTable.CONTENT_ID + " from " + ClipboardTable.TABLE_NAME + " order by " + ClipboardTable.COPY_TIME + " desc limit " + clipboardHistoryLimit +")"
         mHelper.clearDatabase(ClipboardTable.TABLE_NAME, commonWhere)
     }
 
@@ -266,8 +215,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
         ca.add(Calendar.DATE, -1)
         val lastDay = ca.time
         val timeoutTime = getTime(lastDay.time, TimeUtils.DEFAULT_DATE_FORMATTER)
-        val s =
-            ClipboardTable.COPY_TIME + " < '" + timeoutTime + "' and " + ClipboardTable.IS_KEEP + " == 0"
+        val s = ClipboardTable.COPY_TIME + " < '" + timeoutTime + "' and " + ClipboardTable.IS_KEEP + " == 0"
         mHelper.clearDatabase(ClipboardTable.TABLE_NAME, s)
     }
 }

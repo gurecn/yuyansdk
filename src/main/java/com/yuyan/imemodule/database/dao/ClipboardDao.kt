@@ -40,13 +40,10 @@ class ClipboardDao(dataProvider: BaseDataProvider?) {
         return mClipboardDatabaseHelper.getAllClipboardContents(timestamp)
     }
 
-    @get:Synchronized
-    val lastClipboardContent: ClipBoardDataBean?
-        get() = mClipboardDatabaseHelper.lastClipboardContent
-
-    //	public synchronized ClipBoardDataBean getLastTest() {
-    //		return mClipboardDatabaseHelper.getTestContent();
-    //	}
+    @Synchronized
+    fun getLastClipboardContent():ClipBoardDataBean? {
+        return mClipboardDatabaseHelper.getLastClipboardContent();
+    }
     @Synchronized
     fun clearAllClipBoardContent() {
         mClipboardDatabaseHelper.clearAllClipBoardContent()
