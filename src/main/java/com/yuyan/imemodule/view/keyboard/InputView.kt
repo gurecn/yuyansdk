@@ -263,6 +263,14 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         changeToStateInput()
     }
 
+    // 响应剪切板数据
+    fun responseClipboardResultEvent(words: ArrayList<CandidateListItem?>) {
+        mDecInfo.isAssociate = true
+        isSkipEngineMode = true
+        mDecInfo.cacheCandidates(words)
+        changeToStateInput()
+    }
+
     /**
      * 按键处理函数
      */
