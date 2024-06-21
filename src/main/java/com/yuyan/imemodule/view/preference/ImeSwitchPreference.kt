@@ -8,7 +8,7 @@ import androidx.preference.SwitchPreference
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.restore
 
-class CsSwitchPreference(context: Context) : SwitchPreference(context) {
+class ImeSwitchPreference(context: Context) : SwitchPreference(context) {
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         holder.itemView.setOnLongClickListener {

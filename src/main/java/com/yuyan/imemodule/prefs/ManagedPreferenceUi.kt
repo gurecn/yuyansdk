@@ -7,7 +7,7 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
-import com.yuyan.imemodule.view.preference.CsSwitchPreference
+import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 import com.yuyan.imemodule.view.preference.DialogSeekBarPreference
 import com.yuyan.imemodule.view.preference.EditTextIntPreference
 import com.yuyan.imemodule.view.preference.ManagedPreference
@@ -41,8 +41,8 @@ abstract class ManagedPreferenceUi<T : Preference>(
         @StringRes
         val summary: Int? = null,
         enableUiOn: (() -> Boolean)? = null
-    ) : ManagedPreferenceUi<CsSwitchPreference>(key, enableUiOn) {
-        override fun createUi(context: Context) = CsSwitchPreference(context).apply {
+    ) : ManagedPreferenceUi<ImeSwitchPreference>(key, enableUiOn) {
+        override fun createUi(context: Context) = ImeSwitchPreference(context).apply {
             key = this@Switch.key
             isIconSpaceReserved = false
             isSingleLineTitle = false
