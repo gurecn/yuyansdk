@@ -14,7 +14,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.setNormalModeTheme
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
-import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -25,6 +24,7 @@ import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.adapter.MenuAdapter
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.LinkedList
 
@@ -56,9 +56,11 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
         //获取键盘功能栏功能对象
         val funItems: MutableList<SkbFunItem> = LinkedList()
         //        funItems.add(new SkbFunItem(mContext.getString(R.string.emoji_setting), R.drawable.sdk_vector_menu_skb_emoji, SkbMenuMode.EmojiKeyboard));
-        funItems.add(SkbFunItem(mContext.getString(R.string.clipboard), R.drawable.ic_clipboard, SkbMenuMode.ClipBoard))
         funItems.add(SkbFunItem(mContext.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
         funItems.add(SkbFunItem(mContext.getString(R.string.setting_ime_keyboard_height), R.drawable.sdk_vector_menu_skb_height, SkbMenuMode.KeyboardHeight))
+        if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
+            funItems.add(SkbFunItem(mContext.getString(R.string.clipboard), R.drawable.ic_clipboard, SkbMenuMode.ClipBoard))
+        }
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_feedback), R.drawable.sdk_vector_menu_skb_touch, SkbMenuMode.Feedback))
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_one_handed_mod), R.drawable.sdk_vector_menu_skb_one_hand, SkbMenuMode.OneHanded))
@@ -117,8 +119,8 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
                 )
             }
             SkbMenuMode.JianFan -> {
-                val chineseFanTi = getInstance().input.chineseFanTi.getValue()
-                getInstance().input.chineseFanTi.setValue(!chineseFanTi)
+                val chineseFanTi = AppPrefs.getInstance().input.chineseFanTi.getValue()
+                AppPrefs.getInstance().input.chineseFanTi.setValue(!chineseFanTi)
                 Kernel.nativeUpdateImeOption()
                 KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
@@ -148,8 +150,8 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
                 )
             }
             SkbMenuMode.EmojiInput -> {
-                val emojiInput = getInstance().input.emojiInput.getValue()
-                getInstance().input.emojiInput.setValue(!emojiInput)
+                val emojiInput = AppPrefs.getInstance().input.emojiInput.getValue()
+                AppPrefs.getInstance().input.emojiInput.setValue(!emojiInput)
                 Kernel.nativeUpdateImeOption()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
@@ -263,8 +265,8 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
             }
         }
         val inputMode = keyboardValue or InputModeSwitcherManager.MASK_LANGUAGE_CN or InputModeSwitcherManager.MASK_CASE_UPPER
-        getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
-        getInstance().internal.pinyinModeRime.setValue(value)
+        AppPrefs.getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
+        AppPrefs.getInstance().internal.pinyinModeRime.setValue(value)
         mInputModeSwitcher!!.saveInputMode(inputMode)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
     }

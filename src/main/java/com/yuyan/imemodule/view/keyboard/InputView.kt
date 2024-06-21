@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
@@ -22,7 +23,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
-import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
@@ -42,6 +43,7 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
+import java.text.SimpleDateFormat
 import kotlin.math.absoluteValue
 
 @SuppressLint("ViewConstructor") // 禁用构造方法警告，不创建含AttributeSet的构造方法，为了实现代码混淆效果
@@ -116,10 +118,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             layoutParamsHoder?.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder?.height = EnvironmentSingleton.instance.skbHeight + margin
         }
-        mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscape
-        else getInstance().internal.keyboardBottomPadding
-        mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscape
-        else getInstance().internal.keyboardRightPadding
+        mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscape
+        else AppPrefs.getInstance().internal.keyboardBottomPadding
+        mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape
+        else AppPrefs.getInstance().internal.keyboardRightPadding
         if(prefs.keyboardModeFloat.getValue()){
             bottomPadding = mBottomPaddingKey!!.getValue()
             rightPadding = mRightPaddingKey!!.getValue()
@@ -128,7 +130,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mIvSkbMove?.visibility = GONE
             bottomPadding = if(EnvironmentSingleton.instance.isLandscape) (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
             else 0
-            rightPadding = if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscape.getValue()
+            rightPadding = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape.getValue()
             else 0
         }
         updateTheme()
@@ -350,7 +352,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            val spaceSelectAssociation = getInstance().input.spaceSelectAssociation.getValue()
+            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
             if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
                 chooseAndUpdate(0)
             } else {
@@ -391,7 +393,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
             // 选择高亮的候选词
-            val spaceSelectAssociation = getInstance().input.spaceSelectAssociation.getValue()
+            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
             if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
                 chooseAndUpdate(0)
             }
@@ -440,7 +442,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             resetToIdleState()
         } else if (keyCode == KeyEvent.KEYCODE_SPACE) {
             // 选择候选词
-            val spaceSelectAssociation = getInstance().input.spaceSelectAssociation.getValue()
+            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
             if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
                 chooseAndUpdate(0)
             }
@@ -466,7 +468,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 updateCandidate()
             }
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            val spaceSelectAssociation = getInstance().input.spaceSelectAssociation.getValue()
+            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
             if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
                 chooseAndUpdate(0)
             }
@@ -692,10 +694,24 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         service.requestHideSelf(InputMethodManager.HIDE_NOT_ALWAYS)
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo) {
-        LogUtil.d(TAG, "onStartInputView")
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+        if(AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()){
+            val lastClipboardContent = LauncherModel.instance?.mClipboardDao?.getLastClipboardContent()
+            if(lastClipboardContent != null) {
+                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                val date = formatter.parse(lastClipboardContent.copyTime)
+                if(date != null) {
+                    val clipboardItemTimeout = AppPrefs.getInstance().clipboard.clipboardItemTimeout.getValue()
+                    if (System.currentTimeMillis() - date.time <= clipboardItemTimeout * 1000){
+                        showSymbols(arrayOf(lastClipboardContent.copyContent!!))
+                    }
+                }
+            }
+
+        }
     }
 
     /**
