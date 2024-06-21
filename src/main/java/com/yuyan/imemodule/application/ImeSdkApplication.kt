@@ -2,6 +2,7 @@ package com.yuyan.imemodule.application
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.emoji.bundled.BundledEmojiCompatConfig
@@ -10,7 +11,8 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.SymbolsManager.Companion.initInstance
-import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.service.ClipBoardService
 import com.yuyan.imemodule.ui.utils.isDarkMode
 import com.yuyan.imemodule.utils.AssetUtils.copyFileOrDir
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
@@ -48,18 +50,23 @@ open class ImeSdkApplication : Application() {
             if (isFollowSystemDayNight) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
+            if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
+                val intent = Intent(context, ClipBoardService::class.java)
+                startService(intent)
+            }
+
         }
     }
 
     private fun imeInit() {
         // 复制词库文件
-        val dataDictVersion = getInstance().internal.dataDictVersion.getValue()
+        val dataDictVersion = AppPrefs.getInstance().internal.dataDictVersion.getValue()
         if (dataDictVersion < CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM) {
             //rime词库
             copyFileOrDir(context, "rime", "", CustomConstant.RIME_DICT_PATH, true)
             //手写词典,暂时与rime词库同时判断
             copyFileOrDir(context, "hdw", "", CustomConstant.HDW_DICT_PATH, false)
-            getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
+            AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
         }
         val config = BundledEmojiCompatConfig(context)
         config.setReplaceAll(true)

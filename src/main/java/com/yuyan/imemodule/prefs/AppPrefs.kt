@@ -24,8 +24,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val pinyinModeRime = string("input_method_pinyin_mode_rime", CustomConstant.SCHEMA_ZH_T9) //拼音输入模式记录，记录引擎
         val inputDefaultMode = int("input_default_method_mode", InputModeSwitcherManager.MODE_T9_CHINESE)   //默认输入法类型
         val inputMethodPinyinMode = int("input_method_pinyin_mode", InputModeSwitcherManager.MODE_T9_CHINESE)  // 保存中文输入法类型
-        val keyboardClipboardCreateTime = long("keyboard_clipboard_create_time", 0L) //剪贴内容是否已经展示过
-        val keyboardClipboardContent = string("keyboard_clipboard_content", "")//最新复制过的内容
         val dataDictVersion = int("rime_dict_data_version", 0)  //缓存rime词库版本号,用于校验是否覆盖词库文件
         val loginStatue = bool("login_statue", false)   // 是否登陆
         val openCandidatesEncryBtn = bool("open_candidates_encry_btn", false)     // 是否添加候选词加密按键
@@ -294,8 +292,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             listOf(
                 internal.pinyinModeRime,
                 internal.inputMethodPinyinMode,
-                internal.keyboardClipboardCreateTime,
-                internal.keyboardClipboardContent,
                 internal.dataDictVersion,
                 internal.loginStatue,
                 internal.openCandidatesEncryBtn,

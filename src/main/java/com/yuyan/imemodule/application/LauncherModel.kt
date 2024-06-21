@@ -39,7 +39,7 @@ class LauncherModel private constructor() {
      */
     var usedEmoticonsDao: UsedEmoticonsDao? = null
         private set
-    private var mClipboardDao: ClipboardDao? = null
+    var mClipboardDao: ClipboardDao? = null
     private fun initData(context: Context) {
         val unLoginTables = ArrayList<String>()
         unLoginTables.add(UsedCharacterTable.CREATE_TABLE)
@@ -55,10 +55,6 @@ class LauncherModel private constructor() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         init(preferences)
         init(context.resources.configuration)
-    }
-
-    fun getmClipboardDao(): ClipboardDao? {
-        return mClipboardDao
     }
 
     companion object {

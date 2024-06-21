@@ -56,6 +56,7 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
         //获取键盘功能栏功能对象
         val funItems: MutableList<SkbFunItem> = LinkedList()
         //        funItems.add(new SkbFunItem(mContext.getString(R.string.emoji_setting), R.drawable.sdk_vector_menu_skb_emoji, SkbMenuMode.EmojiKeyboard));
+        funItems.add(SkbFunItem(mContext.getString(R.string.clipboard), R.drawable.ic_clipboard, SkbMenuMode.ClipBoard))
         funItems.add(SkbFunItem(mContext.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
         funItems.add(SkbFunItem(mContext.getString(R.string.setting_ime_keyboard_height), R.drawable.sdk_vector_menu_skb_height, SkbMenuMode.KeyboardHeight))
         funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
@@ -177,6 +178,10 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
                 KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
                 )
+            }
+            SkbMenuMode.ClipBoard -> {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
             }
             else ->{}
         }

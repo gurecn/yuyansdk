@@ -11,7 +11,7 @@ class ClipboardSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance(
     private val clipboardListening = AppPrefs.getInstance().clipboard.clipboardListening
     private val clipboardSwitchKeyListener = ManagedPreference.OnChangeListener<Boolean> { _, v ->
         val intent = Intent(context, ClipBoardService::class.java)
-        if(v) context?.stopService(intent)
+        if(!v) context?.stopService(intent)
         else context?.startService(intent)
     }
 
