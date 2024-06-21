@@ -4,6 +4,7 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.view.keyboard.container.BaseContainer
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
+import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.HandwritingTextContainer
 import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
@@ -24,7 +25,7 @@ class KeyboardManager {
      * 无，空闲，输入，编辑，联想，完成
      */
     enum class KeyboardType {
-        T9, QWERTY, LX17, QWERTYABC, NUMBER, SYMBOL, SETTINGS, HANDWRITING, CANDIDATES
+        T9, QWERTY, LX17, QWERTYABC, NUMBER, SYMBOL, SETTINGS, HANDWRITING, CANDIDATES, ClipBoard
     }
 
     private var mKeyboardRootView: InputViewParent? = null
@@ -71,6 +72,7 @@ class KeyboardManager {
                 KeyboardType.SYMBOL -> SymbolContainer(ImeSdkApplication.context, mInputView)
                 KeyboardType.QWERTYABC -> QwertyTextContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC)
                 KeyboardType.LX17 -> QwertyTextContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_LX17)
+                KeyboardType.ClipBoard -> ClipBoardContainer(ImeSdkApplication.context, mInputView)
                 else ->  T9TextContainer(ImeSdkApplication.context, mInputView)
             }
             container.updateSkbLayout()

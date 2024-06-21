@@ -6,8 +6,8 @@ import android.content.ClipboardManager.OnPrimaryClipChangedListener
 import android.content.Intent
 import android.os.IBinder
 import android.text.TextUtils
+import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import splitties.systemservices.clipboardManager
 
 /**
  * 监听粘贴版
@@ -50,8 +50,7 @@ class ClipBoardService : Service() {
                 if (itemStr.length > 5000) {
                     itemStr = itemStr.substring(0, 5000)
                 }
-                getInstance().internal.keyboardClipboardCreateTime.setValue(System.nanoTime())
-                getInstance().internal.keyboardClipboardContent.setValue(itemStr)
+                LauncherModel.instance?.mClipboardDao?.insertClopboard(itemStr)
             }
         }
     }
