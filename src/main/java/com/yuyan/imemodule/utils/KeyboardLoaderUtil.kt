@@ -250,7 +250,7 @@ class KeyboardLoaderUtil private constructor() {
         var lastKeyTop: Float
         for (rowBean in rows) {
             lastKeyTop = lastKeyBottom  // 新行top为上一行bottom
-            lastKeyRight = 0f // 新行x从0.005开始
+            lastKeyRight = 0.005f // 新行x从0.005开始
             for (keyBean in rowBean) {
                 var keyXPos = keyBean.mLeftF
                 var keyYPos = keyBean.mTopF
