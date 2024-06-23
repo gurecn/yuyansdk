@@ -27,5 +27,4 @@ object CustomConstant {
     const val YuyanSDKRepo = "https://github.com/gurecn/YuyanIme"
     const val licenseSpdxId = "LGPL-2.1-or-later"
     const val licenseUrl = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1"
-    var flowerTypeface = FlowerTypefaceMode.Disabled
 }

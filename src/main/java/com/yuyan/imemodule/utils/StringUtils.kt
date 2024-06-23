@@ -1,7 +1,7 @@
 package com.yuyan.imemodule.utils
 
 import android.text.TextUtils
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.flower.simplified2HotPreset
 import java.util.regex.Pattern
@@ -126,7 +126,7 @@ object StringUtils {
      * 字符串转花漾字
      */
     fun converted2FlowerTypeface(src: String): String {
-         return  when(CustomConstant.flowerTypeface) {
+         return  when(LauncherModel.instance.flowerTypeface) {
             FlowerTypefaceMode.Mars -> {  //焱暒妏
                  src.map {
                     simplified2HotPreset[it]?:it

@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
+import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
-import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -199,7 +199,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      */
     fun showFlowerTypeface() {
         showViewVisibility(mCandidatesMenuContainer)
-        if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) {
+        if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) {
             val spinner = Spinner(context)
             val layoutParam = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
             spinner.layoutParams = layoutParam
@@ -212,21 +212,21 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     val select = flowerTypefaces[position]
-                    CustomConstant.flowerTypeface = select
+                    LauncherModel.instance.flowerTypeface = select
                     if(select == FlowerTypefaceMode.Disabled){
                         mLLContainerMenu?.removeAllViews()
                     }
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    CustomConstant.flowerTypeface = FlowerTypefaceMode.Disabled
+                    LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
                 }
             }
             mLLContainerMenu?.gravity = Gravity.CENTER
-            CustomConstant.flowerTypeface = FlowerTypefaceMode.Mars
+            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Mars
             mLLContainerMenu?.addView(spinner)
         } else {
             mLLContainerMenu?.removeAllViews()
-            CustomConstant.flowerTypeface = FlowerTypefaceMode.Disabled
+            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
         }
     }
 

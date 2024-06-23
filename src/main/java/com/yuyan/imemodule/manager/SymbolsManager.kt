@@ -50,17 +50,17 @@ class SymbolsManager private constructor(private val mContext: Context) {
     fun getmSymbols(position: Int): Array<String> {
         var data: Array<String>
         if (position == 5) { //常用颜文字
-            data = LauncherModel.instance?.usedEmoticonsDao!!.allUsedEmoticons
+            data = LauncherModel.instance.usedEmoticonsDao!!.allUsedEmoticons
             if (data.isEmpty()) {
                 data = getmSymbolsData(5)
             }
         } else if (position == 4) {  //常用表情
-            data = LauncherModel.instance?.usedEmojiDao!!.allUsedEmoji
+            data = LauncherModel.instance.usedEmojiDao!!.allUsedEmoji
             if (data.isEmpty()) {
                 data = getmSymbolsData(4)
             }
         } else {  //常用符号
-            data = LauncherModel.instance?.usedCharacterDao!!.allUsedCharacter
+            data = LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
             if (data.isEmpty()) {
                 data = getmSymbolsData(0)
             }

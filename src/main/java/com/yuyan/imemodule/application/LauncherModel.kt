@@ -3,6 +3,7 @@ package com.yuyan.imemodule.application
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.preference.PreferenceManager
+import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager.init
 import com.yuyan.imemodule.database.dao.ClipboardDao
 import com.yuyan.imemodule.database.dao.UsedCharacterDao
@@ -39,7 +40,13 @@ class LauncherModel private constructor() {
      */
     var usedEmoticonsDao: UsedEmoticonsDao? = null
         private set
+    /**
+     * 获取粘贴板
+     */
     var mClipboardDao: ClipboardDao? = null
+
+    // 花漾字状态
+    var flowerTypeface = FlowerTypefaceMode.Disabled
     private fun initData(context: Context) {
         val unLoginTables = ArrayList<String>()
         unLoginTables.add(UsedCharacterTable.CREATE_TABLE)
@@ -65,7 +72,7 @@ class LauncherModel private constructor() {
         private var mInstance: LauncherModel? = null
 
         @JvmStatic
-        val instance: LauncherModel?
+        val instance: LauncherModel
             get() {
                 return mInstance!!
             }
