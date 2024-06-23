@@ -31,7 +31,7 @@ class ClipboardDao(dataProvider: BaseDataProvider?) {
     }
 
     @Synchronized
-    fun getAllClipboardContent(timestamp: String?): List<ClipBoardDataBean> {
+    fun getAllClipboardContent(timestamp: String?): MutableList<ClipBoardDataBean> {
         return mClipboardDatabaseHelper.getAllClipboardContent(timestamp)
     }
 

@@ -17,8 +17,6 @@ import java.util.Date
 
 /**
  * 剪贴板dbhelper
- *
- * @author KongXR
  */
 class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
     /**
@@ -117,32 +115,13 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
     }
 
     /**
-     * 查询特定数量剪贴板内容
-     */
-    fun getRecentClipboardContent(maxNumber: Int): List<String> {
-        val copyContents = ArrayList<String>()
-        val orderBy = ClipboardTable.COPY_TIME + " DESC"
-        val cursor =
-            mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy, "0,$maxNumber")
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                val index = cursor.getColumnIndex(ClipboardTable.COPY_CONTENT)
-                val copyContent = cursor.getString(index)
-                copyContents.add(copyContent)
-            } while (cursor.moveToNext())
-            cursor.close()
-        }
-        return copyContents
-    }
-
-    /**
      * 查询所有剪贴板内容
      *
      * @param minTimes 某日期以后的 为空则查全部
      */
-    fun getAllClipboardContent(minTimes: String?): List<ClipBoardDataBean> {
+    fun getAllClipboardContent(minTimes: String?): MutableList<ClipBoardDataBean> {
         deleteOverTimeItems()
-        val copyContents = ArrayList<ClipBoardDataBean>()
+        val copyContents = mutableListOf<ClipBoardDataBean>()
         val orderBy = ClipboardTable.COPY_TIME + " DESC"
         val cursor: Cursor? = if (!TextUtils.isEmpty(minTimes)) {
             mHelper.query(ClipboardTable.TABLE_NAME, null, ClipboardTable.COPY_TIME + " >= ?", arrayOf(minTimes), orderBy)

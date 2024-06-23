@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="clipboard_adapter_content" type="id"/>
+    <item name="clipboard_adapter_delete" type="id"/>
+</resources>
