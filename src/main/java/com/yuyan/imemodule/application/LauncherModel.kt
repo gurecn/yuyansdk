@@ -47,6 +47,11 @@ class LauncherModel private constructor() {
 
     // 花漾字状态
     var flowerTypeface = FlowerTypefaceMode.Disabled
+
+    // 缓存最新剪切板内容
+    var mLastClipboardContent = ""
+    // 缓存最新剪切板时间
+    var mLastClipboardTime = 0L
     private fun initData(context: Context) {
         val unLoginTables = ArrayList<String>()
         unLoginTables.add(UsedCharacterTable.CREATE_TABLE)

@@ -7,7 +7,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.text.TextUtils
 import com.yuyan.imemodule.application.LauncherModel
-import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.AppPrefs
 
 /**
  * 监听粘贴版
@@ -19,7 +19,7 @@ class ClipBoardService : Service() {
     private var primaryClipChangedListener: PrimaryClipChangedListener? = null
     override fun onCreate() {
         super.onCreate()
-        val isClipboardListening = getInstance().clipboard.clipboardListening.getValue()
+        val isClipboardListening = AppPrefs.getInstance().clipboard.clipboardListening.getValue()
         if (!isClipboardListening) {
             this.stopSelf()
             return
@@ -38,7 +38,7 @@ class ClipBoardService : Service() {
             if (item != null && !TextUtils.isEmpty(item.text)) {
                 itemStr = item.text.toString()
             }
-            val isClipboardListening = getInstance().clipboard.clipboardListening.getValue()
+            val isClipboardListening = AppPrefs.getInstance().clipboard.clipboardListening.getValue()
             if (!isClipboardListening) {
                 if (mClipboardManager != null) mClipboardManager!!.removePrimaryClipChangedListener(
                     primaryClipChangedListener
@@ -49,6 +49,10 @@ class ClipBoardService : Service() {
             if (item != null && !TextUtils.isEmpty(item.text)) {
                 if (itemStr.length > 5000) {
                     itemStr = itemStr.substring(0, 5000)
+                }
+                if(AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()) {
+                    LauncherModel.instance.mLastClipboardContent = itemStr
+                    LauncherModel.instance.mLastClipboardTime = System.currentTimeMillis()
                 }
                 LauncherModel.instance.mClipboardDao?.insertClopboard(itemStr)
             }

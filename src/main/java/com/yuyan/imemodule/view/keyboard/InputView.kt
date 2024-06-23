@@ -699,16 +699,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         if(AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()){
-            val lastClipboardContent = LauncherModel.instance?.mClipboardDao?.getLastClipboardContent()
-            if(lastClipboardContent != null) {
-                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                val date = formatter.parse(lastClipboardContent.copyTime)
-                if(date != null) {
-                    val clipboardItemTimeout = AppPrefs.getInstance().clipboard.clipboardItemTimeout.getValue()
-                    if (System.currentTimeMillis() - date.time <= clipboardItemTimeout * 1000){
-                        showSymbols(arrayOf(lastClipboardContent.copyContent!!))
-                    }
+            val lastClipboardTime = LauncherModel.instance.mLastClipboardTime
+            val lastClipboardContent = LauncherModel.instance.mLastClipboardContent
+            if(lastClipboardContent.isNotBlank()) {
+                val clipboardItemTimeout = AppPrefs.getInstance().clipboard.clipboardItemTimeout.getValue()
+                if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
+                    showSymbols(arrayOf(lastClipboardContent))
                 }
+                LauncherModel.instance.mLastClipboardTime = 0L
+                LauncherModel.instance.mLastClipboardContent = ""
             }
 
         }
