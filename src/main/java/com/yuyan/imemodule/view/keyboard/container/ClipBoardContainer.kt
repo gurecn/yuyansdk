@@ -33,7 +33,7 @@ class ClipBoardContainer(context: Context, inputView: InputView?) : BaseContaine
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showClipBoardView() {
-        val copyContents : List<ClipBoardDataBean> = LauncherModel.instance?.mClipboardDao?.getAllClipboardContent("") ?: return
+        val copyContents : List<ClipBoardDataBean> = LauncherModel.instance.mClipboardDao?.getAllClipboardContent("") ?: return
         val words = ArrayList<CandidateListItem?>()
         for (clipBoardDataBean in copyContents) {
             val copyContent = clipBoardDataBean.copyContent
