@@ -50,7 +50,7 @@ class ClipBoardService : Service() {
                 if (itemStr.length > 5000) {
                     itemStr = itemStr.substring(0, 5000)
                 }
-                LauncherModel.instance?.mClipboardDao?.insertClopboard(itemStr)
+                LauncherModel.instance.mClipboardDao?.insertClopboard(itemStr)
             }
         }
     }
