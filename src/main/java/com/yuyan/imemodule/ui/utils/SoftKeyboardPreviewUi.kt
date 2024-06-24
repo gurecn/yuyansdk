@@ -7,15 +7,14 @@ import android.view.LayoutInflater
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
 
@@ -24,27 +23,23 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
         private set
     var intrinsicHeight = 0
         private set
-    private var qwerTextContainer: QwertyTextContainer? = null
+    private lateinit var qwerTextContainer: QwertyTextContainer
     private fun initView() {
-        d("SoftKeyboardPreviewUi", "initView")
         removeAllViews()
         val mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false)
         val previewUi = mSkbRoot.findViewById<RelativeLayout>(R.id.skb_input_keyboard_view)
         qwerTextContainer = QwertyTextContainer(context, null, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
-        qwerTextContainer!!.updateSkbLayout()
+        qwerTextContainer.updateSkbLayout()
         val skbCandidatesBarView = mSkbRoot.findViewById<CandidatesBar>(R.id.candidates_bar)
-        skbCandidatesBarView.initialize(null, null) // 刷新下拉箭头位置
+        skbCandidatesBarView.initialize(ChoiceNotifier(), DecodingInfo())
         previewUi.addView(qwerTextContainer)
         addView(mSkbRoot)
         val oneHandedMod = prefs.oneHandedMod.getValue()
         if (oneHandedMod != KeyboardOneHandedMod.None) {
-            val mHoderLayout = LayoutInflater.from(context)
-                .inflate(R.layout.sdk_skb_holder_layout, this, false) as LinearLayout
+            val mHoderLayout = LayoutInflater.from(context).inflate(R.layout.sdk_skb_holder_layout, this, false) as LinearLayout
             val mIbOneHand = mHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_left)
             val margin = instance.heightForCandidates * 2
-            val layoutParamsHoder = LayoutParams(
-                instance.holderWidth, instance.skbHeight - margin
-            )
+            val layoutParamsHoder = LayoutParams(instance.holderWidth, instance.skbHeight - margin)
             layoutParamsHoder.setMargins(0, margin, 0, margin)
             val layoutParams = mSkbRoot.layoutParams as LayoutParams
             if (oneHandedMod == KeyboardOneHandedMod.LEFT) {
@@ -67,24 +62,15 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
         previewUi.requestLayout()
     }
 
-    fun setTheme(theme: Theme, background: Drawable?) {
-        d("SoftKeyboardPreviewUi", "initView  setTheme")
-        qwerTextContainer!!.setTheme(theme)
-        if (background != null) {
-            setBackground(background)
-        } else {
-            val keyBorder = prefs.keyBorder.getValue()
-            setBackground(theme.backgroundGradientDrawable(keyBorder))
-        }
+    fun setTheme(theme: Theme, background: Drawable) {
+        qwerTextContainer.setTheme(theme)
+        setBackground(background)
     }
 
     fun setTheme(theme: Theme) {
-        d("SoftKeyboardPreviewUi", "initView  setTheme2")
         initView()
-        qwerTextContainer!!.setTheme(theme)
-        val keyBorder = prefs.keyBorder.getValue()
-        background = theme.backgroundGradientDrawable(keyBorder)
-        val layoutParams = layoutParams as (ConstraintLayout.LayoutParams)?
+        qwerTextContainer.setTheme(theme)
+        background = theme.backgroundGradientDrawable(prefs.keyBorder.getValue())
         layoutParams?.width = instance.skbWidth
         layoutParams?.height = instance.inputAreaHeight
     }
@@ -103,5 +89,18 @@ class SoftKeyboardPreviewUi(context: Context) : RelativeLayout(context) {
 
     init {
         initView()
+    }
+
+    inner class ChoiceNotifier : CandidateViewListener {
+        override fun onClickChoice(choiceId: Int) {
+        }
+        override fun onClickMore(level: Int, position: Int) {
+        }
+        override fun onClickSetting() {
+        }
+        override fun onClickCloseKeyboard() {
+        }
+        override fun onClickClearCandidate() {
+        }
     }
 }
