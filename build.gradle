@@ -60,26 +60,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
             resValue("string", "app_name", "@string/ime_yuyan_name")
-            SDK_GIT_COMMIT_ID = getSDKGitRevision()
+            def SDK_GIT_COMMIT_ID = getSDKGitRevision()
             buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
-            APP_GIT_COMMIT_ID = getAPPGitRevision()
+            def APP_GIT_COMMIT_ID = getAPPGitRevision()
             buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
-            APP_GIT_COMMIT_HEAD = getAPPGitHead()
+            def APP_GIT_COMMIT_HEAD = getAPPGitHead()
             buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
-            APP_GIT_COMMIT_TIME = getAPPBuildTime()
+            def APP_GIT_COMMIT_TIME = getAPPBuildTime()
             buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
 
         }
         debug {
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
             resValue("string", "app_name", "@string/ime_yuyan_name_debug")
-            SDK_GIT_COMMIT_ID = getSDKGitRevision()
+            def SDK_GIT_COMMIT_ID = getSDKGitRevision()
             buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
-            APP_GIT_COMMIT_ID = getAPPGitRevision()
+            def APP_GIT_COMMIT_ID = getAPPGitRevision()
             buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
-            APP_GIT_COMMIT_HEAD = getAPPGitHead()
+            def APP_GIT_COMMIT_HEAD = getAPPGitHead()
             buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
-            APP_GIT_COMMIT_TIME = getAPPBuildTime()
+            def APP_GIT_COMMIT_TIME = getAPPBuildTime()
             buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
         }
     }
