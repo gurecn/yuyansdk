@@ -516,7 +516,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         // 从候选词、符号界面切换到输入键盘
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         val container = KeyboardManager.instance.currentContainer
-        (container as T9TextContainer).updateSymbolListView()
+        (container as? T9TextContainer)?.updateSymbolListView()
         mComposingView.setDecodingInfo(mDecInfo)
         mImeState = ImeState.STATE_IDLE
     }
@@ -550,7 +550,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     changeToStateComposing()
                     updateCandidateBar()
                     val container = KeyboardManager.instance.currentContainer
-                    (container as T9TextContainer).updateSymbolListView()
+                    (container as? T9TextContainer)?.updateSymbolListView()
                 } else {
                     resetToIdleState()
                 }
@@ -571,7 +571,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             changeToStateComposing()
             updateCandidateBar()
             val container = KeyboardManager.instance.currentContainer
-            (container as T9TextContainer).updateSymbolListView()
+            (container as? T9TextContainer)?.updateSymbolListView()
         } else {
             resetToIdleState()
         }
@@ -625,7 +625,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 candidatesContainer?.showCandidatesView(position)
             } else {
                 val container = KeyboardManager.instance.currentContainer
-                (container as T9TextContainer).updateSymbolListView()
+                (container as? T9TextContainer)?.updateSymbolListView()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
         }
