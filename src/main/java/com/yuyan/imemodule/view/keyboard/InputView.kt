@@ -58,17 +58,17 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     // 当前的输入法状态
     private var mImeState = ImeState.STATE_IDLE
     private var mChoiceNotifier = ChoiceNotifier()
-    private var mComposingView: ComposingView? = null // 组成字符串的View，用于显示输入的拼音。
-    private var mSkbCandidatesBarView: CandidatesBar? = null //候选词栏根View
-    private var mIbOneHand: ImageButton? = null
-    private var mIbOneHandNone: ImageButton? = null
-    var mSkbRoot: RelativeLayout? = null
-    private var mHoderLayoutLeft: LinearLayout? = null
-    private var mHoderLayoutRight: LinearLayout? = null
-    private var mHoderLayout: LinearLayout? = null
-    private var mRightPaddingKey: ManagedPreference.PInt? = null
-    private var mBottomPaddingKey: ManagedPreference.PInt? = null
-    private var mIvSkbMove: ImageView? = null
+    private lateinit var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
+    private lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
+    private lateinit var mIbOneHand: ImageButton
+    private lateinit var mIbOneHandNone: ImageButton
+    lateinit var mSkbRoot: RelativeLayout
+    private lateinit var mHoderLayoutLeft: LinearLayout
+    private lateinit var mHoderLayoutRight: LinearLayout
+    private lateinit var mHoderLayout: LinearLayout
+    private lateinit var mRightPaddingKey: ManagedPreference.PInt
+    private lateinit var mBottomPaddingKey: ManagedPreference.PInt
+    private lateinit var mIvSkbMove: ImageView
 
     init {
         this.service = service
@@ -78,56 +78,55 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context?) {
         LogUtil.d(TAG, "initView")
-        if (mSkbRoot == null) {
+        if (!::mSkbRoot.isInitialized) {
             mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
-            mComposingView = mSkbRoot?.findViewById(R.id.cmv_container)
-            mSkbCandidatesBarView = mSkbRoot?.findViewById(R.id.candidates_bar)
-            mHoderLayoutLeft = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_left)
-            mHoderLayoutRight = mSkbRoot?.findViewById(R.id.ll_skb_holder_layout_right)
-            val mRLSkbInputContainer:RelativeLayout? = mSkbRoot?.findViewById(R.id.ll_input_keyboard_container)
-            val mIvcSkbContainer:InputViewParent? = mSkbRoot?.findViewById(R.id.skb_input_keyboard_view)
+            mComposingView = mSkbRoot.findViewById(R.id.cmv_container)
+            mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
+            mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
+            mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
+            val mRLSkbInputContainer:RelativeLayout = mSkbRoot.findViewById(R.id.ll_input_keyboard_container)
+            val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            mIvSkbMove = mSkbRoot?.findViewById(R.id.iv_keyboard_move)
-            mIvSkbMove?.isClickable = true
-            mIvSkbMove?.setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
+            mIvSkbMove = mSkbRoot.findViewById<ImageView?>(R.id.iv_keyboard_move).apply {
+                isClickable = true
+                setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
+            }
             addView(mSkbRoot)
             val popupComponent = PopupComponent.get()
-            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             val viewParent = popupComponent.root.parent
             if (viewParent != null) {
                 (viewParent as ViewGroup).removeView(popupComponent.root)
             }
-            mRLSkbInputContainer?.addView(popupComponent.root, layoutParams)
+            mRLSkbInputContainer.addView(popupComponent.root, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
         }
-        mSkbCandidatesBarView?.initialize(mChoiceNotifier, mDecInfo)
+        mSkbCandidatesBarView.initialize(mChoiceNotifier, mDecInfo)
         val oneHandedMod = prefs.oneHandedMod.getValue()
-        mHoderLayout?.visibility = GONE
-        mHoderLayout = when(oneHandedMod){
-            KeyboardOneHandedMod.LEFT -> mHoderLayoutLeft
-            KeyboardOneHandedMod.RIGHT ->  mHoderLayoutRight
-            else -> null
-        }
+        if(::mHoderLayout.isInitialized)mHoderLayout.visibility = GONE
         if (oneHandedMod != KeyboardOneHandedMod.None) {
-            mHoderLayout?.visibility = VISIBLE
-            mIbOneHandNone = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_none)
-            mIbOneHandNone?.setOnClickListener { view: View -> onClick(view) }
-            mIbOneHand = mHoderLayout?.findViewById(R.id.ib_holder_one_hand_left)
-            mIbOneHand?.setOnClickListener { view: View -> onClick(view) }
-            val layoutParamsHoder = mHoderLayout?.layoutParams
+            mHoderLayout = when(oneHandedMod){
+                KeyboardOneHandedMod.RIGHT ->  mHoderLayoutRight
+                else -> mHoderLayoutLeft
+            }
+            mHoderLayout.visibility = VISIBLE
+            mIbOneHandNone = mHoderLayout.findViewById(R.id.ib_holder_one_hand_none)
+            mIbOneHandNone.setOnClickListener { view: View -> onClick(view) }
+            mIbOneHand = mHoderLayout.findViewById(R.id.ib_holder_one_hand_left)
+            mIbOneHand.setOnClickListener { view: View -> onClick(view) }
+            val layoutParamsHoder = mHoderLayout.layoutParams
             val margin = EnvironmentSingleton.instance.heightForCandidates + EnvironmentSingleton.instance.heightForComposingView
-            layoutParamsHoder?.width = EnvironmentSingleton.instance.holderWidth
-            layoutParamsHoder?.height = EnvironmentSingleton.instance.skbHeight + margin
+            layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
+            layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
         mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscape
         else AppPrefs.getInstance().internal.keyboardBottomPadding
         mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape
         else AppPrefs.getInstance().internal.keyboardRightPadding
         if(prefs.keyboardModeFloat.getValue()){
-            bottomPadding = mBottomPaddingKey!!.getValue()
-            rightPadding = mRightPaddingKey!!.getValue()
-            mIvSkbMove?.visibility = VISIBLE
+            bottomPadding = mBottomPaddingKey.getValue()
+            rightPadding = mRightPaddingKey.getValue()
+            mIvSkbMove.visibility = VISIBLE
         } else {
-            mIvSkbMove?.visibility = GONE
+            mIvSkbMove.visibility = GONE
             bottomPadding = if(EnvironmentSingleton.instance.isLandscape) (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
             else 0
             rightPadding = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape.getValue()
@@ -143,8 +142,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                bottomPaddingValue = mBottomPaddingKey!!.getValue()
-                rightPaddingValue = mRightPaddingKey!!.getValue()
+                bottomPaddingValue = mBottomPaddingKey.getValue()
+                rightPaddingValue = mRightPaddingKey.getValue()
                 initialTouchX = event.rawX
                 initialTouchY = event.rawY
                 return true
@@ -155,8 +154,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 if(dx.absoluteValue > 10) {
                     rightPaddingValue -= dx.toInt()
                     rightPaddingValue = if(rightPaddingValue < 0) 0
-                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - mSkbRoot!!.width) {
-                        EnvironmentSingleton.instance.mScreenWidth - mSkbRoot!!.width
+                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width) {
+                        EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width
                     } else rightPaddingValue
                     initialTouchX = event.rawX
                     rightPadding = rightPaddingValue
@@ -164,8 +163,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 if(dy.absoluteValue > 10 ) {
                     bottomPaddingValue -= dy.toInt()
                     bottomPaddingValue = if(bottomPaddingValue < 0) 0
-                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - mSkbRoot!!.height) {
-                        EnvironmentSingleton.instance.mScreenHeight - mSkbRoot!!.height
+                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height) {
+                        EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height
                     } else bottomPaddingValue
                     initialTouchY = event.rawY
                     bottomPadding = bottomPaddingValue
@@ -173,8 +172,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                mRightPaddingKey?.setValue(rightPadding)
-                mBottomPaddingKey?.setValue(bottomPadding)
+                mRightPaddingKey.setValue(rightPadding)
+                mBottomPaddingKey.setValue(bottomPadding)
             }
         }
         return false
@@ -184,11 +183,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
         val isKeyBorder = prefs.keyBorder.getValue()
-        mSkbRoot?.background = activeTheme.backgroundGradientDrawable(isKeyBorder)
-        mComposingView?.updateTheme(activeTheme.keyTextColor)
-        mSkbCandidatesBarView?.updateTheme(activeTheme.keyTextColor)
-        mIbOneHandNone?.getDrawable()?.setTint(activeTheme.keyTextColor)
-        mIbOneHand?.getDrawable()?.setTint(activeTheme.keyTextColor)
+        mSkbRoot.background = activeTheme.backgroundGradientDrawable(isKeyBorder)
+        mComposingView.updateTheme(activeTheme.keyTextColor)
+        mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
+        if(::mIbOneHandNone.isInitialized){
+            mIbOneHandNone.getDrawable().setTint(activeTheme.keyTextColor)
+            mIbOneHand.getDrawable().setTint(activeTheme.keyTextColor)
+        }
     }
 
     private fun onClick(view: View) {
@@ -515,8 +516,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         // 从候选词、符号界面切换到输入键盘
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         val container = KeyboardManager.instance.currentContainer
-        (container as? T9TextContainer)?.updateSymbolListView()
-        mComposingView?.setDecodingInfo(mDecInfo)
+        (container as T9TextContainer).updateSymbolListView()
+        mComposingView.setDecodingInfo(mDecInfo)
         mImeState = ImeState.STATE_IDLE
     }
 
@@ -549,7 +550,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     changeToStateComposing()
                     updateCandidateBar()
                     val container = KeyboardManager.instance.currentContainer
-                    (container as? T9TextContainer)?.updateSymbolListView()
+                    (container as T9TextContainer).updateSymbolListView()
                 } else {
                     resetToIdleState()
                 }
@@ -570,7 +571,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             changeToStateComposing()
             updateCandidateBar()
             val container = KeyboardManager.instance.currentContainer
-            (container as? T9TextContainer)?.updateSymbolListView()
+            (container as T9TextContainer).updateSymbolListView()
         } else {
             resetToIdleState()
         }
@@ -580,8 +581,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 显示候选词视图
      */
     private fun updateCandidateBar() {
-        mSkbCandidatesBarView?.showCandidates()
-        mComposingView?.setDecodingInfo(mDecInfo)
+        mSkbCandidatesBarView.showCandidates()
+        mComposingView.setDecodingInfo(mDecInfo)
     }
 
     /**
@@ -624,7 +625,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 candidatesContainer?.showCandidatesView(position)
             } else {
                 val container = KeyboardManager.instance.currentContainer
-                (container as? T9TextContainer)?.updateSymbolListView()
+                (container as T9TextContainer).updateSymbolListView()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
         }
@@ -663,7 +664,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 点击花漾字菜单
      */
     fun showFlowerTypeface() {
-        mSkbCandidatesBarView?.showFlowerTypeface()
+        mSkbCandidatesBarView.showFlowerTypeface()
     }
 
     /**
@@ -684,7 +685,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mDecInfo.cacheCandidates(list)
         mDecInfo.isAssociate = true
         isSkipEngineMode = true
-        mSkbCandidatesBarView?.showCandidates()
+        mSkbCandidatesBarView.showCandidates()
         mImeState = ImeState.STATE_PREDICT
     }
 
