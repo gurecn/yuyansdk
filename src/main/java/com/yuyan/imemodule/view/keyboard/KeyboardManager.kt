@@ -18,23 +18,17 @@ import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
  * 键盘显示管理类
  */
 class KeyboardManager {
-    private var mInputView: InputView? = null
-
-    /**
-     * 输入法状态
-     * 无，空闲，输入，编辑，联想，完成
-     */
     enum class KeyboardType {
         T9, QWERTY, LX17, QWERTYABC, NUMBER, SYMBOL, SETTINGS, HANDWRITING, CANDIDATES, ClipBoard
     }
-
-    private var mKeyboardRootView: InputViewParent? = null
+    private lateinit var mInputView: InputView
+    private lateinit var mKeyboardRootView: InputViewParent
     private val keyboards = HashMap<KeyboardType, BaseContainer?>()
-    private var mCurrentKeyboardName: KeyboardType? = null
+    private lateinit var mCurrentKeyboardName: KeyboardType
     var currentContainer: BaseContainer? = null
         private set
 
-    fun setData(keyboardRootView: InputViewParent?, inputView: InputView) {
+    fun setData(keyboardRootView: InputViewParent, inputView: InputView) {
         keyboards.clear() // TODO 清空缓存界面，发现调用 PinyinService.onCreateInputView时，原输入界面全部会失效。
         mKeyboardRootView = keyboardRootView
         mInputView = inputView
@@ -42,8 +36,8 @@ class KeyboardManager {
 
     fun clearKeyboard() {
         keyboards.clear()
-        if (mInputView != null) {
-            mInputView!!.initView(mInputView!!.context)
+        if (::mInputView.isInitialized) {
+            mInputView.initView(mInputView.context)
         }
     }
 
@@ -60,7 +54,7 @@ class KeyboardManager {
     }
 
     fun switchKeyboard(keyboardName: KeyboardType) {
-        if (mKeyboardRootView == null) return
+        if (!::mKeyboardRootView.isInitialized) return
         var container = keyboards[keyboardName]
         if (container == null) {
             container = when (keyboardName) {
@@ -78,7 +72,7 @@ class KeyboardManager {
             container.updateSkbLayout()
             keyboards[keyboardName] = container
         }
-        mKeyboardRootView!!.showView(container)
+        mKeyboardRootView.showView(container)
         mCurrentKeyboardName = keyboardName
         currentContainer = container
     }

@@ -17,7 +17,7 @@ class QwertyTextContainer(context: Context?, inputView: InputView?, skbValue: In
     /**
      * 重置主题
      */
-    fun setTheme(theme: Theme?) {
+    fun setTheme(theme: Theme) {
         mMajorView!!.setTheme(theme)
     }
 

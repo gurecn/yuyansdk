@@ -19,12 +19,11 @@ import java.util.LinkedList
 import kotlin.math.sqrt
 
 class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
-    private val mHandWritingPaint //绘制笔迹的画笔
-            : Paint
+    private val mHandWritingPaint: Paint //绘制笔迹的画笔
     private val mDrawing: DrawingStrokes
     private var mLastUpTime: Long = 0 //记录上次手写抬手时间，与本次按下时间对比。
     private val mSBPoint: MutableList<Short?> = LinkedList()
-    var ishandleHandwriting = false //判断是否正在手写
+    private var isHandleHandwriting = false //判断是否正在手写
 
     init {
         //笔划
@@ -41,15 +40,15 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
      */
     override fun setSoftKeyboard(softSkb: SoftKeyboard) {
         super.setSoftKeyboard(softSkb)
-        mHandWritingPaint.setColor(mActiveTheme!!.keyTextColor)
+        mHandWritingPaint.setColor(mActiveTheme.keyTextColor)
     }
 
     /**
      * 重置主题
      */
-    override fun setTheme(theme: Theme?) {
+    override fun setTheme(theme: Theme) {
         super.setTheme(theme)
-        mHandWritingPaint.setColor(mActiveTheme!!.keyTextColor)
+        mHandWritingPaint.setColor(mActiveTheme.keyTextColor)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -63,7 +62,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         val x = me.x.toInt()
         val y = me.y.toInt()
         val softKey = onKeyPressHandwriting(x, y)
-        if (softKey == null && me.actionMasked == MotionEvent.ACTION_DOWN || ishandleHandwriting) {
+        if (softKey == null && me.actionMasked == MotionEvent.ACTION_DOWN || isHandleHandwriting) {
             handleHandwriting(me)
             return true
         }
@@ -76,7 +75,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         mSBPoint.add(event.y.toInt().toShort())
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
-                ishandleHandwriting = true
+                isHandleHandwriting = true
                 val times = 1200 - getInstance().handwriting.handWritingSpeed.getValue()
                 //默认1.3s
                 if (mLastUpTime != 0L && System.currentTimeMillis() - mLastUpTime > times) {
@@ -111,7 +110,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
             }
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_POINTER_UP -> {
-                ishandleHandwriting = false
+                isHandleHandwriting = false
                 mLastUpTime = System.currentTimeMillis()
                 mDrawing.actionUp(event.x, event.y, event.pressure)
                 mSBPoint.add(-1)

@@ -42,8 +42,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
     private val mPaint: Paint = Paint()
     private val mFmi: FontMetricsInt
     private var isKeyBorder = false // 启用按键边框
-    @JvmField
-    protected var mActiveTheme: Theme? = null
+    protected lateinit var mActiveTheme: Theme
     private var keyRadius = 0
 
     /**
@@ -69,7 +68,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
         isKeyBorder = prefs.keyBorder.getValue()
         keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = activeTheme
-        mPaint.setColor(mActiveTheme!!.keyTextColor)
+        mPaint.setColor(mActiveTheme.keyTextColor)
         // Hint to reallocate the buffer if the size changed
         mKeyboardChanged = true
         invalidateView()
@@ -94,11 +93,11 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
     /**
      * 重置主题
      */
-    open fun setTheme(theme: Theme?) {
+    open fun setTheme(theme: Theme) {
         isKeyBorder = prefs.keyBorder.getValue()
         keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = theme
-        mPaint.setColor(mActiveTheme!!.keyTextColor)
+        mPaint.setColor(mActiveTheme.keyTextColor)
         invalidateView()
     }
 
@@ -191,9 +190,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
      */
     private fun drawSoftKey(canvas: Canvas, softKey: SoftKey, keyXMargin: Int, keyYMargin: Int) {
         val bg = GradientDrawable()
-        var textColor = mActiveTheme!!.keyTextColor
+        var textColor = mActiveTheme.keyTextColor
         if (softKey.pressed) {
-            bg.setColor(mActiveTheme!!.keyPressHighlightColor)
+            bg.setColor(mActiveTheme.keyPressHighlightColor)
             bg.setShape(GradientDrawable.RECTANGLE)
             bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
             bg.setBounds(
@@ -203,17 +202,17 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
                 softKey.mBottom - keyYMargin
             )
             bg.draw(canvas)
-            textColor = mActiveTheme!!.popupTextColor
+            textColor = mActiveTheme.popupTextColor
         } else if (isKeyBorder) {
             val background = when (softKey.keyCode) {
                 KeyEvent.KEYCODE_ENTER -> {
-                    mActiveTheme!!.accentKeyBackgroundColor
+                    mActiveTheme.accentKeyBackgroundColor
                 }
                 KeyEvent.KEYCODE_SPACE -> {
-                    mActiveTheme!!.spaceBarColor
+                    mActiveTheme.spaceBarColor
                 }
                 else -> {
-                    mActiveTheme!!.keyBackgroundColor
+                    mActiveTheme.keyBackgroundColor
                 }
             }
             bg.setColor(background)
@@ -228,7 +227,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
             bg.draw(canvas)
         } else {
            if(softKey.keyCode == KeyEvent.KEYCODE_ENTER) {
-               bg.setColor(mActiveTheme!!.accentKeyBackgroundColor)
+               bg.setColor(mActiveTheme.accentKeyBackgroundColor)
                bg.setShape(GradientDrawable.OVAL)
                val bgWidth = softKey.width() - 2 * keyXMargin
                val bgHeight = softKey.height() - 2 * keyYMargin
@@ -269,7 +268,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
             val marginRight = softKey.width() - intrinsicWidth - marginLeft
             val marginTop = (softKey.height() - intrinsicHeight) / 2
             val marginBottom = softKey.height() - intrinsicHeight - marginTop
-            (keyIcon as? VectorDrawable)?.setTint(mActiveTheme!!.keyTextColor)
+            (keyIcon as? VectorDrawable)?.setTint(mActiveTheme.keyTextColor)
             keyIcon.setBounds(softKey.mLeft + marginLeft, softKey.mTop + marginTop, softKey.mRight - marginRight, softKey.mBottom - marginBottom)
             keyIcon.draw(canvas)
         } else if (!TextUtils.isEmpty(keyLabel)) {
@@ -283,7 +282,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
         }
         if (keyboardMnemonic && !TextUtils.isEmpty(keyMnemonic)) {
             //助记符位于中下方
-            mPaint.setColor(mActiveTheme!!.popupTextColor)
+            mPaint.setColor(mActiveTheme.popupTextColor)
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyMnemonic)) / 2.0f
             val y = softKey.mTop + weightHeigth * 3 + weightHeigth / 2.0f

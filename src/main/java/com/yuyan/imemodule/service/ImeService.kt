@@ -24,9 +24,9 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
  * Main class of the Pinyin input method. 输入法服务
  */
 class ImeService : InputMethodService() {
-    private var mInputView: InputView? = null
+    private lateinit var mInputView: InputView
     private val onThemeChangeListener =
-        OnThemeChangeListener { _: Theme? -> if (mInputView != null) mInputView!!.updateTheme() }
+        OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme() }
 
     override fun onCreate() {
         super.onCreate()
@@ -36,21 +36,18 @@ class ImeService : InputMethodService() {
 
     override fun onCreateInputView(): View {
         mInputView = InputView(baseContext, this)
-        return mInputView!!
+        return mInputView
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         if (!restarting) {
-            if (mInputView != null) {
-                mInputView!!.onStartInputView(editorInfo)
-            }
+            mInputView.onStartInputView(editorInfo)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        LogUtil.d(TAG, "onDestroy")
-        if (mInputView != null) mInputView!!.resetToIdleState()
+        mInputView.resetToIdleState()
         ThreadPoolUtils.executeSingleton { Kernel.freeIme() }
         removeOnChangedListener(onThemeChangeListener)
     }
@@ -60,11 +57,10 @@ class ImeService : InputMethodService() {
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        LogUtil.d(TAG, "onConfigurationChanged")
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
-        if (mInputView != null) mInputView!!.resetToIdleState()
+        mInputView.resetToIdleState()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -72,14 +68,14 @@ class ImeService : InputMethodService() {
         return if (isInputViewShown || 0 == event.repeatCount) {
             super.onKeyDown(keyCode, event)
         } else {
-            mInputView!!.processKey(event) || super.onKeyDown(keyCode, event)
+            mInputView.processKey(event) || super.onKeyDown(keyCode, event)
         }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         LogUtil.d(TAG, "ImeService   onKeyUp:" + event.keyCode)
         return if (isInputViewShown) {
-            mInputView!!.processKey(event) || super.onKeyUp(keyCode, event)
+            mInputView.processKey(event) || super.onKeyUp(keyCode, event)
         } else {
             super.onKeyUp(keyCode, event)
         }
@@ -95,7 +91,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onComputeInsets(outInsets: Insets) {
-        val (x, y) = intArrayOf(0, 0).also { mInputView?.mSkbRoot?.getLocationInWindow(it) }
+        val (x, y) = intArrayOf(0, 0).also { mInputView.mSkbRoot.getLocationInWindow(it) }
         outInsets.apply {
             if(!ThemeManager.prefs.keyboardModeFloat.getValue()) {
                 contentTopInsets = y
@@ -106,7 +102,7 @@ class ImeService : InputMethodService() {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 touchableInsets = Insets.TOUCHABLE_INSETS_REGION
-                touchableRegion.set(x, y, x + mInputView!!.mSkbRoot!!.width, y + mInputView!!.mSkbRoot!!.height)
+                touchableRegion.set(x, y, x + mInputView.mSkbRoot.width, y + mInputView.mSkbRoot.height)
             }
         }
     }
