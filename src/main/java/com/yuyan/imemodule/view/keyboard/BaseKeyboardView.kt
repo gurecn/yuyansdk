@@ -21,8 +21,6 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
-import com.yuyan.imemodule.utils.LogUtil
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.popup.KeyDef
 import com.yuyan.imemodule.view.popup.PopupAction
 import com.yuyan.imemodule.view.popup.PopupAction.ChangeFocusAction
@@ -37,34 +35,7 @@ import kotlin.math.abs
 open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val popupComponent: PopupComponent = get()
     private var swipeEnabled: Boolean
-
-    /**
-     * Listener for virtual keyboard events.
-     */
-    interface OnKeyboardActionListener {
-        /**
-         * Called when the user presses a key.
-         * For keys that repeat, this is only called once.
-         * @param key the unicode of the key being pressed. If the touch is not on a valid
-         * key, the value will be zero.
-         */
-        fun onPress(key: SoftKey)
-
-        /**
-         * Called when the user releases a key.
-         * For keys that repeat, this is only called once.
-         * @param key the code of the key that was released
-         */
-        fun onRelease(key: SoftKey)
-    }
-
-    /**
-     * 软件盘布局
-     */
-    @JvmField
     protected var mSoftKeyboard: SoftKeyboard? = null
-    private var mKeyboardActionListener: OnKeyboardActionListener? = null
-
     /** The accessibility manager for accessibility support  */
     private val mAccessibilityManager: AccessibilityManager
     private var mDownTime: Long = 0
@@ -85,30 +56,23 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val mSwipeTracker = SwipeTracker()
     private var mOldPointerX = 0f
     private var mOldPointerY = 0f
-
-    // For multi-tap
     private var mLastSentIndex: SoftKey? = null
     private var mLastTapTime: Long = 0
-    var mHandler: Handler? = null
-
+    private var mHandler: Handler? = null
     /** Whether the keyboard bitmap needs to be redrawn before it's blitted.  */
     protected var mDrawPending = false
-
     /** The dirty region in the keyboard bitmap  */
     protected var mDirtyRect = Rect()
-
     /** The keyboard bitmap for faster updates  */
     protected var mBuffer: Bitmap? = null
-
     /** Notes if the keyboard just changed, so that we could possibly reallocate the mBuffer.  */
     protected var mKeyboardChanged = false
-
     /** The canvas for the above mutable keyboard bitmap  */
     protected var mCanvas: Canvas? = null
     protected var mClipRegion = Rect(0, 0, 0, 0)
+    private var mOldPointerCount = 1
 
     //输入法服务
-    @JvmField
     protected var mService: IResponseKeyEvent? = null
     fun setResponseKeyEvent(service: IResponseKeyEvent?) {
         mService = service
@@ -158,34 +122,19 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
-    fun setOnKeyboardActionListener(listener: OnKeyboardActionListener?) {
-        mKeyboardActionListener = listener
-    }
-
     private fun detectAndSendKey(key: SoftKey?, eventTime: Long) {
         if (mLongPressKey || key == null) return
-        mKeyboardActionListener!!.onRelease(key)
+        mService?.responseKeyEvent(key)
         mLastSentIndex = key
         mLastTapTime = eventTime
     }
 
-    /**
-     * Requests a redraw of the entire keyboard. Calling [.invalidate] is not sufficient
-     * because the keyboard renders the keys to an off-screen buffer and an invalidate() only
-     * draws the cached buffer.
-     */
     fun invalidateAllKeys() {
         mDirtyRect.union(0, 0, width, height)
         mDrawPending = true
         invalidate()
     }
 
-    /**
-     * Invalidates a key so that it will be redrawn on the next repaint. Use this method if only
-     * one key is changing it's content. Any changes that affect the position or size of the key
-     * may not be honored.
-     * @see .invalidateAllKeys
-     */
     fun invalidateKey(key: SoftKey?) {
         mInvalidatedKey = key
         if (key == null) return
@@ -196,7 +145,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     open fun onBufferDraw() {}
     private fun openPopupIfRequired() {
-        d(TAG, "openPopupIfRequired")
         showPreview(null)
         onLongPress(mCurrentKey)
     }
@@ -222,9 +170,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return true
     }
 
-    // Variables for dealing with multiple pointers
-    private var mOldPointerCount = 1
-
     init {
         mAccessibilityManager =
             mContext?.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
@@ -232,24 +177,19 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     override fun onTouchEvent(me: MotionEvent): Boolean {
-        // Convert multi-pointer up/down events to single up/down events to
-        // deal with the typical multi-pointer behavior of two-thumb typing
         val pointerCount = me.pointerCount
         val action = me.action
         var result: Boolean
         val now = me.eventTime
         if (pointerCount != mOldPointerCount) {
             if (pointerCount == 1) {
-                // Send a down event for the latest pointer
                 val down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, me.x, me.y, me.metaState)
                 result = onModifiedTouchEvent(down)
                 down.recycle()
-                // If it's an up action, then deliver the up as well.
                 if (action == MotionEvent.ACTION_UP) {
                     result = onModifiedTouchEvent(me)
                 }
             } else {
-                // Send an up event for the last pointer
                 val up = MotionEvent.obtain(
                     now, now, MotionEvent.ACTION_UP,
                     mOldPointerX, mOldPointerY, me.metaState
@@ -263,7 +203,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mOldPointerX = me.x
                 mOldPointerY = me.y
             } else {
-                // Don't do anything when 2 pointers are down and moving.
                 result = true
             }
         }
@@ -279,7 +218,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val keyIndex = getKeyIndices(touchX, touchY)
         if (action == MotionEvent.ACTION_DOWN) mSwipeTracker.clear()
         mSwipeTracker.addMovement(me)
-        // Ignore all motion events until a DOWN.
         if (mAbortKey && action != MotionEvent.ACTION_DOWN) {
             return true
         }
@@ -305,13 +243,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 // 播放按键声音和震动
                 tryPlayKeyDown(mCurrentKey)
                 tryVibrate(this)
-                if(keyIndex != null)mKeyboardActionListener!!.onPress(keyIndex)
+                if(keyIndex != null)onPress(keyIndex)
                 if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
                     mRepeatKeyIndex = mCurrentKey
                     val msg = mHandler!!.obtainMessage(MSG_REPEAT)
                     mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY.toLong())
                     repeatKey()
-                    // Delivering the key could have caused an abort
                     if (mAbortKey) {
                         mRepeatKeyIndex = null
                         return true
@@ -321,7 +258,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
                     mHandler!!.sendMessageDelayed(msg, LONGPRESS_TIMEOUT.toLong())
                 }
-                d(TAG, "ACTION_DOWN")
                 showPreview(mCurrentKey)
             }
 
@@ -339,19 +275,16 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 if (mCurrentKeyTime < mLastKeyTime && mCurrentKeyTime < DEBOUNCE_TIME && mLastKey != null) {
                     mCurrentKey = mLastKey
                 }
-                // If we're not on a repeating key (which sends on a DOWN event)
                 if (mRepeatKeyIndex == null && !mAbortKey && !mSwipeMoveKey) {
                     detectAndSendKey(mCurrentKey, eventTime)
                 }
                 mRepeatKeyIndex = null
-                d(TAG, "ACTION_UP")
                 showPreview(null)
             }
 
             MotionEvent.ACTION_CANCEL -> {
                 removeMessages()
                 mAbortKey = true
-                d(TAG, "ACTION_CANCEL")
                 showPreview(null)
             }
         }
@@ -381,7 +314,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun repeatKey(): Boolean {
-        d(TAG, "repeatKey")
         detectAndSendKey(mCurrentKey, mLastTapTime)
         return true
     }
@@ -415,8 +347,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val mPastX = FloatArray(NUM_PAST)
         val mPastY = FloatArray(NUM_PAST)
         val mPastTime = LongArray(NUM_PAST)
-        var mYVelocity = 0f
-        var mXVelocity = 0f
         fun clear() {
             mPastTime[0] = 0
         }
@@ -476,7 +406,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun showPreview(key: SoftKey?) {
-        d(TAG, "showPreview")
         if (mCurrentKeyPressed === key) {
             val triggerAction = TriggerAction(0, mService)
             onPopupAction(triggerAction)
@@ -499,13 +428,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         mCurrentKeyPressed = key
     }
 
-    /**
-     * Called when a key is long pressed. By default this will open any popup keyboard associated
-     * with this key through the attributes popupLayout and popupCharacters.
-     * @param key the key that was long pressed
-     * @return true if the long press is handled, false otherwise. Subclasses should call the
-     * method on the base class if the subclass doesn't wish to handle the call.
-     */
     private fun onLongPress(key: SoftKey?) {
         if (!TextUtils.isEmpty(key!!.getkeyLabel())) {
             val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
@@ -522,11 +444,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         removeMessages()
     }
 
-    /**
-     * 显示按下气泡
-     *
-     * @param key 按下按键
-     */
     private fun showBalloonText(key: SoftKey) {
         val keyboardBalloonShow = prefs.keyboardBalloonShow.getValue()
         if (keyboardBalloonShow && !TextUtils.isEmpty(key.getkeyLabel())) {
@@ -539,27 +456,17 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return null
     }
 
-    /**
-     * 设置键盘实体
-     *
-     * @param softSkb 键盘
-     */
     open fun setSoftKeyboard(softSkb: SoftKeyboard) {
-        d(TAG, "setSoftKeyboard")
         mSoftKeyboard = softSkb
     }
 
-    /**
-     * 获取当前键盘实体
-     *
-     * @return 返回当前键盘
-     */
     fun getSoftKeyboard(): SoftKeyboard {
         return mSoftKeyboard!!
     }
 
+    open fun onPress(key: SoftKey) {}
+
     companion object {
-        private val TAG = BaseKeyboardView::class.java.getSimpleName()
         private const val MSG_SHOW_PREVIEW = 1
         private const val MSG_REPEAT = 3
         private const val MSG_LONGPRESS = 4

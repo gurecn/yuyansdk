@@ -28,7 +28,7 @@ import kotlin.math.min
  * @author: Gaolei  gurecn@gmail.com
  * @date: 2017/12/12
  */
-open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyboardView.OnKeyboardActionListener {
+open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     /**
      * 正常按键的文本大小
      */
@@ -51,7 +51,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
     init {
         mPaint.isAntiAlias = true
         mFmi = mPaint.getFontMetricsInt()
-        setOnKeyboardActionListener(this)
     }
 
     override fun getKeyIndices(x: Int, y: Int): SoftKey? {
@@ -299,10 +298,5 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context), BaseKeyb
         super.closing()
         mBuffer = null
         mCanvas = null
-    }
-
-    override fun onPress(key: SoftKey) {}
-    override fun onRelease(key: SoftKey) {
-        mService?.responseKeyEvent(key)
     }
 }
