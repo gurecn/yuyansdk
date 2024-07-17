@@ -63,8 +63,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setImageResource(R.drawable.sdk_level_list_candidates_display)
                 val margin = dip2px(10f)
                 val size = (candidatesAreaHeight * 0.2).toInt()
-                setPadding(margin, size, margin, size)
-                this.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
+                this.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0f).apply {
+                    setMargins(margin, size, margin, size)
+                }
             }
             mRightArrowBtn.setOnClickListener { v: View ->
                 val level = (v as ImageView).getDrawable().level
