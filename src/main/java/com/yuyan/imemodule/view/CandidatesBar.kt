@@ -59,7 +59,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             val candidatesAreaHeight = instance.heightForCandidates
             mRightArrowBtn = ImageView(context).apply {
                 isClickable = true
-                setEnabled(true)
+                isEnabled = true
                 setImageResource(R.drawable.sdk_level_list_candidates_display)
                 val margin = dip2px(10f)
                 val size = (candidatesAreaHeight * 0.2).toInt()
@@ -68,22 +68,23 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mRightArrowBtn.setOnClickListener { v: View ->
-                val level = (v as ImageView).getDrawable().level
-                if (level == 3) { //关闭键盘修改为重置候选词
-                    mCvListener.onClickClearCandidate()
-                } else if(level == 0) {
-                    var lastItemPosition = 0
-                    val layoutManager = mRVCandidates.layoutManager
-                    if (layoutManager is LinearLayoutManager) {
-                        lastItemPosition = layoutManager.findLastVisibleItemPosition()
+                when (val level = (v as ImageView).drawable.level) {
+                    3 -> { //关闭键盘修改为重置候选词
+                        mCvListener.onClickClearCandidate()
                     }
-                    if(mDecInfo.mCandidatesList.size > lastItemPosition + 1) {
+                    0 -> {
+                        var lastItemPosition = 0
+                        val layoutManager = mRVCandidates.layoutManager
+                        if (layoutManager is LinearLayoutManager) {
+                            lastItemPosition = layoutManager.findLastVisibleItemPosition()
+                        }
                         mCvListener.onClickMore(level, lastItemPosition)
-                        v.getDrawable().setLevel(1)
+                        v.drawable.setLevel(1)
                     }
-                } else {
-                    mCvListener.onClickMore(level, 0)
-                    v.getDrawable().setLevel(0)
+                    else -> {
+                        mCvListener.onClickMore(level, 0)
+                        v.drawable.setLevel(0)
+                    }
                 }
             }
             mRVCandidates = RecyclerView(context)
@@ -123,7 +124,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             val ivMenuSetting = ImageView(context).apply {
                 setImageResource(R.drawable.app_icon)
                 isClickable = true
-                setEnabled(true)
+                isEnabled = true
                 setOnClickListener{mCvListener.onClickSetting()}
             }
             ivMenuSetting.layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
@@ -134,7 +135,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mIvMenuCloseSKB = ImageView(context).apply {
                 setImageResource(R.drawable.sdk_skb_close_icon)
                 isClickable = true
-                setEnabled(true)
+                isEnabled = true
                 this.layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
                 setOnClickListener { mCvListener.onClickCloseKeyboard() }
             }
@@ -154,11 +155,11 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         } else {
             showViewVisibility(mCandidatesDataContainer)
             if (mDecInfo.isAssociate) {
-                mRightArrowBtn.getDrawable().setLevel(3)
+                mRightArrowBtn.drawable.setLevel(3)
             } else {
                 val container = KeyboardManager.instance.currentContainer
                 if (container is CandidatesContainer) {
-                    mRightArrowBtn.getDrawable().setLevel(0)
+                    mRightArrowBtn.drawable.setLevel(0)
                     var lastItemPosition = 0
                     val layoutManager = mRVCandidates.layoutManager
                     if (layoutManager is LinearLayoutManager) {
@@ -166,10 +167,11 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     }
                     mCvListener.onClickMore(0, lastItemPosition)
                 } else {
-                    mRightArrowBtn.getDrawable().setLevel(0)
+                    mRightArrowBtn.drawable.setLevel(0)
                 }
             }
             mCandidatesAdapter.notifyDataSetChanged()
+
         }
     }
 
@@ -221,8 +223,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     // 刷新主题
     fun updateTheme(textColor: Int) {
-        mIvMenuCloseSKB.getDrawable().setTint(textColor)
-        mRightArrowBtn.getDrawable().setTint(textColor)
+        mIvMenuCloseSKB.drawable.setTint(textColor)
+        mRightArrowBtn.drawable.setTint(textColor)
         mCandidatesAdapter.updateTextColor(textColor)
     }
 }
