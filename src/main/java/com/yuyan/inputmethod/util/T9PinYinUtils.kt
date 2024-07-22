@@ -279,12 +279,12 @@ object T9PinYinUtils {
      * 获取T9键码对应的拼音组合
      */
     @JvmStatic
-    fun t9KeyToPinyin(t9Sequence: String?): List<String> {
+    fun t9KeyToPinyin(t9Sequence: String?): Array<String> {
         if (t9Sequence.isNullOrEmpty()) {
-            return emptyList()
+            return emptyArray()
         }
         val t9NumString = if (t9Sequence.length > 6) t9Sequence.substring(0, 6) else t9Sequence
-        var t9Num = t9NumString.toIntOrNull() ?: return emptyList()
+        var t9Num = t9NumString.toIntOrNull() ?: return emptyArray()
         val pinyin = ArrayList<Pair<String, Int>>(6)
         while (t9Num > 0) {
             if (pinyin.isEmpty()) {
@@ -297,7 +297,7 @@ object T9PinYinUtils {
         }
         return pinyin.sortedByDescending { it.second }
             .joinToString(",") { it.first }
-            .split(",")
+            .split(",").toTypedArray()
     }
 
     fun pinyin2T9Key(pinyin: Char): String = t9KeyMap[pinyin]!!

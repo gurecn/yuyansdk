@@ -61,7 +61,7 @@ object Kernel {
          * 是否输入完毕，等待上屏。
          */
         get() = !isFinish()
-    val candidates: List<CandidateListItem>
+    val candidates: Array<CandidateListItem>
         get() {
             d("Kernel", "getNextPageCandidates")
             return showCandidates

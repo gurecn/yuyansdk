@@ -16,8 +16,8 @@ object RimeEngine {
 
     private val keyRecordStack = KeyRecordStack()
 
-    private var pinyinCandidates: List<String> = emptyList() // 候选词界面的候选拼音列表
-    var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
+    private var pinyinCandidates: Array<String> = emptyArray() // 候选词界面的候选拼音列表
+    var showCandidates: Array<CandidateListItem> = emptyArray() // 所有待展示的候选词
     var showComposition: CharSequence = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
 
@@ -119,8 +119,8 @@ object RimeEngine {
 //    }
 
     fun reset() {
-        showCandidates = emptyList()
-        pinyinCandidates = emptyList()
+        showCandidates = emptyArray()
+        pinyinCandidates = emptyArray()
         showComposition = ""
         keyRecordStack.clear()
         Rime.clearComposition()
@@ -184,10 +184,10 @@ object RimeEngine {
                 val t9Input = remainT9Keys.joinToString("").reversed()
                 T9PinYinUtils.t9KeyToPinyin(t9Input)
             } else {
-                emptyList()
+                emptyArray()
             }
         pinyinCandidates = pyCandidates
-        showCandidates = candidates.asList()
+        showCandidates = candidates
         showComposition = composition
         preCommitText = ""
         return null
@@ -212,9 +212,9 @@ object RimeEngine {
                 val t9Input = remainT9Keys.joinToString("").reversed()
                 T9PinYinUtils.t9KeyToPinyin(t9Input)
             } else {
-                emptyList()
+                emptyArray()
             }
-        return pyCandidates.toTypedArray()
+        return pyCandidates
     }
 
     private fun getCurrentComposition(candidates: Array<CandidateListItem>): CharSequence {
