@@ -23,21 +23,13 @@ object Kernel {
     private var isHandWriting = false
 
     /**
-     * 初始化输入法（词库读取等）
-     * dictpath词典文件路径，串联一起
-     * dictCount词典个数
-     * 输入模式：0表示全键，1表示九键,2表示智能英文, 3表示普通英文
+     * 初始化输入法
      */
     @Synchronized
-    fun initWiIme(inputMod: String) {
-        d("Kernel", "initWiIme", " inputMod: $inputMod")
-        if (inputMod == CustomConstant.SCHEMA_ZH_HANDWRITING) {
-            selectSchema(CustomConstant.SCHEMA_ZH_T9)
-            isHandWriting = true
-        } else {
-            isHandWriting = false
-            selectSchema(inputMod)
-        }
+    fun initWiIme(schema: String, inputMode:Int = 0) {
+        d("Kernel", "initWiIme", " schema: $schema")
+        isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
+        selectSchema(schema, inputMode)
         nativeUpdateImeOption()
     }
 

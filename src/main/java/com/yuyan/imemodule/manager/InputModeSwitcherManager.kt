@@ -189,9 +189,9 @@ class InputModeSwitcherManager {
         prepareToggleStates()
         // 语言键：显示中文或者英文、中符、英符的键
         if (isEnglish) {
-            Kernel.initWiIme(CustomConstant.SCHEMA_EN)
+            Kernel.initWiIme(CustomConstant.SCHEMA_EN, mInputMode)
         } else {
-            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
+            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue(), mInputMode)
         }
         if (isChinese || isEnglish) {
             mRecentLauageInputMode = mInputMode
@@ -358,7 +358,7 @@ class InputModeSwitcherManager {
         /**
          * 指明软键盘状态为低（小写）。
          */
-        private const val MASK_CASE_LOWER = 0x0001
+        const val MASK_CASE_LOWER = 0x0001
 
         /**
          * 指明软键盘状态为高（大写）。
@@ -368,7 +368,7 @@ class InputModeSwitcherManager {
         /**
          * 指明软键盘状态为高（大写）锁定状态。
          */
-        private const val MASK_CASE_UPPER_LOCK = 0x0003
+        const val MASK_CASE_UPPER_LOCK = 0x0003
 
         /**
          * Mode for inputing Chinese with soft keyboard. 九宫格软键盘、中文模式

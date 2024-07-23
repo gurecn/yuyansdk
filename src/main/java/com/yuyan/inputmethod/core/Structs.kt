@@ -9,8 +9,8 @@ data class SchemaListItem(
 )
 @Keep
 data class CandidateListItem(
-    val comment: String,
-    val text: String,
+    var comment: String,
+    var text: String,
 )
 
 /** Rime編碼區  */
