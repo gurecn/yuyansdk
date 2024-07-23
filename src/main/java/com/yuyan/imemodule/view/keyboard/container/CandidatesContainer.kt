@@ -97,14 +97,18 @@ class CandidatesContainer(context: Context, inputView: InputView?) : BaseContain
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
             ThreadPoolUtils.executeSingleton {
-                if (!isLoadingMore && !noMoreData) {
+                if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
                     isLoadingMore = true
-                    val lastItem = (recyclerView.layoutManager as FlexboxLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                    val lastItem = (recyclerView.layoutManager as FlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
                     val adapterSize = mDecInfo!!.mCandidatesList.size
                     if (dy > 0 && adapterSize - lastItem <= 30) { // 未加载中、未加载完、向下滑动、还有10个数据滑动到底
                         val num = mDecInfo!!.nextPageCandidates
                         if (num > 0) {
-                            post { (mRVSymbolsView!!.adapter as CandidatesAdapter?)!!.updateData(num) }
+                            post {
+                                (mRVSymbolsView!!.adapter as CandidatesAdapter?)!!.updateData(
+                                    num
+                                )
+                            }
                         } else {
                             noMoreData = true
                         }

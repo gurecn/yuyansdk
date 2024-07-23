@@ -47,7 +47,7 @@ class ImeService : InputMethodService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mInputView.resetToIdleState()
+        if (::mInputView.isInitialized) mInputView.resetToIdleState()
         ThreadPoolUtils.executeSingleton { Kernel.freeIme() }
         removeOnChangedListener(onThemeChangeListener)
     }
