@@ -73,8 +73,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var mOldPointerCount = 1
 
     //输入法服务
-    protected var mService: IResponseKeyEvent? = null
-    fun setResponseKeyEvent(service: IResponseKeyEvent?) {
+    protected var mService: InputView? = null
+    fun setResponseKeyEvent(service: InputView?) {
         mService = service
     }
 

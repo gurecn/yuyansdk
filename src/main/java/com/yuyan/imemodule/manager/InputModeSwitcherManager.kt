@@ -46,20 +46,8 @@ class InputModeSwitcherManager {
      * mRowIdToEnable 和 ALWAYS_SHOW_ROW_ID 的行才会被显示出来。
      */
     class ToggleStates {
-        /**
-         * If it is true, this soft keyboard is a QWERTY one. 是否是标准键盘
-         */
-		@JvmField
-		var mQwerty = false
-
-        /**
-         * If [.mQwerty] is true, this variable is used to decide the
-         * letter case of the QWERTY keyboard. 是否是标准键盘大写模式
-         */
-		@JvmField
-		var mQwertyUpperCase = false
         @JvmField
-		var isUpperLock = false
+        var charCase = 0
         @JvmField
 		var mStateEnter = 0
     }
@@ -202,28 +190,8 @@ class InputModeSwitcherManager {
      * 准备设置控制显示的按键切换状态和可显示行ID的对象的数据，封装mToggleStates的数据。
      */
     private fun prepareToggleStates() {
-        mToggleStates.mQwerty = false
-        val language = mInputMode and MASK_LANGUAGE
-        val layout = mInputMode and MASK_SKB_LAYOUT
         val charCase = mInputMode and MASK_CASE
-        // 更加输入法模式添加要显示的按键的切换状态
-        if (MASK_LANGUAGE_CN == language) {
-            mToggleStates.mQwerty = true
-            mToggleStates.mQwertyUpperCase = true
-        } else if (MASK_LANGUAGE_EN == language) {
-            if (MASK_SKB_LAYOUT_QWERTY_ABC == layout) {
-                mToggleStates.mQwerty = true
-                mToggleStates.mQwertyUpperCase = false
-                mToggleStates.isUpperLock = false
-                if (MASK_CASE_UPPER == charCase) {
-                    mToggleStates.mQwertyUpperCase = true
-                }
-                if (MASK_CASE_UPPER_LOCK == charCase) {
-                    mToggleStates.mQwertyUpperCase = true
-                    mToggleStates.isUpperLock = true
-                }
-            }
-        }
+        mToggleStates.charCase = charCase
     }
 
     companion object {

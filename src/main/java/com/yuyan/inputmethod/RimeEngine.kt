@@ -10,6 +10,7 @@ import com.yuyan.inputmethod.util.T9PinYinUtils
 import com.yuyan.inputmethod.util.buildSpannedString
 import com.yuyan.inputmethod.util.isDigitsOnly
 import com.yuyan.inputmethod.util.underline
+import java.util.Locale
 
 object RimeEngine {
     private const val PINYIN_T9_0 = 41
@@ -155,7 +156,7 @@ object RimeEngine {
             keyRecordStack.clear()
             preCommitText = rimeCommit.commitText
             if (InputModeSwitcherManager.MASK_CASE_UPPER == charCase) {
-                preCommitText = preCommitText.replaceFirstChar { it.uppercase() }
+                preCommitText = preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }else if (InputModeSwitcherManager.MASK_CASE_UPPER_LOCK == charCase) {
                 preCommitText = preCommitText.uppercase()
             }

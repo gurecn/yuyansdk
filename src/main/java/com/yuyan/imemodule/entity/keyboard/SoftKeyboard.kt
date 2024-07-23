@@ -15,13 +15,6 @@ import java.util.LinkedList
  */
 class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
     private var skbValue = 0
-
-    /**
-     * this member is Used to indicate that the
-     * soft keyboard should be displayed in uppercase. 是否是标准键盘的大写
-     */
-    private var mIsQwertyUpperCase = true
-
     /**
      * Rows in this soft keyboard. Each row has a id. Only matched rows will be
      * enabled. 按键排列的行的链表，每个元素都是一行。
@@ -113,34 +106,23 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
      */
     fun enableToggleStates(toggleStates: ToggleStates?) {
         if (null == toggleStates) return
-        val isQwerty = toggleStates.mQwerty
-        val isQwertyUpperCase = toggleStates.mQwertyUpperCase
-        val isUpperLock = toggleStates.isUpperLock
-        val needUpdateQwerty = isQwerty && mIsQwertyUpperCase != isQwertyUpperCase
-        val stateEnter = toggleStates.mStateEnter
         for (keyRow in mKeyRows) {
             for (key in keyRow) {
-                if (needUpdateQwerty) {  //1
-                    if (key.keyCode >= KeyEvent.KEYCODE_A && key.keyCode <= KeyEvent.KEYCODE_Z) {
-                        key.changeCase(isQwertyUpperCase)
-                    }
-                }
                 if (key is SoftKeyToggle) {
-                    if (key.keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) { //2
-                        if (isUpperLock) {
+                    if (key.keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) {
+                        if (InputModeSwitcherManager.MASK_CASE_UPPER_LOCK == toggleStates.charCase) {
                             key.enableToggleState(2)
-                        } else if (isQwertyUpperCase) {
+                        } else if (InputModeSwitcherManager.MASK_CASE_UPPER == toggleStates.charCase) {
                             key.enableToggleState(1)
                         } else {
                             key.enableToggleState(0)
                         }
                     }
                     if (key.keyCode == KeyEvent.KEYCODE_ENTER) {
-                        key.enableToggleState(stateEnter)
+                        key.enableToggleState(toggleStates.mStateEnter)
                     }
                 }
             }
         }
-        mIsQwertyUpperCase = isQwertyUpperCase
     }
 }
