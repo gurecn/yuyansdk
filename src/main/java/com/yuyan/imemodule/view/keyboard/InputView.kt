@@ -35,6 +35,7 @@ import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
+import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
@@ -291,13 +292,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 ImeState.STATE_COMPOSING -> processStateEditComposing(event)
             }
             // 临时代码:判断英语、未锁定大写、大写键盘时，键盘切换为小写
-            if (mInputModeSwitcher.isEnglish && mInputModeSwitcher.isEnglishUpperCase) { // 英语、未开启智能英文
-                val keyCode = event.keyCode
-                if (keyCode in KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) {
-                    //切换为英文小写键盘
-                    mInputModeSwitcher.saveInputMode(InputModeSwitcherManager.MODE_SKB_ENGLISH_LOWER)
-                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                }
+            if (mInputModeSwitcher.isEnglish) {
+                val container = KeyboardManager.instance.currentContainer
+                (container as? QwertyTextContainer)?.updateStates()
             }
         } else { // 数字、符号处理 && 英语、未开启智能英文
             val keyChar = event.unicodeChar

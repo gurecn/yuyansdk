@@ -167,9 +167,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyYMargin = mSoftKeyboard!!.keyYMargin
         for (softKeys in mSoftKeyboard!!.row) {
             for (softKey in softKeys) {
-                if (drawSingleKey && invalidKey !== softKey) {
-                    continue
-                }
+                if (drawSingleKey && invalidKey !== softKey) continue
                 canvas?.let { drawSoftKey(it, softKey, keyXMargin, keyYMargin) }
             }
         }
@@ -241,8 +239,18 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 )
                 bg.draw(canvas)
             }
+
         }
-        val keyLabel = softKey.keyLabel
+        val keyLabel = if(mService!=null) {
+            val charCase = mService!!.mInputModeSwitcher.mToggleStates.charCase
+            if (InputModeSwitcherManager.MASK_CASE_LOWER == charCase || (InputModeSwitcherManager.MASK_CASE_UPPER == charCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
+                softKey.keyLabel?.lowercase()
+            } else {
+                softKey.keyLabel
+            }
+        } else {
+            softKey.keyLabel
+        }
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon
@@ -250,7 +258,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
-            mPaint.setColor(textColor)
+            mPaint.color = textColor
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabelSmall)) / 2.0f
             val y = softKey.mTop + weightHeigth
@@ -272,7 +280,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             keyIcon.draw(canvas)
         } else if (!TextUtils.isEmpty(keyLabel)) {
             //Label位于中间
-            mPaint.setColor(textColor)
+            mPaint.color = textColor
             mPaint.textSize = mNormalKeyTextSize.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabel)) / 2.0f
             val fontHeight = mFmi.bottom - mFmi.top
