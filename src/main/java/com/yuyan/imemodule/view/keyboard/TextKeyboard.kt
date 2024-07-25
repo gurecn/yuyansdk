@@ -50,7 +50,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     init {
         mPaint.isAntiAlias = true
-        mFmi = mPaint.getFontMetricsInt()
+        mFmi = mPaint.fontMetricsInt
     }
 
     override fun getKeyIndices(x: Int, y: Int): SoftKey? {
@@ -67,7 +67,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         isKeyBorder = prefs.keyBorder.getValue()
         keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = activeTheme
-        mPaint.setColor(mActiveTheme.keyTextColor)
+        mPaint.color = mActiveTheme.keyTextColor
         // Hint to reallocate the buffer if the size changed
         mKeyboardChanged = true
         invalidateView()
@@ -77,15 +77,13 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      * 刷新按键状态
      */
     fun updateStates(switcherManager: InputModeSwitcherManager) {
-        if (switcherManager.isEnglish) {
-            mSoftKeyboard?.enableToggleStates(switcherManager.mToggleStates)
-            invalidateView() // ToDO 英文键盘刷新全部按键,逻辑待优化
-        } else {
-            val softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle?
-                ?: return
-            if (softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)) {
-                invalidateKey(softKey)
-            }
+        var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle? ?: return
+        if (softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)) {
+            invalidateKey(softKey)
+        }
+        softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) as SoftKeyToggle? ?: return
+        if (softKey.enableToggleState(switcherManager.mToggleStates.charCase)) {
+            invalidateKey(softKey)
         }
     }
 
@@ -96,7 +94,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         isKeyBorder = prefs.keyBorder.getValue()
         keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = theme
-        mPaint.setColor(mActiveTheme.keyTextColor)
+        mPaint.color = mActiveTheme.keyTextColor
         invalidateView()
     }
 
@@ -106,7 +104,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         if (null != mSoftKeyboard) {
             measuredWidth = mSoftKeyboard!!.skbCoreWidth
             measuredHeight = mSoftKeyboard!!.skbCoreHeight
-            measuredWidth += getPaddingLeft() + getPaddingRight()
+            measuredWidth += paddingLeft + paddingRight
             measuredHeight += paddingTop + paddingBottom
         }
         setMeasuredDimension(measuredWidth, measuredHeight)
@@ -136,7 +134,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
 
     override fun onBufferDraw() {
         if (mBuffer == null || mKeyboardChanged) {
-            if (mBuffer == null || mBuffer!!.getWidth() != width || mBuffer!!.getHeight() != height) {
+            if (mBuffer == null || mBuffer!!.width != width || mBuffer!!.height != height) {
                 // Make sure our bitmap is at least 1x1
                 val width = max(1.0, width.toDouble()).toInt()
                 val height = max(1.0, height.toDouble()).toInt()
@@ -190,8 +188,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         var textColor = mActiveTheme.keyTextColor
         if (softKey.pressed) {
             bg.setColor(mActiveTheme.keyPressHighlightColor)
-            bg.setShape(GradientDrawable.RECTANGLE)
-            bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+            bg.shape = GradientDrawable.RECTANGLE
+            bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             bg.setBounds(
                 softKey.mLeft + keyXMargin,
                 softKey.mTop + keyYMargin,
@@ -213,8 +211,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 }
             }
             bg.setColor(background)
-            bg.setShape(GradientDrawable.RECTANGLE)
-            bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+            bg.shape = GradientDrawable.RECTANGLE
+            bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             bg.setBounds(
                 softKey.mLeft + keyXMargin,
                 softKey.mTop + keyYMargin,
@@ -225,7 +223,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         } else {
            if(softKey.keyCode == KeyEvent.KEYCODE_ENTER) {
                bg.setColor(mActiveTheme.accentKeyBackgroundColor)
-               bg.setShape(GradientDrawable.OVAL)
+               bg.shape = GradientDrawable.OVAL
                val bgWidth = softKey.width() - 2 * keyXMargin
                val bgHeight = softKey.height() - 2 * keyYMargin
                val radius = min(bgWidth, bgHeight)*2/3
@@ -241,7 +239,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             }
 
         }
-        val keyLabel = if(mService!=null) {
+        val keyLabel = if(mService != null && mService!!.mInputModeSwitcher.isEnglish) {
             val charCase = mService!!.mInputModeSwitcher.mToggleStates.charCase
             if (InputModeSwitcherManager.MASK_CASE_LOWER == charCase || (InputModeSwitcherManager.MASK_CASE_UPPER == charCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
                 softKey.keyLabel?.lowercase()
@@ -289,7 +287,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         }
         if (keyboardMnemonic && !TextUtils.isEmpty(keyMnemonic)) {
             //助记符位于中下方
-            mPaint.setColor(mActiveTheme.popupTextColor)
+            mPaint.color = mActiveTheme.popupTextColor
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyMnemonic)) / 2.0f
             val y = softKey.mTop + weightHeigth * 3 + weightHeigth / 2.0f
