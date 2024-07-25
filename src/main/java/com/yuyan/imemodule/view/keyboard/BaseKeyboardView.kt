@@ -21,6 +21,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
+import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
 import com.yuyan.imemodule.view.popup.KeyDef
 import com.yuyan.imemodule.view.popup.PopupAction
 import com.yuyan.imemodule.view.popup.PopupAction.ChangeFocusAction
@@ -416,7 +417,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val oldKeyPressed = mCurrentKeyPressed
         if (oldKeyPressed != null) {
             oldKeyPressed.onReleased()
-            invalidateKey(oldKeyPressed)
+            if(mService == null) return
+            if (mService!!.mInputModeSwitcher.isEnglish && (mService!!.mDecInfo.composingStrForDisplay.isBlank() ||  mService!!.mDecInfo.composingStrForDisplay.length == 1)) {
+                invalidateAllKeys()
+            } else {
+                invalidateKey(oldKeyPressed)
+            }
         }
         if (key != null) {
             key.onPressed()

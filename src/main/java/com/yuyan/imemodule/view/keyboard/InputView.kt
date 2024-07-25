@@ -291,11 +291,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 ImeState.STATE_PREDICT -> processStatePredict(event)
                 ImeState.STATE_COMPOSING -> processStateEditComposing(event)
             }
-            // 临时代码:判断英语、未锁定大写、大写键盘时，键盘切换为小写
-            if (mInputModeSwitcher.isEnglish) {
-                val container = KeyboardManager.instance.currentContainer
-                (container as? QwertyTextContainer)?.updateStates()
-            }
         } else { // 数字、符号处理 && 英语、未开启智能英文
             val keyChar = event.unicodeChar
             if (0 != keyChar) {

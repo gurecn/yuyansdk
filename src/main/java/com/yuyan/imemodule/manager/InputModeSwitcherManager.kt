@@ -180,7 +180,6 @@ class InputModeSwitcherManager {
             mToggleStates.charCase = charCase
             Kernel.initWiIme(CustomConstant.SCHEMA_EN, mInputMode)
         } else {
-            mToggleStates.charCase = 0x000f
             Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue(), mInputMode)
         }
         if (isChinese || isEnglish) {
