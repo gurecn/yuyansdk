@@ -174,24 +174,18 @@ class InputModeSwitcherManager {
     fun saveInputMode(newInputMode: Int) {
         mInputMode = newInputMode // 设置新的输入法模式为当前的输入法模式
         getInstance().internal.inputDefaultMode.setValue(mInputMode)
-        prepareToggleStates()
         // 语言键：显示中文或者英文、中符、英符的键
         if (isEnglish) {
+            val charCase = mInputMode and MASK_CASE
+            mToggleStates.charCase = charCase
             Kernel.initWiIme(CustomConstant.SCHEMA_EN, mInputMode)
         } else {
+            mToggleStates.charCase = 0x000f
             Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue(), mInputMode)
         }
         if (isChinese || isEnglish) {
             mRecentLauageInputMode = mInputMode
         }
-    }
-
-    /**
-     * 准备设置控制显示的按键切换状态和可显示行ID的对象的数据，封装mToggleStates的数据。
-     */
-    private fun prepareToggleStates() {
-        val charCase = mInputMode and MASK_CASE
-        mToggleStates.charCase = charCase
     }
 
     companion object {
