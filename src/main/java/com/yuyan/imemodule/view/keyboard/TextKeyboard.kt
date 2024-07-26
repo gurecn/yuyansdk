@@ -18,6 +18,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.utils.LogUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -77,13 +78,14 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      * 刷新按键状态
      */
     fun updateStates(switcherManager: InputModeSwitcherManager) {
-        var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle? ?: return
-        if (softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)) {
-            invalidateKey(softKey)
-        }
-        softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) as SoftKeyToggle? ?: return
-        if (softKey.enableToggleState(switcherManager.mToggleStates.charCase)) {
-            invalidateKey(softKey)
+        if (switcherManager.isEnglish) {
+            mSoftKeyboard?.enableToggleStates(switcherManager.mToggleStates)
+            invalidateView()
+        } else {
+            val softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
+            if (softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)) {
+                invalidateKey(softKey)
+            }
         }
     }
 
