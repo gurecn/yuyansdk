@@ -47,7 +47,7 @@ class InputModeSwitcherManager {
      */
     class ToggleStates {
         @JvmField
-        var charCase = 0
+        var charCase = MASK_CASE_LOWER
         @JvmField
 		var mStateEnter = 0
     }
@@ -87,8 +87,7 @@ class InputModeSwitcherManager {
         } else if (USERDEF_KEYCODE_NUMBER_7 == userKey) {
             newInputMode = MASK_SKB_LAYOUT_NUMBER
         } else if (USERDEF_KEYCODE_RETURN_8 == userKey) {
-            newInputMode =
-                if (mRecentLauageInputMode != 0) mRecentLauageInputMode else getInstance().internal.inputMethodPinyinMode.getValue()
+            newInputMode = if (mRecentLauageInputMode != 0) mRecentLauageInputMode else getInstance().internal.inputMethodPinyinMode.getValue()
         }
         if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
             // 保存新的输入法模式
@@ -319,17 +318,17 @@ class InputModeSwitcherManager {
         /**
          * 指明软键盘状态为低（小写）。
          */
-        const val MASK_CASE_LOWER = 0x0001
+        const val MASK_CASE_LOWER = 0x0000
 
         /**
          * 指明软键盘状态为高（大写）。
          */
-        const val MASK_CASE_UPPER = 0x0002
+        const val MASK_CASE_UPPER = 0x0001
 
         /**
          * 指明软键盘状态为高（大写）锁定状态。
          */
-        const val MASK_CASE_UPPER_LOCK = 0x0003
+        const val MASK_CASE_UPPER_LOCK = 0x0002
 
         /**
          * Mode for inputing Chinese with soft keyboard. 九宫格软键盘、中文模式
