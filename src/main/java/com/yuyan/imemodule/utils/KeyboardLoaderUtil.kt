@@ -169,7 +169,7 @@ class KeyboardLoaderUtil private constructor() {
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                lX17Keys = createLX17Keys(arrayOf(31, 45, 35, 34, 48, 42, 67))
+                lX17Keys = createLX17Keys(arrayOf(31, 45, 35, 34, 48, 67))
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = lastRows(numberLine)
