@@ -49,14 +49,12 @@ object RimeEngine {
     }
 
     fun onNormalKey(keyCode: Int) {
-        val keyCodeA = 29
-        val keyCodeZ = 54
         val keyChar = when (keyCode) {
-            in keyCodeA..keyCodeZ -> {
-                keyCode - keyCodeA + 'a'.code
+            in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
+                keyCode - KeyEvent.KEYCODE_A + 'a'.code
             }
-            in (keyCodeA or KeyEvent.META_SHIFT_RIGHT_ON)..(keyCodeZ or KeyEvent.META_SHIFT_RIGHT_ON) -> {
-                keyCode - (keyCodeA or KeyEvent.META_SHIFT_RIGHT_ON) + 'A'.code
+            in (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON)..(KeyEvent.KEYCODE_Z or KeyEvent.META_SHIFT_RIGHT_ON) -> {
+                keyCode - (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON) + 'A'.code
             }
             KeyEvent.KEYCODE_APOSTROPHE -> '\''.code
             in PINYIN_T9_1..PINYIN_T9_9 -> keyCode + PINYIN_T9_0

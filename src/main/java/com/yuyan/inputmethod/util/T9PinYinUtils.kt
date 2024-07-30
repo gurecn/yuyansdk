@@ -3,19 +3,6 @@ package com.yuyan.inputmethod.util
 import androidx.collection.SparseArrayCompat
 
 object T9PinYinUtils {
-
-    val t9KeyCodMap = mapOf(
-        1001 to 1049,
-        1002 to 1050,
-        1003 to 1051,
-        1004 to 1052,
-        1005 to 1053,
-        1006 to 1054,
-        1007 to 1055,
-        1008 to 1056,
-        1009 to 1057,
-    )
-
     private val t9KeyMap = mapOf(
         'a' to "2",
         'b' to "2",
@@ -44,8 +31,7 @@ object T9PinYinUtils {
         'y' to "9",
         'z' to "9",
     )
-    private val t9PinyinMap =
-        SparseArrayCompat<Pair<String, Int>>(225)
+    private val t9PinyinMap = SparseArrayCompat<Pair<String, Int>>(225)
 
     init {
         t9PinyinMap.append(2, "a,b,c" to 103106)
@@ -278,7 +264,6 @@ object T9PinYinUtils {
     /**
      * 获取T9键码对应的拼音组合
      */
-    @JvmStatic
     fun t9KeyToPinyin(t9Sequence: String?): Array<String> {
         if (t9Sequence.isNullOrEmpty()) {
             return emptyArray()
