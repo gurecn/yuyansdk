@@ -89,7 +89,7 @@ object RimeEngine {
         val candidates = mutableListOf<CandidateListItem>()
         for(i in 0..4){
             if (Rime.hasRight()) {
-                Rime.simulateKeySequence("{Page_Down}")
+                Rime.processKey(getRimeKeycodeByName("Page_Down"), 0)
                 val caned = Rime.getRimeContext()!!.candidates
                 candidates.addAll(caned.asList())
             } else {
@@ -127,11 +127,11 @@ object RimeEngine {
             }
             is InputKey.Apostrophe -> {
                 if (!lastKey.dummy) {
-                    Rime.processKey(65288, 0)
+                    Rime.processKey(getRimeKeycodeByName("BackSpace"), 0)
                 }
             }
             else -> {
-                Rime.processKey(65288, 0)
+                Rime.processKey(getRimeKeycodeByName("BackSpace"), 0)
             }
         }
     }
@@ -263,6 +263,13 @@ object RimeEngine {
      */
     fun setImeOption(option: String, value: Boolean) {
         Rime.setOption(option, value)
+    }
+
+    /**
+     * 获取Rime定义键值
+     */
+    private fun getRimeKeycodeByName(name: String) : Int {
+        return Rime.getRimeKeycodeByName(name)
     }
 
     private class KeyRecordStack {
