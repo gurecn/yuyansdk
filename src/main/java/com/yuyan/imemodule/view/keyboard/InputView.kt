@@ -29,13 +29,11 @@ import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
-import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
@@ -78,7 +76,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context?) {
-        LogUtil.d(TAG, "initView")
         if (!::mSkbRoot.isInitialized) {
             mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
             mComposingView = mSkbRoot.findViewById(R.id.cmv_container)
@@ -211,7 +208,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseKeyEvent(sKey: SoftKey) {
-        LogUtil.d(TAG, "responseKeyEvent sKey：" + sKey.keyCode)
         isSkipEngineMode = false
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
@@ -502,7 +498,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 重置到空闲状态
      */
     fun resetToIdleState() {
-        LogUtil.d(TAG, "resetToIdleState")
         if (mInputModeSwitcher.isEnglish) setComposingText("") // 清除预选词
         resetCandidateWindow()
         // 从候选词、符号界面切换到输入键盘
@@ -682,7 +677,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     }
 
     fun requestHideSelf() {
-        LogUtil.d(TAG, "requestHideSelf")
         resetToIdleState()
         service.requestHideSelf(InputMethodManager.HIDE_NOT_ALWAYS)
     }

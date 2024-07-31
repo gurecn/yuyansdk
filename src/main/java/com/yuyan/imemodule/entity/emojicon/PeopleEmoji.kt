@@ -1,7 +1,5 @@
 package com.yuyan.imemodule.entity.emojicon
 
-import com.yuyan.imemodule.utils.LogUtil
-
 /**
  * Emoji表情解析表
  * @author Hieu Rocker (rockerhieu@gmail.com)

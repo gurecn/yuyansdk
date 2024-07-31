@@ -112,7 +112,7 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
                 val abcNumberLine = prefs.abcNumberLine.getValue()
                 prefs.abcNumberLine.setValue(!abcNumberLine)
                 //更换键盘模式后 重亲加载键盘
-                KeyboardLoaderUtil.instance.changeSKBNumberRow(!abcNumberLine)
+                KeyboardLoaderUtil.instance.changeSKBNumberRow()
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(
                     mInputModeSwitcher!!.skbLayout
