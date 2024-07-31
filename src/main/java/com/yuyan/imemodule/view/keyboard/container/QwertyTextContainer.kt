@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.ViewGroup
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
@@ -35,7 +34,6 @@ class QwertyTextContainer(context: Context?, inputView: InputView?, skbValue: In
             mMajorView!!.setResponseKeyEvent(inputView)
         }
         val softKeyboard = instance.getSoftKeyboard(mSkbValue)
-        d(TAG, "updateSkbLayout  softKeyboard.getRow().size():" + softKeyboard.row.size)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         mMajorView!!.invalidate()
     }

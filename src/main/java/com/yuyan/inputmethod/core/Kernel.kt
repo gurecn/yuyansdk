@@ -3,7 +3,6 @@ package com.yuyan.inputmethod.core
 import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.inputmethod.RimeEngine
 import com.yuyan.inputmethod.RimeEngine.destroy
 import com.yuyan.inputmethod.RimeEngine.getNextPageCandidates
@@ -27,7 +26,6 @@ object Kernel {
      */
     @Synchronized
     fun initWiIme(schema: String, inputMode:Int = 0) {
-        d("Kernel", "initWiIme", " schema: $schema")
         isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
         selectSchema(schema, inputMode)
         nativeUpdateImeOption()
@@ -44,7 +42,6 @@ object Kernel {
      * 传入一个键码
      */
     fun inputKeyCode(keyCode: Int, event: KeyEvent) {
-        d("Kernel", "1inputKeyCode: keyCode:$keyCode")
         onNormalKey(keyCode)
     }
 
@@ -55,12 +52,10 @@ object Kernel {
         get() = !isFinish()
     val candidates: Array<CandidateListItem>
         get() {
-            d("Kernel", "getNextPageCandidates")
             return showCandidates
         }
     val nextPageCandidates: List<CandidateListItem>
         get() {
-            d("Kernel", "getNextPageCandidates")
             return getNextPageCandidates()
         }
     val prefixs: Array<String>
@@ -68,7 +63,6 @@ object Kernel {
          * 拿到候选词拼音
          */
         get() {
-            d("Kernel", "getPrefixs")
             return getPrefixs()
         }
 
@@ -83,7 +77,6 @@ object Kernel {
      * 执行选择动作，选择了index指向的词语
      */
     fun getWordSelectedWord(index: Int) {
-        d("Kernel", "getWordSelectedWord:$index")
         selectCandidate(index)
     }
 
@@ -97,7 +90,6 @@ object Kernel {
          * 得到即将上屏的候选词
          */
         get() {
-            d("Kernel", "getPreCommitText")
             return preCommitText
         }
 
@@ -105,12 +97,10 @@ object Kernel {
      * 删除操作
      */
     fun deleteAction() {
-        d("Kernel", "deleteAction")
         onDeleteKey()
     }
 
     fun reset() {
-        d("Kernel", "reset")
         RimeEngine.reset()
     }
 
@@ -119,7 +109,6 @@ object Kernel {
      * 简体和繁体切换需要释放内存
      */
     fun freeIme() {
-        d("Kernel", "freeIme")
         destroy()
     }
 

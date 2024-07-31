@@ -4,7 +4,6 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
-import com.yuyan.imemodule.utils.LogUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -44,12 +43,10 @@ class EnvironmentSingleton private constructor() {
     }
 
     fun initData() {
-        LogUtil.d(TAG, "initData")
         val resources = ImeSdkApplication.context.resources
         val dm = resources.displayMetrics
         mScreenWidth = dm.widthPixels
         mScreenHeight = dm.heightPixels
-        LogUtil.d(TAG, "initData  mScreenWidth:$mScreenWidth  screenHeight:$mScreenHeight")
         isLandscape = mScreenHeight <= mScreenWidth
         var screenWidthVertical = min(dm.widthPixels, dm.heightPixels)
         var screenHeightVertical = max(dm.widthPixels, dm.heightPixels)

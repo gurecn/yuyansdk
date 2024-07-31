@@ -3,7 +3,6 @@ package com.yuyan.inputmethod
 import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -30,7 +29,6 @@ object RimeEngine {
 
     fun selectSchema(mod: String, inputMode:Int = 0): Boolean {
         mInputMode= inputMode
-        LogUtil.d("RimeEngine", "selectSchema", " mInputMode: $mInputMode")
         if(mod != Rime.getCurrentRimeSchema()) {
             keyRecordStack.clear()
             val shareDir = CustomConstant.RIME_DICT_PATH

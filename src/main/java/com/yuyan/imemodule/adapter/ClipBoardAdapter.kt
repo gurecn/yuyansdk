@@ -20,7 +20,6 @@ import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.DevicesUtils.px2dip
-import com.yuyan.imemodule.utils.LogUtil.d
 import splitties.views.dsl.core.margin
 
 /**
@@ -37,7 +36,6 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     }
 
     init {
-        d("CandidatesAdapter", "CandidatesAdapter")
         mDatas = datas
         val theme = activeTheme
         textColor = theme.keyTextColor

@@ -8,7 +8,6 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.entity.keyboard.ToggleState
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9NumberKeyPreset
@@ -21,12 +20,10 @@ import java.util.LinkedList
 class KeyboardLoaderUtil private constructor() {
 
     fun clearKeyboardMap() {
-        d(TAG, "clearKeyboardMap")
         mSoftKeyboardMap.clear()
     }
 
     private fun loadBaseSkb(skbValue: Int): SoftKeyboard {
-        d(TAG, "loadBaseSkb")
         // shift键状态
         val shiftToggleStates = LinkedList<ToggleState>()
         shiftToggleStates.add(ToggleState(0))
@@ -35,7 +32,6 @@ class KeyboardLoaderUtil private constructor() {
 
         val softKeyboard: SoftKeyboard?
         val numberLine = prefs.abcNumberLine.getValue()
-        d(TAG, "loadBaseSkb numberLine：$numberLine")
         val rows: MutableList<List<SoftKey>> = LinkedList()
         if (numberLine) {
             val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
@@ -178,7 +174,6 @@ class KeyboardLoaderUtil private constructor() {
         }
         softKeyboard = getSoftKeyboard(skbValue, rows, numberLine)
         mSoftKeyboardMap[skbValue] = softKeyboard
-        d(TAG, "loadBaseSkb finish:$skbValue")
         return softKeyboard
     }
 
@@ -224,15 +219,13 @@ class KeyboardLoaderUtil private constructor() {
         return keyBeans
     }
 
-    fun changeSKBNumberRow(numberLine: Boolean) {
-        d(TAG, "changeSKBNumberRow numberLine:$numberLine")
+    fun changeSKBNumberRow() {
         for (skbValue in mSoftKeyboardMap.keys) {
             loadBaseSkb(skbValue)
         }
     }
 
     fun getSoftKeyboard(skbValue: Int): SoftKeyboard {
-        d(TAG, "getSoftKeyboard skbValue:$skbValue")
         var softKeyboard = mSoftKeyboardMap[skbValue]
         if (softKeyboard == null) {
             softKeyboard = loadBaseSkb(skbValue)

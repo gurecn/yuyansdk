@@ -18,7 +18,6 @@
 package com.yuyan.inputmethod.core
 import androidx.annotation.Keep
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.utils.LogUtil
 import kotlin.system.measureTimeMillis
 
 /**
@@ -50,67 +49,35 @@ class Rime(fullCheck: Boolean) {
         }
 
         private fun startup(fullCheck: Boolean) {
-            LogUtil.d("Rime&", "startup")
             isHandlingRimeNotification = false
             val sharedDataDir = CustomConstant.RIME_DICT_PATH
             val userDataDir = CustomConstant.RIME_DICT_PATH
-            LogUtil.d("Rime", "Starting up Rime APIs ...")
             startupRime(sharedDataDir, userDataDir, fullCheck)
-            LogUtil.d("Rime", "Initializing schema stuffs after starting up ...")
             updateStatus()
         }
         @JvmStatic
         fun destroy() {
-            LogUtil.d("Rime&", "destroy")
             exitRime()
             instance = null
         }
 
         fun deploy() {
-            LogUtil.d("Rime&", "deploy")
             destroy()
             getInstance(false)
         }
 
         fun updateStatus() {
-            LogUtil.d("Rime&", "updateStatus")
-//            SchemaManager.updateSwitchOptions()
             measureTimeMillis {
                 mStatus = getRimeStatus() ?: RimeStatus()
-            }.also { LogUtil.d("Rime", "Took $it ms to get status") }
+            }
         }
 
         fun updateContext() {
-            LogUtil.d("Rime&", "updateContext")
-            LogUtil.d("Rime", "Update Rime context ...")
             measureTimeMillis {
                 mContext = getRimeContext() ?: RimeContext()
-            }.also { LogUtil.d("Rime", "Took $it ms to get context") }
+            }
             updateStatus()
         }
-
-        /*
-  Android SDK包含了如下6个修饰键的状态，其中function键会被trime消费掉，因此只处理5个键
-  Android和librime对按键命名并不一致。读取可能有误。librime按键命名见如下链接，
-  https://github.com/rime/librime/blob/master/src/rime/key_table.cc
-         */
-        @JvmField
-        val META_SHIFT_ON = getRimeModifierByName("Shift")
-
-        @JvmField
-        val META_CTRL_ON = getRimeModifierByName("Control")
-
-        @JvmField
-        val META_ALT_ON = getRimeModifierByName("Alt")
-
-        @JvmField
-        val META_SYM_ON = getRimeModifierByName("Super")
-
-        @JvmField
-        val META_META_ON = getRimeModifierByName("Meta")
-
-        @JvmField
-        val META_RELEASE_ON = getRimeModifierByName("Release")
 
         @JvmStatic
         val isComposing get() = mStatus?.isComposing ?: false
@@ -162,40 +129,27 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         fun isVoidKeycode(keycode: Int): Boolean {
-            LogUtil.d("Rime&", "isVoidKeycode")
             val voidSymbol = 0xffffff
             return keycode <= 0 || keycode == voidSymbol
         }
 
         // KeyProcess 调用JNI方法发送keycode和mask
         @JvmStatic
-        fun processKey(
-            keycode: Int,
-            mask: Int,
-        ): Boolean {
+        fun processKey(keycode: Int, mask: Int, ): Boolean {
             if (isVoidKeycode(keycode)) return false
-            LogUtil.d("Rime", "processKey: keyCode=$keycode, mask=$mask")
             return processRimeKey(keycode, mask).also {
-                LogUtil.d("Rime", "processKey ${if (it) "success" else "failed"}")
                 updateContext()
             }
         }
 
         @JvmStatic
-        fun replaceKey(
-            caretPos: Int,
-            length: Int,
-            key: String,
-        ): Boolean {
-            LogUtil.d("Rime", "replaceKey: caretPos=$caretPos, length=$length, key=$key")
+        fun replaceKey(caretPos: Int, length: Int, key: String, ): Boolean {
             return replaceRimeKey(caretPos, length, key).also {
-                LogUtil.d("Rime", "replaceKey ${if (it) "success" else "failed"}")
                 updateContext()
             }
         }
 
         private fun isValidText(text: CharSequence?): Boolean {
-            LogUtil.d("Rime&", "isValidText")
             if (text.isNullOrEmpty()) return false
             val ch = text.toString().codePointAt(0)
             return ch in 0x20..0x7f
@@ -203,13 +157,10 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         fun simulateKeySequence(sequence: CharSequence): Boolean {
-            LogUtil.d("Rime&", "simulateKeySequence  sequence = $sequence")
             if (!isValidText(sequence)) return false
-            LogUtil.d("Rime", "simulateKeySequence: $sequence")
             return simulateRimeKeySequence(
                 sequence.toString().replace("{}", "{braceleft}{braceright}"),
             ).also {
-                LogUtil.d("Rime", "simulateKeySequence ${if (it) "success" else "failed"}")
                 updateContext()
             }
         }
@@ -233,34 +184,29 @@ class Rime(fullCheck: Boolean) {
             get() = if (isComposing) mContext?.menu?.highlightedCandidateIndex ?: -1 else -1
 
         fun commitComposition(): Boolean {
-            LogUtil.d("Rime&", "commitComposition")
             return commitRimeComposition().also {
                 updateContext()
             }
         }
         @JvmStatic
         fun clearComposition() {
-            LogUtil.d("Rime&", "clearComposition")
             clearRimeComposition()
             updateContext()
         }
         @JvmStatic
         fun selectCandidate(index: Int): Boolean {
-            LogUtil.d("Rime&", "selectCandidate  index=$index")
             return selectRimeCandidate(index).also {
                 updateContext()
             }
         }
 
         fun selectRimeCandidateCurrentPage(index: Int): Boolean {
-            LogUtil.d("Rime&", "selectRimeCandidateCurrentPage  index=$index")
             return selectRimeCandidateOnCurrentPage(index).also {
                 updateContext()
             }
         }
 
         fun deleteCandidate(index: Int): Boolean {
-            LogUtil.d("Rime&", "deleteCandidate")
             return deleteRimeCandidateOnCurrentPage(index).also {
                 updateContext()
             }
@@ -281,7 +227,6 @@ class Rime(fullCheck: Boolean) {
         }
 
         fun toggleOption(option: String) {
-            LogUtil.d("Rime&", "toggleOption   option=$option")
             setOption(option, !getOption(option))
         }
 
@@ -291,7 +236,6 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         fun selectSchema(schemaId: String): Boolean {
-            LogUtil.d("Rime&", "selectSchema   schemaId=$schemaId")
             return selectRimeSchema(schemaId).also {
                 updateContext()
             }
@@ -299,7 +243,6 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         fun setCaretPos(caretPos: Int) {
-            LogUtil.d("Rime&", "setCaretPos   caretPos=$caretPos")
             setRimeCaretPos(caretPos)
             updateContext()
         }

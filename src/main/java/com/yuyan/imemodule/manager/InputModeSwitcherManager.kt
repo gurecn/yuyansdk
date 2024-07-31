@@ -3,7 +3,6 @@ package com.yuyan.imemodule.manager
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 
@@ -92,7 +91,6 @@ class InputModeSwitcherManager {
         if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
             // 保存新的输入法模式
             saveInputMode(newInputMode)
-            LogUtil.d(TAG, "switchModeForUserKey")
             KeyboardManager.instance.switchKeyboard(skbLayout)
         }
     }

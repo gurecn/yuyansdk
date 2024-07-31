@@ -20,7 +20,6 @@ import com.yuyan.imemodule.ui.utils.SoftKeyboardPreviewUi
 import kotlinx.coroutines.launch
 import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
 import splitties.resources.styledColor
@@ -47,7 +46,6 @@ class ThemeFragment : Fragment() {
 
     private val onThemeChangeListener = ThemeManager.OnThemeChangeListener {
         lifecycleScope.launch {
-            LogUtil.d("ThemeFragment", "onThemeChangeListener")
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard();

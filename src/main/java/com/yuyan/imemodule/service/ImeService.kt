@@ -15,7 +15,6 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
@@ -73,7 +72,6 @@ class ImeService : InputMethodService() {
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        LogUtil.d(TAG, "ImeService   onKeyUp:" + event.keyCode)
         return if (isInputViewShown) {
             mInputView.processKey(event) || super.onKeyUp(keyCode, event)
         } else {

@@ -11,7 +11,6 @@ import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils.px2dip
-import com.yuyan.imemodule.utils.LogUtil.d
 import com.yuyan.inputmethod.core.CandidateListItem
 
 /**
@@ -33,7 +32,6 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     }
 
     init {
-        d("CandidatesAdapter", "CandidatesAdapter")
         mDatas = datas
         val theme = activeTheme
         textColor = theme.keyTextColor

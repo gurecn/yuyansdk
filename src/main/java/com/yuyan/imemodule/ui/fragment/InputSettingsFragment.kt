@@ -3,7 +3,6 @@ package com.yuyan.imemodule.ui.fragment
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
 import com.yuyan.inputmethod.core.Kernel
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().input){
@@ -12,7 +11,6 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
     private val emojiInput = AppPrefs.getInstance().input.emojiInput
 
     private val switchKeyListener = ManagedPreference.OnChangeListener<Boolean> { key, v ->
-        LogUtil.d("InputSettingsFragment", "SwitchKeyListener   key:$key value:$v")
         Kernel.nativeUpdateImeOption()
     }
 

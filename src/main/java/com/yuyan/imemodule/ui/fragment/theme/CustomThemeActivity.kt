@@ -43,7 +43,6 @@ import com.yuyan.imemodule.data.theme.ThemeFilesManager
 import com.yuyan.imemodule.data.theme.ThemePreset
 import com.yuyan.imemodule.ui.utils.DarkenColorFilter
 import com.yuyan.imemodule.ui.utils.SoftKeyboardPreviewUi
-import com.yuyan.imemodule.utils.LogUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
