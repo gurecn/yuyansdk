@@ -74,9 +74,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val handWritingWidth = int(
             R.string.paint_thickness,
             "hand_writing_width",
-            55,
-            30,
-            85,
+            35,
+            0,
+            100,
             "%",
             defaultLabel = R.string.system_default
         )
