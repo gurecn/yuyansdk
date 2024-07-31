@@ -29,6 +29,7 @@ import kotlin.math.sqrt
  * Description:This is DrawingStrokes
  */
 class DrawingStrokes(strokeView: View, strokes: Strokes) {
+    private val STROKES_MAX_WIDTH: Float = 50f   // 最大笔迹宽度
     var mPaint: Paint? = null
     var timePoints = Vector<TimePoint>()
     var strokesPath: Path? = null
@@ -261,7 +262,7 @@ class DrawingStrokes(strokeView: View, strokes: Strokes) {
             mPaint.setColor(ContextCompat.getColor(context, R.color.black_00))
         }
         val paintWidth = getInstance().handwriting.handWritingWidth.getValue()
-        setMaxWidth(paintWidth.toFloat())
+        setMaxWidth(STROKES_MAX_WIDTH * paintWidth / 100f)
         canvas.drawBitmap(bitmapStroke!!, 0f, 0f, mPaint)
     }
 

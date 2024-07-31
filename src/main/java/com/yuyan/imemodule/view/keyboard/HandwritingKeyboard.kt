@@ -29,7 +29,6 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         //笔划
         val strokes = Strokes()
         mDrawing = DrawingStrokes(this, strokes)
-        mDrawing.setMaxWidth(50f) //刚笔
         mHandWritingPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     }
 
