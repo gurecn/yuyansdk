@@ -17,18 +17,17 @@ object RimeEngine {
     private const val PINYIN_T9_9 = 16
 
     private val keyRecordStack = KeyRecordStack()
-    private var mInputMode = 0  // 键盘模式
+    private var mInputModeSwitcher : InputModeSwitcherManager? = null  // 键盘模式
     private var pinyinCandidates: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: Array<CandidateListItem> = emptyArray() // 所有待展示的候选词
     var showComposition: CharSequence = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
-
     fun init() {
         Rime.getInstance(false)
     }
 
-    fun selectSchema(mod: String, inputMode:Int = 0): Boolean {
-        mInputMode= inputMode
+    fun selectSchema(mod: String, inputMode:InputModeSwitcherManager? = null): Boolean {
+        mInputModeSwitcher= inputMode
         if(mod != Rime.getCurrentRimeSchema()) {
             keyRecordStack.clear()
             val shareDir = CustomConstant.RIME_DICT_PATH
@@ -146,30 +145,33 @@ object RimeEngine {
     }
 
     private fun updateCandidatesOrCommitText(): String? {
-        val charCase = mInputMode and InputModeSwitcherManager.MASK_CASE
         val rimeCommit = Rime.getRimeCommit()
         if (rimeCommit != null) {
             keyRecordStack.clear()
             preCommitText = rimeCommit.commitText
-            if (InputModeSwitcherManager.MASK_CASE_UPPER == charCase) {
-                preCommitText = preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            }else if (InputModeSwitcherManager.MASK_CASE_UPPER_LOCK == charCase) {
-                preCommitText = preCommitText.uppercase()
+            if(mInputModeSwitcher != null) {
+                if (mInputModeSwitcher!!.isEnglishUpperCase) {
+                    preCommitText = preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                } else if (mInputModeSwitcher!!.isEnglishUpperLockCase) {
+                    preCommitText = preCommitText.uppercase()
+                }
             }
             return preCommitText
         }
         val candidates = Rime.getRimeContext()?.candidates ?: emptyArray()
         var composition = getCurrentComposition(candidates)
-        if (InputModeSwitcherManager.MASK_CASE_UPPER == charCase) {
-            for(item in candidates){
-                item.text = item.text.replaceFirstChar { it.uppercase() }
+        if(mInputModeSwitcher != null) {
+            if (mInputModeSwitcher!!.isEnglishUpperCase) {
+                for (item in candidates) {
+                    item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                }
+                composition = composition.toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            } else if (mInputModeSwitcher!!.isEnglishUpperLockCase) {
+                for (item in candidates) {
+                    item.text = item.text.uppercase()
+                }
+                composition = composition.toString().uppercase()
             }
-            composition = composition.toString().replaceFirstChar { it.uppercase() }
-        }else if (InputModeSwitcherManager.MASK_CASE_UPPER_LOCK == charCase) {
-            for(item in candidates){
-                item.text = item.text.uppercase()
-            }
-            composition = composition.toString().uppercase()
         }
         var count = Rime.compositionText.count { it in '1'..'9' }
         val pyCandidates =

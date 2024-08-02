@@ -98,31 +98,4 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
         }
         return null
     }
-
-    /**
-     * 改变键盘的状态，并且根据键盘状态中的mKeyStates[]来设置每个按键。
-     *
-     * @param toggleStates 整个键盘的状态
-     */
-    fun enableToggleStates(toggleStates: ToggleStates?) {
-        if (null == toggleStates) return
-        for (keyRow in mKeyRows) {
-            for (key in keyRow) {
-                if (key is SoftKeyToggle) {
-                    if (key.keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) {
-                        if (InputModeSwitcherManager.MASK_CASE_UPPER_LOCK == toggleStates.charCase) {
-                            key.enableToggleState(2)
-                        } else if (InputModeSwitcherManager.MASK_CASE_UPPER == toggleStates.charCase) {
-                            key.enableToggleState(1)
-                        } else {
-                            key.enableToggleState(0)
-                        }
-                    }
-                    if (key.keyCode == KeyEvent.KEYCODE_ENTER) {
-                        key.enableToggleState(toggleStates.mStateEnter)
-                    }
-                }
-            }
-        }
-    }
 }

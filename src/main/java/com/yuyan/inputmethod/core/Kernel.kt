@@ -2,6 +2,7 @@ package com.yuyan.inputmethod.core
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.inputmethod.RimeEngine
 import com.yuyan.inputmethod.RimeEngine.destroy
@@ -25,7 +26,7 @@ object Kernel {
      * 初始化输入法
      */
     @Synchronized
-    fun initWiIme(schema: String, inputMode:Int = 0) {
+    fun initWiIme(schema: String, inputMode: InputModeSwitcherManager? = null) {
         isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
         selectSchema(schema, inputMode)
         nativeUpdateImeOption()

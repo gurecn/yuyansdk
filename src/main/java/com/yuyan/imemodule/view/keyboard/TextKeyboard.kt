@@ -78,7 +78,10 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     fun updateStates(switcherManager: InputModeSwitcherManager) {
         if (switcherManager.isEnglish) {
-            mSoftKeyboard?.enableToggleStates(switcherManager.mToggleStates)
+            var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
+            softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)
+            softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) as SoftKeyToggle??: return
+            softKey.enableToggleState(switcherManager.mToggleStates.charCase)
             invalidateView()
         } else {
             val softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
@@ -241,8 +244,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
 
         }
         val keyLabel = if(mService != null && mService!!.mInputModeSwitcher.isEnglish) {
-            val charCase = mService!!.mInputModeSwitcher.mToggleStates.charCase
-            if (InputModeSwitcherManager.MASK_CASE_LOWER == charCase || (InputModeSwitcherManager.MASK_CASE_UPPER == charCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
+            if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
                 softKey.keyLabel?.lowercase()
             } else {
                 softKey.keyLabel

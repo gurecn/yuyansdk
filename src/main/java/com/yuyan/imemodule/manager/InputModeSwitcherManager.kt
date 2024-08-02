@@ -165,6 +165,13 @@ class InputModeSwitcherManager {
          */
         get() = mInputMode and (MASK_SKB_LAYOUT or MASK_LANGUAGE or MASK_CASE) == MODE_SKB_ENGLISH_UPPER
 
+
+    val isEnglishUpperLockCase: Boolean
+        /**
+         * 是否是软键盘高（锁定大写）模式
+         */
+        get() = mInputMode and (MASK_SKB_LAYOUT or MASK_LANGUAGE or MASK_CASE) == MODE_SKB_ENGLISH_UPPER_LOCK
+
     /**
      * 保存新的输入法模式
      */
@@ -175,9 +182,9 @@ class InputModeSwitcherManager {
         if (isEnglish) {
             val charCase = mInputMode and MASK_CASE
             mToggleStates.charCase = charCase
-            Kernel.initWiIme(CustomConstant.SCHEMA_EN, mInputMode)
+            Kernel.initWiIme(CustomConstant.SCHEMA_EN, this)
         } else {
-            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue(), mInputMode)
+            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue(), this)
         }
         if (isChinese || isEnglish) {
             mRecentLauageInputMode = mInputMode
@@ -311,12 +318,12 @@ class InputModeSwitcherManager {
         /**
          * 第5位指明软键盘当前的状态，比如高（大写），低（小写）。
          */
-        const val MASK_CASE = 0x000f
+        private const val MASK_CASE = 0x000f
 
         /**
          * 指明软键盘状态为低（小写）。
          */
-        const val MASK_CASE_LOWER = 0x0000
+        private const val MASK_CASE_LOWER = 0x0000
 
         /**
          * 指明软键盘状态为高（大写）。
@@ -326,7 +333,7 @@ class InputModeSwitcherManager {
         /**
          * 指明软键盘状态为高（大写）锁定状态。
          */
-        const val MASK_CASE_UPPER_LOCK = 0x0002
+        private const val MASK_CASE_UPPER_LOCK = 0x0002
 
         /**
          * Mode for inputing Chinese with soft keyboard. 九宫格软键盘、中文模式
@@ -336,7 +343,7 @@ class InputModeSwitcherManager {
         /**
          * Mode for inputing English lower characters with soft keyboard. 标准软键盘、英文、小写模式
          */
-        const val MODE_SKB_ENGLISH_LOWER =
+        private const val MODE_SKB_ENGLISH_LOWER =
             MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_LOWER
 
         /**
