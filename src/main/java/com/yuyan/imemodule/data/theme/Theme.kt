@@ -28,21 +28,14 @@ sealed class Theme : Parcelable {
     abstract val keyBackgroundColor: Int
     abstract val keyTextColor: Int
 
-    abstract val altKeyBackgroundColor: Int
-    abstract val altKeyTextColor: Int
-
     abstract val accentKeyBackgroundColor: Int
     abstract val accentKeyTextColor: Int
-
-    abstract val keyPressHighlightColor: Int
-    abstract val keyShadowColor: Int
 
     abstract val popupBackgroundColor: Int
     abstract val popupTextColor: Int
 
     abstract val spaceBarColor: Int
     abstract val dividerColor: Int
-    abstract val clipboardEntryColor: Int
 
     abstract val genericActiveBackgroundColor: Int
     abstract val genericActiveForegroundColor: Int
@@ -76,17 +69,12 @@ sealed class Theme : Parcelable {
         override val keyboardColor: Int,
         override val keyBackgroundColor: Int,
         override val keyTextColor: Int,
-        override val altKeyBackgroundColor: Int,
-        override val altKeyTextColor: Int,
         override val accentKeyBackgroundColor: Int,
         override val accentKeyTextColor: Int,
-        override val keyPressHighlightColor: Int,
-        override val keyShadowColor: Int,
         override val popupBackgroundColor: Int,
         override val popupTextColor: Int,
         override val spaceBarColor: Int,
         override val dividerColor: Int,
-        override val clipboardEntryColor: Int,
         override val genericActiveBackgroundColor: Int,
         override val genericActiveForegroundColor: Int
     ) : Theme() {
@@ -123,17 +111,12 @@ sealed class Theme : Parcelable {
         override val keyboardColor: Int,
         override val keyBackgroundColor: Int,
         override val keyTextColor: Int,
-        override val altKeyBackgroundColor: Int,
-        override val altKeyTextColor: Int,
         override val accentKeyBackgroundColor: Int,
         override val accentKeyTextColor: Int,
-        override val keyPressHighlightColor: Int,
-        override val keyShadowColor: Int,
         override val popupBackgroundColor: Int,
         override val popupTextColor: Int,
         override val spaceBarColor: Int,
         override val dividerColor: Int,
-        override val clipboardEntryColor: Int,
         override val genericActiveBackgroundColor: Int,
         override val genericActiveForegroundColor: Int
     ) : Theme() {
@@ -143,24 +126,19 @@ sealed class Theme : Parcelable {
         constructor(
             name: String,
             isDark: Boolean,    // 深色主题
-            backgroundColor: Number,  // 键盘背景色
+            backgroundColor: Number,  // 整体区域背景色
             barColor: Number,    // 菜单栏、候选此栏背景色
-            keyboardColor: Number,  //
+            keyboardColor: Number,  // 按键区域背景色
             keyBackgroundColor: Number,  // 按键背景色
             keyTextColor: Number,   // 按键字体颜色
-            altKeyBackgroundColor: Number,
-            altKeyTextColor: Number,
-            accentKeyBackgroundColor: Number,
-            accentKeyTextColor: Number,
-            keyPressHighlightColor: Number,
-            keyShadowColor: Number,
-            popupBackgroundColor: Number,
-            popupTextColor: Number,
-            spaceBarColor: Number,
-            dividerColor: Number,
-            clipboardEntryColor: Number,
-            genericActiveBackgroundColor: Number,
-            genericActiveForegroundColor: Number
+            accentKeyBackgroundColor: Number, // 回车键背景色
+            accentKeyTextColor: Number, // 回车键字体色
+            popupBackgroundColor: Number,   // 长按弹窗背景色
+            popupTextColor: Number,  // 长按弹窗字体颜色
+            spaceBarColor: Number,  // 空格键背景色
+            dividerColor: Number,  // 分割线颜色
+            genericActiveBackgroundColor: Number,    //通用活动背景色
+            genericActiveForegroundColor: Number   //通用活动前景色
         ) : this(
             name,
             isDark,
@@ -169,17 +147,12 @@ sealed class Theme : Parcelable {
             keyboardColor.toInt(),
             keyBackgroundColor.toInt(),
             keyTextColor.toInt(),
-            altKeyBackgroundColor.toInt(),
-            altKeyTextColor.toInt(),
             accentKeyBackgroundColor.toInt(),
             accentKeyTextColor.toInt(),
-            keyPressHighlightColor.toInt(),
-            keyShadowColor.toInt(),
             popupBackgroundColor.toInt(),
             popupTextColor.toInt(),
             spaceBarColor.toInt(),
             dividerColor.toInt(),
-            clipboardEntryColor.toInt(),
             genericActiveBackgroundColor.toInt(),
             genericActiveForegroundColor.toInt()
         )
@@ -193,17 +166,12 @@ sealed class Theme : Parcelable {
             keyboardColor,
             keyBackgroundColor,
             keyTextColor,
-            altKeyBackgroundColor,
-            altKeyTextColor,
             accentKeyBackgroundColor,
             accentKeyTextColor,
-            keyPressHighlightColor,
-            keyShadowColor,
             popupBackgroundColor,
             popupTextColor,
             spaceBarColor,
             dividerColor,
-            clipboardEntryColor,
             genericActiveBackgroundColor,
             genericActiveForegroundColor
         )
@@ -228,17 +196,12 @@ sealed class Theme : Parcelable {
             keyboardColor,
             keyBackgroundColor,
             keyTextColor,
-            altKeyBackgroundColor,
-            altKeyTextColor,
             accentKeyBackgroundColor,
             accentKeyTextColor,
-            keyPressHighlightColor,
-            keyShadowColor,
             popupBackgroundColor,
             popupTextColor,
             spaceBarColor,
             dividerColor,
-            clipboardEntryColor,
             genericActiveBackgroundColor,
             genericActiveForegroundColor
         )
