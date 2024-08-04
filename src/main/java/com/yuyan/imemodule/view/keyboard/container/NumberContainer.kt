@@ -14,7 +14,7 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
-class NumberContainer(context: Context?, inputView: InputView?) : InputBaseContainer(context, inputView) {
+class NumberContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private var mRVLeftPrefix : RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
@@ -50,7 +50,7 @@ class NumberContainer(context: Context?, inputView: InputView?) : InputBaseConta
         val adapter = PrefixAdapter(context, strs)
         adapter.setOnItemClickLitener { _, _, position ->
             val softKey = SoftKey(strs[position])
-            inputView!!.responseKeyEvent(softKey)
+            inputView.responseKeyEvent(softKey)
             tryPlayKeyDown()
             tryVibrate(this)
         }

@@ -26,7 +26,7 @@ import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 
-class SymbolContainer(context: Context, inputView: InputView?) : BaseContainer(context, inputView) {
+class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null
     private fun initView(context: Context) {
@@ -44,12 +44,12 @@ class SymbolContainer(context: Context, inputView: InputView?) : BaseContainer(c
             val keyRadius = prefs.keyRadius.getValue()
             val bg = GradientDrawable()
             bg.setColor(mActiveTheme.keyBackgroundColor)
-            bg.setShape(GradientDrawable.RECTANGLE)
-            bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+            bg.shape = GradientDrawable.RECTANGLE
+            bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             ivDelete.background = bg
         }
         ivDelete.setOnClickListener {
-            inputView!!.sendKeyEvent(KeyEvent.KEYCODE_DEL)
+            inputView.sendKeyEvent(KeyEvent.KEYCODE_DEL)
             val softKey = SoftKey()
             softKey.keyCode = KeyEvent.KEYCODE_DEL
             tryPlayKeyDown(softKey)
@@ -60,14 +60,14 @@ class SymbolContainer(context: Context, inputView: InputView?) : BaseContainer(c
             LayoutParams.WRAP_CONTENT
         )
         layoutParams.addRule(ALIGN_PARENT_BOTTOM)
-        mLLSymbolType.setLayoutParams(layoutParams)
+        mLLSymbolType.layoutParams = layoutParams
         this.addView(mLLSymbolType)
         val layoutParams2 = LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
         )
         layoutParams2.addRule(ABOVE, mLLSymbolType.id)
-        mRVSymbolsView!!.setLayoutParams(layoutParams2)
+        mRVSymbolsView!!.layoutParams = layoutParams2
         this.addView(mRVSymbolsView)
     }
 
@@ -79,25 +79,25 @@ class SymbolContainer(context: Context, inputView: InputView?) : BaseContainer(c
         val result = s.replace("[ \\r]".toRegex(), "")
         val viewType = adapter.viewType
         if (viewType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
-            LauncherModel.instance!!.usedCharacterDao!!.insertUsedCharacter(
+            LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(
                 result,
                 System.currentTimeMillis()
             )
-            inputView!!.resetToIdleState()
+            inputView.resetToIdleState()
             KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
         } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
-            LauncherModel.instance!!.usedEmojiDao!!.insertUsedEmoji(
+            LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(
                 result,
                 System.currentTimeMillis()
             )
         } else if (viewType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
-            LauncherModel.instance!!.usedEmoticonsDao!!.insertUsedEmoticons(
+            LauncherModel.instance.usedEmoticonsDao!!.insertUsedEmoticons(
                 result,
                 System.currentTimeMillis()
             )
         }
         val softKey = SoftKey(result)
-        inputView!!.responseKeyEvent(softKey)
+        inputView.responseKeyEvent(softKey)
     }
 
     private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
@@ -110,10 +110,10 @@ class SymbolContainer(context: Context, inputView: InputView?) : BaseContainer(c
         if (position < 0) return
         if (lastPosition != position) {
             val symbols = SymbolsManager.instance!!.getmSymbols(position)
-            inputView!!.showSymbols(symbols)
+            inputView.showSymbols(symbols)
             updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)
         } else {
-            inputView!!.resetToIdleState()
+            inputView.resetToIdleState()
             KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
         }
     }

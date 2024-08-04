@@ -28,7 +28,7 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.LinkedList
 
-class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer(context, inputView) {
+class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
 
@@ -45,7 +45,7 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
         manager.justifyContent = JustifyContent.FLEX_START
         mRVMenuLayout!!.setLayoutManager(manager)
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        mRVMenuLayout!!.setLayoutParams(layoutParams)
+        mRVMenuLayout!!.layoutParams = layoutParams
         this.addView(mRVMenuLayout)
     }
 
@@ -55,7 +55,6 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
     fun showSettingsView() {
         //获取键盘功能栏功能对象
         val funItems: MutableList<SkbFunItem> = LinkedList()
-        //        funItems.add(new SkbFunItem(mContext.getString(R.string.emoji_setting), R.drawable.sdk_vector_menu_skb_emoji, SkbMenuMode.EmojiKeyboard));
         funItems.add(SkbFunItem(mContext.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
         funItems.add(SkbFunItem(mContext.getString(R.string.setting_ime_keyboard_height), R.drawable.sdk_vector_menu_skb_height, SkbMenuMode.KeyboardHeight))
         if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
@@ -83,7 +82,7 @@ class SettingsContainer(context: Context, inputView: InputView?) : BaseContainer
         when (data.skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
                 val symbols = SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                inputView!!.showSymbols(symbols)
+                inputView.showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             }

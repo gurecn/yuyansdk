@@ -6,7 +6,7 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
-class QwertyTextContainer(context: Context?, inputView: InputView?, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
+class QwertyTextContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
     private var mSkbValue: Int = 0
     init {
         mSkbValue = skbValue

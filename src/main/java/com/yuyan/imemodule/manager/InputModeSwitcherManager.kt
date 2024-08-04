@@ -260,7 +260,7 @@ class InputModeSwitcherManager {
          * current input mode does not require a soft keyboard.
          * 第8位指明软键盘的布局。如果最8位为0，那么就表明当前输入法模式不需要软键盘。
          */
-        private const val MASK_SKB_LAYOUT = 0xff00 //不同位代表意义:布局（2位）/语言/大小写/0/0/0/0
+        const val MASK_SKB_LAYOUT = 0xff00 //不同位代表意义:布局（2位）/语言/大小写/0/0/0/0
 
         /**
          * A kind of soft keyboard layout. An input mode should be anded with

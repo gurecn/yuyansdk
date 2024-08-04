@@ -337,7 +337,6 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     companion object {
-        private val TAG = KeyboardLoaderUtil::class.java.getSimpleName()
         private var mInstance: KeyboardLoaderUtil? = null
         private val mSoftKeyboardMap = HashMap<Int, SoftKeyboard?>() //缓存所有可用键盘
         @JvmStatic
