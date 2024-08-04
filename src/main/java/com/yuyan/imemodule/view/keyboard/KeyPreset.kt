@@ -33,6 +33,37 @@ val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     -7 to arrayOf("123"),
 )
 
+val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
+    45 to arrayOf("Q", "[", "iu"),
+    51 to arrayOf("W", "]", "ei"),
+    33 to arrayOf("E", "<", "e"),
+    46 to arrayOf("R", ">", "uan"),
+    48 to arrayOf("T", "（", "ue ve"),
+    53 to arrayOf("Y", "）", "un"),
+    49 to arrayOf("U", "{", "sh"),
+    37 to arrayOf("I", "}", "ch"),
+    43 to arrayOf("O", "|", "uo"),
+    44 to arrayOf("P", "-", "ie"),
+    29 to arrayOf("A", "-", "a"),
+    47 to arrayOf("S", "/", "iong ong"),
+    32 to arrayOf("D", ":", "ai"),
+    34 to arrayOf("F", ";", "en"),
+    35 to arrayOf("G", "_", "eng"),
+    36 to arrayOf("H", "#", "ang"),
+    38 to arrayOf("J", "~", "an"),
+    39 to arrayOf("K", "'", "ing uai"),
+    40 to arrayOf("L", "\"", "iang uang"),
+    75 to arrayOf("分词"),
+    54 to arrayOf("Z", "@", "ou"),
+    52 to arrayOf("X", ",", "ia ua"),
+    31 to arrayOf("C", ".", "ao"),
+    50 to arrayOf("V", "&", "ui zh"),
+    30 to arrayOf("B", "?", "in"),
+    42 to arrayOf("N", "!", "iao"),
+    41 to arrayOf("M", "...", "ian"),
+    -3 to arrayOf("符"),
+    -7 to arrayOf("123"),
+)
 
 val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     36 to arrayOf( "HP", "-", "a ia ua"),
