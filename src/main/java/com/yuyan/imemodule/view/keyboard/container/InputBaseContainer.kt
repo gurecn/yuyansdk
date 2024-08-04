@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -23,6 +24,14 @@ open class InputBaseContainer(context: Context?, inputView: InputView?) : BaseCo
     fun updateStates() {
         mMajorView!!.updateStates(mInputModeSwitcher!!)
     }
+
+    /**
+     * 重置主题
+     */
+    fun setTheme(theme: Theme) {
+        mMajorView!!.setTheme(theme)
+    }
+
 
     /**
      * 设置键盘高度

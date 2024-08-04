@@ -16,7 +16,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.theme.ThemeSettingsFragment
-import com.yuyan.imemodule.ui.utils.SoftKeyboardPreviewUi
+import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.launch
 import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
@@ -38,7 +38,7 @@ import splitties.views.dsl.core.wrapContent
 
 class ThemeFragment : Fragment() {
 
-    private lateinit var previewUi: SoftKeyboardPreviewUi
+    private lateinit var previewUi: KeyboardPreviewView
 
     private lateinit var tabLayout: TabLayout
 
@@ -57,7 +57,7 @@ class ThemeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = with(requireContext()) {
-        previewUi = SoftKeyboardPreviewUi(this)
+        previewUi = KeyboardPreviewView(this)
         previewUi.setTheme(activeTheme)
         ThemeManager.addOnChangedListener(onThemeChangeListener)
         val preview = previewUi.apply {

@@ -42,7 +42,7 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeFilesManager
 import com.yuyan.imemodule.data.theme.ThemePreset
 import com.yuyan.imemodule.ui.utils.DarkenColorFilter
-import com.yuyan.imemodule.ui.utils.SoftKeyboardPreviewUi
+import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -111,7 +111,7 @@ class CustomThemeActivity : AppCompatActivity() {
         }
     }
 
-    private lateinit var previewUi: SoftKeyboardPreviewUi
+    private lateinit var previewUi: KeyboardPreviewView
 
     private fun createTextView(@StringRes string: Int? = null, ripple: Boolean = false) = textView {
         if (string != null) {
@@ -283,7 +283,7 @@ class CustomThemeActivity : AppCompatActivity() {
             theme = ThemePreset.TransparentDark.deriveCustomBackground(n, c.path, s.path)
         }
 
-        previewUi = SoftKeyboardPreviewUi(this).apply {
+        previewUi = KeyboardPreviewView(this).apply {
             scaleX = 0.7f
             scaleY = 0.7f
             outlineProvider = ViewOutlineProvider.BOUNDS
