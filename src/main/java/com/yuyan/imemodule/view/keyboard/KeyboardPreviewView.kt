@@ -9,22 +9,23 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
-import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 
 class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     var intrinsicWidth = 0
         private set
     var intrinsicHeight = 0
         private set
-    private var qwerTextContainer: InputBaseContainer? = null
+    private var qwerTextContainer: TextKeyboard? = null
     private fun initView() {
         removeAllViews()
         val mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false)
         val previewUi = mSkbRoot.findViewById<RelativeLayout>(R.id.skb_input_keyboard_view)
-        qwerTextContainer = QwertyTextContainer(context, null, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
-        qwerTextContainer?.updateSkbLayout()
+        qwerTextContainer = TextKeyboard(context)
+        val softKeyboard = KeyboardLoaderUtil.instance.getSoftKeyboard(AppPrefs.getInstance().internal.inputDefaultMode.getValue()  and InputModeSwitcherManager.MASK_SKB_LAYOUT)
+        qwerTextContainer!!.setSoftKeyboard(softKeyboard)
         previewUi.addView(qwerTextContainer)
         addView(mSkbRoot)
         intrinsicWidth = instance.skbWidth

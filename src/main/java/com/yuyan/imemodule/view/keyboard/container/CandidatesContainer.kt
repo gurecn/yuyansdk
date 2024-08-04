@@ -23,7 +23,7 @@ import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 
-class CandidatesContainer(context: Context, inputView: InputView?) : BaseContainer(context, inputView) {
+class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVLeftPrefix: RecyclerView? = null
     private var isLoadingMore = false // 正在加载更多
@@ -69,8 +69,8 @@ class CandidatesContainer(context: Context, inputView: InputView?) : BaseContain
             val keyRadius = prefs.keyRadius.getValue()
             val bg = GradientDrawable()
             bg.setColor(mActiveTheme.keyBackgroundColor)
-            bg.setShape(GradientDrawable.RECTANGLE)
-            bg.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+            bg.shape = GradientDrawable.RECTANGLE
+            bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             ivDelete.background = bg
         }
         ivDelete.isClickable = true
@@ -78,7 +78,7 @@ class CandidatesContainer(context: Context, inputView: InputView?) : BaseContain
         ivDelete.setOnClickListener { _: View? ->
             val softKey = SoftKey()
             softKey.keyCode = KeyEvent.KEYCODE_DEL
-            inputView!!.responseKeyEvent(softKey)
+            inputView.responseKeyEvent(softKey)
             tryPlayKeyDown(softKey)
             tryVibrate(this)
         }
@@ -86,7 +86,7 @@ class CandidatesContainer(context: Context, inputView: InputView?) : BaseContain
         layoutParams3.setMargins(paddingBorder, paddingBorder, paddingBorder, paddingBorder)
         layoutParams3.addRule(ALIGN_PARENT_END, TRUE)
         layoutParams3.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-        ivDelete.setLayoutParams(layoutParams3)
+        ivDelete.layoutParams = layoutParams3
         return ivDelete
     }
 
@@ -135,9 +135,9 @@ class CandidatesContainer(context: Context, inputView: InputView?) : BaseContain
                 parent.getSymbolData(position)
                 tryPlayKeyDown()
                 tryVibrate(this)
-                inputView!!.selectPrefix(position)
+                inputView.selectPrefix(position)
             } else if (parent is CandidatesAdapter) {
-                inputView!!.onChoiceTouched(parent.getItem(position))
+                inputView.onChoiceTouched(parent.getItem(position))
             }
         }
         mRVSymbolsView!!.setAdapter(adapter)
@@ -167,11 +167,11 @@ class CandidatesContainer(context: Context, inputView: InputView?) : BaseContain
             tryVibrate(this)
             if (isPrefixs) {
                 if (isLetter(s)) {
-                    inputView!!.selectPrefix(position)
+                    inputView.selectPrefix(position)
                 }
             } else {
                 val softKey = SoftKey(s)
-                inputView!!.responseKeyEvent(softKey)
+                inputView.responseKeyEvent(softKey)
             }
         }
         mRVLeftPrefix!!.setAdapter(adapter)

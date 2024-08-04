@@ -14,7 +14,7 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
 
-class HandwritingTextContainer(context: Context?, inputView: InputView?) : InputBaseContainer(context, inputView) {
+class HandwritingTextContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘界面上符号(T9左侧、手写右侧)
     private var mRVRightSymbols: RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
@@ -55,7 +55,7 @@ class HandwritingTextContainer(context: Context?, inputView: InputView?) : Input
         val adapter = PrefixAdapter(context, strs)
         adapter.setOnItemClickLitener { _, _, position ->
             val softKey = SoftKey(strs[position])
-            inputView!!.responseKeyEvent(softKey)
+            inputView.responseKeyEvent(softKey)
             tryPlayKeyDown()
             tryVibrate(this)
         }

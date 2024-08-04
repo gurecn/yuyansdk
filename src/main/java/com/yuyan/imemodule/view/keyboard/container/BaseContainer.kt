@@ -10,10 +10,10 @@ import com.yuyan.imemodule.view.keyboard.InputView
 /**
  * 软键盘View的集装箱，主持一个软件盘View。
  */
-open class BaseContainer(@JvmField var mContext: Context, inputView: InputView?) : RelativeLayout(mContext) {
+open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) : RelativeLayout(mContext) {
     //输入法服务
     @JvmField
-    protected var inputView: InputView? = null
+    protected var inputView: InputView
 
     //输入法变换器
     @JvmField
@@ -33,8 +33,8 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView?)
 
     init {
         this.inputView = inputView
-        mDecInfo = inputView?.mDecInfo
-        mInputModeSwitcher = inputView?.mInputModeSwitcher
+        mDecInfo = inputView.mDecInfo
+        mInputModeSwitcher = inputView.mInputModeSwitcher
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

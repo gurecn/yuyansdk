@@ -12,7 +12,7 @@ import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 import kotlin.math.abs
 
-open class InputBaseContainer(context: Context?, inputView: InputView?) : BaseContainer(context!!, inputView) {
+open class InputBaseContainer(context: Context?, inputView: InputView) : BaseContainer(context!!, inputView) {
 
     //主要视图：软键盘视图。
     @JvmField
@@ -26,29 +26,20 @@ open class InputBaseContainer(context: Context?, inputView: InputView?) : BaseCo
     }
 
     /**
-     * 重置主题
-     */
-    fun setTheme(theme: Theme) {
-        mMajorView!!.setTheme(theme)
-    }
-
-
-    /**
      * 设置键盘高度
      */
     fun setKeyboardHeight() {
         val softKeyboardHeight = EnvironmentSingleton.instance.skbHeight
         val lp = LayoutParams(LayoutParams.MATCH_PARENT, softKeyboardHeight)
-        val rootView =
-            LayoutInflater.from(context).inflate(R.layout.layout_ime_keyboard_height_shadow, null)
-        rootView.setLayoutParams(lp)
+        val rootView = LayoutInflater.from(context).inflate(R.layout.layout_ime_keyboard_height_shadow, this, false)
+        rootView.layoutParams = lp
         this.addView(rootView)
         rootView.findViewById<View>(R.id.ll_keyboard_height_reset).setOnClickListener { _: View? ->
             EnvironmentSingleton.instance.keyBoardHeightRatio = 0.3f
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             updateSkbLayout()
-            rootView.setLayoutParams(lp)
+            rootView.layoutParams = lp
         }
         rootView.findViewById<View>(R.id.ll_keyboard_height_sure).setOnClickListener { removeView(rootView) }
         val lastY = floatArrayOf(0f)

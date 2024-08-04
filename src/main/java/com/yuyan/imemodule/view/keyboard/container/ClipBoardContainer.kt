@@ -10,7 +10,7 @@ import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.inputmethod.core.CandidateListItem
 
-class ClipBoardContainer(context: Context, inputView: InputView?) : BaseContainer(context, inputView) {
+class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
 
     init {
@@ -24,7 +24,7 @@ class ClipBoardContainer(context: Context, inputView: InputView?) : BaseContaine
         val manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         mRVSymbolsView!!.setLayoutManager(manager)
         val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        mRVSymbolsView!!.setLayoutParams(layoutParams2)
+        mRVSymbolsView!!.layoutParams = layoutParams2
         this.addView(mRVSymbolsView)
         showClipBoardView()
     }
@@ -41,11 +41,11 @@ class ClipBoardContainer(context: Context, inputView: InputView?) : BaseContaine
                 words.add(CandidateListItem("", copyContent))
             }
         }
-        inputView?.responseClipboardResultEvent(words)
+        inputView.responseClipboardResultEvent(words)
         val adapter = ClipBoardAdapter(context, copyContents)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is ClipBoardAdapter) {
-                inputView!!.onChoiceTouched(position)
+                inputView.onChoiceTouched(position)
             }
         }
         mRVSymbolsView!!.setAdapter(adapter)

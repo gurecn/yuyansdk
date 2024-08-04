@@ -16,7 +16,7 @@ import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
-class T9TextContainer(context: Context?, inputView: InputView?) : InputBaseContainer(context, inputView) {
+class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private var mRVLeftPrefix : RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
@@ -85,11 +85,11 @@ class T9TextContainer(context: Context?, inputView: InputView?) : InputBaseConta
             tryVibrate(this)
             if (isPrefixs) {
                 if (isLetter(symbol)) {
-                    inputView!!.selectPrefix(position)
+                    inputView.selectPrefix(position)
                 }
             } else {
                 val softKey = SoftKey(symbol)
-                inputView!!.responseKeyEvent(softKey)
+                inputView.responseKeyEvent(softKey)
             }
         }
         mRVLeftPrefix.setAdapter(adapter)
