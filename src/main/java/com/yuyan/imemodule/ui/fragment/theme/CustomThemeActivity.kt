@@ -41,6 +41,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeFilesManager
 import com.yuyan.imemodule.data.theme.ThemePreset
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.DarkenColorFilter
 import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +157,7 @@ class CustomThemeActivity : AppCompatActivity() {
         val itemMargin = dp(30)
         constraintLayout {
             bottomPadding = dp(24)
-            add(previewUi, lParams(wrapContent, wrapContent) {
+            add(previewUi, lParams(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight) {
                 topOfParent()
                 centerHorizontally()
                 above(cropLabel, dp(8))
@@ -367,7 +368,6 @@ class CustomThemeActivity : AppCompatActivity() {
 
         if (newCreated) {
             cropLabel.visibility = View.GONE
-
             whenHasBackground {
                 previewUi.onSizeMeasured = { w, h ->
                     launchCrop(w, h)
@@ -424,7 +424,7 @@ class CustomThemeActivity : AppCompatActivity() {
         val progress = brightnessSeekBar.progress
         brightnessValue.text = "$progress%"
         filteredDrawable.colorFilter = DarkenColorFilter(100 - progress)
-        previewUi.setBackground(filteredDrawable)
+        previewUi.background = filteredDrawable
     }
 
     private fun cancel() {
