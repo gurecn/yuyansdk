@@ -42,7 +42,7 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
             keyBackground.setColor(mActiveTheme.keyBackgroundColor)
             keyBackground.setShape(GradientDrawable.RECTANGLE)
             keyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
-            pressKeyBackground.setColor(mActiveTheme.keyPressHighlightColor)
+            pressKeyBackground.setColor(mActiveTheme.genericActiveBackgroundColor)
             pressKeyBackground.setShape(GradientDrawable.RECTANGLE)
             pressKeyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
         }
