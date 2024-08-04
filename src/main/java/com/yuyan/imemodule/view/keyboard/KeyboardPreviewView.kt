@@ -10,8 +10,15 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import splitties.dimensions.dp
+import splitties.views.dsl.constraintlayout.endOfParent
+import splitties.views.dsl.constraintlayout.lParams
+import splitties.views.dsl.constraintlayout.startOfParent
+import splitties.views.dsl.constraintlayout.topOfParent
+import splitties.views.dsl.core.add
 
 class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     var intrinsicWidth = 0
@@ -26,7 +33,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         qwerTextContainer = TextKeyboard(context)
         val softKeyboard = KeyboardLoaderUtil.instance.getSoftKeyboard(AppPrefs.getInstance().internal.inputDefaultMode.getValue()  and InputModeSwitcherManager.MASK_SKB_LAYOUT)
         qwerTextContainer!!.setSoftKeyboard(softKeyboard)
-        previewUi.addView(qwerTextContainer)
+        previewUi.addView(qwerTextContainer, LayoutParams(instance.skbWidth, instance.skbHeight))
         addView(mSkbRoot)
         intrinsicWidth = instance.skbWidth
         intrinsicHeight = instance.skbHeight
