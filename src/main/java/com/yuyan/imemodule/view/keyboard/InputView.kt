@@ -42,7 +42,6 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
-import java.text.SimpleDateFormat
 import kotlin.math.absoluteValue
 
 /**
@@ -223,11 +222,17 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
         } else if (sKey.isUserDefKey) { // 是用户定义的keycode
-            if (InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3 == keyCode || InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6 == keyCode) {  // 点击标点、表情按钮
-                if (!mDecInfo.isAssociate && !mDecInfo.isFinish) {
+            if (!mDecInfo.isAssociate && !mDecInfo.isCandidatesListEmpty) {
+                if(mInputModeSwitcher.isChinese) {
                     chooseAndUpdate(0)
+                } else if(mInputModeSwitcher.isEnglish){
+                    val displayStr = mDecInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
+                    commitDecInfoText(displayStr)
+                    resetToIdleState()
                 }
-                val symbolType = if (keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6) { 4 } else if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
+            }
+            if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode || InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 == keyCode) {  // 点击标点、表情按钮
+                val symbolType = if (keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4) { 4 } else if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
                 val symbols = SymbolsManager.instance!!.getmSymbols(symbolType)
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
@@ -235,17 +240,18 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     symbolType
                 )
             } else {
-                if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
-                    if (keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_NUMBER_7 || keyCode == InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2) {  //数字键盘、中英切换，有候选词的情况 上屏候选词
-                        chooseAndUpdate(0)
-                    }
-                }
                 mInputModeSwitcher.switchModeForUserKey(keyCode)
                 resetToIdleState()
             }
         } else if (sKey.isUniStrKey) {  // 字符按键
-            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
-                chooseAndUpdate(0)
+            if (!mDecInfo.isAssociate && !mDecInfo.isCandidatesListEmpty) {
+                if(mInputModeSwitcher.isChinese) {
+                    chooseAndUpdate(0)
+                } else if(mInputModeSwitcher.isEnglish){
+                    val displayStr = mDecInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
+                    commitDecInfoText(displayStr)
+                    resetToIdleState()
+                }
             }
             val selectSymbol = sKey.keyLabel
             if(selectSymbol != null)commitText(selectSymbol)
@@ -257,9 +263,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseLongKeyEvent(showText: String?) {
-        if (!mDecInfo.isCandidatesListEmpty) { // 上屏候选词后上屏符号
-            if (!mDecInfo.isAssociate) {
+        if (!mDecInfo.isAssociate && !mDecInfo.isCandidatesListEmpty) {
+            if(mInputModeSwitcher.isChinese) {
                 chooseAndUpdate(0)
+            } else if(mInputModeSwitcher.isEnglish){
+                val displayStr = mDecInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
+                commitDecInfoText(displayStr)
+                resetToIdleState()
             }
             mDecInfo.reset()
         }
@@ -384,8 +394,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 updateCandidate()
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            val displayStr = mDecInfo.composingStrForDisplay.replace("'".toRegex(), "")
-            // 把输入的拼音字符串发送给EditText
+            val displayStr = mDecInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
             commitDecInfoText(displayStr)
             resetToIdleState()
             return true
@@ -429,7 +438,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 return true
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            val retStr = mDecInfo.composingStrForDisplay.replace("'".toRegex(), "")
+            val retStr = mDecInfo.composingStrForCommit
             if (!TextUtils.isEmpty(retStr)) {
                 // 发送文本给EditText
                 commitDecInfoText(retStr)
@@ -476,7 +485,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             if (composingStr.isEmpty()) { // 发送 ENTER 键给 EditText
                 sendKeyEvent(KeyEvent.KEYCODE_ENTER)
             } else { // 发送文本给EditText
-                commitDecInfoText(composingStr.replace("'".toRegex(), ""))
+                commitDecInfoText(composingStr.replace("'", ""))
                 resetToIdleState()
             }
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -750,9 +759,5 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     private fun sendKeyChar(char: Char) {
         service.sendKeyChar(char)
-    }
-
-    companion object {
-        private val TAG = InputView::class.java.getSimpleName()
     }
 }

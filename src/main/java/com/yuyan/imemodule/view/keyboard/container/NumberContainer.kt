@@ -12,7 +12,6 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
@@ -70,7 +69,7 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
     private fun createLayoutParams(): LayoutParams {
         val softKeyboard = mMajorView!!.getSoftKeyboard()
         val softKeySymbolHolder =
-            softKeyboard.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12)
+            softKeyboard.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12)
         val prefixLayoutParams = LayoutParams(
             softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
         )

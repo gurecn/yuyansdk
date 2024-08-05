@@ -73,11 +73,17 @@ class DecodingInfo {
          */
         get() = !Kernel.unHandWriting() ||  Kernel.isFinish
 
-    val composingStrForDisplay: CharSequence
+    val composingStrForDisplay: String
         /**
          * 获取显示的拼音字符串
          */
         get() = Kernel.wordsShowPinyin
+
+    val composingStrForCommit: String
+        /**
+         * 获取显示的拼音字符串
+         */
+        get() = Kernel.wordsShowPinyin.replace("'", "")
     val fullSent: String
         /**
          * 获取当前完整句子

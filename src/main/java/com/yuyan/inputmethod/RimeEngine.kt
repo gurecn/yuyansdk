@@ -20,7 +20,7 @@ object RimeEngine {
     private var mInputModeSwitcher : InputModeSwitcherManager? = null  // 键盘模式
     private var pinyinCandidates: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: Array<CandidateListItem> = emptyArray() // 所有待展示的候选词
-    var showComposition: CharSequence = "" // 候选词上方展示的拼音
+    var showComposition: String = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
     fun init() {
         Rime.getInstance(false)
@@ -221,16 +221,14 @@ object RimeEngine {
         return pyCandidates
     }
 
-    private fun getCurrentComposition(candidates: Array<CandidateListItem>): CharSequence {
+    private fun getCurrentComposition(candidates: Array<CandidateListItem>): String {
         val compositionText = Rime.compositionText
         return when {
             candidates.isEmpty() -> compositionText
             compositionText.isEmpty() -> compositionText
             Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_T9  -> {
-                val compositionList: List<String> =
-                    compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
-                val pinyinList: List<String> =
-                    candidates.first().comment.split(" ")
+                val compositionList: List<String> =compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
+                val pinyinList: List<String> = candidates.first().comment.split(" ")
                 buildSpannedString {
                     append(compositionText.filter { it.code > 0xFF })
                     pinyinList.zip(compositionList).forEach { (pinyin, composition) ->

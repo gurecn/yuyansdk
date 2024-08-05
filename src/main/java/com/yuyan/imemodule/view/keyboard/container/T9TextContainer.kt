@@ -23,7 +23,7 @@ import com.yuyan.imemodule.view.keyboard.TextKeyboard
  * 包含输入键盘键盘[TextKeyboard]及拼音选择界面两层。
  *
  * 其中：
- *  输入键盘占据全部空间，左上角由拼音选择栏占位按键[InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12]站位。
+ *  输入键盘占据全部空间，左上角由拼音选择栏占位按键[InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12]站位。
  *
  *  拼音选择栏（无拼音时显示中文符号）位于键盘左上角，拼音选择栏占位按键正上方。
  *
@@ -69,7 +69,7 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
     private fun createLayoutParams(): LayoutParams {
         val softKeyboard = mMajorView!!.getSoftKeyboard()
         val softKeySymbolHolder =
-            softKeyboard.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12)
+            softKeyboard.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12)
         val prefixLayoutParams = LayoutParams(
             softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
         )

@@ -8,10 +8,10 @@ import android.text.style.UnderlineSpan
 
 inline fun buildSpannedString(
     builderAction: SpannableStringBuilder.() -> Unit
-): SpannedString {
+): String {
     val builder = SpannableStringBuilder()
     builder.builderAction()
-    return SpannedString(builder)
+    return SpannedString(builder).toString()
 }
 
 inline fun SpannableStringBuilder.inSpans(

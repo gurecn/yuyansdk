@@ -74,7 +74,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
     private fun createLayoutParams(): LayoutParams {
         val softKeyboard = mMajorView?.getSoftKeyboard()
         val softKeySymbolHolder =
-            softKeyboard?.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12)
+            softKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12)
         val prefixLayoutParams = LayoutParams(
             softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
         )

@@ -81,7 +81,7 @@ object Kernel {
         selectCandidate(index)
     }
 
-    val wordsShowPinyin: CharSequence
+    val wordsShowPinyin: String
         /**
          * 最上端拼音行
          */

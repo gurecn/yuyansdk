@@ -66,7 +66,7 @@ class InputModeSwitcherManager {
      */
     fun switchModeForUserKey(userKey: Int) {
         var newInputMode = MODE_UNSET
-        if (USERDEF_KEYCODE_SHIFT_1 == userKey) {
+        if (USER_DEF_KEYCODE_SHIFT_1 == userKey) {
             // shift键：显示“，” 或者 大小写图标的按键。
             if (MODE_SKB_ENGLISH_LOWER == mInputMode) {
                 newInputMode = MODE_SKB_ENGLISH_UPPER
@@ -76,16 +76,16 @@ class InputModeSwitcherManager {
             } else if (MODE_SKB_ENGLISH_UPPER_LOCK == mInputMode) {
                 newInputMode = MODE_SKB_ENGLISH_LOWER
             }
-        } else if (USERDEF_KEYCODE_LANG_2 == userKey) {
+        } else if (USER_DEF_KEYCODE_LANG_2 == userKey) {
             // 语言键：显示中文或者英文、中符、英符的键
             newInputMode = if (isChinese) {
                 MODE_SKB_ENGLISH_LOWER
             } else {
                 getInstance().internal.inputMethodPinyinMode.getValue()
             }
-        } else if (USERDEF_KEYCODE_NUMBER_7 == userKey) {
+        } else if (USER_DEF_KEYCODE_NUMBER_5 == userKey) {
             newInputMode = MASK_SKB_LAYOUT_NUMBER
-        } else if (USERDEF_KEYCODE_RETURN_8 == userKey) {
+        } else if (USER_DEF_KEYCODE_RETURN_6 == userKey) {
             newInputMode = if (mRecentLauageInputMode != 0) mRecentLauageInputMode else getInstance().internal.inputMethodPinyinMode.getValue()
         }
         if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
@@ -198,62 +198,42 @@ class InputModeSwitcherManager {
          * User defined key code, used by soft keyboard.
          * 用户定义的key的code，用于软键盘。shift键的code。
          */
-        const val USERDEF_KEYCODE_SHIFT_1 = -1
+        const val USER_DEF_KEYCODE_SHIFT_1 = -1
 
         /**
          * User defined key code, used by soft keyboard. 语言键的code,语言切换键。
          */
-        const val USERDEF_KEYCODE_LANG_2 = -2
+        const val USER_DEF_KEYCODE_LANG_2 = -2
 
         /**
          * User defined key code, used by soft keyboard. 语言键的code,表符号键盘切换键。
          */
-        const val USERDEF_KEYCODE_SYMBOL_ZH_3 = -3
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,表符号键盘切换键。
-         */
-        const val USERDEF_KEYCODE_SYMBOL_EN_4 = -4
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,表符号键盘切换键。
-         */
-        const val USERDEF_KEYCODE_SYMBOL_NUM_5 = -5
+        const val USER_DEF_KEYCODE_SYMBOL_3 = -3
 
         /**
          * User defined key code, used by soft keyboard. 语言键的code,表情键盘切换键。
          */
-        const val USERDEF_KEYCODE_EMOJI_6 = -6
+        const val USER_DEF_KEYCODE_EMOJI_4 = -4
 
         /**
          * User defined key code, used by soft keyboard. 语言键的code,数字键盘切换键。
          */
-        const val USERDEF_KEYCODE_NUMBER_7 = -7
+        const val USER_DEF_KEYCODE_NUMBER_5 = -5
 
         /**
          * User defined key code, used by soft keyboard. 语言键的code,数字键盘返回按键。
          */
-        const val USERDEF_KEYCODE_RETURN_8 = -8
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,英语拼写模式切换键。
-         */
-        const val USERDEF_KEYCODE_ABC_9 = -9
+        const val USER_DEF_KEYCODE_RETURN_6 = -6
 
         /**
          * User defined key code, used by soft keyboard. 语言键的code,光标控制键。
          */
-        const val USERDEF_KEYCODE_CURSOR_10 = -10
+        const val USER_DEF_KEYCODE_CURSOR_7 = -7
 
         /**
-         * User defined key code, used by soft keyboard. 语言键的code,锁定符号键。
+         * User defined key code, used by soft keyboard. 语言键的code,九宫格、手写符号侧栏占位符。
          */
-        const val USERDEF_KEYCODE_LOCK_SYMBOL_11 = -11
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,九宫格、手写符号侧栏。
-         */
-        const val USERDEF_KEYCODE_LEFT_SYMBOL_12 = -12
+        const val USER_DEF_KEYCODE_LEFT_SYMBOL_12 = -12
 
         /**
          * Bits used to indicate soft keyboard layout. If none bit is set, the

@@ -65,7 +65,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x2000 -> {  // 2000  T9键键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_AT))
+                var t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_AT))
                 t9Key.first().apply {
                     widthF = 0.18f
                     heightF = 0.75f
@@ -90,7 +90,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x3000 -> {// 3000 手写键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var handwritingKey = createHandwritingKey(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12) // 符号站位
+                var handwritingKey = createHandwritingKey(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12) // 符号站位
                 handwritingKey.mLeftF = 0.815f
                 handwritingKey.heightF = 0.50f
                 keyBeans.add(handwritingKey)
@@ -130,7 +130,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x5000 -> {  // 5000 数字键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_LEFT_SYMBOL_12,8, 9, 10, KeyEvent.KEYCODE_AT))
+                var t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12,8, 9, 10, KeyEvent.KEYCODE_AT))
                 t9Keys.first().apply {
                     widthF = 0.18f
                     heightF = 0.75f
@@ -189,14 +189,14 @@ class KeyboardLoaderUtil private constructor() {
         val keyBeans = mutableListOf<SoftKey>()
         val t9Keys =
         if(isNumKeyboard){
-            createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
-                InputModeSwitcherManager.USERDEF_KEYCODE_RETURN_8, 7, KeyEvent.KEYCODE_SPACE))
+            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4,
+                InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6, 7, KeyEvent.KEYCODE_SPACE))
         } else if(!numberLine){
-            createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
-                InputModeSwitcherManager.USERDEF_KEYCODE_NUMBER_7, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2))
+            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4,
+                InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
         } else {
-            createT9Keys(arrayOf(InputModeSwitcherManager.USERDEF_KEYCODE_SYMBOL_ZH_3, InputModeSwitcherManager.USERDEF_KEYCODE_EMOJI_6,
-                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USERDEF_KEYCODE_LANG_2))
+            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4,
+                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
         }
         if(t9Keys.size == 5){
             t9Keys[0].widthF = 0.09f
