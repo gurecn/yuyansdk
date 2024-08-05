@@ -1,6 +1,8 @@
 
 package com.yuyan.imemodule.view.keyboard
 
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
+
 val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     45 to arrayOf("Q", "["),
     51 to arrayOf("W", "]"),
@@ -29,8 +31,8 @@ val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     30 to arrayOf("B", "?"),
     42 to arrayOf("N", "!"),
     41 to arrayOf("M", "..."),
-    -3 to arrayOf("符"),
-    -7 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
 )
 
 val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -61,8 +63,8 @@ val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     30 to arrayOf("B", "?", "in"),
     42 to arrayOf("N", "!", "iao"),
     41 to arrayOf("M", "...", "ian"),
-    -3 to arrayOf("符"),
-    -7 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
 )
 
 val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -83,8 +85,8 @@ val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     35 to arrayOf("G", "_", "ei un"),
     34 to arrayOf("FC", "…", "iu ou"),
     48 to arrayOf("T", "(", "er ong"),
-    -3 to arrayOf("符"),
-    -7 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
 )
 
 val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -100,9 +102,9 @@ val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     28 to arrayOf("重输"),
     75 to arrayOf("分词", "1"),
     77 to arrayOf("@"),
-    -3 to arrayOf("符"),
-    -7 to arrayOf("123"),
-    -8 to arrayOf("返回"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 to arrayOf("返回"),
 )
 
 val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
