@@ -1,36 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="title_bg_color">#fafafa</color><!-- 标题栏背景色 -->
-    <color name="title_text_color">#000c0d</color><!-- 标题栏文字色 -->
-    <color name="containerdivider1">#eeeff1</color>
-    <color name="containerview">#d7d8da</color>
-    <color name="containerdivider">#acacbb</color>
-    <color name="containerdivider2">#016DC2</color>
-    <color name="page_bg_color">#f2f2f2</color><!-- 页面主体色 -->
-    <!-- 分割线颜色 -->
-    <color name="btn_bg_normal">#ff3f3f</color><!-- 按钮默认背景色 -->
-    <color name="grey">#ededed</color>
-    <color name="black">#000000</color>
-    <color name="white">#ffffff</color>
-    <color name="ballont_bac">#F5F5F5</color>
-    <color name="balloon_tx">#888888</color>
-
     <!-- xml 解析 -->
-    <color name="extracolor1">#b0b0b0</color>
-    <color name="active_candidate_color">#2196F3</color>
-    <color name="skb_bg">#00dcdbdb</color>
-    <color name="skb_key_bg">#80ffffff</color>
-    <color name="skb_function_key_bg">#80d1d1d1</color>
     <color name="skb_key_text_color">#000000</color>
-
-    <color name="skb_bg_night">#001e1e1e</color>
-    <color name="skb_key_bg_night">#803c3c3c</color>
-    <color name="skb_function_key_bg_night">#802e2e2e</color>
-    <color name="skb_key_text_color_night">#ff707070</color>
     <color name="skb_shadow_bg_color">#cc091424</color>
     <color name="skb_shadow_icon_color">#bfbfbf</color>
-
-    <color name="skb_menu_text_select_color">#1677FF</color>
 
     <color name="black_00">#ff000000</color>
     <color name="grey_bf">#ffbfbfbf</color>

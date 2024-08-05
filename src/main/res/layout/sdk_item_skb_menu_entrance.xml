@@ -21,6 +21,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textColor="@color/skb_key_text_color"
         android:textSize="12sp"/>
 </LinearLayout>

@@ -189,9 +189,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     private fun drawSoftKey(canvas: Canvas, softKey: SoftKey, keyXMargin: Int, keyYMargin: Int) {
         val bg = GradientDrawable()
-        var textColor = mActiveTheme.keyTextColor
         if (softKey.pressed) {
-            bg.setColor(mActiveTheme.genericActiveBackgroundColor)
+            bg.setColor(mActiveTheme.keyPressHighlightColor)
             bg.shape = GradientDrawable.RECTANGLE
             bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             bg.setBounds(
@@ -201,7 +200,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 softKey.mBottom - keyYMargin
             )
             bg.draw(canvas)
-            textColor = mActiveTheme.genericActiveForegroundColor
         } else if (isKeyBorder) {
             val background = when (softKey.keyCode) {
                 KeyEvent.KEYCODE_ENTER -> {
@@ -258,6 +256,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyboardSymbol = prefs.keyboardSymbol.getValue()
         val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
+        val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
             mPaint.color = textColor
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
