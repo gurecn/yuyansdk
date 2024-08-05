@@ -1,14 +1,16 @@
 
 package com.yuyan.imemodule.data.theme
 
+import com.yuyan.imemodule.R
+
 object ThemePreset {
 
     val MaterialLight = Theme.Builtin(
         name = "MaterialLight",
         isDark = false,
-        backgroundColor = 0xffeceff1,
-        barColor = 0xffe4e7e9,
+        keyboardResources = 0x0,
         keyboardColor = 0xffeceff1,
+        barColor = 0xffe4e7e9,
         keyBackgroundColor = 0xfffbfbfc,
         keyTextColor = 0xff37474f,
         accentKeyBackgroundColor = 0xff5cb5ab,
@@ -25,7 +27,7 @@ object ThemePreset {
     val MaterialDark = Theme.Builtin(
         name = "MaterialDark",
         isDark = true,
-        backgroundColor = 0xff263238,
+        keyboardResources = 0x0,
         barColor = 0xff21272b,
         keyboardColor = 0xff263238,
         keyBackgroundColor = 0xff404a50,
@@ -44,7 +46,7 @@ object ThemePreset {
     val PixelLight = Theme.Builtin(
         name = "PixelLight",
         isDark = false,
-        backgroundColor = 0xffeeeeee,
+        keyboardResources = 0x0,
         barColor = 0xffeeeeee,
         keyboardColor = 0xfffafafa,
         keyBackgroundColor = 0xffffffff,
@@ -63,7 +65,7 @@ object ThemePreset {
     val PixelDark = Theme.Builtin(
         name = "PixelDark",
         isDark = true,
-        backgroundColor = 0xff2d2d2d,
+        keyboardResources = 0x0,
         barColor = 0xff373737,
         keyboardColor = 0xff2d2d2d,
         keyBackgroundColor = 0xff464646,
@@ -82,7 +84,7 @@ object ThemePreset {
     val DeepBlue = Theme.Builtin(
         name = "DeepBlue",
         isDark = true,
-        backgroundColor = 0xff1565c0,
+        keyboardResources = 0x0,
         barColor = 0xff0d47a1,
         keyboardColor = 0xff1565c0,
         keyBackgroundColor = 0xff3f80cb,
@@ -101,7 +103,7 @@ object ThemePreset {
     val AMOLEDBlack = Theme.Builtin(
         name = "AMOLEDBlack",
         isDark = true,
-        backgroundColor = 0xff000000,
+        keyboardResources = 0x0,
         barColor = 0xff373737,
         keyboardColor = 0xff000000,
         keyBackgroundColor = 0xff2e2e2e,
@@ -120,7 +122,7 @@ object ThemePreset {
     val NordLight = Theme.Builtin(
         name = "NordLight",
         isDark = false,
-        backgroundColor = 0xffD8DEE9,
+        keyboardResources = 0x0,
         barColor = 0xffE5E9F0,
         keyboardColor = 0xffECEFF4,
         keyBackgroundColor = 0xffECEFF4,
@@ -139,7 +141,7 @@ object ThemePreset {
     val NordDark = Theme.Builtin(
         name = "NordDark",
         isDark = true,
-        backgroundColor = 0xff2E3440,
+        keyboardResources = 0x0,
         barColor = 0xff434C5E,
         keyboardColor = 0xff2E3440,
         keyBackgroundColor = 0xff4C566A,
@@ -158,7 +160,7 @@ object ThemePreset {
     val Monokai = Theme.Builtin(
         name = "Monokai",
         isDark = true,
-        backgroundColor = 0xff272822,
+        keyboardResources = 0x0,
         barColor = 0xff1f201b,
         keyboardColor = 0xff272822,
         keyBackgroundColor = 0xff33342c,
@@ -180,7 +182,7 @@ object ThemePreset {
     val TransparentDark = Theme.Builtin(
         name = "TransparentDark",
         isDark = true,
-        backgroundColor = 0xff2d2d2d,
+        keyboardResources = 0x0,
         barColor = 0x4c000000,
         keyboardColor = 0x00000000,
         keyBackgroundColor = 0x4bffffff,
@@ -202,7 +204,7 @@ object ThemePreset {
     val TransparentLight = Theme.Builtin(
         name = "TransparentLight",
         isDark = false,
-        backgroundColor = 0xffeeeeee,
+        keyboardResources = 0x0,
         barColor = 0x26000000,
         keyboardColor = 0x00000000,
         keyBackgroundColor = 0x4bffffff,
@@ -218,4 +220,113 @@ object ThemePreset {
         genericActiveForegroundColor = 0xffffffff
     )
 
+    val CustomRed = Theme.Builtin(
+        name = "CustomRed",
+        isDark = false,
+        keyboardResources = R.drawable.skb_background_red,
+        barColor = 0xfffd3422,
+        keyboardColor = 0xffeceff1,
+        keyBackgroundColor = 0x33fbfbfc,
+        keyTextColor = 0xffffffff,
+        accentKeyBackgroundColor = 0x5ffbfbfc,
+        accentKeyTextColor = 0xffffffff,
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffd9dbdd,
+        popupTextColor = 0xff37474f,
+        spaceBarColor = 0x5affffff,
+        dividerColor = 0x1f000000,
+        genericActiveBackgroundColor = 0xff80cbc4,
+        genericActiveForegroundColor = 0xff37474f
+    )
+    val CustomPink = Theme.Builtin(
+        name = "CustomPink",
+        isDark = false,
+        keyboardResources = R.drawable.skb_background_pink,
+        barColor = 0xffd7c4d0,
+        keyboardColor = 0xffeceff1,
+        keyBackgroundColor = 0x33fbfbfc,
+        keyTextColor = 0xff2E3440,
+        accentKeyBackgroundColor = 0x5ffbfbfc,
+        accentKeyTextColor = 0xffffffff,
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffd9dbdd,
+        popupTextColor = 0xff37474f,
+        spaceBarColor = 0x5affffff,
+        dividerColor = 0x1f000000,
+        genericActiveBackgroundColor = 0xff80cbc4,
+        genericActiveForegroundColor = 0xff37474f
+    )
+    val CustomYellow = Theme.Builtin(
+        name = "CustomYellow",
+        isDark = false,
+        keyboardResources = R.drawable.skb_background_yellow,
+        barColor = 0xfff16877,
+        keyboardColor = 0xffeceff1,
+        keyBackgroundColor = 0x33fbfbfc,
+        keyTextColor = 0xff2E3440,
+        accentKeyBackgroundColor = 0x5ffbfbfc,
+        accentKeyTextColor = 0xffffffff,
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffd9dbdd,
+        popupTextColor = 0xff37474f,
+        spaceBarColor = 0x5affffff,
+        dividerColor = 0x1f000000,
+        genericActiveBackgroundColor = 0xff80cbc4,
+        genericActiveForegroundColor = 0xff37474f
+    )
+    val CustomCrimson = Theme.Builtin(
+        name = "CustomCrimson",
+        isDark = true,
+        keyboardResources = R.drawable.skb_background_crimso,
+        barColor = 0XFF480603,
+        keyboardColor = 0xffeceff1,
+        keyBackgroundColor = 0x33fbfbfc,
+        keyTextColor = 0xffffffff,
+        accentKeyBackgroundColor = 0x5ffbfbfc,
+        accentKeyTextColor = 0xffffffff,
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffd9dbdd,
+        popupTextColor = 0xff37474f,
+        spaceBarColor = 0x5affffff,
+        dividerColor = 0x1f000000,
+        genericActiveBackgroundColor = 0xff80cbc4,
+        genericActiveForegroundColor = 0xff37474f
+    )
+    val CustomPurple = Theme.Builtin(
+        name = "CustomPurple",
+        isDark = false,
+        keyboardResources = R.drawable.skb_background_purple,
+        barColor = 0xff9f00ff,
+        keyboardColor = 0xffeceff1,
+        keyBackgroundColor = 0x33fbfbfc,
+        keyTextColor = 0xffffffff,
+        accentKeyBackgroundColor = 0x5ffbfbfc,
+        accentKeyTextColor = 0xffffffff,
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffd9dbdd,
+        popupTextColor = 0xff37474f,
+        spaceBarColor = 0x5affffff,
+        dividerColor = 0x1f000000,
+        genericActiveBackgroundColor = 0xff80cbc4,
+        genericActiveForegroundColor = 0xff37474f
+    )
+
+    val CustomBlue = Theme.Builtin(
+        name = "CustomBlue",
+        isDark = false,
+        keyboardResources = R.drawable.skb_background_blue,
+        barColor = 0xff0d47a1,
+        keyboardColor = 0xffeceff1,
+        keyBackgroundColor = 0x33fbfbfc,
+        keyTextColor = 0xffffffff,
+        accentKeyBackgroundColor = 0x5ffbfbfc,
+        accentKeyTextColor = 0xffffffff,
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffd9dbdd,
+        popupTextColor = 0xff37474f,
+        spaceBarColor = 0x5affffff,
+        dividerColor = 0x1f000000,
+        genericActiveBackgroundColor = 0xff80cbc4,
+        genericActiveForegroundColor = 0xff37474f
+    )
 }

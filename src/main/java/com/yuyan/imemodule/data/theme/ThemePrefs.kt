@@ -1,5 +1,3 @@
-
-
 package com.yuyan.imemodule.data.theme
 
 import android.content.SharedPreferences
@@ -28,6 +26,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         return pref
     }
 
+    // 主题设置title
     val themeSetting = category(R.string.theme)
     /**
      * When [followSystemDayNightTheme] is disabled, this theme is used.
@@ -49,7 +48,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val lightModeTheme = themePreference(
         R.string.light_mode_theme,
         "light_mode_theme",
-        ThemePreset.PixelLight,
+        ThemePreset.CustomRed,
         enableUiOn = {
             followSystemDayNightTheme.getValue()
         })
@@ -68,7 +67,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         darkModeTheme.key
     )
 
-
+    // 键盘设置title
     val titleKeyboardSetting = category(R.string.setting_ime_keyboard)
 
     val keyBorder = switch(R.string.key_border, "key_border", true)

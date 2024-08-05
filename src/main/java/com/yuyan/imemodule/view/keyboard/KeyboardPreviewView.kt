@@ -10,15 +10,8 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import splitties.dimensions.dp
-import splitties.views.dsl.constraintlayout.endOfParent
-import splitties.views.dsl.constraintlayout.lParams
-import splitties.views.dsl.constraintlayout.startOfParent
-import splitties.views.dsl.constraintlayout.topOfParent
-import splitties.views.dsl.core.add
 
 class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     var intrinsicWidth = 0
@@ -48,7 +41,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     fun setTheme(theme: Theme) {
         initView()
         qwerTextContainer?.setTheme(theme)
-        background = theme.backgroundGradientDrawable(prefs.keyBorder.getValue())
+        background = theme.backgroundDrawable(prefs.keyBorder.getValue())
         layoutParams?.width = instance.skbWidth
         layoutParams?.height = instance.inputAreaHeight
     }

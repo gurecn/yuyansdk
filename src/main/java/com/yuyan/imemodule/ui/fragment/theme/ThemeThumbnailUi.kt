@@ -81,7 +81,7 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
 
     fun setTheme(theme: Theme) {
         root.apply {
-            foreground = rippleDrawable(theme.backgroundColor)
+            foreground = rippleDrawable(theme.keyboardColor)
         }
         bkg.imageDrawable = theme.backgroundDrawable()
         bar.backgroundColor = theme.barColor

@@ -1,14 +1,8 @@
 
 package com.yuyan.imemodule.data.theme
 
-
 import android.content.res.Configuration
-import android.os.Build
 import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
-import androidx.core.content.edit
-import androidx.preference.PreferenceManager
-import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.WeakHashSet
 import com.yuyan.imemodule.ui.utils.isDarkMode
@@ -21,18 +15,23 @@ object ThemeManager {
     }
 
     val BuiltinThemes = listOf(
-        ThemePreset.MaterialLight,
+        ThemePreset.CustomRed,
         ThemePreset.MaterialDark,
-        ThemePreset.PixelLight,
+        ThemePreset.CustomBlue,
         ThemePreset.PixelDark,
-        ThemePreset.NordLight,
+        ThemePreset.MaterialLight,
         ThemePreset.NordDark,
-        ThemePreset.DeepBlue,
+        ThemePreset.PixelLight,
         ThemePreset.Monokai,
+        ThemePreset.NordLight,
         ThemePreset.AMOLEDBlack,
+        ThemePreset.CustomPink,
+        ThemePreset.CustomCrimson,
+        ThemePreset.CustomYellow,
+        ThemePreset.CustomPurple,
     )
 
-    val DefaultTheme = ThemePreset.MaterialLight
+    val DefaultTheme = ThemePreset.CustomRed
 
     private val customThemes: MutableList<Theme.Custom> = ThemeFilesManager.listThemes()
 
@@ -138,17 +137,6 @@ object ThemeManager {
     fun onSystemDarkModeChange(isDark: Boolean) {
         isDarkMode = isDark
         activeTheme = evaluateActiveTheme()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun syncToDeviceEncryptedStorage() {
-        val ctx = ImeSdkApplication.context.createDeviceProtectedStorageContext()
-        val sp = PreferenceManager.getDefaultSharedPreferences(ctx)
-        sp.edit {
-            prefs.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
-            }
-        }
     }
 
 }

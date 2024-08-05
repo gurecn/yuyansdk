@@ -6,8 +6,8 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Parcelable
+import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.ui.utils.DarkenColorFilter
 import com.yuyan.imemodule.ui.utils.RectSerializer
@@ -21,38 +21,31 @@ sealed class Theme : Parcelable {
     abstract val name: String
     abstract val isDark: Boolean
 
-    abstract val backgroundColor: Int
-    abstract val barColor: Int
-    abstract val keyboardColor: Int
+    abstract val keyboardResources: Int  // 键盘背景资源，首选
+    abstract val keyboardColor: Int  // 键盘区域背景色，次选
 
-    abstract val keyBackgroundColor: Int
-    abstract val keyPressHighlightColor: Int
-    abstract val keyTextColor: Int
+    abstract val barColor: Int     // 菜单栏、候选此栏背景色
+    abstract val keyBackgroundColor: Int    // 按键背景色
+    abstract val keyPressHighlightColor: Int  // 按键按下背景色
+    abstract val keyTextColor: Int   // 按键字体颜色
 
-    abstract val accentKeyBackgroundColor: Int
-    abstract val accentKeyTextColor: Int
+    abstract val accentKeyBackgroundColor: Int   // 回车键背景色
+    abstract val accentKeyTextColor: Int   // 回车键字体色
 
-    abstract val popupBackgroundColor: Int
-    abstract val popupTextColor: Int
+    abstract val popupBackgroundColor: Int    // 长按弹窗背景色
+    abstract val popupTextColor: Int   // 长按弹窗字体颜色
 
-    abstract val spaceBarColor: Int
-    abstract val dividerColor: Int
+    abstract val spaceBarColor: Int    // 空格键背景色
+    abstract val dividerColor: Int    // 分割线颜色
 
-    abstract val genericActiveBackgroundColor: Int
-    abstract val genericActiveForegroundColor: Int
+    abstract val genericActiveBackgroundColor: Int    //通用活动背景色
+    abstract val genericActiveForegroundColor: Int   //通用活动前景色
 
     open fun backgroundDrawable(keyBorder: Boolean = false): Drawable {
-        return ColorDrawable(if (keyBorder) backgroundColor else keyboardColor)
-    }
-
-    open fun backgroundGradientDrawable(keyBorder: Boolean = false): Drawable {
-        return GradientDrawable().apply {
-            setColor(if (keyBorder) backgroundColor else keyboardColor)
-            setShape(GradientDrawable.RECTANGLE)
-            setCornerRadius(20f) // 设置圆角半径
-            if(ThemeManager.prefs.keyboardModeFloat.getValue()){
-                setStroke(2, dividerColor)
-            }
+        return if(keyboardResources != 0){
+            ContextCompat.getDrawable(ImeSdkApplication.context, keyboardResources)!!
+        } else {
+            ColorDrawable(keyboardColor)
         }
     }
 
@@ -65,7 +58,7 @@ sealed class Theme : Parcelable {
          * absolute paths of cropped and src png files
          */
         val backgroundImage: CustomBackground?,
-        override val backgroundColor: Int,
+        override val keyboardResources: Int,
         override val barColor: Int,
         override val keyboardColor: Int,
         override val keyBackgroundColor: Int,
@@ -108,7 +101,7 @@ sealed class Theme : Parcelable {
     data class Builtin(
         override val name: String,
         override val isDark: Boolean,
-        override val backgroundColor: Int,
+        override val keyboardResources: Int,
         override val barColor: Int,
         override val keyboardColor: Int,
         override val keyBackgroundColor: Int,
@@ -128,25 +121,25 @@ sealed class Theme : Parcelable {
         // because kotlin compiler treats `0xff000000` as Long, not Int
         constructor(
             name: String,
-            isDark: Boolean,    // 深色主题
-            backgroundColor: Number,  // 整体区域背景色
-            barColor: Number,    // 菜单栏、候选此栏背景色
-            keyboardColor: Number,  // 按键区域背景色
-            keyBackgroundColor: Number,  // 按键背景色
-            keyTextColor: Number,   // 按键字体颜色
-            accentKeyBackgroundColor: Number, // 回车键背景色
-            accentKeyTextColor: Number, // 回车键字体色
+            isDark: Boolean,
+            keyboardResources: Number,
+            barColor: Number,
+            keyboardColor: Number,
+            keyBackgroundColor: Number,
+            keyTextColor: Number,
+            accentKeyBackgroundColor: Number,
+            accentKeyTextColor: Number,
             keyPressHighlightColor: Number,
-            popupBackgroundColor: Number,   // 长按弹窗背景色
-            popupTextColor: Number,  // 长按弹窗字体颜色
-            spaceBarColor: Number,  // 空格键背景色
-            dividerColor: Number,  // 分割线颜色
-            genericActiveBackgroundColor: Number,    //通用活动背景色
-            genericActiveForegroundColor: Number   //通用活动前景色
+            popupBackgroundColor: Number,
+            popupTextColor: Number,
+            spaceBarColor: Number,
+            dividerColor: Number,
+            genericActiveBackgroundColor: Number,
+            genericActiveForegroundColor: Number
         ) : this(
             name,
             isDark,
-            backgroundColor.toInt(),
+            keyboardResources.toInt(),
             barColor.toInt(),
             keyboardColor.toInt(),
             keyBackgroundColor.toInt(),
@@ -166,7 +159,7 @@ sealed class Theme : Parcelable {
             name,
             isDark,
             null,
-            backgroundColor,
+            keyboardResources,
             barColor,
             keyboardColor,
             keyBackgroundColor,
@@ -197,7 +190,7 @@ sealed class Theme : Parcelable {
                 brightness,
                 cropBackgroundRect
             ),
-            backgroundColor,
+            keyboardResources,
             barColor,
             keyboardColor,
             keyBackgroundColor,
