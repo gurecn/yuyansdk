@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.view.keyboard.container
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +11,12 @@ import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.inputmethod.core.CandidateListItem
 
+/**
+ * 粘贴板列表键盘容器
+ *
+ * 使用RecyclerView实现垂直ListView列表布局。
+ */
+@SuppressLint("ViewConstructor")
 class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
 

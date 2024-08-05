@@ -15,13 +15,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityManager
-import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
-import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
 import com.yuyan.imemodule.view.popup.KeyDef
 import com.yuyan.imemodule.view.popup.PopupAction
 import com.yuyan.imemodule.view.popup.PopupAction.ChangeFocusAction
@@ -33,6 +31,11 @@ import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import kotlin.math.abs
 
+/**
+ * 键盘根布局
+ *
+ * 由于之前键盘体验问题，当前基于Android内置键盘[android.inputmethodservice.KeyboardView]进行调整开发。
+ */
 open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val popupComponent: PopupComponent = get()
     private var swipeEnabled: Boolean

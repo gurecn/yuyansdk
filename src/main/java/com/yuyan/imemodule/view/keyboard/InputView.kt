@@ -45,8 +45,17 @@ import splitties.views.rightPadding
 import java.text.SimpleDateFormat
 import kotlin.math.absoluteValue
 
-@SuppressLint("ViewConstructor") // 禁用构造方法警告，不创建含AttributeSet的构造方法，为了实现代码混淆效果
+/**
+ * 输入法主界面。
+ *
+ * 包含拼音显示、候选词栏、键盘界面等。
+ *
+ * 在 该类中处理界面绘制、、输入逻辑等为输入法核心处理类。
+ *
+ * 注: 所有键盘自定义 View禁用构造方法警告，且不创建含AttributeSet的构造方法。为了实现代码混淆效果。
+ */
 
+@SuppressLint("ViewConstructor")
 class InputView(context: Context, service: ImeService) : RelativeLayout(context),
     IResponseKeyEvent {
     private var service: ImeService

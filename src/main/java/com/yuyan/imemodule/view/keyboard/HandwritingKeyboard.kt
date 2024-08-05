@@ -18,6 +18,12 @@ import com.yuyan.inputmethod.core.CandidateListItem
 import java.util.LinkedList
 import kotlin.math.sqrt
 
+/**
+ * 手写键盘
+ *
+ * 继承输入键盘[TextKeyboard]，在输入键盘上层覆盖手写板[Canvas]绘制笔迹效果。
+ */
+@SuppressLint("ViewConstructor")
 class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     private val mHandWritingPaint: Paint //绘制笔迹的画笔
     private val mDrawing: DrawingStrokes

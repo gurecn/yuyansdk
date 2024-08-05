@@ -1,10 +1,11 @@
 package com.yuyan.imemodule.view.keyboard.container
 
+import android.annotation.SuppressLint
+import com.google.android.flexbox.JustifyContent
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.Theme
@@ -28,6 +29,12 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.LinkedList
 
+/**
+ * 设置键盘容器
+ *
+ * 设置键盘、切换键盘界面容器。使用RecyclerView + FlexboxLayoutManager实现Grid布局。
+ */
+@SuppressLint("ViewConstructor")
 class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
@@ -167,7 +174,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 )
             }
             SkbMenuMode.FlowerTypeface -> {
-                inputView?.showFlowerTypeface()
+                inputView.showFlowerTypeface()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             SkbMenuMode.FloatKeyboard -> {
