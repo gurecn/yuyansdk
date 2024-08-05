@@ -80,7 +80,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         if (switcherManager.isEnglish) {
             var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
             softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)
-            softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USERDEF_KEYCODE_SHIFT_1) as SoftKeyToggle??: return
+            softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) as SoftKeyToggle??: return
             softKey.enableToggleState(switcherManager.mToggleStates.charCase)
             invalidateView()
         } else {
