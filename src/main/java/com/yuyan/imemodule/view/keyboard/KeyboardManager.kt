@@ -5,11 +5,11 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.view.keyboard.container.BaseContainer
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.view.keyboard.container.HandwritingTextContainer
+import com.yuyan.imemodule.view.keyboard.container.HandwritingContainer
 import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.NumberContainer
-import com.yuyan.imemodule.view.keyboard.container.QwertyTextContainer
+import com.yuyan.imemodule.view.keyboard.container.QwertyContainer
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
@@ -59,13 +59,13 @@ class KeyboardManager {
         if (container == null) {
             container = when (keyboardName) {
                 KeyboardType.CANDIDATES ->  CandidatesContainer(ImeSdkApplication.context, mInputView)
-                KeyboardType.HANDWRITING -> HandwritingTextContainer(ImeSdkApplication.context, mInputView)
+                KeyboardType.HANDWRITING -> HandwritingContainer(ImeSdkApplication.context, mInputView)
                 KeyboardType.NUMBER -> NumberContainer(ImeSdkApplication.context, mInputView)
-                KeyboardType.QWERTY -> QwertyTextContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
+                KeyboardType.QWERTY -> QwertyContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
                 KeyboardType.SETTINGS -> SettingsContainer(ImeSdkApplication.context, mInputView)
                 KeyboardType.SYMBOL -> SymbolContainer(ImeSdkApplication.context, mInputView)
-                KeyboardType.QWERTYABC -> QwertyTextContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC)
-                KeyboardType.LX17 -> QwertyTextContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_LX17)
+                KeyboardType.QWERTYABC -> QwertyContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC)
+                KeyboardType.LX17 -> QwertyContainer(ImeSdkApplication.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_LX17)
                 KeyboardType.ClipBoard -> ClipBoardContainer(ImeSdkApplication.context, mInputView)
                 else ->  T9TextContainer(ImeSdkApplication.context, mInputView)
             }

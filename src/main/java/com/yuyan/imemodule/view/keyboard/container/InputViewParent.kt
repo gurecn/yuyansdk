@@ -5,8 +5,15 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
-// 根布局集装箱，此为所有键盘布局共享对象
+/**
+ * 根布局集装箱，
+ *
+ * 此为所有键盘布局共享对象。
+ *
+ * 该类用于键盘切换是刷新操作。如从九宫格（中文）切换到全键盘（英文），键盘使用缓存对象，需要进行九宫格父布局清除及全键盘父布局设置工作。
+ */
 class InputViewParent @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private var mLastContainer: View? = null
     fun showView(child: View?) {

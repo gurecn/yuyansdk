@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.view.keyboard.container
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.RelativeLayout
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
@@ -8,8 +9,10 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 
 /**
- * 软键盘View的集装箱，主持一个软件盘View。
+ * 软键盘View集装箱
+ * 所有软键盘（输入、符号、设置等）父容器View。
  */
+@SuppressLint("ViewConstructor")
 open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) : RelativeLayout(mContext) {
     //输入法服务
     @JvmField

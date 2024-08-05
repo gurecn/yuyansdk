@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.view.keyboard.container
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.KeyEvent
@@ -25,7 +26,23 @@ import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
+
+/**
+ * 符号键盘容器
+ *
+ * 包含符号界面、符号类型行（居底）。
+ *
+ * 与输入键哦安不同的是，此处两个界面均使用RecyclerView实现。
+ *
+ * 其中：
+ *
+ * 符号界面使用RecyclerView + FlexboxLayoutManager实现Grid布局。
+ *
+ * 符号类型行使用RecyclerView + LinearLayoutManager实现水平ListView效果。
+ */
+@SuppressLint("ViewConstructor")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null

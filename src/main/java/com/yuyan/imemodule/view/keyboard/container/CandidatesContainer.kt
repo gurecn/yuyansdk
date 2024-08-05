@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.view.keyboard.container
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.KeyEvent
@@ -23,6 +24,13 @@ import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 
+/**
+ * 候选词键盘容器
+ *
+ * 选择候选词界面分两种效果：九宫格（[com.yuyan.imemodule.manager.InputModeSwitcherManager.isChineseT9])情况下显示左侧拼音选择栏；全键、手写等情况下不显示拼音选择栏。
+ * @see com.yuyan.imemodule.manager.InputModeSwitcherManager.isChineseT9
+ */
+@SuppressLint("ViewConstructor")
 class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVLeftPrefix: RecyclerView? = null

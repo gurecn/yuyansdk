@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.view.keyboard.container
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +15,15 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
 
-class HandwritingTextContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
+/**
+ * 手写键盘容器
+ *
+ * 包含手写键盘[HandwritingKeyboard]及拼音选择界面。
+ *
+ * 与九宫格键盘容器[T9TextContainer]、九宫格候选词键盘容器[CandidatesContainer]不同的是，手写键盘容器拼音选择栏在键盘右侧。
+ */
+@SuppressLint("ViewConstructor")
+class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘界面上符号(T9左侧、手写右侧)
     private var mRVRightSymbols: RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
 
