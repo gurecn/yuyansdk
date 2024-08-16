@@ -256,11 +256,6 @@ class DrawingStrokes(strokeView: View, strokes: Strokes) {
     }
 
     fun draw(canvas: Canvas, mPaint: Paint) {
-        if (activeTheme.isDark) {
-            mPaint.setColor(ContextCompat.getColor(context, R.color.grey_bf))
-        } else {
-            mPaint.setColor(ContextCompat.getColor(context, R.color.black_00))
-        }
         val paintWidth = getInstance().handwriting.handWritingWidth.getValue()
         setMaxWidth(STROKES_MAX_WIDTH * paintWidth / 100f)
         canvas.drawBitmap(bitmapStroke!!, 0f, 0f, mPaint)
