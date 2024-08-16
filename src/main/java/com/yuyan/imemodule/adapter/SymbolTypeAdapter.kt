@@ -64,14 +64,9 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
 
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
         val tvSymbolType = holder.itemView as EmojiAppCompatTextView
+        tvSymbolType.setTextColor(mTheme.keyTextColor)
         tvSymbolType.text = mDatas[position]
-        if (isClicks == position) {
-            tvSymbolType.setTextColor(mTheme.genericActiveBackgroundColor)
-            tvSymbolType.background = pressKeyBackground
-        } else {
-            tvSymbolType.setTextColor(mTheme.keyTextColor)
-            tvSymbolType.background = keyBackground
-        }
+        tvSymbolType.background = if (isClicks == position) pressKeyBackground else keyBackground
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener { v: View? ->
                 isClicks = holder.getBindingAdapterPosition()
