@@ -10,7 +10,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.utils.DevicesUtils.px2dip
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 
 /**
@@ -18,7 +18,6 @@ import com.yuyan.inputmethod.core.CandidateListItem
  */
 class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     RecyclerView.Adapter<CandidatesBarAdapter.SymbolHolder>() {
-//    private var mCandidateTextSize = 0
     private var mDatas: List<CandidateListItem?>
     private val inflater: LayoutInflater
     private var textColor: Int
@@ -36,7 +35,6 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
         val theme = activeTheme
         textColor = theme.keyTextColor
         inflater = LayoutInflater.from(context)
-//        mCandidateTextSize = instance.candidateTextSize
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
@@ -67,7 +65,7 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)
-            textView.textSize = px2dip(instance.candidateTextSize.toFloat()).toFloat()
+            textView.textSize = DevicesUtils.px2dip(instance.candidateTextSize.toFloat()).toFloat()
         }
     }
 }
