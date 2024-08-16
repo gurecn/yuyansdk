@@ -131,6 +131,9 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val spaceSwipeMoveCursor =
         switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
 
+    val deleteLocationTop =
+        switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
+
     // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
     val keyboardLockEnglish =
         switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)

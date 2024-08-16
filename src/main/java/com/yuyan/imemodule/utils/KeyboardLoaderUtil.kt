@@ -40,18 +40,22 @@ class KeyboardLoaderUtil private constructor() {
         when(skbValue){
             0x1000 -> {  // 1000  拼音全键
                 var keyBeans = mutableListOf<SoftKey>()
-                var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
+                val keys = arrayListOf(
+                    arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44),
+                    arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40),
+                    arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL),)
+                var qwertyKeys = createQwertyKeys(keys[0])
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                qwertyKeys = createQwertyKeys(arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40))
+                qwertyKeys = createQwertyKeys(keys[1])
                 qwertyKeys.first().apply {
                     mLeftF = 0.06f
                 }
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                qwertyKeys = createQwertyKeys(arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL))
+                qwertyKeys = createQwertyKeys(keys[2])
                 qwertyKeys.first().apply {
                     widthF = 0.147f
                 }
@@ -65,7 +69,12 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x2000 -> {  // 2000  T9键键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var t9Key = createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_AT))
+                val keyDeleteOrder = if(prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keys = arrayListOf(
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, keyDeleteOrder.first),
+                    arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR),
+                    arrayOf(14, 15, 16, keyDeleteOrder.second),)
+                var t9Key = createT9Keys(keys[0])
                 t9Key.first().apply {
                     widthF = 0.18f
                     heightF = 0.75f
@@ -74,13 +83,13 @@ class KeyboardLoaderUtil private constructor() {
                 keyBeans.addAll(t9Key)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                t9Key = createT9Keys(arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR))
+                t9Key = createT9Keys(keys[1])
                 t9Key.first().mLeftF = 0.185f
                 t9Key.last().widthF = 0.18f
                 keyBeans.addAll(t9Key)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                t9Key = createT9Keys(arrayOf(14, 15, 16, KeyEvent.KEYCODE_DEL))
+                t9Key = createT9Keys(keys[2])
                 t9Key.first().mLeftF = 0.185f
                 t9Key.last().widthF = 0.18f
                 keyBeans.addAll(t9Key)
@@ -105,11 +114,15 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x4000 -> {// 4000 英文全键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var qwertyKeys = createQwertyKeys(arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44))
+                val keys = arrayListOf(
+                    arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44),
+                    arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40),
+                    arrayOf(54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL),)
+                var qwertyKeys = createQwertyKeys(keys[0])
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                qwertyKeys = createQwertyKeys(arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40))
+                qwertyKeys = createQwertyKeys(keys[1])
                 qwertyKeys.first().apply {
                     mLeftF = 0.06f
                 }
@@ -120,7 +133,7 @@ class KeyboardLoaderUtil private constructor() {
                 softKeyToggle.widthF = 0.147f
                 softKeyToggle.setToggleStates(shiftToggleStates)
                 keyBeans.add(softKeyToggle)
-                keyBeans.addAll(createQwertyKeys(arrayOf(54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL)))
+                keyBeans.addAll(createQwertyKeys(keys[2]))
                 keyBeans.last().apply {
                     widthF = 0.147f
                 }
@@ -130,7 +143,12 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x5000 -> {  // 5000 数字键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var t9Keys = createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12,8, 9, 10, KeyEvent.KEYCODE_AT))
+                val keyDelete = if(prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keys = arrayListOf(
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 8, 9, 10, keyDelete.first),
+                    arrayOf(11, 12, 13, 0),
+                    arrayOf(14, 15, 16, keyDelete.second),)
+                var t9Keys = createT9NumberKeys(keys[0])
                 t9Keys.first().apply {
                     widthF = 0.18f
                     heightF = 0.75f
@@ -140,14 +158,14 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
 
                 keyBeans = LinkedList()
-                t9Keys = createT9NumberKeys(arrayOf(11, 12, 13, 0))
+                t9Keys = createT9NumberKeys(keys[1])
                 t9Keys.first().mLeftF = 0.185f
                 t9Keys.last().widthF = 0.18f
                 keyBeans.addAll(t9Keys)
                 rows.add(keyBeans)
 
                 keyBeans = LinkedList()
-                t9Keys = createT9NumberKeys(arrayOf( 14, 15, 16, KeyEvent.KEYCODE_DEL))
+                t9Keys = createT9NumberKeys(keys[2])
                 t9Keys.first().mLeftF = 0.185f
                 t9Keys.last().widthF = 0.18f
                 keyBeans.addAll(t9Keys)
@@ -157,15 +175,19 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x6000 -> {     // 6000 乱序17键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                var lX17Keys = createLX17Keys(arrayOf(36, 47, 54, 30, 52, 41))
+                val keys = arrayListOf(
+                    arrayOf(36, 47, 54, 30, 52, 41),
+                    arrayOf(40, 32, 53, 51, 38, 42),
+                    arrayOf(31, 45, 35, 34, 48, 67),)
+                var lX17Keys = createLX17Keys(keys[0])
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                lX17Keys = createLX17Keys(arrayOf(40, 32, 53, 51, 38, 42))
+                lX17Keys = createLX17Keys(keys[1])
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                lX17Keys = createLX17Keys(arrayOf(31, 45, 35, 34, 48, 67))
+                lX17Keys = createLX17Keys(keys[2])
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = lastRows(numberLine)
