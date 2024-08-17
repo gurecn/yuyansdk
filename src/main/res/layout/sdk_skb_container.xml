@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/inputView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -44,7 +45,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:src="@drawable/sdk_vector_keyboard_horizontal_line"
-            android:layout_below="@+id/skb_input_keyboard_view"/>
+            android:layout_below="@+id/skb_input_keyboard_view"
+            tools:ignore="ContentDescription" />
     </RelativeLayout>
     <include
         android:id="@+id/ll_skb_holder_layout_right"

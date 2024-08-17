@@ -75,7 +75,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private lateinit var mHoderLayout: LinearLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
-    private lateinit var mIvSkbMove: ImageView
 
     init {
         this.service = service
@@ -93,7 +92,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val mRLSkbInputContainer:RelativeLayout = mSkbRoot.findViewById(R.id.ll_input_keyboard_container)
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            mIvSkbMove = mSkbRoot.findViewById<ImageView?>(R.id.iv_keyboard_move).apply {
+            mSkbRoot.findViewById<ImageView?>(R.id.iv_keyboard_move).apply {
                 isClickable = true
                 setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
             }
@@ -130,9 +129,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(prefs.keyboardModeFloat.getValue()){
             bottomPadding = mBottomPaddingKey.getValue()
             rightPadding = mRightPaddingKey.getValue()
-            mIvSkbMove.visibility = VISIBLE
         } else {
-            mIvSkbMove.visibility = GONE
             bottomPadding = if(EnvironmentSingleton.instance.isLandscape) (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
             else 0
             rightPadding = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape.getValue()
@@ -143,8 +140,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     private var initialTouchX = 0f
     private var initialTouchY = 0f
-    private var rightPaddingValue = 0
-    private var bottomPaddingValue = 0
+    private var rightPaddingValue = 0  // 右侧边距
+    private var bottomPaddingValue = 0  // 底部边距
     private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {

@@ -105,8 +105,4 @@ class ImeService : InputMethodService() {
             }
         }
     }
-
-    companion object {
-        private val TAG = ImeService::class.java.getSimpleName()
-    }
 }
