@@ -701,6 +701,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo) {
+        resetToIdleState()
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         if(AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()){
