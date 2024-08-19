@@ -64,8 +64,6 @@ open class ImeSdkApplication : Application() {
         if (dataDictVersion < CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM) {
             //rime词库
             copyFileOrDir(context, "rime", "", CustomConstant.RIME_DICT_PATH, true)
-            //手写词典,暂时与rime词库同时判断
-            copyFileOrDir(context, "hdw", "", CustomConstant.HDW_DICT_PATH, false)
             AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
         }
         val config = BundledEmojiCompatConfig(context)

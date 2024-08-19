@@ -1,8 +1,8 @@
 __build_info:
-  rime_version: 1.11.1
+  rime_version: 1.11.2
   timestamps:
-    default: 1717741756
-    default.custom: 1717741756
+    default: 1724067610
+    default.custom: 1724067610
 ascii_composer:
   good_old_caps_lock: true
   switch_key:
@@ -118,6 +118,7 @@ schema_list:
   - schema: t9
   - schema: double_pinyin_flypy
   - schema: double_pinyin_ls17
+  - schema: melt_eng
 switcher:
   abbreviate_options: true
   caption: "「方案选单」"
