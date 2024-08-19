@@ -311,7 +311,7 @@ class Rime(fullCheck: Boolean) {
         external fun getRimeOption(option: String): Boolean
 
         @JvmStatic
-        external fun getRimeSchemaList(): Array<SchemaListItem>
+        external fun getRimeSchemaList(): Array<SchemaItem>
 
         @JvmStatic
         external fun getCurrentRimeSchema(): String
@@ -380,10 +380,10 @@ class Rime(fullCheck: Boolean) {
         external fun getRimeKeycodeByName(name: String): Int
 
         @JvmStatic
-        external fun getAvailableRimeSchemaList(): Array<SchemaListItem>
+        external fun getAvailableRimeSchemaList(): Array<SchemaItem>
 
         @JvmStatic
-        external fun getSelectedRimeSchemaList(): Array<SchemaListItem>
+        external fun getSelectedRimeSchemaList(): Array<SchemaItem>
 
         @JvmStatic
         external fun selectRimeSchemas(schemaIds: Array<String>): Boolean
