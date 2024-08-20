@@ -122,18 +122,18 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
-        mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscape
-        else AppPrefs.getInstance().internal.keyboardBottomPadding
-        mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape
-        else AppPrefs.getInstance().internal.keyboardRightPadding
-        if(prefs.keyboardModeFloat.getValue()){
+        if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()){
+            mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
+            else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat
+            mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscapeFloat
+            else AppPrefs.getInstance().internal.keyboardRightPaddingFloat
             bottomPadding = mBottomPaddingKey.getValue()
             rightPadding = mRightPaddingKey.getValue()
         } else {
-            bottomPadding = if(EnvironmentSingleton.instance.isLandscape) (EnvironmentSingleton.instance.mScreenHeight - EnvironmentSingleton.instance.inputAreaHeight)/2
-            else 0
-            rightPadding = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscape.getValue()
-            else 0
+            mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
+            mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
+            bottomPadding = mBottomPaddingKey.getValue()
+            rightPadding = mRightPaddingKey.getValue()
         }
         updateTheme()
     }

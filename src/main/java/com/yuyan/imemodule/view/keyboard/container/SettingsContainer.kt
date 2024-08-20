@@ -178,14 +178,14 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             SkbMenuMode.FloatKeyboard -> {
-                val keyboardModeFloat = prefs.keyboardModeFloat.getValue()
-                prefs.keyboardModeFloat.setValue(!keyboardModeFloat)
-                EnvironmentSingleton.instance.initData()
-                KeyboardLoaderUtil.instance.clearKeyboardMap()
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(
-                    mInputModeSwitcher!!.skbLayout
-                )
+                if(!EnvironmentSingleton.instance.isLandscape) {  // 横屏强制悬浮键盘，暂不支持关闭
+                    val keyboardModeFloat = prefs.keyboardModeFloat.getValue()
+                    prefs.keyboardModeFloat.setValue(!keyboardModeFloat)
+                    EnvironmentSingleton.instance.initData()
+                    KeyboardLoaderUtil.instance.clearKeyboardMap()
+                    KeyboardManager.instance.clearKeyboard()
+                }
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
             SkbMenuMode.ClipBoard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
