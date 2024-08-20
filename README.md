@@ -101,8 +101,8 @@ git clone git@github.com:gurecn/yuyansdk.git
 - [同文输入法](https://github.com/osfans)
 - [小企鹅输入法](https://github.com/fcitx5-android/fcitx5-android)
 - [RIME](http://rime.im)
-- [🍀四叶草拼音输入方案](https://github.com/fkxxyz/rime-cloverpinyin)
-~~- [雾凇拼音方案](https://github.com/iDvel/rime-ice)~~
+- [🍀四叶草拼音输入方案](https://github.com/fkxxyz/rime-cloverpinyin)  
+~~- [雾凇拼音方案](https://github.com/iDvel/rime-ice)~~  
 - [白霜词库](https://github.com/gaboolic/rime-frost)
 
 ## 联系作者:
