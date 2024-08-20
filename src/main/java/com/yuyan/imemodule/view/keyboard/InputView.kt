@@ -2,6 +2,7 @@ package com.yuyan.imemodule.view.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -69,6 +70,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
     private lateinit var mIbOneHand: ImageButton
     private lateinit var mIbOneHandNone: ImageButton
+    private lateinit var mIvKeyboardMove: ImageView
     lateinit var mSkbRoot: RelativeLayout
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
@@ -92,7 +94,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val mRLSkbInputContainer:RelativeLayout = mSkbRoot.findViewById(R.id.ll_input_keyboard_container)
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            mSkbRoot.findViewById<ImageView?>(R.id.iv_keyboard_move).apply {
+            mIvKeyboardMove = mSkbRoot.findViewById<ImageView>(R.id.iv_keyboard_move).apply {
                 isClickable = true
                 setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
             }
@@ -189,6 +191,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mSkbRoot.background = activeTheme.backgroundDrawable(isKeyBorder)
         mComposingView.updateTheme(activeTheme.keyTextColor)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
+        val vectorDrawableCompat = mIvKeyboardMove.getDrawable() as VectorDrawable
+        vectorDrawableCompat.setTint(activeTheme.keyTextColor)
         if(::mIbOneHandNone.isInitialized){
             mIbOneHandNone.getDrawable().setTint(activeTheme.keyTextColor)
             mIbOneHand.getDrawable().setTint(activeTheme.keyTextColor)

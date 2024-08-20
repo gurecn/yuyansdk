@@ -96,7 +96,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             SkbMenuMode.SwitchKeyboard -> (KeyboardManager.instance.currentContainer as SettingsContainer?)!!.showSkbSelelctModeView()
             SkbMenuMode.KeyboardHeight -> {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
-                (KeyboardManager.instance.currentContainer as InputBaseContainer?)!!.setKeyboardHeight()
+                KeyboardManager.instance.currentContainer!!.setKeyboardHeight()
             }
             SkbMenuMode.DarkTheme -> {
                 val isDark = activeTheme.isDark
