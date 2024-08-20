@@ -25,6 +25,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
+import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 
 /**
  * 候选词集装箱
@@ -133,11 +134,18 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 this.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
             }
             mIvMenuCloseSKB = ImageView(context).apply {
-                setImageResource(R.drawable.sdk_skb_close_icon)
+                setImageResource(R.drawable.sdk_level_candidates_menu)
                 isClickable = true
                 isEnabled = true
                 this.layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
-                setOnClickListener { mCvListener.onClickCloseKeyboard() }
+                setOnClickListener {
+                    val container = KeyboardManager.instance.currentContainer
+                    if (container is ClipBoardContainer) {
+                        mCvListener.onClickClearClipBoard()
+                    } else {
+                        mCvListener.onClickCloseKeyboard()
+                    }
+                }
             }
             mCandidatesMenuContainer.addView(ivMenuSetting)
             mCandidatesMenuContainer.addView(mLLContainerMenu)
@@ -150,14 +158,18 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      * 显示候选词
      */
     fun showCandidates() {
-        if (mDecInfo.isCandidatesListEmpty) {
+        val container = KeyboardManager.instance.currentContainer
+        if (container is ClipBoardContainer) {
+            mIvMenuCloseSKB.drawable.setLevel(1)
+            showViewVisibility(mCandidatesMenuContainer)
+        } else if (mDecInfo.isCandidatesListEmpty) {
+            mIvMenuCloseSKB.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
         } else {
             showViewVisibility(mCandidatesDataContainer)
             if (mDecInfo.isAssociate) {
                 mRightArrowBtn.drawable.setLevel(3)
             } else {
-                val container = KeyboardManager.instance.currentContainer
                 if (container is CandidatesContainer) {
                     mRightArrowBtn.drawable.setLevel(0)
                     var lastItemPosition = 0

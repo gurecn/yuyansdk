@@ -2,7 +2,6 @@ package com.yuyan.imemodule.view.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -34,6 +33,7 @@ import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
+import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
@@ -191,8 +191,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mSkbRoot.background = activeTheme.backgroundDrawable(isKeyBorder)
         mComposingView.updateTheme(activeTheme.keyTextColor)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
-        val vectorDrawableCompat = mIvKeyboardMove.getDrawable() as VectorDrawable
-        vectorDrawableCompat.setTint(activeTheme.keyTextColor)
+        mIvKeyboardMove.drawable.setTint(activeTheme.keyTextColor)
         if(::mIbOneHandNone.isInitialized){
             mIbOneHandNone.getDrawable().setTint(activeTheme.keyTextColor)
             mIbOneHand.getDrawable().setTint(activeTheme.keyTextColor)
@@ -279,14 +278,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     override fun responseHandwritingResultEvent(words: ArrayList<CandidateListItem?>) {
         mDecInfo.isAssociate = false
-        mDecInfo.cacheCandidates(words)
-        changeToStateInput()
-    }
-
-    // 响应剪切板数据
-    fun responseClipboardResultEvent(words: ArrayList<CandidateListItem?>) {
-        mDecInfo.isAssociate = true
-        isSkipEngineMode = true
         mDecInfo.cacheCandidates(words)
         changeToStateInput()
     }
@@ -586,7 +577,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     /**
      * 显示候选词视图
      */
-    private fun updateCandidateBar() {
+    fun updateCandidateBar() {
         mSkbCandidatesBarView.showCandidates()
         mComposingView.setDecodingInfo(mDecInfo)
     }
@@ -642,6 +633,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
             } else {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                updateCandidateBar()
             }
         }
 
@@ -652,6 +644,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         override fun onClickClearCandidate() {
             resetToIdleState()
             KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+        }
+
+        override fun onClickClearClipBoard() {
+            LauncherModel.instance.mClipboardDao?.clearAllClipBoardContent()
+            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+            resetToIdleState()
         }
     }
 

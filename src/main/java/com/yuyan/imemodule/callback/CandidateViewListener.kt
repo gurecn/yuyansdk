@@ -13,4 +13,5 @@ interface CandidateViewListener {
     fun onClickSetting()
     fun onClickCloseKeyboard()
     fun onClickClearCandidate()
+    fun onClickClearClipBoard()
 }
