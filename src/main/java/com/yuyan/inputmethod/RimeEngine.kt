@@ -165,12 +165,12 @@ object RimeEngine {
                 for (item in candidates) {
                     item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
                 }
-                composition = composition.toString().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                composition = composition.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             } else if (mInputModeSwitcher!!.isEnglishUpperLockCase) {
                 for (item in candidates) {
                     item.text = item.text.uppercase()
                 }
-                composition = composition.toString().uppercase()
+                composition = composition.uppercase()
             }
         }
         var count = Rime.compositionText.count { it in '1'..'9' }
@@ -225,6 +225,7 @@ object RimeEngine {
         val compositionText = Rime.compositionText
         return when {
             candidates.isEmpty() -> compositionText
+            candidates.first().comment.isBlank() -> compositionText
             compositionText.isEmpty() -> compositionText
             Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_T9  -> {
                 val compositionList: List<String> =compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
