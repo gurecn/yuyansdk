@@ -33,7 +33,6 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         mRVSymbolsView!!.layoutParams = layoutParams2
         this.addView(mRVSymbolsView)
-        showClipBoardView()
     }
 
     /**
@@ -48,11 +47,10 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 words.add(CandidateListItem("", copyContent))
             }
         }
-        inputView.responseClipboardResultEvent(words)
         val adapter = ClipBoardAdapter(context, copyContents)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is ClipBoardAdapter) {
-                inputView.onChoiceTouched(position)
+                inputView.responseLongKeyEvent(copyContents[position].copyContent)
             }
         }
         mRVSymbolsView!!.setAdapter(adapter)

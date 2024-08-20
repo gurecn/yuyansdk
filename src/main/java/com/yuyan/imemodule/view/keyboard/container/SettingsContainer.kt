@@ -189,6 +189,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             }
             SkbMenuMode.ClipBoard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                inputView.updateCandidateBar()
                 (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
             }
             else ->{}
