@@ -1,8 +1,8 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1724067610
-    default.custom: 1724067610
+    default: 1724118423
+    default.custom: 1724118423
 ascii_composer:
   good_old_caps_lock: true
   switch_key:
@@ -14,111 +14,21 @@ ascii_composer:
 config_version: "2024-02-05"
 key_binder:
   bindings:
-    - {accept: "Shift+Tab", send: "Shift+Left", when: composing}
-    - {accept: Tab, send: "Shift+Right", when: composing}
-    - {accept: "Alt+Left", send: "Shift+Left", when: composing}
-    - {accept: "Alt+Right", send: "Shift+Right", when: composing}
     - {accept: minus, send: Page_Up, when: has_menu}
     - {accept: equal, send: Page_Down, when: has_menu}
-    - {accept: "Control+Shift+3", toggle: ascii_punct, when: always}
-    - {accept: "Control+Shift+numbersign", toggle: ascii_punct, when: always}
-    - {accept: "Control+Shift+4", toggle: traditionalization, when: always}
-    - {accept: "Control+Shift+dollar", toggle: traditionalization, when: always}
-    - {accept: "Control+k", send: "Shift+Delete", when: composing}
-    - {accept: KP_0, send: 0, when: composing}
-    - {accept: KP_1, send: 1, when: composing}
-    - {accept: KP_2, send: 2, when: composing}
-    - {accept: KP_3, send: 3, when: composing}
-    - {accept: KP_4, send: 4, when: composing}
-    - {accept: KP_5, send: 5, when: composing}
-    - {accept: KP_6, send: 6, when: composing}
-    - {accept: KP_7, send: 7, when: composing}
-    - {accept: KP_8, send: 8, when: composing}
-    - {accept: KP_9, send: 9, when: composing}
-    - {accept: KP_Decimal, send: period, when: composing}
-  select_first_character: bracketleft
-  select_last_character: bracketright
 menu:
   page_size: 10
-punctuator:
-  full_shape:
-    " ": {commit: "　"}
-    "!": {commit: "！"}
-    "\"": {pair: ["“", "”"]}
-    "#": ["＃", "⌘"]
-    "$": ["￥", "$", "€", "£", "¥", "¢", "¤"]
-    "%": ["％", "°", "℃"]
-    "&": "＆"
-    "'": {pair: ["‘", "’"]}
-    "(": "（"
-    ")": "）"
-    "*": ["＊", "·", "・", "×", "※", "❂"]
-    "+": "＋"
-    ",": {commit: "，"}
-    "-": "－"
-    .: {commit: "。"}
-    "/": ["／", "÷"]
-    ":": {commit: "："}
-    ";": {commit: "；"}
-    "<": ["《", "〈", "«", "‹"]
-    "=": "＝"
-    ">": ["》", "〉", "»", "›"]
-    "?": {commit: "？"}
-    "@": ["＠", "☯"]
-    "[": ["「", "【", "〔", "［"]
-    "\\": ["、", "＼"]
-    "]": ["」", "】", "〕", "］"]
-    "^": {commit: "……"}
-    _: "——"
-    "`": "｀"
-    "{": ["『", "〖", "｛"]
-    "|": ["·", "｜", "§", "¦"]
-    "}": ["』", "〗", "｝"]
-    "~": "～"
-  half_shape:
-    "!": "！"
-    "\"": {pair: ["“", "”"]}
-    "#": "#"
-    "$": "¥"
-    "%": "%"
-    "&": "&"
-    "'": {pair: ["‘", "’"]}
-    "(": "（"
-    ")": "）"
-    "*": "*"
-    "+": "+"
-    ",": "，"
-    "-": "-"
-    .: "。"
-    "/": "/"
-    ":": "："
-    ";": "；"
-    "<": "《"
-    "=": "="
-    ">": "》"
-    "?": "？"
-    "@": "@"
-    "[": "【"
-    "\\": "、"
-    "]": "】"
-    "^": "……"
-    _: "——"
-    "`": "`"
-    "{": "「"
-    "|": "|"
-    "}": "」"
-    "~": "~"
 recognizer:
   patterns:
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
     underscore: "^[A-Za-z]+_.*"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 schema_list:
-  - schema: rime_ice
-  - schema: t9
+  - schema: english
+  - schema: pinyin
+  - schema: pinyin_t9
   - schema: double_pinyin_flypy
   - schema: double_pinyin_ls17
-  - schema: melt_eng
 switcher:
   abbreviate_options: true
   caption: "「方案选单」"
@@ -132,5 +42,4 @@ switcher:
     - ascii_punct
     - traditionalization
     - emoji
-    - full_shape
     - search_single_char

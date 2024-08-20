@@ -1,11 +1,11 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1724067610
-    default.custom: 1724067610
+    default: 1724118423
+    default.custom: 1724118423
     double_pinyin_flypy.custom: 0
-    double_pinyin_flypy.schema: 1724067610
-    symbols_caps_v: 1724067610
+    double_pinyin_flypy.schema: 1724118423
+    symbols_caps_v: 1724118423
     symbols_caps_v.custom: 0
 cn_en:
   comment_format:
@@ -39,8 +39,6 @@ engine:
     - "lua_filter@corrector"
     - "reverse_lookup_filter@radical_reverse_lookup"
     - "lua_filter@autocap_filter"
-    - "lua_filter@pin_cand_filter"
-    - "lua_filter@reduce_english_filter"
     - "simplifier@emoji"
     - "simplifier@traditionalize"
     - "lua_filter@search@radical_pinyin"
@@ -68,120 +66,29 @@ engine:
     - "lua_translator@date_translator"
     - "lua_translator@lunar"
     - "table_translator@custom_phrase"
-    - "table_translator@melt_eng"
+    - "table_translator@english"
     - "table_translator@cn_en"
     - "table_translator@radical_lookup"
     - "lua_translator@unicode"
     - "lua_translator@number_translator"
     - "lua_translator@force_gc"
-key_binder:
-  bindings:
-    - {accept: "Shift+Tab", send: "Shift+Left", when: composing}
-    - {accept: Tab, send: "Shift+Right", when: composing}
-    - {accept: "Alt+Left", send: "Shift+Left", when: composing}
-    - {accept: "Alt+Right", send: "Shift+Right", when: composing}
-    - {accept: minus, send: Page_Up, when: has_menu}
-    - {accept: equal, send: Page_Down, when: has_menu}
-    - {accept: "Control+Shift+3", toggle: ascii_punct, when: always}
-    - {accept: "Control+Shift+numbersign", toggle: ascii_punct, when: always}
-    - {accept: "Control+Shift+4", toggle: traditionalization, when: always}
-    - {accept: "Control+Shift+dollar", toggle: traditionalization, when: always}
-    - {accept: "Control+k", send: "Shift+Delete", when: composing}
-    - {accept: KP_0, send: 0, when: composing}
-    - {accept: KP_1, send: 1, when: composing}
-    - {accept: KP_2, send: 2, when: composing}
-    - {accept: KP_3, send: 3, when: composing}
-    - {accept: KP_4, send: 4, when: composing}
-    - {accept: KP_5, send: 5, when: composing}
-    - {accept: KP_6, send: 6, when: composing}
-    - {accept: KP_7, send: 7, when: composing}
-    - {accept: KP_8, send: 8, when: composing}
-    - {accept: KP_9, send: 9, when: composing}
-    - {accept: KP_Decimal, send: period, when: composing}
-  import_preset: default
-  search: "`"
-  select_first_character: bracketleft
-  select_last_character: bracketright
-lunar: lunar
-melt_eng:
+english:
   comment_format:
     - "xform/.*//"
-  dictionary: melt_eng
+  dictionary: english
   enable_sentence: false
   enable_user_dict: false
   initial_quality: 1.1
+key_binder:
+  bindings:
+    - {accept: minus, send: Page_Up, when: has_menu}
+    - {accept: equal, send: Page_Down, when: has_menu}
+  import_preset: default
+  search: "`"
+lunar: lunar
 menu:
   page_size: 10
-pin_cand_filter:
-  - "d\t的"
 punctuator:
-  full_shape:
-    " ": {commit: "　"}
-    "!": {commit: "！"}
-    "\"": {pair: ["“", "”"]}
-    "#": ["＃", "⌘"]
-    "$": ["￥", "$", "€", "£", "¥", "¢", "¤"]
-    "%": ["％", "°", "℃"]
-    "&": "＆"
-    "'": {pair: ["‘", "’"]}
-    "(": "（"
-    ")": "）"
-    "*": ["＊", "·", "・", "×", "※", "❂"]
-    "+": "＋"
-    ",": {commit: "，"}
-    "-": "－"
-    .: {commit: "。"}
-    "/": ["／", "÷"]
-    ":": {commit: "："}
-    ";": {commit: "；"}
-    "<": ["《", "〈", "«", "‹"]
-    "=": "＝"
-    ">": ["》", "〉", "»", "›"]
-    "?": {commit: "？"}
-    "@": ["＠", "☯"]
-    "[": ["「", "【", "〔", "［"]
-    "\\": ["、", "＼"]
-    "]": ["」", "】", "〕", "］"]
-    "^": {commit: "……"}
-    _: "——"
-    "`": "｀"
-    "{": ["『", "〖", "｛"]
-    "|": ["·", "｜", "§", "¦"]
-    "}": ["』", "〗", "｝"]
-    "~": "～"
-  half_shape:
-    "!": "！"
-    "\"": {pair: ["“", "”"]}
-    "#": "#"
-    "$": "¥"
-    "%": "%"
-    "&": "&"
-    "'": {pair: ["‘", "’"]}
-    "(": "（"
-    ")": "）"
-    "*": "*"
-    "+": "+"
-    ",": "，"
-    "-": "-"
-    .: "。"
-    "/": "/"
-    ":": "："
-    ";": "；"
-    "<": "《"
-    "=": "="
-    ">": "》"
-    "?": "？"
-    "@": "@"
-    "[": "【"
-    "\\": "、"
-    "]": "】"
-    "^": "……"
-    _: "——"
-    "`": "`"
-    "{": "「"
-    "|": "|"
-    "}": "」"
-    "~": "~"
   symbols:
     V0: ["零", "〇", "⁰", "₀", "⓪", "⓿", "０"]
     V1: ["一", "壹", "¹", "₁", "Ⅰ", "ⅰ", "①", "➀", "❶", "➊", "⓵", "⑴", "⒈", "１", "㊀", "㈠", "弌", "壱", "幺", "㆒"]
@@ -398,7 +305,7 @@ radical_lookup:
   tag: radical_lookup
   tips: "  〔拆字〕"
 radical_reverse_lookup:
-  dictionary: rime_ice
+  dictionary: pinyin
   tags:
     - radical_lookup
 recognizer:
@@ -412,286 +319,14 @@ recognizer:
     underscore: "^[A-Za-z]+_.*"
     unicode: "^U[a-f0-9]+"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
-reduce_english_filter:
-  idx: 2
-  mode: custom
-  words:
-    - aid
-    - ann
-    - bail
-    - bait
-    - bam
-    - band
-    - bans
-    - bat
-    - bay
-    - bend
-    - bent
-    - benz
-    - bib
-    - bid
-    - bien
-    - biz
-    - boc
-    - bop
-    - bos
-    - bud
-    - buf
-    - bach
-    - bench
-    - bush
-    - cab
-    - cad
-    - cain
-    - cam
-    - cans
-    - cap
-    - cas
-    - cef
-    - chad
-    - chan
-    - chap
-    - chef
-    - cher
-    - chew
-    - chic
-    - chin
-    - chip
-    - chit
-    - coup
-    - cum
-    - cunt
-    - cur
-    - couch
-    - dab
-    - dag
-    - dal
-    - dam
-    - dent
-    - dew
-    - dial
-    - diet
-    - dim
-    - din
-    - dip
-    - dis
-    - dit
-    - doug
-    - dub
-    - dug
-    - dunn
-    - fab
-    - fax
-    - fob
-    - fog
-    - foul
-    - fur
-    - gag
-    - gail
-    - gain
-    - gal
-    - gam
-    - gaol
-    - ged
-    - gel
-    - ger
-    - guam
-    - gus
-    - gut
-    - hail
-    - ham
-    - hank
-    - hans
-    - hat
-    - hay
-    - heil
-    - heir
-    - hem
-    - hep
-    - hud
-    - hum
-    - hung
-    - hunk
-    - hut
-    - hush
-    - jim
-    - jug
-    - kat
-    - lab
-    - lad
-    - lag
-    - laid
-    - lam
-    - laos
-    - lap
-    - lat
-    - lax
-    - lay
-    - led
-    - leg
-    - lex
-    - liam
-    - lib
-    - lid
-    - lied
-    - lien
-    - lies
-    - linn
-    - lip
-    - lit
-    - liz
-    - lob
-    - lug
-    - lund
-    - lung
-    - lux
-    - lash
-    - loch
-    - lush
-    - mag
-    - maid
-    - mann
-    - mar
-    - mat
-    - med
-    - mel
-    - mend
-    - mens
-    - ment
-    - mil
-    - mins
-    - mint
-    - mob
-    - moc
-    - mop
-    - mos
-    - mot
-    - mud
-    - mug
-    - mum
-    - mesh
-    - nap
-    - nat
-    - nay
-    - neil
-    - nib
-    - nip
-    - noun
-    - nous
-    - nun
-    - nut
-    - nail
-    - nash
-    - pac
-    - paid
-    - pail
-    - pain
-    - pair
-    - pak
-    - pal
-    - pam
-    - pans
-    - pant
-    - pap
-    - par
-    - pat
-    - paw
-    - pax
-    - pens
-    - pic
-    - pier
-    - pies
-    - pins
-    - pint
-    - pit
-    - pix
-    - pod
-    - pop
-    - pos
-    - pot
-    - pour
-    - pow
-    - pub
-    - pinch
-    - pouch
-    - rand
-    - rant
-    - rent
-    - rep
-    - res
-    - ret
-    - rex
-    - rib
-    - rid
-    - rig
-    - rim
-    - rub
-    - rug
-    - rum
-    - runc
-    - runs
-    - ranch
-    - sac
-    - sail
-    - sal
-    - sam
-    - sans
-    - sap
-    - saw
-    - sax
-    - sew
-    - sham
-    - shaw
-    - shin
-    - sig
-    - sin
-    - sip
-    - sis
-    - suit
-    - sung
-    - suns
-    - sup
-    - sur
-    - sus
-    - tad
-    - tail
-    - taj
-    - tar
-    - tax
-    - tec
-    - ted
-    - tel
-    - ter
-    - tex
-    - tic
-    - tied
-    - tier
-    - ties
-    - tim
-    - tin
-    - tit
-    - tour
-    - tout
-    - tum
-    - wag
-    - wand
-    - womens
-    - wap
-    - wax
-    - weir
-    - won
-    - yan
-    - yen
-    - zach
 schema:
   author:
     - Dvel
   dependencies:
-    - melt_eng
+    - english
     - radical_pinyin
   description: |
-    雾凇拼音 - 小鹤双拼
-    https://github.com/iDvel/rime-ice
+    小鹤双拼：雨燕输入法
 
   name: "小鹤双拼"
   schema_id: double_pinyin_flypy
@@ -741,8 +376,6 @@ switches:
   - name: emoji
     reset: 1
     states: ["💀", "😄"]
-  - name: full_shape
-    states: ["半角", "全角"]
   - abbrev: ["词", "单"]
     name: search_single_char
     states: ["正常", "单字"]
@@ -759,7 +392,7 @@ translator:
   comment_format:
     - "xform/^/［/"
     - "xform/$/］/"
-  dictionary: rime_ice
+  dictionary: pinyin
   initial_quality: 1.2
   preedit_format:
     - "xform/([bpmfdtnljqx])n/$1iao/"
