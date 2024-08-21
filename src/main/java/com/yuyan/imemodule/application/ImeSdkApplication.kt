@@ -15,6 +15,8 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.ClipBoardService
 import com.yuyan.imemodule.ui.utils.isDarkMode
 import com.yuyan.imemodule.utils.AssetUtils.copyFileOrDir
+import com.yuyan.imemodule.utils.LogUtil
+import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 
 open class ImeSdkApplication : Application() {
@@ -69,6 +71,9 @@ open class ImeSdkApplication : Application() {
         val config = BundledEmojiCompatConfig(context)
         config.setReplaceAll(true)
         EmojiCompat.init(config)
+
+        LogUtil.d("11111111111", "转换+" + StringUtils.sbc2dbcCase("，。、：；“”！&"))
+
     }
 
     companion object {

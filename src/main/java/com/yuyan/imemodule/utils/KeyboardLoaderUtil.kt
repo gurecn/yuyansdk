@@ -9,6 +9,7 @@ import com.yuyan.imemodule.entity.keyboard.ToggleState
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
+import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9NumberKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9PYKeyPreset
@@ -44,18 +45,18 @@ class KeyboardLoaderUtil private constructor() {
                     arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44),
                     arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40),
                     arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL),)
-                var qwertyKeys = createQwertyKeys(keys[0])
+                var qwertyKeys = createQwertyPYKeys(keys[0])
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                qwertyKeys = createQwertyKeys(keys[1])
+                qwertyKeys = createQwertyPYKeys(keys[1])
                 qwertyKeys.first().apply {
                     mLeftF = 0.06f
                 }
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
-                qwertyKeys = createQwertyKeys(keys[2])
+                qwertyKeys = createQwertyPYKeys(keys[2])
                 qwertyKeys.first().apply {
                     widthF = 0.147f
                 }
@@ -139,6 +140,7 @@ class KeyboardLoaderUtil private constructor() {
                 }
                 rows.add(keyBeans)
                 keyBeans = lastRows(numberLine)
+                keyBeans[keyBeans.size -2].stateId = 1
                 rows.add(keyBeans)
             }
             0x5000 -> {  // 5000 数字键盘
@@ -313,10 +315,21 @@ class KeyboardLoaderUtil private constructor() {
         return softKeys.toTypedArray()
     }
 
-    private fun createQwertyKeys(codes: Array<Int>): Array<SoftKey> {
+    private fun createQwertyPYKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
             val labels = qwertyPYKeyPreset[code]
+            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "").apply {
+                widthF = 0.099f
+            })
+        }
+        return softKeys.toTypedArray()
+    }
+
+    private fun createQwertyKeys(codes: Array<Int>): Array<SoftKey> {
+        val softKeys = mutableListOf<SoftKey>()
+        for(code in codes){
+            val labels = qwertyKeyPreset[code]
             softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "").apply {
                 widthF = 0.099f
             })
