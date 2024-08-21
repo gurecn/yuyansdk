@@ -1,6 +1,8 @@
 
 package com.yuyan.imemodule.view.popup
 
+import com.yuyan.imemodule.entity.emojicon.PeopleEmoji
+
 val PopupPreset: Map<String, Array<String>> = hashMapOf(
     //
     // Latin
@@ -96,6 +98,7 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     //
     "$" to arrayOf("¢", "€", "£", "¥", "₹", "₽", "₺", "₩", "₱", "₿"),
     "符" to arrayOf(",", ".", "?", "!", ":", ";", "@", "(", ")"),
+    "Emoji" to PeopleEmoji.DATA.copyOfRange(0, 10),
 
 )
 
@@ -162,6 +165,7 @@ val PopupChinesePreset: Map<String, Array<String>> = hashMapOf(
     "M" to arrayOf("…", "m"),
 
     "符" to arrayOf("，", "。", "？", "！", "：", "；", "@", "（", "）"),
+    "Emoji" to PeopleEmoji.DATA.copyOfRange(0, 10),
 
     //
     // T9

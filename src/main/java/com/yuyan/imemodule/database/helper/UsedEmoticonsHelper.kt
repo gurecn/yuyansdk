@@ -84,7 +84,7 @@ class UsedEmoticonsHelper(dataProvider: BaseDataProvider?) {
             val emojis: MutableList<String> = mutableListOf()
             val orderBy = UsedEmoticonsTable.LATEST_TIME + " DESC"
             val columns = arrayOf<String?>(UsedEmoticonsTable.CHARACTER)
-            val cursor = mHelper!!.query(UsedEmoticonsTable.TABLE_NAME, columns, null, null, orderBy)
+            val cursor = mHelper!!.query(UsedEmoticonsTable.TABLE_NAME, columns, null, null, orderBy, "0,10")
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     val index = cursor.getColumnIndex(UsedEmoticonsTable.CHARACTER)
