@@ -94,7 +94,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             1300,
             "毫秒",
             100,
-            defaultLabel = R.string.number_500
+            defaultLabel = R.string.number_500_ms
         )
 
         val handWritingRCMode =

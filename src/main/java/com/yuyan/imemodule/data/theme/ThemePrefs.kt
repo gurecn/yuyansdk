@@ -119,6 +119,18 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val keyboardBalloonShow =
         switch(R.string.keypopup_input_settings, "keyboard_balloon_show_enable", false)
 
+    val longPressTimeout = int(
+        R.string.long_press_timeout,
+        "long_press_timeout",
+        400,
+        100,
+        700,
+        "毫秒",
+        50,
+        defaultLabel = R.string.number_400_ms
+    )
+
+
     val abcNumberLine =
         switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
 

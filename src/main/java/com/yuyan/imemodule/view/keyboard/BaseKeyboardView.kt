@@ -15,7 +15,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityManager
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
+import com.yuyan.imemodule.data.theme.ThemePrefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
@@ -150,7 +152,11 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     open fun onBufferDraw() {}
     private fun openPopupIfRequired() {
         showPreview(null)
-        onLongPress(mCurrentKey)
+        if (mCurrentKey != null && !TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
+            val bounds = Rect(mCurrentKey!!.mLeft, mCurrentKey!!.mTop, mCurrentKey!!.mRight, mCurrentKey!!.mBottom)
+            onPopupAction(ShowKeyboardAction(0, KeyDef.Popup.Key(mCurrentKey!!.getkeyLabel()), mService, bounds))
+            mLongPressKey = true
+        }
     }
 
     override fun onHoverEvent(event: MotionEvent): Boolean {
@@ -260,7 +266,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 }
                 if (mCurrentKey != null) {
                     val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
-                    mHandler!!.sendMessageDelayed(msg, LONGPRESS_TIMEOUT.toLong())
+                    mHandler!!.sendMessageDelayed(msg, prefs.longPressTimeout.getValue().toLong())
                 }
                 showPreview(mCurrentKey)
             }
@@ -437,14 +443,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         mCurrentKeyPressed = key
     }
 
-    private fun onLongPress(key: SoftKey?) {
-        if (!TextUtils.isEmpty(key!!.getkeyLabel())) {
-            val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
-            onPopupAction(ShowKeyboardAction(0, KeyDef.Popup.Key(key.getkeyLabel()), mService, bounds))
-            mLongPressKey = true
-        }
-    }
-
     private fun onPopupAction(action: PopupAction) {
         popupComponent.listener.onPopupAction(action)
     }
@@ -482,7 +480,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         private const val DEBOUNCE_TIME = 70
         private const val REPEAT_INTERVAL = 50 // ~20 keys per second
         private const val REPEAT_START_DELAY = 400
-        private val LONGPRESS_TIMEOUT = ViewConfiguration.getLongPressTimeout()
         private const val MULTITAP_INTERVAL = 800 // milliseconds
     }
 }

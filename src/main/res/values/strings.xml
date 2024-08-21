@@ -10,6 +10,7 @@
     <string name="ime_settings_voice">语音识别</string>
     <string name="ime_settings_handwriting">手写设置</string>
     <string name="keypopup_input_settings">按键气泡提示</string>
+    <string name="long_press_timeout">按键长按灵敏度</string>
     <string name="keyboard_mnemonic_show">双拼辅助</string>
     <string name="keyboard_flower_typeface">花漾字</string>
     <string name="keyboard_symbol_show">上滑符号</string>
@@ -142,7 +143,8 @@
     <string name="setup_keyboard">请完成键盘设置</string>
     <string name="setup_channel">设置向导</string>
     <string name="skip">跳过</string>
-    <string name="number_500">500</string>
+    <string name="number_500_ms">500毫秒</string>
+    <string name="number_400_ms">400毫秒</string>
 
     <string name="new_theme">新增主题</string>
     <string name="exception_theme_json">找不到主题 JSON</string>
