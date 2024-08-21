@@ -96,9 +96,9 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     //
     // Currency
     //
-    "$" to arrayOf("¢", "€", "£", "¥", "₹", "₽", "₺", "₩", "₱", "₿"),
     "符" to arrayOf(",", ".", "?", "!", ":", ";", "@", "(", ")"),
     "Emoji" to PeopleEmoji.DATA.copyOfRange(0, 10),
+    "123" to arrayOf( "0", "1", "2", "3", "4", "4", "5", "6", "7", "8", "9"),
 
 )
 
@@ -166,6 +166,7 @@ val PopupChinesePreset: Map<String, Array<String>> = hashMapOf(
 
     "符" to arrayOf("，", "。", "？", "！", "：", "；", "@", "（", "）"),
     "Emoji" to PeopleEmoji.DATA.copyOfRange(0, 10),
+    "123" to arrayOf( "0", "1", "2", "3", "4", "4", "5", "6", "7", "8", "9"),
 
     //
     // T9
