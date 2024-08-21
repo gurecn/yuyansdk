@@ -53,11 +53,7 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolTypeHolder {
-        val view = inflater.inflate(
-            R.layout.sdk_item_recycler_symbol_type,
-            parent,
-            false
-        ) as EmojiAppCompatTextView
+        val view = inflater.inflate(R.layout.sdk_item_recycler_symbol_type, parent, false) as EmojiAppCompatTextView
         view.setMinimumWidth(itemWidth)
         return SymbolTypeHolder(view)
     }
@@ -71,11 +67,7 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
             holder.itemView.setOnClickListener { v: View? ->
                 isClicks = holder.getBindingAdapterPosition()
                 notifyDataSetChanged()
-                mOnItemClickListener!!.onItemClick(
-                    this@SymbolTypeAdapter,
-                    v,
-                    isClicks
-                ) //索引即符号在SymbolsManager中的key
+                mOnItemClickListener!!.onItemClick(this@SymbolTypeAdapter, v, isClicks) //索引即符号在SymbolsManager中的key
             }
         }
     }

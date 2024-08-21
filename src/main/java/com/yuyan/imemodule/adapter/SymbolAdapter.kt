@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.emoji.widget.EmojiAppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
@@ -60,7 +60,7 @@ class SymbolAdapter(context: Context?, private val mDatas: Array<String>, val vi
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var textView: TextView
+        var textView: EmojiAppCompatTextView
 
         init {
             textView = view.findViewById(R.id.gv_item)
