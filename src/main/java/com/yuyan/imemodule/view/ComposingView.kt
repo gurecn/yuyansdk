@@ -5,42 +5,36 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.FontMetricsInt
 import android.text.TextUtils
-import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 
 /**
  * 拼音字符串View，用于显示输入的拼音。
  */
-class ComposingView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class ComposingView(context: Context) : View(context) {
     /**
      * Used to draw composing string. When drawing the active and idle part of
      * the spelling(Pinyin) string, the color may be changed.
      */
-    private val mPaint // 显示拼音字符串
-            : Paint
+    private val mPaint: Paint // 显示拼音字符串
 
     /**
      * Used to estimate dimensions to show the string .
      */
     private val mFmi: FontMetricsInt
 
-    /**
-     * 解码操作对象
-     */
-    var mDecInfo: DecodingInfo? = null
+    private var mComposingDisplay:String = ""  //显示拼音
 
     init {
         val r = context.resources
-        // 字符串普通颜色
-        val textColor = ContextCompat.getColor(context, android.R.color.tab_indicator_text)
         val mFontSize = r.getDimensionPixelSize(R.dimen.composing_height)
         mPaint = Paint()
-        mPaint.setColor(textColor)
+        mPaint.setColor(ThemeManager.activeTheme.keyTextColor)
         mPaint.isAntiAlias = true
         mPaint.textSize = mFontSize.toFloat()
         mFmi = mPaint.getFontMetricsInt()
@@ -57,24 +51,28 @@ class ComposingView(context: Context, attrs: AttributeSet?) : View(context, attr
     /**
      * 设置 解码操作对象，然后刷新View。
      */
-    fun setDecodingInfo(decInfo: DecodingInfo?) {
-        mDecInfo = decInfo
-        requestLayout()
-        invalidate()
+    fun setDecodingInfo(decInfo: DecodingInfo) {
+        mComposingDisplay = decInfo.composingStrForDisplay
+        if (mComposingDisplay.isBlank()) {
+            visibility = INVISIBLE
+        }  else {
+            visibility = VISIBLE
+            requestLayout()
+            invalidate()
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var width: Float
         val height = instance.heightForComposingView
-        if (null == mDecInfo || mDecInfo!!.isFinish) {
+        if (mComposingDisplay.isBlank()) {
             width = 0f
         } else {
             width = (getPaddingLeft() + getPaddingRight() + LEFT_RIGHT_MARGIN * 2).toFloat()
-            var str = mDecInfo!!.composingStrForDisplay
-            if (!TextUtils.isEmpty(str) && str.length > COMPOSING_STR_LENGTH) {
-                str = str.substring(str.length - COMPOSING_STR_LENGTH)
+            if (mComposingDisplay.length > COMPOSING_STR_LENGTH) {
+                mComposingDisplay = mComposingDisplay.substring(mComposingDisplay.length - COMPOSING_STR_LENGTH)
             }
-            width += mPaint.measureText(str, 0, str.length)
+            width += mPaint.measureText(mComposingDisplay, 0, mComposingDisplay.length)
         }
         val widthMeasure = MeasureSpec.makeMeasureSpec(width.toInt(), MeasureSpec.EXACTLY)
         val heightMeasure = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
@@ -89,34 +87,24 @@ class ComposingView(context: Context, attrs: AttributeSet?) : View(context, attr
      * 画拼音字符串
      */
     private fun drawForPinyin(canvas: Canvas) {
-        val x: Float = (getPaddingLeft() + LEFT_RIGHT_MARGIN).toFloat()
-        val y: Float = (-mFmi.top + paddingTop).toFloat()
-        if (mDecInfo == null) return
-        var cmpsStr = mDecInfo!!.composingStrForDisplay
-        if (!TextUtils.isEmpty(cmpsStr) && cmpsStr.length > COMPOSING_STR_LENGTH) {
-            cmpsStr = cmpsStr.substring(cmpsStr.length - COMPOSING_STR_LENGTH + 3)
-            canvas.drawText(
-                SUSPENSION_POINTS + cmpsStr,
-                0,
-                (SUSPENSION_POINTS + cmpsStr).length,
-                x,
-                y,
-                mPaint
-            )
-        } else {
-            canvas.drawText(cmpsStr, 0, cmpsStr.length, x, y, mPaint)
+        val x: Float = (paddingLeft + LEFT_RIGHT_MARGIN).toFloat()
+        val y: Float = (paddingTop - mFmi.top).toFloat()
+        if (mComposingDisplay.isBlank()) {
+            return
+        } else if (mComposingDisplay.length > COMPOSING_STR_LENGTH) {
+            mComposingDisplay = mComposingDisplay.substring(mComposingDisplay.length - COMPOSING_STR_LENGTH + 3)
+            canvas.drawText(SUSPENSION_POINTS + mComposingDisplay, 0, (SUSPENSION_POINTS + mComposingDisplay).length, x, y, mPaint)
+        } else if (!TextUtils.isEmpty(mComposingDisplay)){
+            canvas.drawText(mComposingDisplay, 0, mComposingDisplay.length, x, y, mPaint)
         }
     }
 
-    fun updateTheme(textColor: Int) {
-        // 刷新主题
-        mPaint.setColor(textColor)
+    fun updateTheme(theme: Theme) {
+        mPaint.setColor(theme.keyTextColor)
+        setBackgroundColor(theme.barColor)
     }
 
     companion object {
-        /**
-         * Suspension points used to display long items. 省略号
-         */
         private const val SUSPENSION_POINTS = "…"
         private const val LEFT_RIGHT_MARGIN = 5 //左右间隔
         private const val COMPOSING_STR_LENGTH = 50 //字符串最大长度

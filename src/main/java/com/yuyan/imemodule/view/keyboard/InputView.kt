@@ -28,12 +28,12 @@ import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
-import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
@@ -84,10 +84,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    fun initView(context: Context?) {
+    fun initView(context: Context) {
         if (!::mSkbRoot.isInitialized) {
             mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
-            mComposingView = mSkbRoot.findViewById(R.id.cmv_container)
             mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
             mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
             mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
@@ -99,6 +98,11 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
             }
             addView(mSkbRoot)
+            mComposingView = ComposingView(context)
+            mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
+            addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                addRule(ABOVE, mSkbRoot.id)
+            })
             val popupComponent = PopupComponent.get()
             val viewParent = popupComponent.root.parent
             if (viewParent != null) {
@@ -120,7 +124,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mIbOneHand = mHoderLayout.findViewById(R.id.ib_holder_one_hand_left)
             mIbOneHand.setOnClickListener { view: View -> onClick(view) }
             val layoutParamsHoder = mHoderLayout.layoutParams
-            val margin = EnvironmentSingleton.instance.heightForCandidates + EnvironmentSingleton.instance.heightForComposingView
+            val margin = EnvironmentSingleton.instance.heightForCandidates
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
@@ -201,7 +205,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         setBackgroundResource(android.R.color.transparent)
         val isKeyBorder = prefs.keyBorder.getValue()
         mSkbRoot.background = activeTheme.backgroundDrawable(isKeyBorder)
-        mComposingView.updateTheme(activeTheme.keyTextColor)
+        mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
         mIvKeyboardMove.drawable.setTint(activeTheme.keyTextColor)
         if(::mIbOneHandNone.isInitialized){
