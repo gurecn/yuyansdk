@@ -33,7 +33,6 @@ sealed class Theme : Parcelable {
     abstract val accentKeyTextColor: Int   // 回车键字体色
 
     abstract val popupBackgroundColor: Int    // 长按弹窗背景色
-    abstract val popupTextColor: Int   // 长按弹窗字体颜色
 
     abstract val spaceBarColor: Int    // 空格键背景色
     abstract val dividerColor: Int    // 分割线颜色
@@ -67,7 +66,6 @@ sealed class Theme : Parcelable {
         override val accentKeyTextColor: Int,
         override val keyPressHighlightColor: Int,
         override val popupBackgroundColor: Int,
-        override val popupTextColor: Int,
         override val spaceBarColor: Int,
         override val dividerColor: Int,
         override val genericActiveBackgroundColor: Int,
@@ -110,7 +108,6 @@ sealed class Theme : Parcelable {
         override val accentKeyTextColor: Int,
         override val keyPressHighlightColor: Int,
         override val popupBackgroundColor: Int,
-        override val popupTextColor: Int,
         override val spaceBarColor: Int,
         override val dividerColor: Int,
         override val genericActiveBackgroundColor: Int,
@@ -131,7 +128,6 @@ sealed class Theme : Parcelable {
             accentKeyTextColor: Number,
             keyPressHighlightColor: Number,
             popupBackgroundColor: Number,
-            popupTextColor: Number,
             spaceBarColor: Number,
             dividerColor: Number,
             genericActiveBackgroundColor: Number,
@@ -148,7 +144,6 @@ sealed class Theme : Parcelable {
             accentKeyTextColor.toInt(),
             keyPressHighlightColor.toInt(),
             popupBackgroundColor.toInt(),
-            popupTextColor.toInt(),
             spaceBarColor.toInt(),
             dividerColor.toInt(),
             genericActiveBackgroundColor.toInt(),
@@ -168,7 +163,6 @@ sealed class Theme : Parcelable {
             accentKeyTextColor,
             keyPressHighlightColor,
             popupBackgroundColor,
-            popupTextColor,
             spaceBarColor,
             dividerColor,
             genericActiveBackgroundColor,
@@ -199,7 +193,6 @@ sealed class Theme : Parcelable {
             accentKeyTextColor,
             keyPressHighlightColor,
             popupBackgroundColor,
-            popupTextColor,
             spaceBarColor,
             dividerColor,
             genericActiveBackgroundColor,

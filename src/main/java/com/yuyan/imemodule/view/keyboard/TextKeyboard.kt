@@ -289,7 +289,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         }
         if (keyboardMnemonic && !TextUtils.isEmpty(keyMnemonic)) {
             //助记符位于中下方
-            mPaint.color = mActiveTheme.popupTextColor
+            mPaint.color = textColor
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyMnemonic)) / 2.0f
             val y = softKey.mTop + weightHeigth * 3 + weightHeigth / 2.0f

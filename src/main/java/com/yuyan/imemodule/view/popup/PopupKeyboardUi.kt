@@ -201,16 +201,16 @@ class PopupKeyboardUi(
     private fun markFocus(index: Int) {
         keyUis.getOrNull(index)?.apply {
             root.background = focusBackground
-            textView.setTextColor(theme.genericActiveForegroundColor)
-            textViewSdb.setTextColor(theme.genericActiveForegroundColor)
+            textView.setTextColor(theme.keyTextColor)
+            textViewSdb.setTextColor(theme.keyTextColor)
         }
     }
 
     private fun markInactive(index: Int) {
         keyUis.getOrNull(index)?.apply {
             root.background = null
-            textView.setTextColor(theme.popupTextColor)
-            textViewSdb.setTextColor(theme.popupTextColor)
+            textView.setTextColor(theme.keyTextColor)
+            textViewSdb.setTextColor(theme.keyTextColor)
         }
     }
 
