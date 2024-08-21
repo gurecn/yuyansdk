@@ -86,7 +86,7 @@ class UsedChararterDBHelper(dataProvider: BaseDataProvider?) {
             val orderBy = UsedCharacterTable.LATEST_TIME + " DESC"
             val columns = arrayOf<String?>(UsedCharacterTable.CHARACTER)
             val cursor =
-                mHelper!!.query(UsedCharacterTable.TABLE_NAME, columns, null, null, orderBy)
+                mHelper!!.query(UsedCharacterTable.TABLE_NAME, columns, null, null, orderBy, "0,10")
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     val index = cursor.getColumnIndex(UsedEmoticonsTable.CHARACTER)

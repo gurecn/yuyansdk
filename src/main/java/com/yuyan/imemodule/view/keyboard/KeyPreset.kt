@@ -33,6 +33,7 @@ val qwertyKeyPreset: Map<Int, Array<String>> = hashMapOf(
     41 to arrayOf("M", "..."),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
 )
 
 val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -65,6 +66,7 @@ val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     41 to arrayOf("M", "..."),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
 )
 
 val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -97,6 +99,7 @@ val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     41 to arrayOf("M", "...", "ian"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
 )
 
 val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -119,6 +122,7 @@ val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     48 to arrayOf("T", "(", "er ong"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
 )
 
 val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -137,6 +141,7 @@ val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 to arrayOf("返回"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
 )
 
 val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
