@@ -131,11 +131,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             else AppPrefs.getInstance().internal.keyboardRightPaddingFloat
             bottomPadding = mBottomPaddingKey.getValue()
             rightPadding = mRightPaddingKey.getValue()
+            mSkbRoot.bottomPadding = 0
+            mSkbRoot.rightPadding = 0
         } else {
             mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
             mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
-            bottomPadding = mBottomPaddingKey.getValue()
-            rightPadding = mRightPaddingKey.getValue()
+            bottomPadding = 0
+            rightPadding = 0
+            mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
+            mSkbRoot.rightPadding = mRightPaddingKey.getValue()
         }
         updateTheme()
     }
@@ -163,7 +167,11 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                         EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width
                     } else rightPaddingValue
                     initialTouchX = event.rawX
-                    rightPadding = rightPaddingValue
+                    if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()) {
+                        rightPadding = rightPaddingValue
+                    } else {
+                        mSkbRoot.rightPadding = rightPaddingValue
+                    }
                 }
                 if(dy.absoluteValue > 10 ) {
                     bottomPaddingValue -= dy.toInt()
@@ -172,7 +180,11 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                         EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height
                     } else bottomPaddingValue
                     initialTouchY = event.rawY
-                    bottomPadding = bottomPaddingValue
+                    if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()) {
+                        bottomPadding = bottomPaddingValue
+                    } else {
+                        mSkbRoot.bottomPadding = bottomPaddingValue
+                    }
                 }
                 return true
             }
