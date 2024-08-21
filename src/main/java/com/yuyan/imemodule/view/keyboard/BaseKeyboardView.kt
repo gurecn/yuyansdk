@@ -440,7 +440,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private fun onLongPress(key: SoftKey?) {
         if (!TextUtils.isEmpty(key!!.getkeyLabel())) {
             val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
-            onPopupAction(ShowKeyboardAction(0, KeyDef.Popup.Keyboard(key.getkeyLabel()), bounds))
+            onPopupAction(ShowKeyboardAction(0, KeyDef.Popup.Key(key.getkeyLabel()), mService, bounds))
             mLongPressKey = true
         }
     }

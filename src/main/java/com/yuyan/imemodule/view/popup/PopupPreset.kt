@@ -15,7 +15,7 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     "i" to arrayOf("}", "』", "〗", "I"),
     "o" to arrayOf("|", "｜", "§", "¦", "O"),
     "p" to arrayOf("-", "_", "——", "～", "P"),
-    "a" to arrayOf("-", "A", "ā", "á", "ǎ", "à"),
+    "a" to arrayOf("、", "A", "ā", "á", "ǎ", "à"),
     "s" to arrayOf("/", "$", "¥", "S", "ß", "ś", "š", "ş"),
     "d" to arrayOf(":", "：", "D", "ð"),
     "f" to arrayOf(";", "；", "F"),
@@ -95,6 +95,73 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     // Currency
     //
     "$" to arrayOf("¢", "€", "£", "¥", "₹", "₽", "₺", "₩", "₱", "₿"),
+    "符" to arrayOf(",", ".", "?", "!", ":", ";", "@", "(", ")"),
+
+)
+
+
+val PopupChinesePreset: Map<String, Array<String>> = hashMapOf(
+    //
+    // Latin
+    //
+    "q" to arrayOf("【", "〔", "[", "Q"),
+    "w" to arrayOf("】", "〕", "]", "W"),
+    "e" to arrayOf("《", "〈", "<", "«", "E"),
+    "r" to arrayOf("》", "〉", ">", "»", "R"),
+    "t" to arrayOf("（", "(", "T"),
+    "y" to arrayOf("）", ")", "Y",),
+    "u" to arrayOf("『", "〖", "{", "U"),
+    "i" to arrayOf("』", "〗", "}", "I"),
+    "o" to arrayOf("|", "｜", "§", "¦", "O"),
+    "p" to arrayOf("-", "_", "——", "～", "P"),
+    "a" to arrayOf("、", "A", "ā", "á", "ǎ", "à"),
+    "s" to arrayOf("/", "$", "¥", "S", "ß", "ś", "š", "ş"),
+    "d" to arrayOf("：", ":", "D", "ð"),
+    "f" to arrayOf("；", ";", "F"),
+    "g" to arrayOf("_", "——", "～", "G", "ğ"),
+    "h" to arrayOf("#", "H"),
+    "j" to arrayOf("~", "J"),
+    "k" to arrayOf( "‘", "'","K"),
+    "l" to arrayOf("“", "”", "\"", "L", "ł"),
+    "z" to arrayOf("@", "Z", "ž", "ź", "ż"),
+    "x" to arrayOf("，", ",", "X", "×"),
+    "c" to arrayOf("。", ".", "·", "•", "C", "ç", "ć", "č"),
+    "v" to arrayOf("&", "$", "¥", "V", "ǖ", "ǘ", "ǚ", "ǜ"),
+    "b" to arrayOf("？", "?", "B"),
+    "n" to arrayOf( "！", "!","|", "¦", "N", "ñ", "ń"),
+    "m" to arrayOf("…", "M"),
+
+    //
+    // Upper case Latin
+    //
+    "Q" to arrayOf("【", "〔", "[", "q"),
+    "W" to arrayOf("】", "〕", "]", "w"),
+    "E" to arrayOf("《", "〈", "<", "«", "e"),
+    "R" to arrayOf("》", "〉", ">", "»", "r"),
+    "T" to arrayOf("（", "(",  "t"),
+    "Y" to arrayOf("）", ")",  "y"),
+    "U" to arrayOf("『", "〖", "{", "u"),
+    "I" to arrayOf("』", "〗", "}",  "i"),
+    "O" to arrayOf("|", "｜", "§", "¦",  "o"),
+    "P" to arrayOf("-", "_", "——", "～", "p"),
+    "A" to arrayOf("、","a", "ā", "á", "ǎ", "à"),
+    "S" to arrayOf("/", "s", "ẞ", "Ś", "Š", "Ş"),
+    "D" to arrayOf("：", ":", "d", "Ð"),
+    "F" to arrayOf( "；", ";","f"),
+    "G" to arrayOf("_", "——", "～", "G", "ğ"),
+    "H" to arrayOf("#", "H"),
+    "J" to arrayOf("~", "j"),
+    "K" to arrayOf("‘", "'", "k"),
+    "L" to arrayOf( "“", "”", "\"", "l", "Ł"),
+    "Z" to arrayOf("@", "z", "Ž", "Ź", "Ż"),
+    "X" to arrayOf("，", ",", "x"),
+    "C" to arrayOf( "。", ".","·", "•", "c", "Ç", "Ć", "Č"),
+    "V" to arrayOf("&", "$", "¥", "v", "ǖ", "ǘ", "ǚ", "ǜ"),
+    "B" to arrayOf("？", "?",  "b"),
+    "N" to arrayOf("！", "!", "|", "¦", "n", "Ñ", "Ń"),
+    "M" to arrayOf("…", "m"),
+
+    "符" to arrayOf("，", "。", "？", "！", "：", "；", "@", "（", "）"),
 
     //
     // T9
