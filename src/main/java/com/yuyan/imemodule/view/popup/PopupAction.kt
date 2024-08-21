@@ -3,6 +3,7 @@ package com.yuyan.imemodule.view.popup
 
 import android.graphics.Rect
 import com.yuyan.imemodule.callback.IResponseKeyEvent
+import com.yuyan.imemodule.view.keyboard.InputView
 
 sealed class PopupAction {
 
@@ -25,7 +26,8 @@ sealed class PopupAction {
 
     data class ShowKeyboardAction(
         override val viewId: Int,
-        val keyboard: KeyDef.Popup.Keyboard,
+        val key: KeyDef.Popup.Key,
+        var service: InputView?,
         val bounds: Rect
     ) : PopupAction()
 

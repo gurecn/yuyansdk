@@ -14,7 +14,7 @@ val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     37 to arrayOf("I", "}"),
     43 to arrayOf("O", "|"),
     44 to arrayOf("P", "-"),
-    29 to arrayOf("A", "-"),
+    29 to arrayOf("A", "、"),
     47 to arrayOf("S", "/"),
     32 to arrayOf("D", ":"),
     34 to arrayOf("F", ";"),

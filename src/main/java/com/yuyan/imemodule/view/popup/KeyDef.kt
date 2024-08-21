@@ -6,6 +6,6 @@ open class KeyDef(
 ) {
 
     sealed class Popup {
-        class Keyboard(val label: String) : Popup()
+        class Key(val label: String) : Popup()
     }
 }
