@@ -25,17 +25,17 @@ class AboutFragment : PreferenceFragmentCompat() {
                 findNavController().navigate(R.id.action_aboutFragment_to_licensesFragment)
             }
             addPreference(R.string.source_code, R.string.github_repo) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.YuyanIMERepo)))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.YUYAN_IME_REPO)))
             }
-            addPreference(R.string.license, CustomConstant.licenseSpdxId) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.licenseUrl)))
+            addPreference(R.string.license, CustomConstant.LICENSE_SPDX_ID) {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.LICENSE_URL)))
             }
             addCategory(R.string.app_version) {
                 isIconSpaceReserved = false
                 addPreference(R.string.version, BuildConfig.AppCommitId)
                 addPreference(R.string.build_git_hash, BuildConfig.AppCommitHead) {
                     val commit = BuildConfig.AppCommitHead.substringBefore('-')
-                    val uri = Uri.parse("${CustomConstant.YuyanIMERepo}/commit/${commit}")
+                    val uri = Uri.parse("${CustomConstant.YUYAN_IME_REPO}/commit/${commit}")
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
                 addPreference(R.string.build_time, BuildConfig.AppBuildTime)
@@ -46,7 +46,7 @@ class AboutFragment : PreferenceFragmentCompat() {
                 addPreference(R.string.version, BuildConfig.SdkCommitId)
                 addPreference(R.string.build_git_hash, BuildConfig.SdkCommitHead) {
                     val commit = BuildConfig.SdkCommitHead.substringBefore('-')
-                    val uri = Uri.parse("${CustomConstant.YuyanSDKRepo}/commit/${commit}")
+                    val uri = Uri.parse("${CustomConstant.YUYAN_SDK_REPO}/commit/${commit}")
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
                 addPreference(R.string.build_time, BuildConfig.AppBuildTime)
