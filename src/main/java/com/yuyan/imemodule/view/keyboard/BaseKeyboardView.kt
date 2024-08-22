@@ -13,11 +13,8 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityManager
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
-import com.yuyan.imemodule.data.theme.ThemePrefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
