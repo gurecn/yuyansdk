@@ -30,16 +30,26 @@ class AboutFragment : PreferenceFragmentCompat() {
             addPreference(R.string.license, CustomConstant.licenseSpdxId) {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.licenseUrl)))
             }
-            addCategory(R.string.version) {
+            addCategory(R.string.app_version) {
                 isIconSpaceReserved = false
-                addPreference(R.string.app_version, BuildConfig.AppCommitId)
-                addPreference(R.string.app_build_git_hash, BuildConfig.AppCommitHead) {
+                addPreference(R.string.version, BuildConfig.AppCommitId)
+                addPreference(R.string.build_git_hash, BuildConfig.AppCommitHead) {
                     val commit = BuildConfig.AppCommitHead.substringBefore('-')
+                    val uri = Uri.parse("${CustomConstant.YuyanIMERepo}/commit/${commit}")
+                    startActivity(Intent(Intent.ACTION_VIEW, uri))
+                }
+                addPreference(R.string.build_time, BuildConfig.AppBuildTime)
+
+            }
+            addCategory(R.string.sdk_version) {
+                isIconSpaceReserved = false
+                addPreference(R.string.version, BuildConfig.SdkCommitId)
+                addPreference(R.string.build_git_hash, BuildConfig.SdkCommitHead) {
+                    val commit = BuildConfig.SdkCommitHead.substringBefore('-')
                     val uri = Uri.parse("${CustomConstant.YuyanSDKRepo}/commit/${commit}")
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
-                addPreference(R.string.app_build_time, BuildConfig.AppBuildTime)
-                addPreference(R.string.sdk_version, BuildConfig.SdkCommitId)
+                addPreference(R.string.build_time, BuildConfig.AppBuildTime)
             }
         }
 

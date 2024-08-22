@@ -8,16 +8,19 @@ apply plugin: 'kotlinx-serialization'
 
 def _VERSION = "2.0.16"  //项目（1：通用输入法；2：SIM密信，安全屋）.大版本.小版本
 
-def getSDKGitRevision() {
+def getSDKCommitId() {
     return "git --git-dir=/home/gure/devproject/YuyanIme/yuyansdk/.git rev-parse --short HEAD".execute().text.trim()
 }
-def getAPPGitHead() {
+def getSDKGitHead() {
+    return "git --git-dir=/home/gure/devproject/YuyanIme/yuyansdk/.git rev-parse HEAD".execute().text.trim()
+}
+def getAppGitHead() {
     return "git rev-parse HEAD".execute().text.trim()
 }
-def getAPPGitRevision() {
+def getAppCommitId() {
     return "git rev-parse --short HEAD".execute().text.trim()
 }
-def getAPPBuildTime() {
+def getAppBuildTime() {
     return "git log -1 --pretty=%ai".execute().text.trim()
 }
 
@@ -60,26 +63,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
             resValue("string", "app_name", "@string/ime_yuyan_name")
-            def SDK_GIT_COMMIT_ID = getSDKGitRevision()
+            def SDK_GIT_COMMIT_ID = getSDKCommitId()
             buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
-            def APP_GIT_COMMIT_ID = getAPPGitRevision()
+            def SDK_GIT_COMMIT_HEAD = getSDKGitHead()
+            buildConfigField "String", "SdkCommitHead", "\"${SDK_GIT_COMMIT_HEAD}\""
+            def APP_GIT_COMMIT_ID = getAppCommitId()
             buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
-            def APP_GIT_COMMIT_HEAD = getAPPGitHead()
+            def APP_GIT_COMMIT_HEAD = getAppGitHead()
             buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
-            def APP_GIT_COMMIT_TIME = getAPPBuildTime()
+            def APP_GIT_COMMIT_TIME = getAppBuildTime()
             buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
-
         }
         debug {
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
             resValue("string", "app_name", "@string/ime_yuyan_name_debug")
-            def SDK_GIT_COMMIT_ID = getSDKGitRevision()
+            def SDK_GIT_COMMIT_ID = getSDKCommitId()
             buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
-            def APP_GIT_COMMIT_ID = getAPPGitRevision()
+            def SDK_GIT_COMMIT_HEAD = getSDKGitHead()
+            buildConfigField "String", "SdkCommitHead", "\"${SDK_GIT_COMMIT_HEAD}\""
+            def APP_GIT_COMMIT_ID = getAppCommitId()
             buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
-            def APP_GIT_COMMIT_HEAD = getAPPGitHead()
+            def APP_GIT_COMMIT_HEAD = getAppGitHead()
             buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
-            def APP_GIT_COMMIT_TIME = getAPPBuildTime()
+            def APP_GIT_COMMIT_TIME = getAppBuildTime()
             buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
         }
     }
