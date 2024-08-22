@@ -3,6 +3,7 @@ package com.yuyan.imemodule.view.keyboard
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextUtils
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -30,6 +31,7 @@ import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -90,7 +92,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
             mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
             mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
-            val mRLSkbInputContainer:RelativeLayout = mSkbRoot.findViewById(R.id.ll_input_keyboard_container)
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
             mIvKeyboardMove = mSkbRoot.findViewById<ImageView>(R.id.iv_keyboard_move).apply {
@@ -103,12 +104,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 addRule(ABOVE, mSkbRoot.id)
             })
-            val popupComponent = PopupComponent.get()
-            val viewParent = popupComponent.root.parent
+            val root = PopupComponent.get().root
+            val viewParent = root.parent
             if (viewParent != null) {
-                (viewParent as ViewGroup).removeView(popupComponent.root)
+                (viewParent as ViewGroup).removeView(root)
             }
-            mRLSkbInputContainer.addView(popupComponent.root, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+            addView(root, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                addRule(ALIGN_BOTTOM, mSkbRoot.id)
+                addRule(ALIGN_LEFT, mSkbRoot.id)
+            })
         }
         mSkbCandidatesBarView.initialize(mChoiceNotifier, mDecInfo)
         val oneHandedMod = prefs.oneHandedMod.getValue()
@@ -193,8 +197,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                mRightPaddingKey.setValue(rightPadding)
-                mBottomPaddingKey.setValue(bottomPadding)
+                mRightPaddingKey.setValue(rightPaddingValue)
+                mBottomPaddingKey.setValue(bottomPaddingValue)
             }
         }
         return false
