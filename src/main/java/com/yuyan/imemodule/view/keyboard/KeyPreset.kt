@@ -31,9 +31,9 @@ val qwertyKeyPreset: Map<Int, Array<String>> = hashMapOf(
     30 to arrayOf("B", "?"),
     42 to arrayOf("N", "!"),
     41 to arrayOf("M", "..."),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
 
 val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -64,9 +64,9 @@ val qwertyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     30 to arrayOf("B", "?"),
     42 to arrayOf("N", "!"),
     41 to arrayOf("M", "..."),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
 
 val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -97,9 +97,9 @@ val doubleFlyPYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     30 to arrayOf("B", "?", "in"),
     42 to arrayOf("N", "!", "iao"),
     41 to arrayOf("M", "...", "ian"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
 
 val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -120,9 +120,9 @@ val lx17PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     35 to arrayOf("G", "_", "ei un"),
     34 to arrayOf("FC", "…", "iu ou"),
     48 to arrayOf("T", "(", "er ong"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
 
 val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -138,10 +138,9 @@ val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     28 to arrayOf("重输"),
     75 to arrayOf("分词", "1"),
     77 to arrayOf("@"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 to arrayOf("返回"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("Emoji"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
 
 val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
