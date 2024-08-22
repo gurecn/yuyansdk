@@ -225,7 +225,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         funItems.add(
             SkbFunItem(
                 mContext.getString(R.string.keyboard_name_pinyin_flypy_plus),
-                R.drawable.selece_input_mode_py26,
+                R.drawable.selece_input_mode_dpy26,
                 SkbMenuMode.Pinyin26Double
             )
         )
