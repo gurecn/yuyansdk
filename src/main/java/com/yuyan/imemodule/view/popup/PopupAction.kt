@@ -26,7 +26,7 @@ sealed class PopupAction {
 
     data class ShowKeyboardAction(
         override val viewId: Int,
-        val key: KeyDef.Popup.Key,
+        val lable: String,
         var service: InputView?,
         val bounds: Rect
     ) : PopupAction()

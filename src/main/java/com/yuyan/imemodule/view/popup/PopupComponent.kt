@@ -88,11 +88,11 @@ class PopupComponent private constructor():
         showingEntryUi[viewId]?.setText(content)
     }
 
-    private fun showKeyboard(viewId: Int, key: KeyDef.Popup.Key, service: InputView?, bounds: Rect) {
+    private fun showKeyboard(viewId: Int, label: String, service: InputView?, bounds: Rect) {
         val keys = if(service != null && service.mInputModeSwitcher.isChinese) {
-            PopupChinesePreset[key.label] ?: return
+            PopupChinesePreset[label] ?: return
         } else {
-            PopupPreset[key.label] ?: return
+            PopupPreset[label] ?: return
         }
         showingEntryUi[viewId]?.setText("") ?: showPopup(viewId, "", bounds)
         reallyShowKeyboard(viewId, keys, bounds)
@@ -154,7 +154,7 @@ class PopupComponent private constructor():
                 is PopupAction.DismissAction -> dismissPopup(viewId)
                 is PopupAction.PreviewAction -> showPopup(viewId, content, bounds)
                 is PopupAction.PreviewUpdateAction -> updatePopup(viewId, content)
-                is PopupAction.ShowKeyboardAction -> showKeyboard(viewId, key, service, bounds)
+                is PopupAction.ShowKeyboardAction -> showKeyboard(viewId, lable, service, bounds)
                 is PopupAction.TriggerAction -> {
                     val text = triggerFocused(viewId)
                     service?.apply {

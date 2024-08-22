@@ -19,7 +19,6 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
 import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
-import com.yuyan.imemodule.view.popup.KeyDef
 import com.yuyan.imemodule.view.popup.PopupAction
 import com.yuyan.imemodule.view.popup.PopupAction.ChangeFocusAction
 import com.yuyan.imemodule.view.popup.PopupAction.DismissAction
@@ -150,8 +149,13 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private fun openPopupIfRequired() {
         showPreview(null)
         if (mCurrentKey != null && !TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
+            val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
+                    mCurrentKey!!.keyLabel?.lowercase()
+                } else {
+                    mCurrentKey!!.keyLabel
+                }
             val bounds = Rect(mCurrentKey!!.mLeft, mCurrentKey!!.mTop, mCurrentKey!!.mRight, mCurrentKey!!.mBottom)
-            onPopupAction(ShowKeyboardAction(0, KeyDef.Popup.Key(mCurrentKey!!.getkeyLabel()), mService, bounds))
+            onPopupAction(ShowKeyboardAction(0, keyLabel!!, mService, bounds))
             mLongPressKey = true
         }
     }
