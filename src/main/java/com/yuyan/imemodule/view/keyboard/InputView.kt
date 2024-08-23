@@ -2,8 +2,9 @@ package com.yuyan.imemodule.view.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.text.TextUtils
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -15,6 +16,10 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
@@ -82,6 +87,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     init {
         this.service = service
+        initNavbarBackground(service)
         initView(context)
     }
 
@@ -141,6 +147,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             rightPadding = mRightPaddingKey.getValue()
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
+            (mIvKeyboardMove.layoutParams as LayoutParams).apply {
+                setMargins(0, 0, 0, 0)
+            }
         } else {
             mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
             mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
@@ -148,6 +157,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             rightPadding = 0
             mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
+            (mIvKeyboardMove.layoutParams as LayoutParams).apply {
+                setMargins(0, 0, 0, EnvironmentSingleton.instance.systemNavbarWindowsBottom)
+            }
         }
         updateTheme()
     }
@@ -779,5 +791,23 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     private fun sendKeyChar(char: Char) {
         service.sendKeyChar(char)
+    }
+
+
+    private fun initNavbarBackground(service: ImeService) {
+        service.window.window!!.also {
+            WindowCompat.setDecorFitsSystemWindows(it, false)
+            it.navigationBarColor = Color.TRANSPARENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                it.isNavigationBarContrastEnforced = false
+            }
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+            EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            (mIvKeyboardMove.layoutParams as LayoutParams).apply {
+                setMargins(0, 0, 0, if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom)
+            }
+            insets
+        }
     }
 }
