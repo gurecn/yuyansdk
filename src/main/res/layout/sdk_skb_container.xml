@@ -43,7 +43,7 @@
         android:id="@+id/iv_keyboard_move"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:padding="2dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/sdk_vector_keyboard_horizontal_line"
         android:layout_below="@+id/ll_input_keyboard_container"

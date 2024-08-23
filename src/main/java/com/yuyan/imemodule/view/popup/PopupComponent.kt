@@ -74,7 +74,8 @@ class PopupComponent private constructor():
             setText(content)
         }
         var bottomPadding =
-            if(!EnvironmentSingleton.instance.isLandscape && !ThemeManager.prefs.keyboardModeFloat.getValue()){ AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() } else { 0 }
+            if(!EnvironmentSingleton.instance.isLandscape && !ThemeManager.prefs.keyboardModeFloat.getValue()){
+                AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
         root.apply {
             add(popup.root, lParams(bounds.width(), bounds.height()) {
                 bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + bottomPadding - bounds.top
@@ -101,11 +102,12 @@ class PopupComponent private constructor():
     private fun reallyShowKeyboard(viewId: Int, keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup(viewId) }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
-        var bottomPadding =
-        if(!EnvironmentSingleton.instance.isLandscape && !ThemeManager.prefs.keyboardModeFloat.getValue()){ AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() } else { 0 }
+        val bottomPadding =
+        if(!EnvironmentSingleton.instance.isLandscape && !ThemeManager.prefs.keyboardModeFloat.getValue()){
+            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
         root.apply {
             add(keyboardUi.root, lParams {
-                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + bottomPadding - bounds.top
+                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight  + bottomPadding - bounds.top
                 leftMargin = bounds.left + keyboardUi.offsetX
             })
         }

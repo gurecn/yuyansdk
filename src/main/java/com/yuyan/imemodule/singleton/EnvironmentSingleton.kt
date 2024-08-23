@@ -17,6 +17,7 @@ import kotlin.math.min
  * 、功能按键中文本的大小、正常按键气泡中文本的大小、功能按键气泡中文本的大小。
  */
 class EnvironmentSingleton private constructor() {
+    var systemNavbarWindowsBottom = 0 // 导航栏高度
     var mScreenWidth = 0 // 屏幕的宽度
     var mScreenHeight = 0 // 屏幕的高度
     var skbWidth = 0 // 键盘区域、候选词区域宽度
@@ -88,7 +89,6 @@ class EnvironmentSingleton private constructor() {
         }
 
     companion object {
-        private val TAG = EnvironmentSingleton::class.java.getSimpleName()
         private var mInstance: EnvironmentSingleton? = null
         @JvmStatic
 		val instance: EnvironmentSingleton
