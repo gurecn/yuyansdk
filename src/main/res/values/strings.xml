@@ -6,7 +6,7 @@
     <string name="setting_ime_sdk">输入法设置</string>
     <string name="setting_ime_input">输入设置</string>
     <string name="setting_ime_keyboard">键盘设置</string>
-    <string name="setting_ime_keyboard_height">键盘高度</string>
+    <string name="setting_ime_keyboard_height">键盘调节</string>
     <string name="ime_settings_voice">语音识别</string>
     <string name="ime_settings_handwriting">手写设置</string>
     <string name="keypopup_input_settings">按键气泡提示</string>
@@ -93,7 +93,6 @@
     <string name="build_time">构建时间</string>
     <string name="clipboard">剪贴板</string>
     <string name="keyboard">键盘</string>
-    <string name="keyboard_height">键盘高度</string>
     <string name="keyboard_feedback">按键效果</string>
     <string name="clipboard_suggestion_timeout">剪贴板提示超时</string>
     <string name="source_code">源代码</string>

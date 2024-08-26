@@ -39,13 +39,11 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/ll_input_keyboard_container"
         android:visibility="gone"/>
-    <ImageView
-        android:id="@+id/iv_keyboard_move"
+    <LinearLayout
+        android:id="@+id/iv_keyboard_holder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="2dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/sdk_vector_keyboard_horizontal_line"
+        android:orientation="vertical"
         android:layout_below="@+id/ll_input_keyboard_container"
-        tools:ignore="ContentDescription" />
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

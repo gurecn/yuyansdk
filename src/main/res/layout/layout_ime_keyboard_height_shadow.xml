@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="bottom"
     android:background="@drawable/sdk_shape_keyboard_shadow_bg">
     <ImageView
@@ -56,4 +57,12 @@
                 android:text="@string/setting_ime_keyboard_height_sure"/>
         </LinearLayout>
     </LinearLayout>
+    <ImageView
+        android:id="@+id/iv_keyboard_move"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/sdk_vector_keyboard_height_shadow_border"
+        tools:ignore="ContentDescription" />
 </RelativeLayout>
