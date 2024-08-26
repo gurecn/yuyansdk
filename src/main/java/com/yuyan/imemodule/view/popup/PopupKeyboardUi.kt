@@ -67,7 +67,7 @@ class PopupKeyboardUi(
             text = "半"
             padding = dp(3)
             scaleMode = AutoScaleTextView.Mode.Proportional
-            setTextSize(TypedValue.COMPLEX_UNIT_PX, EnvironmentSingleton.instance.keyTextSmallSize * 1.2f)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, EnvironmentSingleton.instance.keyTextSmallSize * 0.8f)
             setTextColor(theme.keyTextColor)
         }
 
