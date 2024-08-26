@@ -105,6 +105,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
             addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 addRule(ABOVE, mSkbRoot.id)
+                addRule(ALIGN_LEFT, mSkbRoot.id)
             })
             val root = PopupComponent.get().root
             val viewParent = root.parent
