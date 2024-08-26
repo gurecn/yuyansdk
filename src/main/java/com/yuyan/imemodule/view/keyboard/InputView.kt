@@ -7,16 +7,13 @@ import android.os.Build
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -36,7 +33,6 @@ import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -46,11 +42,9 @@ import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
-import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
-import kotlin.math.absoluteValue
 
 /**
  * 输入法主界面。
@@ -67,23 +61,17 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     IResponseKeyEvent {
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
-    // 词库解码操作对象
-    val mDecInfo = DecodingInfo()
+    val mDecInfo = DecodingInfo() // 词库解码操作对象
     private var isSkipEngineMode = false //选择候选词栏时，为true则不进行引擎操作。当为切板模式或常用符号模式时为true。
-    // 当前的输入法状态
-    private var mImeState = ImeState.STATE_IDLE
+    private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
     private var mChoiceNotifier = ChoiceNotifier()
     private lateinit var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
-    private lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
-    private lateinit var mIbOneHand: ImageButton
-    private lateinit var mIbOneHandNone: ImageButton
-    private lateinit var mLlKeyboardHolder: LinearLayout
     lateinit var mSkbRoot: RelativeLayout
+    private lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
-    private lateinit var mHoderLayout: LinearLayout
-    private lateinit var mRightPaddingKey: ManagedPreference.PInt
-    private lateinit var mBottomPaddingKey: ManagedPreference.PInt
+    private lateinit var mOnehandHoderLayout: LinearLayout
+    private lateinit var mLlKeyboardBottomHolder: LinearLayout
 
     init {
         this.service = service
@@ -99,7 +87,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            mLlKeyboardHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
+            mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
             addView(mSkbRoot)
             mComposingView = ComposingView(context)
             mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
@@ -119,40 +107,36 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         mSkbCandidatesBarView.initialize(mChoiceNotifier, mDecInfo)
         val oneHandedMod = prefs.oneHandedMod.getValue()
-        if(::mHoderLayout.isInitialized)mHoderLayout.visibility = GONE
+        if(::mOnehandHoderLayout.isInitialized)mOnehandHoderLayout.visibility = GONE
         if (oneHandedMod != KeyboardOneHandedMod.None) {
-            mHoderLayout = when(oneHandedMod){
+            mOnehandHoderLayout = when(oneHandedMod){
                 KeyboardOneHandedMod.RIGHT ->  mHoderLayoutRight
                 else -> mHoderLayoutLeft
             }
-            mHoderLayout.visibility = VISIBLE
-            mIbOneHandNone = mHoderLayout.findViewById(R.id.ib_holder_one_hand_none)
+            mOnehandHoderLayout.visibility = VISIBLE
+            val mIbOneHandNone = mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_none)
             mIbOneHandNone.setOnClickListener { view: View -> onClick(view) }
-            mIbOneHand = mHoderLayout.findViewById(R.id.ib_holder_one_hand_left)
+            val mIbOneHand = mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_left)
             mIbOneHand.setOnClickListener { view: View -> onClick(view) }
-            val layoutParamsHoder = mHoderLayout.layoutParams
+            val layoutParamsHoder = mOnehandHoderLayout.layoutParams
             val margin = EnvironmentSingleton.instance.heightForCandidates
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
         if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()){
-            mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
-            else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat
-            mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscapeFloat
-            else AppPrefs.getInstance().internal.keyboardRightPaddingFloat
-            bottomPadding = mBottomPaddingKey.getValue()
-            rightPadding = mRightPaddingKey.getValue()
+            bottomPadding = (if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
+                else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat).getValue()
+            rightPadding = (if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscapeFloat
+            else AppPrefs.getInstance().internal.keyboardRightPaddingFloat).getValue()
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
-            mLlKeyboardHolder.minimumHeight = 0
+            mLlKeyboardBottomHolder.minimumHeight = 0
         } else {
-            mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
-            mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
             bottomPadding = 0
             rightPadding = 0
-            mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
-            mSkbRoot.rightPadding = mRightPaddingKey.getValue()
-            mLlKeyboardHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            mSkbRoot.bottomPadding = AppPrefs.getInstance().internal.keyboardBottomPadding.getValue()
+            mSkbRoot.rightPadding = AppPrefs.getInstance().internal.keyboardRightPadding.getValue()
+            mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
         }
         updateTheme()
     }
@@ -160,14 +144,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     // 刷新主题
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
-        val isKeyBorder = prefs.keyBorder.getValue()
-        mSkbRoot.background = activeTheme.backgroundDrawable(isKeyBorder)
+        mSkbRoot.background = activeTheme.backgroundDrawable(prefs.keyBorder.getValue())
         mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
-        if(::mIbOneHandNone.isInitialized){
-            mIbOneHandNone.getDrawable().setTint(activeTheme.keyTextColor)
-            mIbOneHand.getDrawable().setTint(activeTheme.keyTextColor)
-        }
     }
 
     private fun onClick(view: View) {
@@ -630,10 +609,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 空闲，输入，编辑，联想
      */
     enum class ImeState {
-        STATE_IDLE,
-        STATE_INPUT,
-        STATE_COMPOSING,
-        STATE_PREDICT
+        STATE_IDLE, STATE_INPUT, STATE_COMPOSING, STATE_PREDICT
     }
 
     /**
@@ -733,7 +709,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         service.sendKeyChar(char)
     }
 
-
     private fun initNavbarBackground(service: ImeService) {
         service.window.window!!.also {
             WindowCompat.setDecorFitsSystemWindows(it, false)
@@ -744,7 +719,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            mLlKeyboardHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
     }
