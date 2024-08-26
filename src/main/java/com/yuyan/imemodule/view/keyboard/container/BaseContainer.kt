@@ -7,12 +7,18 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.preference.ManagedPreference
+import splitties.views.bottomPadding
+import splitties.views.rightPadding
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 
 /**
  * 软键盘View集装箱
@@ -33,6 +39,8 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
      */
     @JvmField
     protected var mDecInfo: DecodingInfo? = null
+    private lateinit var mRightPaddingKey: ManagedPreference.PInt
+    private lateinit var mBottomPaddingKey: ManagedPreference.PInt
 
     /**
      * 更新软键盘布局
@@ -57,6 +65,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
     /**
      * 设置键盘高度
      */
+    @SuppressLint("ClickableViewAccessibility")
     fun setKeyboardHeight() {
         val softKeyboardHeight = EnvironmentSingleton.instance.skbHeight
         val lp = LayoutParams(LayoutParams.MATCH_PARENT, softKeyboardHeight)
@@ -71,36 +80,100 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
             rootView.layoutParams = lp
         }
         rootView.findViewById<View>(R.id.ll_keyboard_height_sure).setOnClickListener { removeView(rootView) }
-        val lastY = floatArrayOf(0f)
         rootView.findViewById<View>(R.id.iv_keyboard_height_Top)
-            .setOnTouchListener { v12: View, event: MotionEvent ->
-                when (event.actionMasked) {
-                    MotionEvent.ACTION_DOWN -> lastY[0] = event.y
-                    MotionEvent.ACTION_MOVE -> {
-                        val y = event.y
-                        if (abs((y - lastY[0]).toDouble()) > 20) {
-                            var rat = EnvironmentSingleton.instance.keyBoardHeightRatio
-                            if (y < lastY[0]) { // 手指向上移动
-                                rat += 0.01f
-                            } else { // 向下移动
-                                rat -= 0.01f
-                            }
-                            lastY[0] = y
-                            EnvironmentSingleton.instance.keyBoardHeightRatio = rat
-                            EnvironmentSingleton.instance.initData()
-                            KeyboardLoaderUtil.instance.clearKeyboardMap()
-                            updateSkbLayout()
-                            val l = LayoutParams(
-                                LayoutParams.MATCH_PARENT,
-                                EnvironmentSingleton.instance.skbHeight
-                            )
-                            rootView.setLayoutParams(l)
-                        }
-                    }
+            .setOnTouchListener { v12: View, event -> onModifyKeyboardHeightEvent(v12, event) }
+        if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()){
+            mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
+            else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat
+            mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscapeFloat
+            else AppPrefs.getInstance().internal.keyboardRightPaddingFloat
+        } else {
+            mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
+            mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
+        }
+        rootView.findViewById<View>(R.id.iv_keyboard_move)
+            .setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
+    }
 
-                    MotionEvent.ACTION_UP -> v12.performClick()
+    private val lastY = floatArrayOf(0f)
+    private fun onModifyKeyboardHeightEvent(v12: View, event: MotionEvent): Boolean {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> lastY[0] = event.y
+            MotionEvent.ACTION_MOVE -> {
+                val y = event.y
+                if (abs((y - lastY[0]).toDouble()) > 20) {
+                    var rat = EnvironmentSingleton.instance.keyBoardHeightRatio
+                    if (y < lastY[0]) { // 手指向上移动
+                        rat += 0.01f
+                    } else { // 向下移动
+                        rat -= 0.01f
+                    }
+                    lastY[0] = y
+                    EnvironmentSingleton.instance.keyBoardHeightRatio = rat
+                    EnvironmentSingleton.instance.initData()
+                    KeyboardLoaderUtil.instance.clearKeyboardMap()
+                    updateSkbLayout()
+                    val l = LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        EnvironmentSingleton.instance.skbHeight
+                    )
+                    rootView.setLayoutParams(l)
                 }
-                true
             }
+            MotionEvent.ACTION_UP -> v12.performClick()
+        }
+        return true
+    }
+
+    private var initialTouchX = 0f
+    private var initialTouchY = 0f
+    private var rightPaddingValue = 0  // 右侧边距
+    private var bottomPaddingValue = 0  // 底部边距
+    private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                bottomPaddingValue = mBottomPaddingKey.getValue()
+                rightPaddingValue = mRightPaddingKey.getValue()
+                initialTouchX = event.rawX
+                initialTouchY = event.rawY
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val dx: Float = event.rawX - initialTouchX
+                val dy: Float = event.rawY - initialTouchY
+                if(dx.absoluteValue > 10) {
+                    rightPaddingValue -= dx.toInt()
+                    rightPaddingValue = if(rightPaddingValue < 0) 0
+                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - inputView.mSkbRoot.width) {
+                        EnvironmentSingleton.instance.mScreenWidth - inputView.mSkbRoot.width
+                    } else rightPaddingValue
+                    initialTouchX = event.rawX
+                    if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()) {
+                        inputView.rightPadding = rightPaddingValue
+                    } else {
+                        inputView.mSkbRoot.rightPadding = rightPaddingValue
+                    }
+                }
+                if(dy.absoluteValue > 10 ) {
+                    bottomPaddingValue -= dy.toInt()
+                    bottomPaddingValue = if(bottomPaddingValue < 0) 0
+                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - inputView.mSkbRoot.height) {
+                        EnvironmentSingleton.instance.mScreenHeight - inputView.mSkbRoot.height
+                    } else bottomPaddingValue
+                    initialTouchY = event.rawY
+                    if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()) {
+                        inputView.bottomPadding = bottomPaddingValue
+                    } else {
+                        inputView.mSkbRoot.bottomPadding = bottomPaddingValue
+                    }
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                mRightPaddingKey.setValue(rightPaddingValue)
+                mBottomPaddingKey.setValue(bottomPaddingValue)
+            }
+        }
+        return false
     }
 }

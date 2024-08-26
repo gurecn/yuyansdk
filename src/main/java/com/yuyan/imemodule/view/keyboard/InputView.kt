@@ -77,7 +77,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
     private lateinit var mIbOneHand: ImageButton
     private lateinit var mIbOneHandNone: ImageButton
-    private lateinit var mIvKeyboardMove: ImageView
+    private lateinit var mLlKeyboardHolder: LinearLayout
     lateinit var mSkbRoot: RelativeLayout
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
@@ -91,7 +91,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         initView(context)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context) {
         if (!::mSkbRoot.isInitialized) {
             mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
@@ -100,10 +99,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
-            mIvKeyboardMove = mSkbRoot.findViewById<ImageView>(R.id.iv_keyboard_move).apply {
-                isClickable = true
-                setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
-            }
+            mLlKeyboardHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
             addView(mSkbRoot)
             mComposingView = ComposingView(context)
             mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
@@ -147,9 +143,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             rightPadding = mRightPaddingKey.getValue()
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
-            (mIvKeyboardMove.layoutParams as LayoutParams).apply {
-                setMargins(0, 0, 0, 0)
-            }
+            mLlKeyboardHolder.minimumHeight = 0
         } else {
             mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
             mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
@@ -157,63 +151,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             rightPadding = 0
             mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
-            (mIvKeyboardMove.layoutParams as LayoutParams).apply {
-                setMargins(0, 0, 0, EnvironmentSingleton.instance.systemNavbarWindowsBottom)
-            }
+            mLlKeyboardHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
         }
         updateTheme()
-    }
-
-    private var initialTouchX = 0f
-    private var initialTouchY = 0f
-    private var rightPaddingValue = 0  // 右侧边距
-    private var bottomPaddingValue = 0  // 底部边距
-    private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                bottomPaddingValue = mBottomPaddingKey.getValue()
-                rightPaddingValue = mRightPaddingKey.getValue()
-                initialTouchX = event.rawX
-                initialTouchY = event.rawY
-                return true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                val dx: Float = event.rawX - initialTouchX
-                val dy: Float = event.rawY - initialTouchY
-                if(dx.absoluteValue > 10) {
-                    rightPaddingValue -= dx.toInt()
-                    rightPaddingValue = if(rightPaddingValue < 0) 0
-                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width) {
-                        EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width
-                    } else rightPaddingValue
-                    initialTouchX = event.rawX
-                    if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()) {
-                        rightPadding = rightPaddingValue
-                    } else {
-                        mSkbRoot.rightPadding = rightPaddingValue
-                    }
-                }
-                if(dy.absoluteValue > 10 ) {
-                    bottomPaddingValue -= dy.toInt()
-                    bottomPaddingValue = if(bottomPaddingValue < 0) 0
-                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height) {
-                        EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height
-                    } else bottomPaddingValue
-                    initialTouchY = event.rawY
-                    if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()) {
-                        bottomPadding = bottomPaddingValue
-                    } else {
-                        mSkbRoot.bottomPadding = bottomPaddingValue
-                    }
-                }
-                return true
-            }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                mRightPaddingKey.setValue(rightPaddingValue)
-                mBottomPaddingKey.setValue(bottomPaddingValue)
-            }
-        }
-        return false
     }
 
     // 刷新主题
@@ -223,7 +163,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mSkbRoot.background = activeTheme.backgroundDrawable(isKeyBorder)
         mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
-        mIvKeyboardMove.drawable.setTint(activeTheme.keyTextColor)
         if(::mIbOneHandNone.isInitialized){
             mIbOneHandNone.getDrawable().setTint(activeTheme.keyTextColor)
             mIbOneHand.getDrawable().setTint(activeTheme.keyTextColor)
@@ -804,9 +743,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            (mIvKeyboardMove.layoutParams as LayoutParams).apply {
-                setMargins(0, 0, 0, if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom)
-            }
+            mLlKeyboardHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
     }
