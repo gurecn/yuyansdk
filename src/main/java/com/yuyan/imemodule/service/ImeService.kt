@@ -18,6 +18,10 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Main class of the Pinyin input method. 输入法服务
@@ -56,10 +60,13 @@ class ImeService : InputMethodService() {
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        EnvironmentSingleton.instance.initData()
-        KeyboardLoaderUtil.instance.clearKeyboardMap()
-        KeyboardManager.instance.clearKeyboard()
-        mInputView.resetToIdleState()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(200) //延时，解决获取屏幕尺寸不准确。
+            EnvironmentSingleton.instance.initData()
+            KeyboardLoaderUtil.instance.clearKeyboardMap()
+            KeyboardManager.instance.clearKeyboard()
+            if (::mInputView.isInitialized) mInputView.resetToIdleState()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -92,16 +99,16 @@ class ImeService : InputMethodService() {
         if (!::mInputView.isInitialized) return
         val (x, y) = intArrayOf(0, 0).also { mInputView.mSkbRoot.getLocationInWindow(it) }
         outInsets.apply {
-            if(!ThemeManager.prefs.keyboardModeFloat.getValue()) {
-                contentTopInsets = y
-                touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
-                touchableRegion.setEmpty()
-                visibleTopInsets = y
-            } else {
+            if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()) {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 touchableInsets = Insets.TOUCHABLE_INSETS_REGION
                 touchableRegion.set(x, y, x + mInputView.mSkbRoot.width, y + mInputView.mSkbRoot.height)
+            } else {
+                contentTopInsets = y
+                touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
+                touchableRegion.setEmpty()
+                visibleTopInsets = y
             }
         }
     }
