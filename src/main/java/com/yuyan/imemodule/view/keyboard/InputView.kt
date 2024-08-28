@@ -700,7 +700,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(resultText == null) return
         val inputConnection = service.getCurrentInputConnection()
         inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-        if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish) {
+        if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish && AppPrefs.getInstance().input.abcSpaceAuto.getValue()) {
             inputConnection.commitText(" ", 1)
         }
     }
