@@ -33,6 +33,7 @@ import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -242,7 +243,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             return true
         }
         var result = false
-        if (mInputModeSwitcher.isEnglish || mInputModeSwitcher.isChinese) { // 中文、英语输入模式
+        if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
             result = when (mImeState) {
                 ImeState.STATE_IDLE -> processStateIdle(event)
                 ImeState.STATE_INPUT -> processStateInput(event)
@@ -252,7 +253,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         } else { // 数字、符号处理 && 英语、未开启智能英文
             val keyChar = event.unicodeChar
             if (0 != keyChar) {
-                sendKeyChar(keyChar.toChar()) // 发送文本给EditText
+                sendKeyChar(
+                    if (mInputModeSwitcher.isEnglishLower) Character.toLowerCase(keyChar.toChar())
+                    else  Character.toUpperCase(keyChar.toChar())
+                )
                 result = true
             }
         }
@@ -275,17 +279,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             return true
         }
         // 中文，智能英文输入单独处理（涉及引擎操作），不在这边处理。
-        if (mInputModeSwitcher.isChinese || mInputModeSwitcher.isEnglish) {
-            return false
-        }
-        if (keyCode == KeyEvent.KEYCODE_DEL) {
-            sendKeyEvent(keyCode)
-            return true
-        }
-        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            val keyChar = event.unicodeChar
-            sendKeyChar(keyChar.toChar())
-            return true
+        if (mInputModeSwitcher.mInputTypePassword || (!mInputModeSwitcher.isChinese && !mInputModeSwitcher.isEnglish)) {
+            if (keyCode == KeyEvent.KEYCODE_DEL) {
+                sendKeyEvent(keyCode)
+                return true
+            }
+            if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
+                sendKeyEvent(keyCode)
+                return true
+            }
         }
         return false
     }
