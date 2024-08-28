@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.FontMetricsInt
 import android.graphics.PorterDuff
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
@@ -259,6 +260,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
             mPaint.color = textColor
+            mPaint.setTypeface(Typeface.DEFAULT)
+//            mPaint.strokeWidth = 1f
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabelSmall)) / 2.0f
             val y = softKey.mTop + weightHeigth
@@ -281,6 +284,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         } else if (!TextUtils.isEmpty(keyLabel)) {
             //Label位于中间
             mPaint.color = textColor
+            mPaint.setTypeface(Typeface.DEFAULT_BOLD)
+//            mPaint.strokeWidth = 20f
             mPaint.textSize = mNormalKeyTextSize.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabel)) / 2.0f
             val fontHeight = mFmi.bottom - mFmi.top
@@ -290,6 +295,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         if (keyboardMnemonic && !TextUtils.isEmpty(keyMnemonic)) {
             //助记符位于中下方
             mPaint.color = textColor
+            mPaint.setTypeface(Typeface.DEFAULT)
+//            mPaint.strokeWidth = 1f
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyMnemonic)) / 2.0f
             val y = softKey.mTop + weightHeigth * 3 + weightHeigth / 2.0f
