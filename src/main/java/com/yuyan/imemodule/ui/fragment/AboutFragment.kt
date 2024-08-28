@@ -32,7 +32,7 @@ class AboutFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.app_version) {
                 isIconSpaceReserved = false
-                addPreference(R.string.version, BuildConfig.AppCommitId)
+                addPreference(R.string.version, BuildConfig.versionName)
                 addPreference(R.string.build_git_hash, BuildConfig.AppCommitHead) {
                     val commit = BuildConfig.AppCommitHead.substringBefore('-')
                     val uri = Uri.parse("${CustomConstant.YUYAN_IME_REPO}/commit/${commit}")
@@ -43,7 +43,6 @@ class AboutFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.sdk_version) {
                 isIconSpaceReserved = false
-                addPreference(R.string.version, BuildConfig.SdkCommitId)
                 addPreference(R.string.build_git_hash, BuildConfig.SdkCommitHead) {
                     val commit = BuildConfig.SdkCommitHead.substringBefore('-')
                     val uri = Uri.parse("${CustomConstant.YUYAN_SDK_REPO}/commit/${commit}")

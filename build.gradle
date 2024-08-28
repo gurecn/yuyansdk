@@ -6,19 +6,15 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlinx-serialization'
 
-def _VERSION = "2.0.16"  //项目（1：通用输入法；2：SIM密信，安全屋）.大版本.小版本
-
-def getSDKCommitId() {
-    return "git --git-dir=/home/gure/devproject/YuyanIme/yuyansdk/.git rev-parse --short HEAD".execute().text.trim()
+static def versionNameDate() {
+    return new Date().format("yyyyMMdd.HH", TimeZone.getTimeZone("GMT+8"))
 }
+
 def getSDKGitHead() {
     return "git --git-dir=/home/gure/devproject/YuyanIme/yuyansdk/.git rev-parse HEAD".execute().text.trim()
 }
 def getAppGitHead() {
     return "git rev-parse HEAD".execute().text.trim()
-}
-def getAppCommitId() {
-    return "git rev-parse --short HEAD".execute().text.trim()
 }
 def getAppBuildTime() {
     return "git log -1 --pretty=%ai".execute().text.trim()
@@ -69,30 +65,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
             resValue("string", "app_name", "@string/ime_yuyan_name")
-            def SDK_GIT_COMMIT_ID = getSDKCommitId()
-            buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
-            def SDK_GIT_COMMIT_HEAD = getSDKGitHead()
-            buildConfigField "String", "SdkCommitHead", "\"${SDK_GIT_COMMIT_HEAD}\""
-            def APP_GIT_COMMIT_ID = getAppCommitId()
-            buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
-            def APP_GIT_COMMIT_HEAD = getAppGitHead()
-            buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
-            def APP_GIT_COMMIT_TIME = getAppBuildTime()
-            buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
+            buildConfigField "String", "versionName", "\"${versionNameDate()}\""
+            buildConfigField "String", "SdkCommitHead", "\"${getSDKGitHead()}\""
+            buildConfigField "String", "AppCommitHead", "\"${getAppGitHead()}\""
+            buildConfigField "String", "AppBuildTime", "\"${getAppBuildTime()}\""
         }
         debug {
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
             resValue("string", "app_name", "@string/ime_yuyan_name_debug")
-            def SDK_GIT_COMMIT_ID = getSDKCommitId()
-            buildConfigField "String", "SdkCommitId", "\"${SDK_GIT_COMMIT_ID}\""
-            def SDK_GIT_COMMIT_HEAD = getSDKGitHead()
-            buildConfigField "String", "SdkCommitHead", "\"${SDK_GIT_COMMIT_HEAD}\""
-            def APP_GIT_COMMIT_ID = getAppCommitId()
-            buildConfigField "String", "AppCommitId", "\"${APP_GIT_COMMIT_ID}\""
-            def APP_GIT_COMMIT_HEAD = getAppGitHead()
-            buildConfigField "String", "AppCommitHead", "\"${APP_GIT_COMMIT_HEAD}\""
-            def APP_GIT_COMMIT_TIME = getAppBuildTime()
-            buildConfigField "String", "AppBuildTime", "\"${APP_GIT_COMMIT_TIME}\""
+            buildConfigField "String", "versionName", "\"${versionNameDate()}\""
+            buildConfigField "String", "SdkCommitHead", "\"${getSDKGitHead()}\""
+            buildConfigField "String", "AppCommitHead", "\"${getAppGitHead()}\""
+            buildConfigField "String", "AppBuildTime", "\"${getAppBuildTime()}\""
         }
     }
     sourceSets {
@@ -138,14 +122,11 @@ dependencies {
     implementation 'org.mechdancer:dependency:0.1.2'
 }
 
-
-def _BASENAME = "imesdk";
-
 task makeaar(type: Copy) {
     from('build/outputs/aar/')
     into('build/outputs/aar/')
     include('imeModule-dev-debug.aar')
-    rename ('imeModule-dev-debug.aar', _BASENAME + '_dev_V' +_VERSION + '.aar')
+    rename ('imeModule-dev-debug.aar', 'imesdk_' + versionNameDate() + '.aar')
 }
 
 makeaar.dependsOn(build)
