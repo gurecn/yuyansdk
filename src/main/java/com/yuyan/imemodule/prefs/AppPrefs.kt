@@ -132,11 +132,11 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             R.string.setting_jian_fan, "chinese_jian_fan_enable", false
         )
         val titleEnglish = category(R.string.EnglishInput)
-        val abcFirstCapital = switch(
-            R.string.first_capital, "first_capital_enable", false
-        )
-        val abcKeyboardNumber = switch(
-            R.string.engish_full_keyboard, "abc_keyboard_number_enable", false
+//        val abcFirstCapital = switch(
+//            R.string.first_capital, "first_capital_enable", false
+//        )
+        val abcSpaceAuto = switch(
+            R.string.space_auto, "abc_space_auto_enable", true
         )
 
         val titleEmoji = category(R.string.emoji_setting)

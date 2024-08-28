@@ -25,6 +25,7 @@
     <string name="EnglishInput">英文输入</string>
     <string name="engish_full_keyboard">数字行</string>
     <string name="first_capital">自动首字母大写</string>
+    <string name="space_auto">英文单词自动追加空格</string>
     <string name="emoji_setting">表情输入</string>
     <string name="emoji_input">候选词中显示Emoji表情</string>
     <!-- Used by the toggle keys in soft keyboards. -->
