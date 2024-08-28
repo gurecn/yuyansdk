@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.text.InputType
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -44,6 +45,7 @@ import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.inputmethod.core.CandidateListItem
+import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
 
@@ -63,6 +65,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
     val mDecInfo = DecodingInfo() // 词库解码操作对象
+    private var currentInputEditorInfo:EditorInfo? = null
     private var isSkipEngineMode = false //选择候选词栏时，为true则不进行引擎操作。当为切板模式或常用符号模式时为true。
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
     private var mChoiceNotifier = ChoiceNotifier()
@@ -651,6 +654,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo) {
         resetToIdleState()
+        currentInputEditorInfo = editorInfo
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         if(AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()){
@@ -672,10 +676,24 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 模拟按键点击
      */
     fun sendKeyEvent(keyCode: Int) {
-        val inputConnection = service.getCurrentInputConnection()
-        if (null != inputConnection) {
-            inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-            inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+        if(keyCode != KeyEvent.KEYCODE_ENTER) {
+            service.sendDownUpKeyEvents(keyCode)
+        } else {
+            val inputConnection = service.getCurrentInputConnection()
+            currentInputEditorInfo?.run {
+                if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
+                    service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                    return
+                }
+                if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+                    inputConnection.performEditorAction(actionId)
+                    return
+                }
+                when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
+                    EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> service.sendDownUpKeyEvents(keyCode)
+                    else -> inputConnection.performEditorAction(action)
+                }
+            }
         }
     }
 
