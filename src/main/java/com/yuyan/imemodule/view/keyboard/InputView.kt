@@ -34,7 +34,6 @@ import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -110,11 +109,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             })
         }
         mSkbCandidatesBarView.initialize(mChoiceNotifier, mDecInfo)
+        val oneHandedModSwitch = prefs.oneHandedModSwitch.getValue()
         val oneHandedMod = prefs.oneHandedMod.getValue()
         if(::mOnehandHoderLayout.isInitialized)mOnehandHoderLayout.visibility = GONE
-        if (oneHandedMod != KeyboardOneHandedMod.None) {
+        if (oneHandedModSwitch) {
             mOnehandHoderLayout = when(oneHandedMod){
-                KeyboardOneHandedMod.RIGHT ->  mHoderLayoutRight
+                KeyboardOneHandedMod.LEFT ->  mHoderLayoutRight
                 else -> mHoderLayoutLeft
             }
             mOnehandHoderLayout.visibility = VISIBLE
@@ -155,7 +155,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     private fun onClick(view: View) {
         if (view.id == R.id.ib_holder_one_hand_none) {
-            prefs.oneHandedMod.setValue(KeyboardOneHandedMod.None)
+            prefs.oneHandedModSwitch.setValue(!prefs.oneHandedModSwitch.getValue())
         } else {
             val oneHandedMod = prefs.oneHandedMod.getValue()
             prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)

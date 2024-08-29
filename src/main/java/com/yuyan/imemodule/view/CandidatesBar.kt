@@ -103,8 +103,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             (mRightArrowBtn.parent as ViewGroup).removeView(mRightArrowBtn)
             (mRVCandidates.parent as ViewGroup).removeView(mRVCandidates)
         }
+        val oneHandedModSwitch = prefs.oneHandedModSwitch.getValue()
         val oneHandedMod = prefs.oneHandedMod.getValue()
-        if (oneHandedMod == KeyboardOneHandedMod.LEFT) {
+        if (oneHandedModSwitch && oneHandedMod == KeyboardOneHandedMod.LEFT) {
             mCandidatesDataContainer.addView(mRightArrowBtn)
             mCandidatesDataContainer.addView(mRVCandidates)
         } else {

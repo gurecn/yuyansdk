@@ -154,20 +154,23 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val keyboardModeFloat =
         switch(R.string.keyboard_menu_float, "keyboard_mode_float", false)
 
+
+    val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
+
     val oneHandedMod = list(
         R.string.keyboard_one_handed_mod,
         "keyboard_one_handed_mod",
-        KeyboardOneHandedMod.None,
+        KeyboardOneHandedMod.LEFT,
         KeyboardOneHandedMod,
         listOf(
-            KeyboardOneHandedMod.None,
             KeyboardOneHandedMod.LEFT,
             KeyboardOneHandedMod.RIGHT
         ),
         listOf(
-            R.string.keyboard_one_handed_mod_none,
             R.string.keyboard_one_handed_mod_left,
             R.string.keyboard_one_handed_mod_right
         )
-    )
+    ) {
+        oneHandedModSwitch.getValue()
+    }
 }

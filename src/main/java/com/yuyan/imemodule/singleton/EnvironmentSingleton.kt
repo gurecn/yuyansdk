@@ -55,14 +55,14 @@ class EnvironmentSingleton private constructor() {
             screenWidthVertical = (screenWidthVertical*3f/4).toInt()
             screenHeightVertical = (screenHeightVertical*3f/4).toInt()
         }
-        val oneHandedMod = ThemeManager.prefs.oneHandedMod.getValue()
+        val oneHandedMod = ThemeManager.prefs.oneHandedModSwitch.getValue()
         // 按键 + 后续高度，值是相对于竖屏宽度，横屏高度。
         keyboardHeightRatio = AppPrefs.getInstance().internal.keyboardHeightRatio.getValue()
         val keyboardWidthRatio = 1f
         val mKeyboardWidthContainer = (screenWidthVertical * keyboardWidthRatio).toInt()
         skbHeight = min((screenHeightVertical * keyboardHeightRatio).toInt(), mKeyboardWidthContainer)
         // 键盘占位宽度（用于单手模式），值是相对于竖屏宽度，横屏高度。
-        holderWidth = if (oneHandedMod != KeyboardOneHandedMod.None) (AppPrefs.getInstance().internal.keyboardHolderWidthRatio.getValue() * mKeyboardWidthContainer).toInt() else 0
+        holderWidth = if (oneHandedMod) (AppPrefs.getInstance().internal.keyboardHolderWidthRatio.getValue() * mKeyboardWidthContainer).toInt() else 0
         skbWidth = mKeyboardWidthContainer - holderWidth
         heightForCandidates = (skbHeight * 0.15f).toInt()
         heightForComposingView = (skbHeight * 0.1f).toInt()

@@ -164,8 +164,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             SkbMenuMode.Handwriting -> launchSettingsToHandwriting(mContext)
             SkbMenuMode.Settings -> launchSettings(mContext)
             SkbMenuMode.OneHanded -> {
-                val oneHandedMod = prefs.oneHandedMod.getValue()
-                prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.None) KeyboardOneHandedMod.LEFT else KeyboardOneHandedMod.None)
+                prefs.oneHandedModSwitch.setValue(!prefs.oneHandedModSwitch.getValue())
                 EnvironmentSingleton.instance.initData()
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
