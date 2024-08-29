@@ -31,16 +31,6 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.drawable.ic_baseline_language_24,
                     R.id.action_settingsFragment_to_inputSettingsFragment
                 )
-                addDestinationPreference(
-                    R.string.ime_settings_handwriting,
-                    R.drawable.ic_baseline_handwriting_24,
-                    R.id.action_settingsFragment_to_handwritingSettingsFragment
-                )
-                addDestinationPreference(
-                    R.string.ime_settings_voice,
-                    R.drawable.ic_baseline_voice,
-                    R.id.action_settingsFragment_to_voiceSettingsFragment
-                )
             }
             addCategory(R.string.keyboard) {
                 isIconSpaceReserved = false
@@ -62,11 +52,6 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.advanced) {
                 isIconSpaceReserved = false
-                addDestinationPreference(
-                    R.string.plugins,
-                    R.drawable.ic_baseline_android_24,
-                    R.id.action_settingsFragment_to_pluginSettingsFragment
-                )
                 addDestinationPreference(
                     R.string.about,
                     R.drawable.ic_baseline_more_horiz_24,

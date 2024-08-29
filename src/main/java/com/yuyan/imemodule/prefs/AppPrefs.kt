@@ -120,23 +120,13 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val titleChinese = category(R.string.chinese_input_setting)
 
-        // 中文联想
-        val chineseAssociation = switch(R.string.chinese_association, "chinese_association_enable", true)
-        val spaceSelectAssociation = switch(
-            R.string.space_lenovo_candidate, "space_chinese_association_enable", true,
-        ) { chineseAssociation.getValue() }
-        val chineseRecovery = switch(
-            R.string.setting_recovery, "chinese_recovery_enable", false
-        )
         val chineseFanTi = switch(
             R.string.setting_jian_fan, "chinese_jian_fan_enable", false
         )
         val titleEnglish = category(R.string.EnglishInput)
-//        val abcFirstCapital = switch(
-//            R.string.first_capital, "first_capital_enable", false
-//        )
+
         val abcSpaceAuto = switch(
-            R.string.space_auto, "abc_space_auto_enable", true
+            R.string.space_auto, "abc_space_auto_enable", false
         )
 
         val titleEmoji = category(R.string.emoji_setting)
