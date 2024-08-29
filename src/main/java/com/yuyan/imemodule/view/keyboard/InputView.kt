@@ -308,8 +308,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
-            if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
             } else {
                 sendKeyEvent(keyCode)
@@ -348,8 +347,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
             // 选择高亮的候选词
-            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
-            if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
             return true
@@ -397,8 +395,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             resetToIdleState()
         } else if (keyCode == KeyEvent.KEYCODE_SPACE) {
             // 选择候选词
-            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
-            if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
         }
@@ -423,8 +420,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 updateCandidate()
             }
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            val spaceSelectAssociation = AppPrefs.getInstance().input.spaceSelectAssociation.getValue()
-            if (!mDecInfo.isCandidatesListEmpty && (!mDecInfo.isAssociate || spaceSelectAssociation)) {
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
         } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
