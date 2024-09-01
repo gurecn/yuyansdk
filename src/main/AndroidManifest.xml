@@ -29,7 +29,6 @@
             android:exported="false"
             android:theme="@style/Theme.CropActivityTheme"
             tools:replace="android:exported" />
-        <service android:name=".service.ClipBoardService"/>
     </application>
 
 </manifest>
