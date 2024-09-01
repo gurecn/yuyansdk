@@ -2,7 +2,6 @@ package com.yuyan.imemodule.application
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.emoji.bundled.BundledEmojiCompatConfig
@@ -12,7 +11,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.manager.SymbolsManager.Companion.initInstance
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.service.ClipBoardService
+import com.yuyan.imemodule.service.ClipboardHelper
 import com.yuyan.imemodule.ui.utils.isDarkMode
 import com.yuyan.imemodule.utils.AssetUtils.copyFileOrDir
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
@@ -50,11 +49,7 @@ open class ImeSdkApplication : Application() {
             if (isFollowSystemDayNight) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
-            if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
-                val intent = Intent(context, ClipBoardService::class.java)
-                startService(intent)
-            }
-
+            ClipboardHelper.init()
         }
     }
 
@@ -75,10 +70,6 @@ open class ImeSdkApplication : Application() {
         private var mInstance: Application? = null
         @JvmStatic
         val context: Context
-            /**
-             * 获取ApplicationContext
-             * @return ApplicationContext
-             */
             get() = mInstance!!.applicationContext
     }
 }
