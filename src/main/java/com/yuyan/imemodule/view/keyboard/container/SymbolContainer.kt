@@ -22,11 +22,8 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.SymbolsManager
-import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
-import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
 
 /**
@@ -66,11 +63,9 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             ivDelete.background = bg
         }
         ivDelete.setOnClickListener {
-            inputView.sendKeyEvent(KeyEvent.KEYCODE_DEL)
             val softKey = SoftKey()
             softKey.keyCode = KeyEvent.KEYCODE_DEL
-            tryPlayKeyDown(softKey)
-            tryVibrate(this)
+            inputView.responseKeyEvent(softKey)
         }
         val layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -91,27 +86,16 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private fun onItemClickOperate(parent: RecyclerView.Adapter<*>?, position: Int) {
         val adapter = parent as SymbolAdapter?
         val s = adapter!!.getItem(position)
-        tryPlayKeyDown()
-        tryVibrate(this)
         val result = s.replace("[ \\r]".toRegex(), "")
         val viewType = adapter.viewType
         if (viewType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
-            LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(
-                result,
-                System.currentTimeMillis()
-            )
+            LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
             inputView.resetToIdleState()
             KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
         } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
-            LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(
-                result,
-                System.currentTimeMillis()
-            )
+            LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(result, System.currentTimeMillis())
         } else if (viewType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
-            LauncherModel.instance.usedEmoticonsDao!!.insertUsedEmoticons(
-                result,
-                System.currentTimeMillis()
-            )
+            LauncherModel.instance.usedEmoticonsDao!!.insertUsedEmoticons(result, System.currentTimeMillis())
         }
         val softKey = SoftKey(result)
         inputView.responseKeyEvent(softKey)
