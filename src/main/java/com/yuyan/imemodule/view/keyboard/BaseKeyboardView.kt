@@ -301,17 +301,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         var result = false
         if (swipeEnabled) {
             val absCountX = abs(countX.toDouble()).toInt()
-            val absCountY = abs(countY.toDouble()).toInt()
-            if (absCountX > 1 || absCountY > 1) {
-                val key = SoftKey()
-                if (absCountY > absCountX) {
-                    key.keyCode =
-                        if (countY > 1) KeyEvent.KEYCODE_DPAD_UP else KeyEvent.KEYCODE_DPAD_DOWN
-                } else {
-                    key.keyCode =
-                        if (countX > 1) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-                }
+            if (absCountX > 2) {
                 mSwipeMoveKey = true
+                val key = SoftKey()
+                key.keyCode = if (countX > 1) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
                 mService!!.responseKeyEvent(key)
                 result = true
             }
@@ -359,8 +352,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
         fun addMovement(ev: MotionEvent) {
             val time = ev.eventTime
-            val N = ev.historySize
-            for (i in 0 until N) {
+            val h = ev.historySize
+            for (i in 0 until h) {
                 addPoint(
                     ev.getHistoricalX(i), ev.getHistoricalY(i),
                     ev.getHistoricalEventTime(i)
@@ -371,9 +364,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
         private fun addPoint(x: Float, y: Float, time: Long) {
             var drop = -1
-            var i: Int
             val pastTime = mPastTime
-            i = 0
+            var i = 0
             while (i < NUM_PAST) {
                 if (pastTime[i] == 0L) {
                     break
