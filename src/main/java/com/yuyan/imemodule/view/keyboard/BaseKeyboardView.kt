@@ -17,8 +17,6 @@ import android.view.accessibility.AccessibilityManager
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
-import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
-import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.view.popup.PopupAction
 import com.yuyan.imemodule.view.popup.PopupAction.ChangeFocusAction
 import com.yuyan.imemodule.view.popup.PopupAction.DismissAction
@@ -251,9 +249,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mDownTime = me.eventTime
                 mLastMoveTime = mDownTime
                 checkMultiTap(eventTime, keyIndex)
-                // 播放按键声音和震动
-                tryPlayKeyDown(mCurrentKey)
-                tryVibrate(this)
                 if(keyIndex != null)onPress(keyIndex)
                 if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
                     mRepeatKeyIndex = mCurrentKey

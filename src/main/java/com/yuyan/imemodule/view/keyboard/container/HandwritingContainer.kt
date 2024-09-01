@@ -9,8 +9,6 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
-import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -48,13 +46,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
 
     // 更新键盘上侧边符号列表
     protected fun updateKeyboardView() {
-        mRVRightSymbols.setLayoutManager(
-            LinearLayoutManager(
-                context,
-                LinearLayoutManager.VERTICAL,
-                false
-            )
-        )
+        mRVRightSymbols.setLayoutManager(LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false))
         if (mRVRightSymbols.parent != null) {
             val parent = mRVRightSymbols.parent as ViewGroup
             parent.removeView(mRVRightSymbols)
@@ -65,8 +57,6 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
         adapter.setOnItemClickLitener { _, _, position ->
             val softKey = SoftKey(strs[position])
             inputView.responseKeyEvent(softKey)
-            tryPlayKeyDown()
-            tryVibrate(this)
         }
         mRVRightSymbols.setAdapter(adapter)
     }
@@ -78,11 +68,8 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
         val prefixLayoutParams = LayoutParams(
             softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
         )
-        prefixLayoutParams.setMargins(
-            softKeyboard.keyXMargin,
-            softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
-            softKeyboard.keyXMargin,
-            softKeyboard.skbCoreHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
+        prefixLayoutParams.setMargins(softKeyboard.keyXMargin, softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
+            softKeyboard.keyXMargin, softKeyboard.skbCoreHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
         )
         prefixLayoutParams.addRule(ALIGN_PARENT_RIGHT)
         return prefixLayoutParams

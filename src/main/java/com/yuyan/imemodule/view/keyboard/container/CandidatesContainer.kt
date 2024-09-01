@@ -18,8 +18,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
-import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
-import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -87,8 +85,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             val softKey = SoftKey()
             softKey.keyCode = KeyEvent.KEYCODE_DEL
             inputView.responseKeyEvent(softKey)
-            tryPlayKeyDown(softKey)
-            tryVibrate(this)
         }
         val layoutParams3 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         layoutParams3.setMargins(paddingBorder, paddingBorder, paddingBorder, paddingBorder)
@@ -141,8 +137,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is PrefixAdapter) {
                 parent.getSymbolData(position)
-                tryPlayKeyDown()
-                tryVibrate(this)
                 inputView.selectPrefix(position)
             } else if (parent is CandidatesAdapter) {
                 inputView.onChoiceTouched(parent.getItem(position))
@@ -171,8 +165,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         val adapter = PrefixAdapter(context, prefixs)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             val s = (parent as PrefixAdapter?)!!.getSymbolData(position)
-            tryPlayKeyDown()
-            tryVibrate(this)
             if (isPrefixs) {
                 if (isLetter(s)) {
                     inputView.selectPrefix(position)

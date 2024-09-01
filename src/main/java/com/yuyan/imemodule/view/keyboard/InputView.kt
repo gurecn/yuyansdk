@@ -171,6 +171,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseKeyEvent(sKey: SoftKey) {
+        // 播放按键声音和震动
+        DevicesUtils.tryPlayKeyDown(sKey)
+        DevicesUtils.tryVibrate(this)
         isSkipEngineMode = false
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
@@ -427,7 +430,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             // 获取原始的输入拼音的字符
             val composingStr = mDecInfo.composingStrForDisplay
             if (composingStr.isEmpty()) { // 发送 ENTER 键给 EditText
-                sendKeyEvent(KeyEvent.KEYCODE_ENTER)
+                sendKeyEvent(keyCode)
             } else { // 发送文本给EditText
                 commitDecInfoText(composingStr.replace("'", ""))
                 resetToIdleState()
@@ -548,6 +551,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     fun onChoiceTouched(activeCandNo: Int) {
         if (mImeState == ImeState.STATE_COMPOSING || mImeState == ImeState.STATE_INPUT || mImeState == ImeState.STATE_PREDICT) {
+            // 播放按键声音和震动
+            DevicesUtils.tryPlayKeyDown()
+            DevicesUtils.tryVibrate(this)
             // 选择候选词
             chooseAndUpdate(activeCandNo)
         } else {
@@ -624,6 +630,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 选择拼音
      */
     fun selectPrefix(position: Int) {
+        // 播放按键声音和震动
+        DevicesUtils.tryPlayKeyDown()
+        DevicesUtils.tryVibrate(this)
         mDecInfo.selectPrefix(position)
         updateCandidate()
     }

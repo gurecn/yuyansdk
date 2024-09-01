@@ -10,8 +10,6 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown
-import com.yuyan.imemodule.utils.DevicesUtils.tryVibrate
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -95,8 +93,6 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
         val adapter = PrefixAdapter(context, prefixs)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             val symbol = (parent as PrefixAdapter?)!!.getSymbolData(position)
-            tryPlayKeyDown()
-            tryVibrate(this)
             if (isPrefixs) {
                 if (isLetter(symbol)) {
                     inputView.selectPrefix(position)
