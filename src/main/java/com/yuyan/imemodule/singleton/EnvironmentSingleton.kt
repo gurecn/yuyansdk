@@ -3,7 +3,6 @@ package com.yuyan.imemodule.singleton
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,7 +22,6 @@ class EnvironmentSingleton private constructor() {
     var skbWidth = 0 // 键盘区域、候选词区域宽度
         private set
     var inputAreaHeight = 0 // 键盘区域高度
-    var inputAreaWidth = 0 // 键盘区域宽度
     var skbHeight = 0 // 键盘区域高度
         private set
     var holderWidth = 0 // 单手模式下键盘占位区域宽度
@@ -70,7 +68,6 @@ class EnvironmentSingleton private constructor() {
         keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
         candidateTextSize = (heightForCandidates * (0.4f + ThemeManager.prefs.candidateTextSize.getValue()/100f)).toInt()
         inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
-        inputAreaWidth = screenWidthVertical
     }
 
     var keyBoardHeightRatio: Float

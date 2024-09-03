@@ -88,7 +88,7 @@ open class SoftKey {
     open val keyIcon: Drawable?
         get() = keyIconRecords[Objects.hash(keyCode, stateId)]
 
-    open val keyLabel: String?
+    open val keyLabel: String
         get() =  mkeyLabel
 
     fun getmKeyLabelSmall(): String {

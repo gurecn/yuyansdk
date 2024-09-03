@@ -37,17 +37,17 @@ class SoftKeyToggle(code: Int) : SoftKey() {
                 keyIconRecords[Objects.hash(keyCode, stateId)]
             } else super.keyIcon
         }
-    override val keyLabel: String?
+    override val keyLabel: String
         get() {
             val state = toggleState
-            return if (null != state) state.label else super.getkeyLabel()
+            return state?.label ?: super.getkeyLabel()
         }
 
     override fun changeCase(upperCase: Boolean) {
         val state = toggleState
         if (state?.label != null) {
-            state.label = if (upperCase) state.label!!.lowercase(Locale.getDefault())
-            else state.label!!.uppercase(Locale.getDefault())
+            state.label = if (upperCase) state.label.lowercase(Locale.getDefault())
+            else state.label.uppercase(Locale.getDefault())
         }
     }
 
