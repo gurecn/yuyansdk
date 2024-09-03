@@ -58,21 +58,19 @@ class EnvironmentSingleton private constructor() {
         val oneHandedMod = ThemeManager.prefs.oneHandedModSwitch.getValue()
         // 按键 + 后续高度，值是相对于竖屏宽度，横屏高度。
         keyboardHeightRatio = AppPrefs.getInstance().internal.keyboardHeightRatio.getValue()
-        val keyboardWidthRatio = 1f
-        val mKeyboardWidthContainer = (screenWidthVertical * keyboardWidthRatio).toInt()
-        skbHeight = min((screenHeightVertical * keyboardHeightRatio).toInt(), mKeyboardWidthContainer)
+        skbHeight = min((screenHeightVertical * keyboardHeightRatio).toInt(), screenWidthVertical)
         // 键盘占位宽度（用于单手模式），值是相对于竖屏宽度，横屏高度。
-        holderWidth = if (oneHandedMod) (AppPrefs.getInstance().internal.keyboardHolderWidthRatio.getValue() * mKeyboardWidthContainer).toInt() else 0
-        skbWidth = mKeyboardWidthContainer - holderWidth
-        heightForCandidates = (skbHeight * 0.15f).toInt()
-        heightForComposingView = (skbHeight * 0.1f).toInt()
+        holderWidth = if (oneHandedMod) (AppPrefs.getInstance().internal.keyboardHolderWidthRatio.getValue() * screenWidthVertical).toInt() else 0
+        skbWidth = screenWidthVertical - holderWidth
+        heightForCandidates = (screenHeightVertical * 0.3 * 0.15f).toInt()
+        heightForComposingView = (heightForCandidates*0.7f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
         keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
         keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
-        candidateTextSize = keyTextSize + ThemeManager.prefs.candidateTextSize.getValue()
+        candidateTextSize = (heightForCandidates * (0.4f + ThemeManager.prefs.candidateTextSize.getValue()/100f)).toInt()
         inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
-        inputAreaWidth = mKeyboardWidthContainer
+        inputAreaWidth = screenWidthVertical
     }
 
     var keyBoardHeightRatio: Float

@@ -110,8 +110,8 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         R.string.candidate_size_input_setting,
         "candidate_size_input_setting",
         10,
-        -10,
-        30,
+        -20,
+        40,
         "%",
         defaultLabel = R.string.system_default
     )
