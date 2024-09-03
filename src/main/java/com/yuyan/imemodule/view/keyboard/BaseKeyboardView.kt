@@ -404,7 +404,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun showPreview(key: SoftKey?) {
-        if (mCurrentKeyPressed === key) {
+        if (mLongPressKey && mCurrentKeyPressed === key) {
             val triggerAction = TriggerAction(0, mService)
             onPopupAction(triggerAction)
             onPopupAction(DismissAction(0))
