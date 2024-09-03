@@ -29,6 +29,7 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -593,6 +594,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                 updateCandidateBar()
             }
+        }
+
+        override fun onClickMenu(skbMenuMode: SkbMenuMode) {
+            TODO("Not yet implemented")
         }
 
         override fun onClickCloseKeyboard() {
