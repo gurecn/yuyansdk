@@ -1,11 +1,6 @@
 package com.yuyan.imemodule.entity.keyboard
 
-import android.view.KeyEvent
-import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.manager.InputModeSwitcherManager.ToggleStates
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import java.util.LinkedList
-
 /**
  * Class used to represent a soft keyboard definition, including the height, the
  * background image, the image for high light, the keys, etc.
