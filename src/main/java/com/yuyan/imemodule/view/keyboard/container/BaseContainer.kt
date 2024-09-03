@@ -67,17 +67,13 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
      */
     @SuppressLint("ClickableViewAccessibility")
     fun setKeyboardHeight() {
-        val softKeyboardHeight = EnvironmentSingleton.instance.skbHeight
-        val lp = LayoutParams(LayoutParams.MATCH_PARENT, softKeyboardHeight)
         val rootView = LayoutInflater.from(context).inflate(R.layout.layout_ime_keyboard_height_shadow, this, false)
-        rootView.layoutParams = lp
         this.addView(rootView)
         rootView.findViewById<View>(R.id.ll_keyboard_height_reset).setOnClickListener { _: View? ->
             EnvironmentSingleton.instance.keyBoardHeightRatio = 0.3f
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             updateSkbLayout()
-            rootView.layoutParams = lp
         }
         rootView.findViewById<View>(R.id.ll_keyboard_height_sure).setOnClickListener { removeView(rootView) }
         rootView.findViewById<View>(R.id.iv_keyboard_height_Top)
