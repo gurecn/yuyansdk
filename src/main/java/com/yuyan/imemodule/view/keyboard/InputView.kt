@@ -211,8 +211,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     resetToIdleState()
                 }
             }
-            val selectSymbol = sKey.keyLabel
-            if(selectSymbol != null)commitText(selectSymbol)
+            commitText(sKey.keyLabel)
         }
     }
 
@@ -220,7 +219,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 响应软键盘长按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
-    override fun responseLongKeyEvent(showText: String?) {
+    override fun responseLongKeyEvent(sKey: SoftKey, showText: String?) {
         if (!mDecInfo.isAssociate && !mDecInfo.isCandidatesListEmpty) {
             if(mInputModeSwitcher.isChinese) {
                 chooseAndUpdate(0)

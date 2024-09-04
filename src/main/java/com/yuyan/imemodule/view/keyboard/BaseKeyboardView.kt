@@ -17,12 +17,6 @@ import android.view.accessibility.AccessibilityManager
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
-import com.yuyan.imemodule.view.popup.PopupAction
-import com.yuyan.imemodule.view.popup.PopupAction.ChangeFocusAction
-import com.yuyan.imemodule.view.popup.PopupAction.DismissAction
-import com.yuyan.imemodule.view.popup.PopupAction.PreviewAction
-import com.yuyan.imemodule.view.popup.PopupAction.ShowKeyboardAction
-import com.yuyan.imemodule.view.popup.PopupAction.TriggerAction
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import kotlin.math.abs
@@ -102,18 +96,13 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private fun initGestureDetector() {
         if (mGestureDetector == null) {
             mGestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-                override fun onScroll(
-                    e1: MotionEvent?,
-                    e2: MotionEvent,
-                    distanceX: Float,
-                    distanceY: Float
-                ): Boolean {
+                override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
                     if(!mLongPressKey && mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE) {
                         if(!dispatchGestureEvent(distanceX.toInt(), distanceY.toInt())){
-                            onPopupAction(ChangeFocusAction(0, e2.x - e1!!.x, e2.y - e1.y))
+                            popupComponent.changeFocus( e2.x - e1!!.x, e2.y - e1.y)
                         }
                     } else {
-                        onPopupAction(ChangeFocusAction(0, e2.x - e1!!.x, e2.y - e1.y))
+                        popupComponent.changeFocus(e2.x - e1!!.x, e2.y - e1.y)
                     }
                     return true
                 }
@@ -145,15 +134,14 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     open fun onBufferDraw() {}
     private fun openPopupIfRequired() {
-        showPreview(null)
         if (mCurrentKey != null && !TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
             val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
-                    mCurrentKey!!.keyLabel?.lowercase()
+                    mCurrentKey!!.keyLabel.lowercase()
                 } else {
                     mCurrentKey!!.keyLabel
                 }
             val bounds = Rect(mCurrentKey!!.mLeft, mCurrentKey!!.mTop, mCurrentKey!!.mRight, mCurrentKey!!.mBottom)
-            onPopupAction(ShowKeyboardAction(0, keyLabel!!, mService, bounds))
+            popupComponent.showKeyboard( keyLabel, mService, bounds)
             mLongPressKey = true
         }
     }
@@ -231,8 +219,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             return true
         }
         if (mGestureDetector!!.onTouchEvent(me)) {
-            mHandler!!.removeMessages(MSG_REPEAT)
-            mHandler!!.removeMessages(MSG_LONGPRESS)
             return true
         }
         when (action) {
@@ -404,12 +390,11 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun showPreview(key: SoftKey?) {
-        if (mLongPressKey && mCurrentKeyPressed === key) {
-            val triggerAction = TriggerAction(0, mService)
-            onPopupAction(triggerAction)
-            onPopupAction(DismissAction(0))
+        if (mLongPressKey) {
+            val text = popupComponent.triggerFocused()  // 获取长按选择字符
+            mService?.responseLongKeyEvent(SoftKey(), text)
+            popupComponent.dismissPopup()
             mLongPressKey = false
-            return
         }
         val oldKeyPressed = mCurrentKeyPressed
         if (oldKeyPressed != null) {
@@ -426,13 +411,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             invalidateKey(key)
             showBalloonText(key)
         } else {
-            onPopupAction(DismissAction(0))
+            popupComponent.dismissPopup()
         }
         mCurrentKeyPressed = key
-    }
-
-    private fun onPopupAction(action: PopupAction) {
-        popupComponent.listener.onPopupAction(action)
     }
 
     open fun closing() {
@@ -443,7 +424,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val keyboardBalloonShow = prefs.keyboardBalloonShow.getValue()
         if (keyboardBalloonShow && !TextUtils.isEmpty(key.getkeyLabel())) {
             val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
-            onPopupAction(PreviewAction(0, key.getkeyLabel(), bounds))
+            popupComponent.showPopup(key.getkeyLabel(), bounds)
         }
     }
 

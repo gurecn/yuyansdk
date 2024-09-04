@@ -242,8 +242,7 @@ class PopupKeyboardUi(
     }
 
     override fun onTrigger(): String? {
-        val key = keys.getOrNull(focusedIndex) ?: return null
-        return key
+        return keys.getOrNull(focusedIndex) ?: return null
     }
 
 }
