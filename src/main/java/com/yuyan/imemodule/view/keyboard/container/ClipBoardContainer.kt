@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.entity.ClipBoardDataBean
+import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.inputmethod.core.CandidateListItem
 
@@ -50,7 +51,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         val adapter = ClipBoardAdapter(context, copyContents)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is ClipBoardAdapter) {
-                inputView.responseLongKeyEvent(copyContents[position].copyContent)
+                inputView.responseLongKeyEvent(SoftKey(), copyContents[position].copyContent)
             }
         }
         mRVSymbolsView!!.setAdapter(adapter)
