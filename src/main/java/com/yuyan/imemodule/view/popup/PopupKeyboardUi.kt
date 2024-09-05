@@ -242,7 +242,7 @@ class PopupKeyboardUi(
     }
 
     override fun onTrigger(): String? {
-        return keys.getOrNull(focusedIndex) ?: return null
+        return keys.getOrNull(focusedIndex)
     }
 
 }

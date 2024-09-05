@@ -150,6 +150,9 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val keyboardLockEnglish =
         switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
 
+    val switchIMEKey =
+        switch(R.string.keyboard_key_switch_ime, "keyboard_key_switch_ime_enable", true)
+
     // 悬浮键盘
     val keyboardModeFloat =
         switch(R.string.keyboard_menu_float, "keyboard_mode_float", false)
