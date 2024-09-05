@@ -22,6 +22,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -32,6 +33,7 @@ import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
@@ -219,7 +221,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 响应软键盘长按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
-    override fun responseLongKeyEvent(sKey: SoftKey, showText: String?) {
+    override fun responseLongKeyEvent(sKey: SoftKey?, showText: String?) {
         if (!mDecInfo.isAssociate && !mDecInfo.isCandidatesListEmpty) {
             if(mInputModeSwitcher.isChinese) {
                 chooseAndUpdate(0)
@@ -230,7 +232,18 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             mDecInfo.reset()
         }
-        if (showText != null)commitText(showText)
+        if(sKey != null){
+            val switchIMEKey = prefs.switchIMEKey.getValue()
+            if( sKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 && switchIMEKey) {
+                InputMethodUtil.showPicker()
+            } else if(!showText.isNullOrBlank()){
+                commitText(showText)
+            }
+        } else {
+            if(!showText.isNullOrBlank()){
+                commitText(showText)
+            }
+        }
     }
 
     override fun responseHandwritingResultEvent(words: ArrayList<CandidateListItem?>) {

@@ -143,6 +143,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             val bounds = Rect(mCurrentKey!!.mLeft, mCurrentKey!!.mTop, mCurrentKey!!.mRight, mCurrentKey!!.mBottom)
             popupComponent.showKeyboard( keyLabel, mService, bounds)
             mLongPressKey = true
+        } else if (mCurrentKey != null){  // 实现功能键长按操作
+            mLongPressKey = true
+            mSwipeMoveKey = true
+            dismissPreview()
         }
     }
 
@@ -271,13 +275,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     detectAndSendKey(mCurrentKey, eventTime)
                 }
                 mRepeatKeyIndex = null
-                showPreview(null)
+                dismissPreview()
             }
-
             MotionEvent.ACTION_CANCEL -> {
                 removeMessages()
                 mAbortKey = true
-                showPreview(null)
+                dismissPreview()
             }
         }
         return true
@@ -389,31 +392,39 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
+    /**
+     * 显示短按气泡
+     */
     private fun showPreview(key: SoftKey?) {
-        if (mLongPressKey) {
-            val text = popupComponent.triggerFocused()  // 获取长按选择字符
-            mService?.responseLongKeyEvent(SoftKey(), text)
-            popupComponent.dismissPopup()
-            mLongPressKey = false
-        }
-        val oldKeyPressed = mCurrentKeyPressed
-        if (oldKeyPressed != null) {
-            oldKeyPressed.onReleased()
-            if(mService == null) return
-            if (mService!!.mInputModeSwitcher.isEnglish && (mService!!.mDecInfo.composingStrForDisplay.isBlank() ||  mService!!.mDecInfo.composingStrForDisplay.length == 1)) {
-                invalidateAllKeys()
-            } else {
-                invalidateKey(oldKeyPressed)
-            }
-        }
         if (key != null) {
             key.onPressed()
             invalidateKey(key)
             showBalloonText(key)
+            mCurrentKeyPressed = key
         } else {
             popupComponent.dismissPopup()
         }
-        mCurrentKeyPressed = key
+    }
+
+    /**
+     * 隐藏短按气泡
+     */
+    private fun dismissPreview() {
+        if (mLongPressKey) {
+            mService?.responseLongKeyEvent(mCurrentKeyPressed, popupComponent.triggerFocused())
+            mLongPressKey = false
+        }
+        if (mCurrentKeyPressed != null) {
+            mCurrentKeyPressed!!.onReleased()
+            if(mService == null) return
+            if (mService!!.mInputModeSwitcher.isEnglish && (mService!!.mDecInfo.composingStrForDisplay.isBlank() ||  mService!!.mDecInfo.composingStrForDisplay.length == 1)) {
+                invalidateAllKeys()
+            } else {
+                invalidateKey(mCurrentKeyPressed)
+            }
+        }
+        popupComponent.dismissPopup()
+        mCurrentKeyPressed = null
     }
 
     open fun closing() {
