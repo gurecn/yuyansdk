@@ -124,7 +124,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             val ivMenuSetting = ImageView(context).apply {
-                setImageResource(R.drawable.app_icon)
+                setImageResource(R.drawable.app_icon_circle)
                 isClickable = true
                 isEnabled = true
                 setOnClickListener{mCvListener.onClickSetting()}
