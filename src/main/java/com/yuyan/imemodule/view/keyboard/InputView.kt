@@ -22,13 +22,13 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
@@ -261,7 +261,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             return true
         }
         var result = false
-        if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
+        val abcSearchEnglishCell = mInputModeSwitcher.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
+        if(abcSearchEnglishCell){
+            result = processEnglishKey(event)
+        }else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish  || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
             result = when (mImeState) {
                 ImeState.STATE_IDLE -> processStateIdle(event)
                 ImeState.STATE_INPUT -> processStateInput(event)
@@ -279,6 +282,25 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
         }
         return result
+    }
+
+    /**
+     * 英文非智能输入处理函数
+     */
+    private fun processEnglishKey(event: KeyEvent): Boolean {
+        val keyCode = event.keyCode
+        if (keyCode == KeyEvent.KEYCODE_DEL || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
+            sendKeyEvent(keyCode)
+            return true
+        }
+        val upperCase = !mInputModeSwitcher.isEnglishLower
+        var keyChar = event.unicodeChar
+        if (keyChar != 0) {
+            if (upperCase) keyChar = keyChar - 'a'.code + 'A'.code
+            sendKeyChar(keyChar.toChar())
+            return true
+        }
+        return false
     }
 
     /**
