@@ -13,10 +13,7 @@ import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
-import com.yuyan.imemodule.prefs.behavior.WritingRCMode
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.utils.vibrator
-import com.yuyan.imemodule.view.preference.ManagedPreference
 
 
 class AppPrefs(private val sharedPreferences: SharedPreferences) {
@@ -103,51 +100,20 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                     R.string.disabled
                 )
             )
-        val buttonPressVibrationMilliseconds: ManagedPreference.PInt
-        val buttonLongPressVibrationMilliseconds: ManagedPreference.PInt
 
-        init {
-            val (primary, secondary) = twinInt(
-                R.string.button_vibration_milliseconds,
-                R.string.button_press,
-                "button_vibration_press_milliseconds",
-                0,
-                R.string.button_long_press,
-                "button_vibration_long_press_milliseconds",
-                0,
-                0,
-                100,
-                "毫秒",
-                defaultLabel = R.string.system_default
-            ) { hapticOnKeyPress.getValue() != InputFeedbackMode.Disabled }
-            buttonPressVibrationMilliseconds = primary
-            buttonLongPressVibrationMilliseconds = secondary
+        val buttonPressVibrationAmplitude = int(
+            R.string.button_vibration_amplitude,
+            "button_vibration_press_amplitude",
+            10,
+            0,
+            100,
+            "%",
+            defaultLabel = R.string.system_default
+        ) {
+            hapticOnKeyPress.getValue() != InputFeedbackMode.Disabled
         }
 
-        val buttonPressVibrationAmplitude: ManagedPreference.PInt
-        val buttonLongPressVibrationAmplitude: ManagedPreference.PInt
 
-        init {
-            val (primary, secondary) = twinInt(
-                R.string.button_vibration_amplitude,
-                R.string.button_press,
-                "button_vibration_press_amplitude",
-                0,
-                R.string.button_long_press,
-                "button_vibration_long_press_amplitude",
-                0,
-                0,
-                255,
-                defaultLabel = R.string.system_default
-            ) {
-                (hapticOnKeyPress.getValue() != InputFeedbackMode.Disabled)
-                        // hide this if using default duration
-                        && (buttonPressVibrationMilliseconds.getValue() != 0 || buttonLongPressVibrationMilliseconds.getValue() != 0)
-                        && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ImeSdkApplication.context.vibrator.hasAmplitudeControl())
-            }
-            buttonPressVibrationAmplitude = primary
-            buttonLongPressVibrationAmplitude = secondary
-        }
 
         val soundOnKeyPress = list(
             R.string.button_sound,

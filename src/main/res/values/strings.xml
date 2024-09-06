@@ -81,10 +81,7 @@
     <string name="input_methods">输入法</string>
     <string name="advanced">高级</string>
     <string name="button_haptic_feedback">按键时振动</string>
-    <string name="button_vibration_milliseconds">按键振动时长</string>
-    <string name="button_press">短按</string>
-    <string name="button_long_press">长按</string>
-    <string name="button_vibration_amplitude">按键振动幅度</string>
+    <string name="button_vibration_amplitude">按键振动</string>
     <string name="clipboard_listening">记录剪贴板历史</string>
     <string name="clipboard_limit">剪贴板历史记录上限</string>
     <string name="about">关于</string>
