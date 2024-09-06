@@ -85,6 +85,7 @@
     <string name="clipboard_listening">记录剪贴板历史</string>
     <string name="clipboard_limit">剪贴板历史记录上限</string>
     <string name="about">关于</string>
+    <string name="feedback">吐槽与反馈</string>
     <string name="app_version">应用版本</string>
     <string name="sdk_version">SDK版本</string>
     <string name="version">版本</string>

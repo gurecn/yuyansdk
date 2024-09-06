@@ -1,5 +1,7 @@
 package com.yuyan.imemodule.ui.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -8,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.ui.utils.addCategory
 import com.yuyan.imemodule.ui.utils.addPreference
 
@@ -52,6 +55,11 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.advanced) {
                 isIconSpaceReserved = false
+
+                addPreference(R.string.feedback,"",
+                    R.drawable.baseline_feedback_24,) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.FEEDBACK_TXC_REPO)))
+                }
                 addDestinationPreference(
                     R.string.about,
                     R.drawable.ic_baseline_more_horiz_24,
