@@ -12,6 +12,7 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
+import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.WritingRCMode
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.vibrator
@@ -41,81 +42,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 //        val keyboardRightPaddingLandscape = int("keyboard_padding_right_landscape_normal", DevicesUtils.dip2px(0))     //横屏竖屏非悬浮右边距
     }
 
-    inner class Advanced : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
-
-        val titleChinese = category(R.string.chinese_input_setting)
-
-        val chineseAssociation = switch(R.string.chinese_association, "chinese_association_enable", true)
-        val spaceSelectAssociation = switch(
-            R.string.space_lenovo_candidate, "space_chinese_association_enable", true,
-        ) { chineseAssociation.getValue() }
-        val chineseRecovery = switch(
-            R.string.setting_recovery, "chinese_recovery_enable", false
-        )
-        val chineseFanTi = switch(
-            R.string.setting_jian_fan, "chinese_jian_fan_enable", false
-        )
-        val titleEnglish = category(R.string.EnglishInput)
-        val abcFirstCapital = switch(
-            R.string.first_capital, "first_capital_enable", false
-        )
-        val abcKeyboardNumber = switch(
-            R.string.engish_full_keyboard, "abc_keyboard_number_enable", false
-        )
-
-        val titleEmoji = category(R.string.emoji_setting)
-        val emojiInput = switch(
-            R.string.emoji_input, "emoji_input_enable", false
-        )
-    }
-    inner class Voice : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
-
-//        val titleChinese = category(R.string.chinese_input_setting)
-    }
-
-    inner class Handwriting : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
-
-
-        val handWritingWidth = int(
-            R.string.paint_thickness,
-            "hand_writing_width",
-            35,
-            0,
-            100,
-            "%",
-            defaultLabel = R.string.system_default
-        )
-
-        val handWritingSpeed = int(
-            R.string.discern_sensitive,
-            "hand_writing_speed",
-            500,
-            300,
-            1300,
-            "毫秒",
-            100,
-            defaultLabel = R.string.number_500_ms
-        )
-
-        val handWritingRCMode =
-            list(
-                R.string.hand_writing_rc_mode,
-                "hand_writing_rc_mode",
-                WritingRCMode.SENTENCE,
-                WritingRCMode,
-                listOf(
-                    WritingRCMode.SENTENCE,
-                    WritingRCMode.OVERLAP,
-                    WritingRCMode.SENTENCE_OVERLAP
-                ),
-                listOf(
-                    R.string.hand_writing_rc_mode_sentence,
-                    R.string.hand_writing_rc_mode_overlap,
-                    R.string.hand_writing_rc_mode_sentence_overlap
-                )
-            )
-    }
-
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
 
         val titleChinese = category(R.string.chinese_input_setting)
@@ -123,6 +49,31 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val chineseFanTi = switch(
             R.string.setting_jian_fan, "chinese_jian_fan_enable", false
         )
+
+        val doublePYSchemaMode =
+            list(
+                R.string.double_pinyin_schema_mode,
+                "double_pinyin_schema_mode",
+                DoublePinyinSchemaMode.flypy,
+                DoublePinyinSchemaMode,
+                listOf(
+                    DoublePinyinSchemaMode.flypy,
+                    DoublePinyinSchemaMode.natural,
+                    DoublePinyinSchemaMode.abc,
+                    DoublePinyinSchemaMode.mspy,
+                    DoublePinyinSchemaMode.sogou,
+                    DoublePinyinSchemaMode.ziguang,
+                ),
+                listOf(
+                    R.string.double_pinyin_flypy_plus,
+                    R.string.double_pinyin_natural,
+                    R.string.double_pinyin_abc,
+                    R.string.double_pinyin_mspy,
+                    R.string.double_pinyin_sougou,
+                    R.string.double_pinyin_ziguang,
+                )
+            )
+
         val titleEnglish = category(R.string.EnglishInput)
 
         val abcSpaceAuto = switch(
@@ -225,6 +176,36 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         }
 
     }
+
+    inner class Voice : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
+//        val titleChinese = category(R.string.chinese_input_setting)
+    }
+
+    inner class Handwriting : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
+
+
+        val handWritingWidth = int(
+            R.string.paint_thickness,
+            "hand_writing_width",
+            35,
+            0,
+            100,
+            "%",
+            defaultLabel = R.string.system_default
+        )
+
+        val handWritingSpeed = int(
+            R.string.discern_sensitive,
+            "hand_writing_speed",
+            500,
+            300,
+            1300,
+            "毫秒",
+            100,
+            defaultLabel = R.string.number_500_ms
+        )
+    }
+
     inner class Clipboard : ManagedPreferenceCategory(R.string.clipboard, sharedPreferences) {
         val clipboardListening = switch(R.string.clipboard_listening, "clipboard_enable", true)
         val clipboardHistoryLimit = int(
@@ -265,7 +246,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
 
     val internal = Internal().register()
-    val advanced = Advanced().register()
     val voice = Voice().register()
     val handwriting = Handwriting().register()
     val input = Input().register()
@@ -284,19 +264,11 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val ctx = ImeSdkApplication.context.createDeviceProtectedStorageContext()
         val sp = PreferenceManager.getDefaultSharedPreferences(ctx)
         sp.edit {
-
-            listOf(
-                internal.pinyinModeRime,
-                internal.inputMethodPinyinMode,
-                internal.dataDictVersion,
-                internal.loginStatue,
-                internal.openCandidatesEncryBtn,
-                internal.keyboardHeightRatio
-            ).forEach {
-                it.putValueTo(this@edit)
+            internal.managedPreferences.forEach {
+                it.value.putValueTo(this@edit)
             }
 
-            advanced.managedPreferences.forEach {
+            input.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
             }
             voice.managedPreferences.forEach {
@@ -305,9 +277,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             handwriting.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
                 HdManager.instance?.hciHwrRelease()
-            }
-            input.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
             }
             keyboard.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)

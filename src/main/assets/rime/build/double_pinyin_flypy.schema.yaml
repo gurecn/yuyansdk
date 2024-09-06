@@ -1,11 +1,11 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1724118423
-    default.custom: 1724118423
+    default: 1725590726
+    default.custom: 1725590726
     double_pinyin_flypy.custom: 0
-    double_pinyin_flypy.schema: 1724118423
-    symbols_caps_v: 1724118423
+    double_pinyin_flypy.schema: 1725590726
+    symbols_caps_v: 1725590726
     symbols_caps_v.custom: 0
 cn_en:
   comment_format:
@@ -326,7 +326,8 @@ schema:
     - english
     - radical_pinyin
   description: |
-    小鹤双拼：雨燕输入法
+    雾凇拼音 - 小鹤双拼
+    https://github.com/iDvel/rime-ice
 
   name: "小鹤双拼"
   schema_id: double_pinyin_flypy

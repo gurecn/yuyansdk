@@ -213,7 +213,14 @@
     <string name="keyboard_name_t9">中文9键</string>
     <string name="keyboard_name_cn26">拼音全键</string>
     <string name="keyboard_name_hand">手写输入</string>
-    <string name="keyboard_name_pinyin_flypy_plus">小鹤双拼</string>
+    <string name="double_pinyin_schema_mode">双拼方案</string>
+    <string name="double_pinyin_flypy_plus">小鹤双拼</string>
+    <string name="double_pinyin_natural">自然码双拼</string>
+    <string name="double_pinyin_abc">智能ABC</string>
+    <string name="double_pinyin_mspy">微软双拼</string>
+    <string name="double_pinyin_sougou">搜狗双拼</string>
+    <string name="double_pinyin_ziguang">紫光双拼</string>
+
     <string name="keyboard_name_pinyin_lx_17">乱序17</string>
     <string name="keyboard_iv_menu_close">关闭键盘</string>
     <string name="space_swipe_move_cursor">滑动空格键移动光标</string>

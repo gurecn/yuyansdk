@@ -26,12 +26,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/action_settingsFragment_to_clipboardSettingsFragment"
             app:destination="@id/clipboardSettingsFragment" />
         <action
-            android:id="@+id/action_settingsFragment_to_pluginSettingsFragment"
-            app:destination="@id/pluginSettingsFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_advancedSettingsFragment"
-            app:destination="@id/advancedSettingsFragment" />
-        <action
             android:id="@+id/action_settingsFragment_to_aboutFragment"
             app:destination="@id/aboutFragment" />
     </fragment>
@@ -59,14 +53,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/clipboardSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.ClipboardSettingsFragment"
         android:label="@string/clipboard" />
-    <fragment
-        android:id="@+id/pluginSettingsFragment"
-        android:name="com.yuyan.imemodule.ui.fragment.PluginSettingsFragment"
-        android:label="@string/plugins" />
-    <fragment
-        android:id="@+id/advancedSettingsFragment"
-        android:name="com.yuyan.imemodule.ui.fragment.AdvancedSettingsFragment"
-        android:label="@string/advanced" />
     <fragment
         android:id="@+id/aboutFragment"
         android:name="com.yuyan.imemodule.ui.fragment.AboutFragment"

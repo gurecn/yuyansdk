@@ -1,11 +1,11 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1724118423
-    default.custom: 1724118423
+    default: 1725590726
+    default.custom: 1725590726
     pinyin.custom: 0
-    pinyin.schema: 1724118423
-    symbols_v: 1724118423
+    pinyin.schema: 1725590726
+    symbols_v: 1725590726
     symbols_v.custom: 0
 cn_en:
   comment_format:
@@ -520,7 +520,8 @@ schema:
     - english
     - radical_pinyin
   description: |
-    雾凇拼音：雨燕输入法
+    雾凇拼音
+    https://github.com/iDvel/rime-ice
 
   name: "拼音方案"
   schema_id: pinyin

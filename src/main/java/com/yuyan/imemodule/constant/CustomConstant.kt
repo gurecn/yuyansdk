@@ -11,13 +11,13 @@ object CustomConstant {
     const val EMOJI_TYPR_FACE_DATA = 4 //emoji表情：4。   序号需和SymbolsManager中mSymbolsEmoji Key对应
     const val EMOJI_TYPR_SMILE_TEXT = 5 //颜文字：5。   序号需和SymbolsManager中mSymbolsEmoji Key对应
     //按键长按选择
-    const val SCHEMA_ZH_T9 = "pinyin_t9" // 拼音九键
+    const val SCHEMA_ZH_T9 = "t9_pinyin" // 拼音九键
     const val SCHEMA_ZH_QWERTY = "pinyin" // 拼音全键
     const val SCHEMA_EN = "english"         // 英语方案
     const val SCHEMA_ZH_HANDWRITING = "handwriting" // 手写输入
-    const val SCHEMA_ZH_DOUBLE_FLYPY = "double_pinyin_flypy" // 小鹤双拼
+    const val SCHEMA_ZH_DOUBLE_FLYPY = "double_pinyin_" // 小鹤双拼
     const val SCHEMA_ZH_DOUBLE_LX17 = "double_pinyin_ls17" // 乱序17双拼
-    const val CURRENT_RIME_DICT_DATA_VERSIOM = 20240827
+    const val CURRENT_RIME_DICT_DATA_VERSIOM = 20240908
     const val YUYAN_IME_REPO = "https://github.com/gurecn/YuyanIme"
     const val YUYAN_SDK_REPO = "https://github.com/gurecn/yuyansdk"
     const val LICENSE_SPDX_ID = "LGPL-2.1-or-later"

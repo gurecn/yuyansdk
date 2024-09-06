@@ -1,11 +1,11 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1724118423
-    default.custom: 1724118423
+    default: 1725590726
+    default.custom: 1725590726
     english.custom: 0
-    english.schema: 1724118423
-    symbols_caps_v: 1724118423
+    english.schema: 1725590726
+    symbols_caps_v: 1725590726
     symbols_caps_v.custom: 0
 algebra_abc:
   - "derive/1([4-7|9])/$1teen/"
@@ -594,7 +594,7 @@ engine:
     - fallback_segmentor
   translators:
     - table_translator
-    - echo_translator
+    - punct_translator
 key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}

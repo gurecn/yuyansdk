@@ -15,7 +15,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.setNormalModeTheme
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
-import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil.launchSettings
@@ -26,6 +25,7 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.adapter.MenuAdapter
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.LinkedList
 
@@ -221,9 +221,18 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 SkbMenuMode.PinyinHandWriting
             )
         )
+        val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
+        val doublePinyinSchemaName = when (doublePYSchemaMode) {
+            DoublePinyinSchemaMode.flypy -> R.string.double_pinyin_flypy_plus
+            DoublePinyinSchemaMode.natural -> R.string.double_pinyin_natural
+            DoublePinyinSchemaMode.abc -> R.string.double_pinyin_abc
+            DoublePinyinSchemaMode.mspy -> R.string.double_pinyin_mspy
+            DoublePinyinSchemaMode.sogou -> R.string.double_pinyin_sougou
+            DoublePinyinSchemaMode.ziguang -> R.string.double_pinyin_ziguang
+        }
         funItems.add(
             SkbFunItem(
-                mContext.getString(R.string.keyboard_name_pinyin_flypy_plus),
+                mContext.getString(doublePinyinSchemaName),
                 R.drawable.selece_input_mode_dpy26,
                 SkbMenuMode.Pinyin26Double
             )
@@ -245,29 +254,31 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
     }
 
     private fun onKeyboardMenuClick(data: SkbFunItem) {
-        var keyboardValue = 0x2000
-        var value = CustomConstant.SCHEMA_ZH_T9
-        when (data.skbMenuMode) {
+        val keyboardValue: Int
+        val value = when (data.skbMenuMode) {
             SkbMenuMode.Pinyin26Jian -> {
                 keyboardValue = 0x1000
-                value = CustomConstant.SCHEMA_ZH_QWERTY
+                CustomConstant.SCHEMA_ZH_QWERTY
             }
 
             SkbMenuMode.PinyinHandWriting -> {
                 keyboardValue = 0x3000
-                value = CustomConstant.SCHEMA_ZH_HANDWRITING
-            }
-
-            SkbMenuMode.Pinyin26Double -> {
-                keyboardValue = 0x1000
-                value = CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY
+                CustomConstant.SCHEMA_ZH_HANDWRITING
             }
 
             SkbMenuMode.PinyinLx17 -> {
                 keyboardValue = 0x6000
-                value = CustomConstant.SCHEMA_ZH_DOUBLE_LX17
+                CustomConstant.SCHEMA_ZH_DOUBLE_LX17
+            }
+
+            SkbMenuMode.Pinyin26Double -> {
+                keyboardValue = 0x1000
+                val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
+                CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + doublePYSchemaMode
             }
             else ->{
+                keyboardValue = 0x2000
+                CustomConstant.SCHEMA_ZH_T9
             }
         }
         val inputMode = keyboardValue or InputModeSwitcherManager.MASK_LANGUAGE_CN or InputModeSwitcherManager.MASK_CASE_UPPER
