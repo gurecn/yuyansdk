@@ -20,7 +20,7 @@
     <string name="chinese_association">中文联想</string>
     <string name="setting_recovery">智能纠错</string>
     <string name="space_lenovo_candidate">空格选择联想词</string>
-    <string name="search_english_cell">预测英文单词</string>
+    <string name="search_english_cell">英文单词补全</string>
     <string name="setting_jian_fan">繁体输入</string>
     <string name="EnglishInput">英文输入</string>
     <string name="engish_full_keyboard">数字行</string>

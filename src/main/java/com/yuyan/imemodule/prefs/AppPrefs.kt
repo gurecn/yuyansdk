@@ -23,16 +23,12 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val inputDefaultMode = int("input_default_method_mode", InputModeSwitcherManager.MODE_T9_CHINESE)   //默认输入法类型
         val inputMethodPinyinMode = int("input_method_pinyin_mode", InputModeSwitcherManager.MODE_T9_CHINESE)  // 保存中文输入法类型
         val dataDictVersion = int("rime_dict_data_version", 0)  //缓存rime词库版本号,用于校验是否覆盖词库文件
-        val loginStatue = bool("login_statue", false)   // 是否登陆
-        val openCandidatesEncryBtn = bool("open_candidates_encry_btn", false)     // 是否添加候选词加密按键
         val keyboardHeightRatio = float("keyboard_height_ratio", 0.3f)     //键盘高度比例
         val keyboardHolderWidthRatio = float("keyboard_holder_width_ratio", 0.2f)     //键盘占位宽度比例，单手模式
-
         val keyboardBottomPaddingFloat = int("keyboard_padding_bottom", DevicesUtils.dip2px(100))     //竖屏悬浮模式底边距
         val keyboardRightPaddingFloat = int("keyboard_padding_right", DevicesUtils.dip2px(20))     //竖屏悬浮模式右边距
         val keyboardBottomPaddingLandscapeFloat = int("keyboard_padding_bottom_landscape", DevicesUtils.dip2px(50))     //横屏悬浮模式底边距
         val keyboardRightPaddingLandscapeFloat = int("keyboard_padding_right_landscape", DevicesUtils.dip2px(20))     //横屏悬浮模式右边距
-
         val keyboardBottomPadding = int("keyboard_padding_bottom_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮底边距
         val keyboardRightPadding = int("keyboard_padding_right_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮右边距
 //        val keyboardBottomPaddingLandscape = int("keyboard_padding_bottom_landscape_normal", DevicesUtils.dip2px(0))     //横屏非悬浮底边距
@@ -73,9 +69,16 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val titleEnglish = category(R.string.EnglishInput)
 
+        //输出英文单词:英文补全
+        val abcSearchEnglishCell = switch(
+            R.string.search_english_cell, "search_english_cell_enable", true
+        )
+
         val abcSpaceAuto = switch(
             R.string.space_auto, "abc_space_auto_enable", false
-        )
+        ){
+            abcSearchEnglishCell.getValue()
+        }
 
         val titleEmoji = category(R.string.emoji_setting)
         val emojiInput = switch(
