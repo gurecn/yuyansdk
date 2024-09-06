@@ -52,12 +52,12 @@ class SetupActivity : FragmentActivity() {
         }
         prevButton = binding.prevButton.apply {
             text = getString(R.string.prev)
-            setOnClickListener { viewPager.currentItem = viewPager.currentItem - 1 }
+            setOnClickListener { viewPager.currentItem -= 1 }
         }
         nextButton = binding.nextButton.apply {
             setOnClickListener {
                 if (viewPager.currentItem != SetupPage.entries.size - 1)
-                    viewPager.currentItem = viewPager.currentItem + 1
+                    viewPager.currentItem += 1
                 else finish()
             }
         }
@@ -124,7 +124,7 @@ class SetupActivity : FragmentActivity() {
     override fun onPause() {
         if (SetupPage.hasUndonePage())
             NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.app_icon)
+                .setSmallIcon(R.drawable.ic_sdk_launcher_small)
                 .setContentTitle(getText(R.string.app_name))
                 .setContentText(getText(R.string.setup_keyboard))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
