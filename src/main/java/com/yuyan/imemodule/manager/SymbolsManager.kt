@@ -58,11 +58,11 @@ class SymbolsManager private constructor(private val mContext: Context) {
         var instance: SymbolsManager? = null
             private set
         private val CHINESE_DATA: Array<String> = arrayOf(
-            "，", "。", "？", "！", "、", "：", "；", "…", "“", "”", "‘",
+            "，", "。", "？", "！", "、", "：", "；", "……", "“", "”", "‘",
             "’", "（", "）", "~", "—", "·", "#", "@", "|", "《", "》", "〔",
             "〕", "｛", "｝", "［", "］", "『", "』", "【", "】", "「", "」")
         val ENGLISH_DATA: Array<String> = arrayOf(
-            ",", ".", "'", "?", "!", "~", "@", ":", ";", "-", "*", "/", "\\",
+            ",", ".", "'", "?", "!", "@", ":", ";", "…", "~", "-", "*", "/", "\\",
             "_", "#", "\"", "|", "`", "$", "￥", "^", "&", "￡", "(", ")", "[",
             "]", "{", "}", "<", ">")
         val SHUXUE: Array<String> = arrayOf(
