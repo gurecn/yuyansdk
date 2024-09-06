@@ -74,7 +74,7 @@
     <string name="hand_writing_rc_mode_overlap">叠写</string>
     <string name="hand_writing_rc_mode_sentence_overlap">自由</string>
 
-    <string name="keyboard_menu_lock_english">锁定英语键盘</string>
+    <string name="keyboard_menu_lock_english">锁定英语键盘(下次弹出保持英语模式)</string>
     <string name="keyboard_key_switch_ime">长按键盘切换时切换输入法</string>
     <string name="keyboard_menu_emoji_input">表情预测</string>
 

@@ -2,6 +2,7 @@ package com.yuyan.imemodule.manager
 
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
@@ -116,8 +117,9 @@ class InputModeSwitcherManager {
                     || v == EditorInfo.TYPE_TEXT_VARIATION_WEB_PASSWORD) {
                         mInputTypePassword = true
                         MODE_SKB_ENGLISH_LOWER
-
-                    } else {
+                    } else if(ThemeManager.prefs.keyboardLockEnglish.getValue()){
+                        getInstance().internal.inputDefaultMode.getValue()
+                    } else{
                         getInstance().internal.inputMethodPinyinMode.getValue()
                     }
             }
