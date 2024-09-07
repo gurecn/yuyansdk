@@ -20,7 +20,7 @@ object ClipboardHelper : OnPrimaryClipChangedListener {
         val isClipboardListening = AppPrefs.getInstance().clipboard.clipboardListening.getValue()
         if(isClipboardListening) {
             clipboardManager.primaryClip?.getItemAt(0)
-                ?.takeIf { it.text!!.isNotBlank() }
+                ?.takeIf { it.text?.isNotBlank() == true }
                 ?.let { b ->
                     val data =
                         if (b.text.length > 5000) b.text.substring(0, 4999) else b.text.toString()
