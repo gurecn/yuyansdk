@@ -520,8 +520,7 @@ schema:
     - english
     - radical_pinyin
   description: |
-    雾凇拼音
-    https://github.com/iDvel/rime-ice
+    雾凇拼音：雨燕输入法
 
   name: "拼音方案"
   schema_id: pinyin
