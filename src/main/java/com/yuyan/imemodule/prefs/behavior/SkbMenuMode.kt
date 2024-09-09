@@ -14,6 +14,7 @@ enum class SkbMenuMode {
     FlowerTypeface,
     EmojiInput,
     Handwriting,
+    Custom,
     Settings,
     FloatKeyboard,
     OneHanded,

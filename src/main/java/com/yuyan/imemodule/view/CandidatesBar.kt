@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
-import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
-import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -138,16 +136,21 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
                 layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             }
-            if(LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled){
-                mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
-            }
+            mFunItems.add(SkbFunItem(context.getString(R.string.emoji_setting), R.drawable.sdk_vector_menu_skb_emoji, SkbMenuMode.EmojiKeyboard))
             mFunItems.add(SkbFunItem(context.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
+            mFunItems.add(SkbFunItem(context.getString(R.string.setting_ime_keyboard_height), R.drawable.sdk_vector_menu_skb_height, SkbMenuMode.KeyboardHeight))
             if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
                 mFunItems.add(SkbFunItem(context.getString(R.string.clipboard), R.drawable.ic_clipboard, SkbMenuMode.ClipBoard))
             }
             mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
+            mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_feedback), R.drawable.sdk_vector_menu_skb_touch, SkbMenuMode.Feedback))
+            mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_one_handed_mod), R.drawable.sdk_vector_menu_skb_one_hand, SkbMenuMode.OneHanded))
+            mFunItems.add(SkbFunItem(context.getString(R.string.engish_full_keyboard), R.drawable.sdk_vector_menu_skb_shuzihang, SkbMenuMode.NumberRow))
             mFunItems.add(SkbFunItem(context.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
-            mFunItems.add(SkbFunItem(context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
+            mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_mnemonic_show), R.drawable.sdk_vector_menu_skb_mnemonic, SkbMenuMode.Mnemonic))
+            mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_menu_float), R.drawable.sdk_vector_menu_skb_float, SkbMenuMode.FloatKeyboard))
+            mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
+            mFunItems.add(SkbFunItem(context.getString(R.string.skb_item_custom), R.drawable.sdk_vector_menu_custom, SkbMenuMode.Custom))
             mFunItems.add(SkbFunItem(context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context, mFunItems)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
