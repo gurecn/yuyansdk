@@ -134,10 +134,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setOnClickListener{mCvListener.onClickSetting()}
             }
             ivMenuSetting.layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
-            mRVContainerMenu = RecyclerView(context)
-            mRVContainerMenu.layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            mRVContainerMenu.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-
+            mRVContainerMenu = RecyclerView(context).apply {
+                layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
             if(LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled){
                 mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
             }
@@ -147,6 +147,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mFunItems.add(SkbFunItem(context.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
             mFunItems.add(SkbFunItem(context.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
+            mFunItems.add(SkbFunItem(context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
             mFunItems.add(SkbFunItem(context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context, mFunItems)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
