@@ -85,7 +85,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
             } else {
                 holder.entranceOption?.setImageResource(R.drawable.baseline_add_circle_24)
             }
-            holder.itemView.setOnTouchListener { _, event ->
+            holder.entranceIconImageView?.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     dragOverListener?.startDragItem(holder)
                 }
