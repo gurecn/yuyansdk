@@ -14,7 +14,6 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -80,7 +79,8 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         }
         if (dragOverListener != null) {
             holder.entranceOption?.visibility = View.VISIBLE
-            if(commonSkbFuns.contains(item.skbMenuMode.name)){
+            val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue()
+            if(keyboardBarMenuCommon.contains(item.skbMenuMode.name)){
                 holder.entranceOption?.setImageResource(R.drawable.baseline_delete_24)
             } else {
                 holder.entranceOption?.setImageResource(R.drawable.baseline_add_circle_24)

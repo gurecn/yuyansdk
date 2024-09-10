@@ -4,7 +4,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-val commonSkbFuns = mutableListOf(
+val commonSkbFuns = arrayOf(
     SkbMenuMode.Settings.name,
     SkbMenuMode.JianFan.name,
     SkbMenuMode.ClipBoard.name,

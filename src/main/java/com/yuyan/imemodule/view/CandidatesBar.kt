@@ -14,10 +14,10 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
 import com.yuyan.imemodule.callback.CandidateViewListener
-import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.SkbFunItem
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
@@ -164,7 +164,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             this.addView(mCandidatesMenuContainer)
         }
         mFunItems.clear()
-        for(item in commonSkbFuns){
+        val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
+        for(item in keyboardBarMenuCommon){
             val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item)]
             if(skbMenuMode != null){
                 mFunItems.add(skbMenuMode)
