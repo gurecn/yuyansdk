@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import com.google.android.flexbox.JustifyContent
 import android.content.Context
 import android.view.View
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
@@ -15,7 +16,11 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.adapter.MenuAdapter
+import com.yuyan.imemodule.data.allSkbFuns
+import com.yuyan.imemodule.data.commonSkbFuns
+import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.LinkedList
 
@@ -28,6 +33,7 @@ import java.util.LinkedList
 class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
+    private var adapter:MenuAdapter? = null
 
     init {
         initView(context)
@@ -52,27 +58,61 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
     fun showSettingsView() {
         //获取键盘功能栏功能对象
         val funItems: MutableList<SkbFunItem> = LinkedList()
-        funItems.add(SkbFunItem(mContext.getString(R.string.emoji_setting), R.drawable.sdk_vector_menu_skb_emoji, SkbMenuMode.EmojiKeyboard))
-        funItems.add(SkbFunItem(mContext.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
-        funItems.add(SkbFunItem(mContext.getString(R.string.setting_ime_keyboard_height), R.drawable.sdk_vector_menu_skb_height, SkbMenuMode.KeyboardHeight))
-        if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
-            funItems.add(SkbFunItem(mContext.getString(R.string.clipboard), R.drawable.ic_clipboard, SkbMenuMode.ClipBoard))
+        for(item in allSkbFuns){
+            val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item)]
+            if(skbMenuMode != null){
+                funItems.add(skbMenuMode)
+            }
         }
-        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
-        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_feedback), R.drawable.sdk_vector_menu_skb_touch, SkbMenuMode.Feedback))
-        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_one_handed_mod), R.drawable.sdk_vector_menu_skb_one_hand, SkbMenuMode.OneHanded))
-        funItems.add(SkbFunItem(mContext.getString(R.string.engish_full_keyboard), R.drawable.sdk_vector_menu_skb_shuzihang, SkbMenuMode.NumberRow))
-        funItems.add(SkbFunItem(mContext.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
-        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_mnemonic_show), R.drawable.sdk_vector_menu_skb_mnemonic, SkbMenuMode.Mnemonic))
-        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_menu_float), R.drawable.sdk_vector_menu_skb_float, SkbMenuMode.FloatKeyboard))
-        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
-        funItems.add(SkbFunItem(mContext.getString(R.string.skb_item_custom), R.drawable.sdk_vector_menu_custom, SkbMenuMode.Custom))
-        funItems.add(SkbFunItem(mContext.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
-        val adapter = MenuAdapter(context, funItems)
-        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+        adapter = MenuAdapter(context, funItems)
+        adapter?.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             inputView.onSettingsMenuClick(funItems[position].skbMenuMode)
         }
         mRVMenuLayout!!.setAdapter(adapter)
+        enableDragItem(false)
+    }
+
+    fun enableDragItem(enable: Boolean) {
+        if (enable) {
+            val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+                override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                    return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0)
+                }
+                override fun onMove(recyclerView: RecyclerView, oldHolder: RecyclerView.ViewHolder, targetHolder: RecyclerView.ViewHolder): Boolean {
+                    adapter?.notifyItemMoved(oldHolder.adapterPosition, targetHolder.adapterPosition)
+                    // 在每次移动后, 将界面上图标的顺序同步到appsAdapter.data中
+//                    adapter?.data?.forEachIndexed { index, _ ->
+//                    }
+                    return true
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                }
+
+                override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = true
+
+                override fun isLongPressDragEnabled() = false
+            })
+
+            adapter?.dragOverListener = object : MenuAdapter.DragOverListener {
+                override fun startDragItem(holder: RecyclerView.ViewHolder) {
+                    itemTouchHelper.startDrag(holder)
+                }
+                override fun onOptionClick(parent: RecyclerView.Adapter<*>?, v: SkbFunItem, position: Int) {
+                    if(commonSkbFuns.contains(v.skbMenuMode.name)){
+                        commonSkbFuns.remove(v.skbMenuMode.name)
+                    } else {
+                        commonSkbFuns.add(v.skbMenuMode.name)
+                    }
+                    inputView.freshCandidatesMenuBar()
+                    adapter?.notifyItemChanged(position)
+                }
+            }
+            itemTouchHelper.attachToRecyclerView(mRVMenuLayout)
+        } else {
+            adapter?.dragOverListener = null
+        }
+        adapter?.notifyDataSetChanged()
     }
 
     /**
@@ -80,46 +120,14 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
      */
     fun showSkbSelelctModeView() {
         val funItems: MutableList<SkbFunItem> = LinkedList()
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_name_t9),
-                R.drawable.selece_input_mode_py9,
-                SkbMenuMode.PinyinT9
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_name_cn26),
-                R.drawable.selece_input_mode_py26,
-                SkbMenuMode.Pinyin26Jian
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_name_hand),
-                R.drawable.selece_input_mode_handwriting,
-                SkbMenuMode.PinyinHandWriting
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_name_pinyin_flypy_plus),
-                R.drawable.selece_input_mode_dpy26,
-                SkbMenuMode.Pinyin26Double
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_name_pinyin_lx_17),
-                R.drawable.selece_input_mode_lx17,
-                SkbMenuMode.PinyinLx17
-            )
-        )
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_name_t9), R.drawable.selece_input_mode_py9, SkbMenuMode.PinyinT9))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_name_cn26), R.drawable.selece_input_mode_py26, SkbMenuMode.Pinyin26Jian))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_name_hand), R.drawable.selece_input_mode_handwriting, SkbMenuMode.PinyinHandWriting))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_name_pinyin_flypy_plus), R.drawable.selece_input_mode_dpy26, SkbMenuMode.Pinyin26Double))
+        funItems.add(SkbFunItem(mContext.getString(R.string.keyboard_name_pinyin_lx_17), R.drawable.selece_input_mode_lx17, SkbMenuMode.PinyinLx17))
         val adapter = MenuAdapter(context, funItems)
         adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            onKeyboardMenuClick(
-                funItems[position]
-            )
+            onKeyboardMenuClick(funItems[position])
         }
         mRVMenuLayout!!.setAdapter(adapter)
     }

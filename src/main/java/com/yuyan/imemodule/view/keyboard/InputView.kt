@@ -622,7 +622,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
     }
 
-    public fun onSettingsMenuClick(skbMenuMode: SkbMenuMode) {
+    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode) {
         when (skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
                 val symbols = SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
@@ -631,7 +631,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(
                     CustomConstant.EMOJI_TYPR_FACE_DATA)
             }
-            SkbMenuMode.SwitchKeyboard -> (KeyboardManager.instance.currentContainer as SettingsContainer?)!!.showSkbSelelctModeView()
+            SkbMenuMode.SwitchKeyboard -> {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
+                (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSkbSelelctModeView()
+            }
             SkbMenuMode.KeyboardHeight -> {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                 KeyboardManager.instance.currentContainer!!.setKeyboardHeight()
@@ -717,6 +720,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 updateCandidateBar()
                 (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
             }
+            SkbMenuMode.Custom -> {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
+                (KeyboardManager.instance.currentContainer as SettingsContainer?)?.enableDragItem(true)
+            }
             else ->{}
         }
     }
@@ -736,6 +743,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     fun showFlowerTypeface() {
         mSkbCandidatesBarView.showFlowerTypeface()
+    }
+
+    /**
+     * 刷新菜单栏
+     */
+    fun freshCandidatesMenuBar() {
+        mSkbCandidatesBarView.initMenuView()
     }
 
     /**

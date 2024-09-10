@@ -1,8 +1,10 @@
 package com.yuyan.imemodule.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.VectorDrawable
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -12,16 +14,16 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 
-class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>) : RecyclerView.Adapter<MenuAdapter.SymbolHolder>() {
+class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : RecyclerView.Adapter<MenuAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private val textColor: Int
@@ -29,6 +31,8 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
+
+    var dragOverListener: DragOverListener? = null
     init {
         val theme = ThemeManager.activeTheme
         textColor = theme.keyTextColor
@@ -40,9 +44,11 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
         var entranceNameTextView: TextView? = null
         var entranceIconImageView: ImageView? = null
+        var entranceOption: ImageView? = null
         init {
             entranceIconImageView = itemView.findViewById(R.id.entrance_image)
             entranceNameTextView = itemView.findViewById(R.id.entrance_name)
+            entranceOption = itemView.findViewById(R.id.entrance_option)
             val skbWidth = EnvironmentSingleton.instance.skbWidth
             val layoutParams = itemView.layoutParams
             layoutParams.width = skbWidth.div(4)
@@ -58,6 +64,7 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
         return data.size
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val item = data[position]
         holder.entranceNameTextView?.text = item.funName
@@ -70,6 +77,28 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
             holder.itemView.setOnClickListener { v: View? ->
                 mOnItemClickListener!!.onItemClick(this, v, position)
             }
+        }
+        if (dragOverListener != null) {
+            holder.entranceOption?.visibility = View.VISIBLE
+            if(commonSkbFuns.contains(item.skbMenuMode.name)){
+                holder.entranceOption?.setImageResource(R.drawable.baseline_delete_24)
+            } else {
+                holder.entranceOption?.setImageResource(R.drawable.baseline_add_circle_24)
+            }
+            holder.itemView.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    dragOverListener?.startDragItem(holder)
+                }
+                return@setOnTouchListener false
+            }
+            holder.entranceOption?.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    dragOverListener?.onOptionClick(this, item, position)
+                }
+                return@setOnTouchListener false
+            }
+        } else {
+            holder.entranceOption?.visibility = View.GONE
         }
     }
 
@@ -97,5 +126,10 @@ class MenuAdapter (context: Context?, private val data: MutableList<SkbFunItem>)
             else -> false
         }
         return result
+    }
+
+    interface DragOverListener {
+        fun startDragItem(holder: RecyclerView.ViewHolder)
+        fun onOptionClick(parent: RecyclerView.Adapter<*>?, v: SkbFunItem, position: Int)
     }
 }

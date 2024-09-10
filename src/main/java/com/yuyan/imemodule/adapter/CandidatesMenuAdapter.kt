@@ -8,9 +8,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
+import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.SkbFunItem
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 
@@ -20,7 +25,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem>) : RecyclerView.Adapter<CandidatesMenuAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
-    private val textColor: Int = activeTheme.keyTextColor
     private val itemHeight: Int
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
@@ -53,8 +57,9 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
     override fun onBindViewHolder(holder: CandidatesMenuAdapter.SymbolHolder, position: Int) {
         val item = items[position]
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
+        val color = if (isSettingsMenuSelect(item)) activeTheme.genericActiveBackgroundColor else activeTheme.keyTextColor
         val vectorDrawableCompat = holder.entranceIconImageView?.getDrawable() as VectorDrawable
-        vectorDrawableCompat.setTint(textColor)
+        vectorDrawableCompat.setTint(color)
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener { v: View? ->
                 mOnItemClickListener!!.onItemClick(this, v, position)
@@ -67,5 +72,32 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
 
     fun getMenuMode(position: Int): SkbMenuMode {
         return items[position].skbMenuMode
+    }
+
+
+    private fun isSettingsMenuSelect(data: SkbFunItem): Boolean {
+        val rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()
+        val result: Boolean = when (data.skbMenuMode) {
+            // Setting Menu
+            SkbMenuMode.DarkTheme -> activeTheme.isDark
+            SkbMenuMode.NumberRow -> ThemeManager.prefs.abcNumberLine.getValue()
+            SkbMenuMode.JianFan -> AppPrefs.getInstance().input.chineseFanTi.getValue()
+            SkbMenuMode.LockEnglish -> ThemeManager.prefs.keyboardLockEnglish.getValue()
+            SkbMenuMode.SymbolShow -> ThemeManager.prefs.keyboardSymbol.getValue()
+            SkbMenuMode.Mnemonic -> ThemeManager.prefs.keyboardMnemonic.getValue()
+            SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
+            SkbMenuMode.OneHanded -> ThemeManager.prefs.oneHandedModSwitch.getValue()
+            SkbMenuMode.FlowerTypeface -> LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled
+            SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()
+
+            // Keyboard Menu
+            SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
+            SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY
+            SkbMenuMode.PinyinHandWriting -> rimeValue == CustomConstant.SCHEMA_ZH_HANDWRITING
+            SkbMenuMode.Pinyin26Double -> rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY
+            SkbMenuMode.PinyinLx17 -> rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_LX17
+            else -> false
+        }
+        return result
     }
 }
