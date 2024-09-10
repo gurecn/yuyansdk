@@ -72,11 +72,6 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         holder.entranceNameTextView?.setTextColor(color)
         val vectorDrawableCompat = holder.entranceIconImageView?.getDrawable() as VectorDrawable
         vectorDrawableCompat.setTint(color)
-        if (mOnItemClickListener != null) {
-            holder.itemView.setOnClickListener { v: View? ->
-                mOnItemClickListener!!.onItemClick(this, v, position)
-            }
-        }
         if (dragOverListener != null) {
             holder.entranceOption?.visibility = View.VISIBLE
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue()
@@ -97,8 +92,14 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
                 }
                 return@setOnTouchListener false
             }
+            holder.itemView.setOnClickListener(null)
         } else {
             holder.entranceOption?.visibility = View.GONE
+            if (mOnItemClickListener != null) {
+                holder.itemView.setOnClickListener { v: View? ->
+                    mOnItemClickListener!!.onItemClick(this, v, position)
+                }
+            }
         }
     }
 
