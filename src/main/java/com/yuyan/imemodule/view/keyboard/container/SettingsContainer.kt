@@ -7,7 +7,6 @@ import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.MenuAdapter
 import com.yuyan.imemodule.constant.CustomConstant
@@ -16,15 +15,11 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.manager.SymbolsManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.adapter.MenuAdapter
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
-import com.yuyan.imemodule.view.keyboard.InputView
 import java.util.Collections
 import java.util.LinkedList
 
