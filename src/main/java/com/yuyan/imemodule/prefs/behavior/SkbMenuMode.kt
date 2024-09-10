@@ -1,5 +1,7 @@
 package com.yuyan.imemodule.prefs.behavior
 
+import com.yuyan.imemodule.view.preference.ManagedPreference
+
 enum class SkbMenuMode {
     EmojiKeyboard,
     SwitchKeyboard,
@@ -14,6 +16,7 @@ enum class SkbMenuMode {
     FlowerTypeface,
     EmojiInput,
     Handwriting,
+    Custom,
     Settings,
     FloatKeyboard,
     OneHanded,
@@ -23,4 +26,9 @@ enum class SkbMenuMode {
     PinyinHandWriting,
     Pinyin26Double,
     ClipBoard;
+
+    companion object : ManagedPreference.StringLikeCodec<SkbMenuMode> {
+        override fun decode(raw: String): SkbMenuMode =
+            SkbMenuMode.valueOf(raw)
+    }
 }

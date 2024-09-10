@@ -48,6 +48,7 @@
     <string name="cancel">取消</string>
     <!--键盘设置条目-->
     <string name="skb_item_settings">设置</string>
+    <string name="skb_item_custom">定制工具栏</string>
     <!--加解密相关-->
     <!--布局部分文件提取文本-->
     <string name="paint_thickness">笔画粗细</string>

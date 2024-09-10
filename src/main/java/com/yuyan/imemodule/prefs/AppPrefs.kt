@@ -9,6 +9,8 @@ import androidx.preference.PreferenceManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.allSkbFuns
+import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
@@ -33,6 +35,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardRightPadding = int("keyboard_padding_right_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮右边距
 //        val keyboardBottomPaddingLandscape = int("keyboard_padding_bottom_landscape_normal", DevicesUtils.dip2px(0))     //横屏非悬浮底边距
 //        val keyboardRightPaddingLandscape = int("keyboard_padding_right_landscape_normal", DevicesUtils.dip2px(0))     //横屏竖屏非悬浮右边距
+
+        val keyboardBarMenuCommon = string("keyboard_bar_menu_common", commonSkbFuns.joinToString())     //缓存候选词菜单栏
+        val keyboardSettingMenuAll = string("keyboard_bar_menu_all", allSkbFuns.joinToString())     //缓存候键盘设置菜单
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
