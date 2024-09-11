@@ -118,8 +118,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             })
         }
         mSkbCandidatesBarView.initialize(mChoiceNotifier, mDecInfo)
-        val oneHandedModSwitch = prefs.oneHandedModSwitch.getValue()
-        val oneHandedMod = prefs.oneHandedMod.getValue()
+        val oneHandedModSwitch = getInstance().keyboardSetting.oneHandedModSwitch.getValue()
+        val oneHandedMod = getInstance().keyboardSetting.oneHandedMod.getValue()
         if(::mOnehandHoderLayout.isInitialized)mOnehandHoderLayout.visibility = GONE
         if (oneHandedModSwitch) {
             mOnehandHoderLayout = when(oneHandedMod){
@@ -136,19 +136,19 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
-        if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue()){
-            bottomPadding = (if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
-                else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat).getValue()
-            rightPadding = (if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscapeFloat
-            else AppPrefs.getInstance().internal.keyboardRightPaddingFloat).getValue()
+        if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()){
+            bottomPadding = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
+                else getInstance().internal.keyboardBottomPaddingFloat).getValue()
+            rightPadding = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscapeFloat
+            else getInstance().internal.keyboardRightPaddingFloat).getValue()
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
             mLlKeyboardBottomHolder.minimumHeight = 0
         } else {
             bottomPadding = 0
             rightPadding = 0
-            mSkbRoot.bottomPadding = AppPrefs.getInstance().internal.keyboardBottomPadding.getValue()
-            mSkbRoot.rightPadding = AppPrefs.getInstance().internal.keyboardRightPadding.getValue()
+            mSkbRoot.bottomPadding = getInstance().internal.keyboardBottomPadding.getValue()
+            mSkbRoot.rightPadding = getInstance().internal.keyboardRightPadding.getValue()
             mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
         }
         updateTheme()
@@ -157,17 +157,17 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     // 刷新主题
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
-        mSkbRoot.background = activeTheme.backgroundDrawable(prefs.keyBorder.getValue())
+        mSkbRoot.background = activeTheme.backgroundDrawable(getInstance().keyboardSetting.keyBorder.getValue())
         mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
     }
 
     private fun onClick(view: View) {
         if (view.id == R.id.ib_holder_one_hand_none) {
-            prefs.oneHandedModSwitch.setValue(!prefs.oneHandedModSwitch.getValue())
+            getInstance().keyboardSetting.oneHandedModSwitch.setValue(!getInstance().keyboardSetting.oneHandedModSwitch.getValue())
         } else {
-            val oneHandedMod = prefs.oneHandedMod.getValue()
-            prefs.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)
+            val oneHandedMod = getInstance().keyboardSetting.oneHandedMod.getValue()
+            AppPrefs.getInstance().keyboardSetting.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)
         }
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
@@ -240,7 +240,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mDecInfo.reset()
         }
         if(sKey != null){
-            val switchIMEKey = prefs.switchIMEKey.getValue()
+            val switchIMEKey = getInstance().keyboardSetting.switchIMEKey.getValue()
             if( sKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 && switchIMEKey) {
                 InputMethodUtil.showPicker()
             } else if(!showText.isNullOrBlank()){
@@ -690,46 +690,46 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 AppUtil.launchSettingsToKeyboard(context)
             }
             SkbMenuMode.NumberRow -> {
-                val abcNumberLine = prefs.abcNumberLine.getValue()
-                prefs.abcNumberLine.setValue(!abcNumberLine)
+                val abcNumberLine = getInstance().keyboardSetting.abcNumberLine.getValue()
+                getInstance().keyboardSetting.abcNumberLine.setValue(!abcNumberLine)
                 //更换键盘模式后 重亲加载键盘
                 KeyboardLoaderUtil.instance.changeSKBNumberRow()
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.JianFan -> {
-                val chineseFanTi = AppPrefs.getInstance().input.chineseFanTi.getValue()
-                AppPrefs.getInstance().input.chineseFanTi.setValue(!chineseFanTi)
+                val chineseFanTi = getInstance().input.chineseFanTi.getValue()
+                getInstance().input.chineseFanTi.setValue(!chineseFanTi)
                 Kernel.nativeUpdateImeOption()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.LockEnglish -> {
-                val keyboardLockEnglish = prefs.keyboardLockEnglish.getValue()
-                prefs.keyboardLockEnglish.setValue(!keyboardLockEnglish)
+                val keyboardLockEnglish = getInstance().keyboardSetting.keyboardLockEnglish.getValue()
+                getInstance().keyboardSetting.keyboardLockEnglish.setValue(!keyboardLockEnglish)
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.SymbolShow -> {
-                val keyboardSymbol = prefs.keyboardSymbol.getValue()
-                prefs.keyboardSymbol.setValue(!keyboardSymbol)
+                val keyboardSymbol = getInstance().keyboardSetting.keyboardSymbol.getValue()
+                getInstance().keyboardSetting.keyboardSymbol.setValue(!keyboardSymbol)
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.Mnemonic -> {
-                val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
-                prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
+                val keyboardMnemonic = getInstance().keyboardSetting.keyboardMnemonic.getValue()
+                getInstance().keyboardSetting.keyboardMnemonic.setValue(!keyboardMnemonic)
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.EmojiInput -> {
-                val emojiInput = AppPrefs.getInstance().input.emojiInput.getValue()
-                AppPrefs.getInstance().input.emojiInput.setValue(!emojiInput)
+                val emojiInput = getInstance().input.emojiInput.getValue()
+                getInstance().input.emojiInput.setValue(!emojiInput)
                 Kernel.nativeUpdateImeOption()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.Handwriting -> AppUtil.launchSettingsToHandwriting(context)
             SkbMenuMode.Settings -> AppUtil.launchSettings(context)
             SkbMenuMode.OneHanded -> {
-                prefs.oneHandedModSwitch.setValue(!prefs.oneHandedModSwitch.getValue())
+                getInstance().keyboardSetting.oneHandedModSwitch.setValue(!getInstance().keyboardSetting.oneHandedModSwitch.getValue())
                 EnvironmentSingleton.instance.initData()
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
@@ -741,8 +741,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             SkbMenuMode.FloatKeyboard -> {
                 if(!EnvironmentSingleton.instance.isLandscape) {  // 横屏强制悬浮键盘，暂不支持关闭
-                    val keyboardModeFloat = prefs.keyboardModeFloat.getValue()
-                    prefs.keyboardModeFloat.setValue(!keyboardModeFloat)
+                    val keyboardModeFloat = getInstance().keyboardSetting.keyboardModeFloat.getValue()
+                    getInstance().keyboardSetting.keyboardModeFloat.setValue(!keyboardModeFloat)
                     EnvironmentSingleton.instance.initData()
                     KeyboardLoaderUtil.instance.clearKeyboardMap()
                     KeyboardManager.instance.clearKeyboard()
@@ -822,11 +822,11 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         currentInputEditorInfo = editorInfo
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-        if(AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()){
+        if(getInstance().clipboard.clipboardSuggestion.getValue()){
             val lastClipboardTime = LauncherModel.instance.mLastClipboardTime
             val lastClipboardContent = LauncherModel.instance.mLastClipboardContent
             if(lastClipboardContent.isNotBlank()) {
-                val clipboardItemTimeout = AppPrefs.getInstance().clipboard.clipboardItemTimeout.getValue()
+                val clipboardItemTimeout = getInstance().clipboard.clipboardItemTimeout.getValue()
                 if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
                     showSymbols(arrayOf(lastClipboardContent))
                 }
@@ -885,7 +885,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(resultText == null) return
         val inputConnection = service.getCurrentInputConnection()
         inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-        if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish && AppPrefs.getInstance().input.abcSpaceAuto.getValue()) {
+        if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
             inputConnection.commitText(" ", 1)
         }
     }
@@ -904,7 +904,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || prefs.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
     }

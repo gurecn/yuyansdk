@@ -2,8 +2,8 @@ package com.yuyan.inputmethod
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -253,7 +253,7 @@ object RimeEngine {
                     }
                 }
             }
-            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && ThemeManager.prefs.keyboardDoubleInputKey.getValue()  -> {
+            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()  -> {
                 keyRecordStack.getkeyRecords().joinToString("") { (it as InputKey.QwertKey).keyChar}
             }
             else -> {

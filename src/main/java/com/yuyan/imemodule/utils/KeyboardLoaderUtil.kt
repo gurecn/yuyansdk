@@ -1,12 +1,12 @@
 package com.yuyan.imemodule.utils
 
 import android.view.KeyEvent
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.entity.keyboard.ToggleState
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
@@ -32,7 +32,7 @@ class KeyboardLoaderUtil private constructor() {
         shiftToggleStates.add(ToggleState(2))
 
         val softKeyboard: SoftKeyboard?
-        val numberLine = prefs.abcNumberLine.getValue()
+        val numberLine = AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
         val rows: MutableList<List<SoftKey>> = LinkedList()
         if (numberLine) {
             val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
@@ -70,7 +70,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x2000 -> {  // 2000  T9键键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                val keyDeleteOrder = if(prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keyDeleteOrder = if(AppPrefs.getInstance().keyboardSetting.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, keyDeleteOrder.first),
                     arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR),
@@ -145,7 +145,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x5000 -> {  // 5000 数字键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                val keyDelete = if(prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keyDelete = if(AppPrefs.getInstance().keyboardSetting.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 8, 9, 10, keyDelete.first),
                     arrayOf(11, 12, 13, 0),

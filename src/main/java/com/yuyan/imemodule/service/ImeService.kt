@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
 import com.yuyan.imemodule.data.theme.ThemeManager.removeOnChangedListener
@@ -99,7 +98,7 @@ class ImeService : InputMethodService() {
         if (!::mInputView.isInitialized) return
         val (x, y) = intArrayOf(0, 0).also { mInputView.mSkbRoot.getLocationInWindow(it) }
         outInsets.apply {
-            if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()) {
+            if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 touchableInsets = Insets.TOUCHABLE_INSETS_REGION

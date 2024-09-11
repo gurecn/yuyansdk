@@ -52,11 +52,7 @@ class ThemeFragment : Fragment() {
             previewUi.setTheme(it)
         }
     }
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = with(requireContext()) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
         previewUi = KeyboardPreviewView(this)
         previewUi.setTheme(activeTheme)
         ThemeManager.addOnChangedListener(onThemeChangeListener)
@@ -73,8 +69,8 @@ class ThemeFragment : Fragment() {
             adapter = object : FragmentStateAdapter(this@ThemeFragment) {
                 override fun getItemCount() = 2
                 override fun createFragment(position: Int): Fragment = when (position) {
-                    0 -> ThemeListFragment()
-                    else -> ThemeSettingsFragment()
+                    0 -> ThemeSettingsFragment()
+                    else -> ThemeListFragment()
                 }
             }
         }
@@ -83,7 +79,7 @@ class ThemeFragment : Fragment() {
             tab.text = getString(
                 when (position) {
                     0 -> R.string.theme
-                    else -> R.string.keyboard
+                    else -> R.string.more
                 }
             )
         }.attach()

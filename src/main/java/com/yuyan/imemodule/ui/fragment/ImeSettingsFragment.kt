@@ -38,14 +38,19 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
             addCategory(R.string.keyboard) {
                 isIconSpaceReserved = false
                 addDestinationPreference(
-                    R.string.keyboard,
-                    R.drawable.ic_baseline_keyboard_24,
+                    R.string.theme,
+                    R.drawable.baseline_theme_lens_24,
                     R.id.action_settingsFragment_to_themeSettingsFragment
                 )
                 addDestinationPreference(
                     R.string.keyboard_feedback,
                     R.drawable.sdk_vector_menu_skb_touch,
-                    R.id.action_settingsFragment_to_keyboardSettingsFragment
+                    R.id.action_settingsFragment_to_keyboardFeedbackFragment
+                )
+                addDestinationPreference(
+                    R.string.setting_ime_keyboard,
+                    R.drawable.ic_baseline_keyboard_24,
+                    R.id.action_settingsFragment_to_keyboardSettingFragment
                 )
                 addDestinationPreference(
                     R.string.clipboard,

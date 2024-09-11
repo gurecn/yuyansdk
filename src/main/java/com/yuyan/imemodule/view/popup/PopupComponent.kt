@@ -24,7 +24,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
     private var showingContainerUi:PopupContainerUi? = null
 
     private val popupRadius by lazy {
-        ThemeManager.prefs.keyRadius.getValue().toFloat()
+        AppPrefs.getInstance().keyboardSetting.keyRadius.getValue().toFloat()
     }
 
     val root by lazy {
@@ -58,7 +58,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
             setText(content)
         }
         val bottomPadding =
-            if(!EnvironmentSingleton.instance.isLandscape && !ThemeManager.prefs.keyboardModeFloat.getValue()){
+            if(!EnvironmentSingleton.instance.isLandscape && !AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()){
                 AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
         root.apply {
             add(popup.root, lParams(bounds.width(), bounds.height()) {
@@ -83,7 +83,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
         val bottomPadding =
-        if(!EnvironmentSingleton.instance.isLandscape && !ThemeManager.prefs.keyboardModeFloat.getValue()){
+        if(!EnvironmentSingleton.instance.isLandscape && !AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()){
             AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
         root.apply {
             add(keyboardUi.root, lParams {

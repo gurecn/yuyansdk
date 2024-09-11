@@ -15,7 +15,9 @@ import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.view.preference.ManagedPreference
 
 
 class AppPrefs(private val sharedPreferences: SharedPreferences) {
@@ -91,7 +93,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         )
     }
 
-    inner class Keyboard : ManagedPreferenceCategory(R.string.keyboard_feedback, sharedPreferences) {
+    inner class KeyboardFeedback : ManagedPreferenceCategory(R.string.keyboard_feedback, sharedPreferences) {
 
         val hapticOnKeyPress =
             list(
@@ -147,6 +149,120 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             defaultLabel = R.string.system_default
         ) {
             soundOnKeyPress.getValue() != InputFeedbackMode.Disabled
+        }
+
+    }
+
+    inner class KeyboardSetting : ManagedPreferenceCategory(R.string.setting_ime_keyboard, sharedPreferences) {
+
+        val keyBorder = switch(R.string.key_border, "key_border", true)
+
+        val keyXMargin: ManagedPreference.PInt
+        val keyYMargin: ManagedPreference.PInt
+
+        init {
+            val (primary, secondary) = twinInt(
+                R.string.keyboard_key_margin,
+                R.string.key_horizontal_margin,
+                "keyboard_key_margin_x",
+                10,
+                R.string.key_vertical_margin,
+                "keyboard_key_margin_y",
+                20,
+                0,
+                100,
+                "",
+                defaultLabel = R.string.system_default
+            ) {
+                keyBorder.getValue()
+            }
+            keyXMargin = primary
+            keyYMargin = secondary
+        }
+
+        val keyRadius = int(
+            R.string.key_radius,
+            "key_radius",
+            20,
+            0,
+            60,
+            "dp"
+        ) {
+            keyBorder.getValue()
+        }
+
+        val candidateTextSize = int(
+            R.string.candidate_size_input_setting,
+            "candidate_size_input_setting",
+            10,
+            -20,
+            40,
+            "%",
+            defaultLabel = R.string.system_default
+        )
+
+        val keyboardBalloonShow =
+            switch(R.string.keypopup_input_settings, "keyboard_balloon_show_enable", false)
+
+        val longPressTimeout = int(
+            R.string.long_press_timeout,
+            "long_press_timeout",
+            400,
+            100,
+            700,
+            "毫秒",
+            50,
+            defaultLabel = R.string.number_400_ms
+        )
+
+
+        val abcNumberLine =
+            switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
+
+        val keyboardMnemonic =
+            switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
+
+        val keyboardDoubleInputKey =
+            switch(R.string.keyboard_double_input_key, "keyboard_double_input_key_enable", false)
+
+        val keyboardSymbol =
+            switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
+
+        val spaceSwipeMoveCursor =
+            switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
+
+        val deleteLocationTop =
+            switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
+
+        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
+        val keyboardLockEnglish =
+            switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
+
+        val switchIMEKey =
+            switch(R.string.keyboard_key_switch_ime, "keyboard_key_switch_ime_enable", true)
+
+        // 悬浮键盘
+        val keyboardModeFloat =
+            switch(R.string.keyboard_menu_float, "keyboard_mode_float", false)
+
+
+        val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
+
+        val oneHandedMod = list(
+            R.string.keyboard_one_handed_mod,
+            "keyboard_one_handed_mod",
+            KeyboardOneHandedMod.LEFT,
+            KeyboardOneHandedMod,
+            listOf(
+                KeyboardOneHandedMod.LEFT,
+                KeyboardOneHandedMod.RIGHT
+            ),
+            listOf(
+                R.string.keyboard_one_handed_mod_left,
+                R.string.keyboard_one_handed_mod_right
+            )
+        ) {
+            oneHandedModSwitch.getValue()
         }
 
     }
@@ -223,8 +339,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     val voice = Voice().register()
     val handwriting = Handwriting().register()
     val input = Input().register()
-    val keyboard = Keyboard().register()
+    val keyboardFeedback = KeyboardFeedback().register()
     val clipboard = Clipboard().register()
+    val keyboardSetting = KeyboardSetting().register()
+
 
     private val onSharedPreferenceChangeListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -252,7 +370,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 it.value.putValueTo(this@edit)
                 HdManager.instance?.hciHwrRelease()
             }
-            keyboard.managedPreferences.forEach {
+            keyboardFeedback.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
             }
             clipboard.managedPreferences.forEach {

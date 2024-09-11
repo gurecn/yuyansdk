@@ -17,11 +17,14 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/action_settingsFragment_to_voiceSettingsFragment"
             app:destination="@id/voiceSettingsFragment" />
         <action
-            android:id="@+id/action_settingsFragment_to_keyboardSettingsFragment"
-            app:destination="@id/keyboardSettingsFragment" />
-        <action
             android:id="@+id/action_settingsFragment_to_themeSettingsFragment"
-            app:destination="@id/themeSettingsFragment" />
+            app:destination="@id/themeFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_keyboardFeedbackFragment"
+            app:destination="@id/keyboardFeedbackFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_keyboardSettingFragment"
+            app:destination="@id/keyboardSettingFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_clipboardSettingsFragment"
             app:destination="@id/clipboardSettingsFragment" />
@@ -42,13 +45,13 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:name="com.yuyan.imemodule.ui.fragment.VoiceSettingsFragment"
         android:label="@string/ime_settings_voice" />
     <fragment
-        android:id="@+id/keyboardSettingsFragment"
+        android:id="@+id/keyboardFeedbackFragment"
         android:name="com.yuyan.imemodule.ui.fragment.KeyboardFeedbacksFragment"
         android:label="@string/keyboard_feedback" />
     <fragment
-        android:id="@+id/themeSettingsFragment"
+        android:id="@+id/themeFragment"
         android:name="com.yuyan.imemodule.ui.fragment.ThemeFragment"
-        android:label="@string/keyboard" />
+        android:label="@string/theme" />
     <fragment
         android:id="@+id/clipboardSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.ClipboardSettingsFragment"
@@ -73,4 +76,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/privacyPolicyFragment"
         android:name="com.yuyan.imemodule.ui.fragment.PrivacyPolicyFragment"
         android:label="@string/privacy_policy" />
+    <fragment
+        android:id="@+id/keyboardSettingFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.KeyboardSettingFragment"
+        android:label="@string/setting_ime_keyboard" />
 </navigation>

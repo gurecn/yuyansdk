@@ -106,6 +106,7 @@
     <string name="github_repo">GitHub 仓库</string>
     <string name="reset">重置</string>
     <string name="theme">主题</string>
+    <string name="more">更多</string>
     <string name="portrait">竖屏</string>
     <string name="landscape">横屏</string>
     <string name="clipboard_suggestion">显示剪贴板提示</string>
@@ -187,7 +188,7 @@
     <string name="exception_theme_unknown">未知主题 %1$s</string>
     <string name="theme_migrated">主题已迁移到当前版本</string>
     <string name="theme_message_follow_system_day_night_mode_enabled">“跟随系统夜间模式”已启用，不能手动更换主题。</string>
-    <string name="disable_it">禁用它</string>
+    <string name="disable_it">禁用跟随系统</string>
     <string name="reloading">重新加载中</string>
     <string name="importing">正在导入</string>
     <string name="import_error">导入错误</string>

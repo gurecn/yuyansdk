@@ -20,10 +20,10 @@ object InputFeedbacks {
         }
     }
 
-    private val soundOnKeyPress by AppPrefs.getInstance().keyboard.soundOnKeyPress
-    private val soundOnKeyPressVolume by AppPrefs.getInstance().keyboard.soundOnKeyPressVolume
-    private val hapticOnKeyPress by AppPrefs.getInstance().keyboard.hapticOnKeyPress
-    private val buttonPressVibrationAmplitude by AppPrefs.getInstance().keyboard.buttonPressVibrationAmplitude
+    private val soundOnKeyPress by AppPrefs.getInstance().keyboardFeedback.soundOnKeyPress
+    private val soundOnKeyPressVolume by AppPrefs.getInstance().keyboardFeedback.soundOnKeyPressVolume
+    private val hapticOnKeyPress by AppPrefs.getInstance().keyboardFeedback.hapticOnKeyPress
+    private val buttonPressVibrationAmplitude by AppPrefs.getInstance().keyboardFeedback.buttonPressVibrationAmplitude
 
     private val vibrator = ImeSdkApplication.context.vibrator
 

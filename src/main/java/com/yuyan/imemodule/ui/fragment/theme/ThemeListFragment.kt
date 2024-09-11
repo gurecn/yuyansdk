@@ -203,7 +203,7 @@ class ThemeListFragment : Fragment() {
                 .setIcon(ctx.styledDrawable(android.R.attr.alertDialogIcon))
                 .setTitle(R.string.configure)
                 .setMessage(R.string.theme_message_follow_system_day_night_mode_enabled)
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(android.R.string.cancel, null)
                 .setNegativeButton(R.string.disable_it) { _, _ ->
                     followSystemDayNightTheme = false
                     lifecycleScope.launch {

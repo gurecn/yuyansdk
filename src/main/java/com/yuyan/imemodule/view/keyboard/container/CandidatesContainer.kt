@@ -14,8 +14,8 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
@@ -69,10 +69,10 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         ivDelete.setImageResource(R.drawable.sdk_skb_key_delete_icon)
         val paddingBorder = dip2px(10f)
         ivDelete.setPadding(paddingBorder, paddingBorder, paddingBorder, paddingBorder)
-        val isKeyBorder = prefs.keyBorder.getValue()
+        val isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
         if (isKeyBorder) {
             val mActiveTheme = activeTheme
-            val keyRadius = prefs.keyRadius.getValue()
+            val keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
             val bg = GradientDrawable()
             bg.setColor(mActiveTheme.keyBackgroundColor)
             bg.shape = GradientDrawable.RECTANGLE

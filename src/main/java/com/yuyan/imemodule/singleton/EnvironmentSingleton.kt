@@ -49,11 +49,11 @@ class EnvironmentSingleton private constructor() {
         isLandscape = mScreenHeight <= mScreenWidth
         var screenWidthVertical = min(dm.widthPixels, dm.heightPixels)
         var screenHeightVertical = max(dm.widthPixels, dm.heightPixels)
-        if(isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()){
+        if(isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()){
             screenWidthVertical = (screenWidthVertical*3f/4).toInt()
             screenHeightVertical = (screenHeightVertical*3f/4).toInt()
         }
-        val oneHandedMod = ThemeManager.prefs.oneHandedModSwitch.getValue()
+        val oneHandedMod = AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
         // 按键 + 后续高度，值是相对于竖屏宽度，横屏高度。
         keyboardHeightRatio = AppPrefs.getInstance().internal.keyboardHeightRatio.getValue()
         skbHeight = min((screenHeightVertical * keyboardHeightRatio).toInt(), screenWidthVertical)
@@ -64,9 +64,9 @@ class EnvironmentSingleton private constructor() {
         heightForComposingView = (heightForCandidates*0.7f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
-        keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
-        keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
-        candidateTextSize = (heightForCandidates * (0.4f + ThemeManager.prefs.candidateTextSize.getValue()/100f)).toInt()
+        keyXMargin = AppPrefs.getInstance().keyboardSetting.keyXMargin.getValue() / 1000f
+        keyYMargin = AppPrefs.getInstance().keyboardSetting.keyYMargin.getValue() / 1000f
+        candidateTextSize = (heightForCandidates * (0.4f + AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue()/100f)).toInt()
         inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
     }
 

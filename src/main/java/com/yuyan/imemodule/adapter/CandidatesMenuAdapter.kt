@@ -80,15 +80,15 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
         val result: Boolean = when (data.skbMenuMode) {
             // Setting Menu
             SkbMenuMode.DarkTheme -> activeTheme.isDark
-            SkbMenuMode.NumberRow -> ThemeManager.prefs.abcNumberLine.getValue()
+            SkbMenuMode.NumberRow -> AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
             SkbMenuMode.JianFan -> AppPrefs.getInstance().input.chineseFanTi.getValue()
-            SkbMenuMode.LockEnglish -> ThemeManager.prefs.keyboardLockEnglish.getValue()
-            SkbMenuMode.SymbolShow -> ThemeManager.prefs.keyboardSymbol.getValue()
-            SkbMenuMode.Mnemonic -> ThemeManager.prefs.keyboardMnemonic.getValue()
+            SkbMenuMode.LockEnglish -> AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.getValue()
+            SkbMenuMode.SymbolShow -> AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
+            SkbMenuMode.Mnemonic -> AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
-            SkbMenuMode.OneHanded -> ThemeManager.prefs.oneHandedModSwitch.getValue()
+            SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
             SkbMenuMode.FlowerTypeface -> LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled
-            SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()
+            SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()
 
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
