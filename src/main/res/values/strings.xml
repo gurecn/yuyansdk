@@ -12,6 +12,7 @@
     <string name="keypopup_input_settings">按键气泡提示</string>
     <string name="long_press_timeout">按键长按灵敏度</string>
     <string name="keyboard_mnemonic_show">双拼辅助</string>
+    <string name="keyboard_double_input_key">双拼时显示输入键值</string>
     <string name="keyboard_flower_typeface">花漾字</string>
     <string name="keyboard_symbol_show">上滑符号</string>
     <string name="candidate_size_input_setting">候选词字体大小</string>

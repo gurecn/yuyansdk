@@ -137,6 +137,9 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val keyboardMnemonic =
         switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
 
+    val keyboardDoubleInputKey =
+        switch(R.string.keyboard_double_input_key, "keyboard_double_input_key_enable", false)
+
     val keyboardSymbol =
         switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
 

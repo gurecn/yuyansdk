@@ -2,6 +2,7 @@ package com.yuyan.inputmethod
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
@@ -252,7 +253,12 @@ object RimeEngine {
                     }
                 }
             }
-            else -> {compositionText.replace(" ", "'")}
+            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && ThemeManager.prefs.keyboardDoubleInputKey.getValue()  -> {
+                keyRecordStack.getkeyRecords().joinToString("") { (it as InputKey.QwertKey).keyChar}
+            }
+            else -> {
+                compositionText.replace(" ", "'")
+            }
         }
     }
 
@@ -278,6 +284,8 @@ object RimeEngine {
         fun pop(): InputKey? = keyRecords.removeLastOrNull()
 
         fun clear() = keyRecords.clear()
+
+        fun getkeyRecords():ArrayList<InputKey> = keyRecords
 
         inline fun forEachReversed(action: (InputKey) -> Unit) {
             for (i in keyRecords.indices.reversed()) {
@@ -306,6 +314,9 @@ object RimeEngine {
                 }
                 in PINYIN_T9_1..PINYIN_T9_9 -> {
                     keyRecords.add(InputKey.T9Key(keyCode))
+                }
+                in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
+                    keyRecords.add(InputKey.QwertKey(keyCode))
                 }
                 else -> {
                     keyRecords.add(InputKey.DefaultAction)
@@ -405,6 +416,13 @@ object RimeEngine {
 
             override fun toString(): String = keyChar
         }
+
+        class QwertKey(val keyChar: String, var consumed: Boolean = false) : InputKey {
+            constructor(keyCode: Int) : this(String(intArrayOf(keyCode - KeyEvent.KEYCODE_A + 'a'.code), 0, 1))
+
+            override fun toString(): String = keyChar
+        }
+
 
         class PinyinKey(private val pinyin: String, val posInInput: Int = 0) : InputKey {
             private var t9InputKeys: String? = null
