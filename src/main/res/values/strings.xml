@@ -11,7 +11,7 @@
     <string name="ime_settings_handwriting">手写设置</string>
     <string name="keypopup_input_settings">按键气泡提示</string>
     <string name="long_press_timeout">按键长按灵敏度</string>
-    <string name="keyboard_mnemonic_show">双拼辅助</string>
+    <string name="keyboard_mnemonic_show">双拼辅助显示</string>
     <string name="keyboard_double_input_key">双拼时显示输入键值</string>
     <string name="keyboard_flower_typeface">花漾字</string>
     <string name="keyboard_symbol_show">上滑符号</string>
@@ -86,6 +86,7 @@
     <string name="button_vibration_amplitude">按键振动</string>
     <string name="clipboard_listening">记录剪贴板历史</string>
     <string name="clipboard_limit">剪贴板历史记录上限</string>
+    <string name="clipboard_empty_ltip">无任何复制内容</string>
     <string name="about">关于</string>
     <string name="feedback">吐槽与反馈</string>
     <string name="app_version">应用版本</string>
