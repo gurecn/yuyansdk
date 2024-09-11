@@ -19,18 +19,19 @@ object ClipboardHelper : OnPrimaryClipChangedListener {
     override fun onPrimaryClipChanged() {
         val isClipboardListening = AppPrefs.getInstance().clipboard.clipboardListening.getValue()
         if(isClipboardListening) {
-            clipboardManager.primaryClip?.getItemAt(0)
-                ?.takeIf { it.text?.isNotBlank() == true }
-                ?.let { b ->
-                    val data =
-                        if (b.text.length > 5000) b.text.substring(0, 4999) else b.text.toString()
-                    if (AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()) {
-                        LauncherModel.instance.mLastClipboardContent = data
-                        LauncherModel.instance.mLastClipboardTime = System.currentTimeMillis()
-                    }
-                    LauncherModel.instance.mClipboardDao?.insertClopboard(data)
+           val item = clipboardManager.primaryClip?.getItemAt(0)
+            if(item != null) {
+                item.takeIf { it.text?.isNotBlank() == true }
+                    ?.let { b ->
+                        val data = if (b.text.length > 5000) b.text.substring(0, 4999) else b.text.toString()
+                        if (AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()) {
+                            LauncherModel.instance.mLastClipboardContent = data
+                            LauncherModel.instance.mLastClipboardTime = System.currentTimeMillis()
+                        }
+                        LauncherModel.instance.mClipboardDao?.insertClopboard(data)
 
-                }
+                    }
+            }
         }
     }
 }
