@@ -117,7 +117,7 @@ val PopupChinesePreset: Map<String, Array<String>> = hashMapOf(
     "v" to arrayOf("&", "$", "¥", "V", "v"),
     "b" to arrayOf("？", "?", "B", "b"),
     "n" to arrayOf( "！", "!","|", "¦", "N", "n"),
-    "m" to arrayOf("…", "M", "m"),
+    "m" to arrayOf("……", "M", "m"),
 
     //
     // Upper case Latin
@@ -147,7 +147,7 @@ val PopupChinesePreset: Map<String, Array<String>> = hashMapOf(
     "V" to arrayOf("&", "$", "¥", "v", "V"),
     "B" to arrayOf("？", "?", "b", "B"),
     "N" to arrayOf("！", "!", "|", "¦", "n", "N"),
-    "M" to arrayOf("…", "m", "M"),
+    "M" to arrayOf("……", "m", "M"),
 
     "@" to arrayOf("，", "。", "？", "！", "：", "；", "（", "）"),
     "符号" to arrayOf("，", "。", "？", "！", "：", "；", "@", "（", "）"),
@@ -181,5 +181,5 @@ val PopupChinesePreset: Map<String, Array<String>> = hashMapOf(
     "NR" to arrayOf("！", "N", "R", "an"),
     "Ch" to arrayOf("，", "Ch", "iang", "ui"),
     "Q~" to arrayOf("。", "Q", "~", "ian", "uang"),
-    "FC" to arrayOf("…", "F", "C", "iu", "ou"),
+    "FC" to arrayOf("……", "F", "C", "iu", "ou"),
 )
