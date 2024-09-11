@@ -659,11 +659,14 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode) {
         when (skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
+                if(KeyboardManager.instance.currentContainer is SymbolContainer) {
+                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                    return
+                }
                 val symbols = SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(
-                    CustomConstant.EMOJI_TYPR_FACE_DATA)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             }
             SkbMenuMode.SwitchKeyboard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
@@ -750,6 +753,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.ClipBoard -> {
+                if(KeyboardManager.instance.currentContainer is ClipBoardContainer) {
+                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                    return
+                }
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
                 updateCandidateBar()
                 (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()

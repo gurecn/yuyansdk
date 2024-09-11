@@ -76,8 +76,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
             updateSkbLayout()
         }
         rootView.findViewById<View>(R.id.ll_keyboard_height_sure).setOnClickListener { removeView(rootView) }
-        rootView.findViewById<View>(R.id.iv_keyboard_height_Top)
-            .setOnTouchListener { v12: View, event -> onModifyKeyboardHeightEvent(v12, event) }
+        rootView.findViewById<View>(R.id.iv_keyboard_height_Top).setOnTouchListener { v12: View, event -> onModifyKeyboardHeightEvent(v12, event) }
         if(EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()){
             mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
             else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat
@@ -87,8 +86,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
             mBottomPaddingKey = AppPrefs.getInstance().internal.keyboardBottomPadding
             mRightPaddingKey = AppPrefs.getInstance().internal.keyboardRightPadding
         }
-        rootView.findViewById<View>(R.id.iv_keyboard_move)
-            .setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
+        rootView.findViewById<View>(R.id.iv_keyboard_move).setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
     }
 
     private val lastY = floatArrayOf(0f)
