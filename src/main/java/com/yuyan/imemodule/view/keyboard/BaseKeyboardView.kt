@@ -14,9 +14,9 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.accessibility.AccessibilityManager
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import kotlin.math.abs
@@ -174,7 +174,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     init {
         mAccessibilityManager =
             mContext?.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        swipeEnabled = prefs.spaceSwipeMoveCursor.getValue()
+        swipeEnabled = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()
     }
 
     override fun onTouchEvent(me: MotionEvent): Boolean {
@@ -252,7 +252,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 }
                 if (mCurrentKey != null) {
                     val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
-                    mHandler!!.sendMessageDelayed(msg, prefs.longPressTimeout.getValue().toLong())
+                    mHandler!!.sendMessageDelayed(msg, AppPrefs.getInstance().keyboardSetting.longPressTimeout.getValue().toLong())
                 }
                 showPreview(mCurrentKey)
             }
@@ -432,7 +432,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun showBalloonText(key: SoftKey) {
-        val keyboardBalloonShow = prefs.keyboardBalloonShow.getValue()
+        val keyboardBalloonShow = AppPrefs.getInstance().keyboardSetting.keyboardBalloonShow.getValue()
         if (keyboardBalloonShow && !TextUtils.isEmpty(key.getkeyLabel())) {
             val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
             popupComponent.showPopup(key.getkeyLabel(), bounds)

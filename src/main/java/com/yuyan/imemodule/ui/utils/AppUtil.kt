@@ -3,13 +3,10 @@ package com.yuyan.imemodule.ui.utils
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.annotation.IdRes
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavDeepLinkBuilder
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.ui.activity.SettingsActivity
 import kotlin.system.exitProcess
 
@@ -44,11 +41,11 @@ object AppUtil {
 
 
     fun launchSettingsToKeyboard(context: Context) =
-        launchMainToDest(context, R.id.keyboardSettingsFragment)
+        launchMainToDest(context, R.id.keyboardFeedbackFragment)
 
 
     fun launchMainToThemeList(context: Context) =
-        launchMainToDest(context, R.id.themeSettingsFragment)
+        launchMainToDest(context, R.id.themeFragment)
 
     fun exit() {
         exitProcess(0)

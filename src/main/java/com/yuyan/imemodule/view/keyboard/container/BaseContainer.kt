@@ -78,7 +78,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
         rootView.findViewById<View>(R.id.ll_keyboard_height_sure).setOnClickListener { removeView(rootView) }
         rootView.findViewById<View>(R.id.iv_keyboard_height_Top)
             .setOnTouchListener { v12: View, event -> onModifyKeyboardHeightEvent(v12, event) }
-        if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()){
+        if(EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()){
             mBottomPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardBottomPaddingLandscapeFloat
             else AppPrefs.getInstance().internal.keyboardBottomPaddingFloat
             mRightPaddingKey = if(EnvironmentSingleton.instance.isLandscape) AppPrefs.getInstance().internal.keyboardRightPaddingLandscapeFloat
@@ -144,7 +144,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
                         EnvironmentSingleton.instance.mScreenWidth - inputView.mSkbRoot.width
                     } else rightPaddingValue
                     initialTouchX = event.rawX
-                    if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()) {
+                    if(EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
                         inputView.rightPadding = rightPaddingValue
                     } else {
                         inputView.mSkbRoot.rightPadding = rightPaddingValue
@@ -157,7 +157,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
                         EnvironmentSingleton.instance.mScreenHeight - inputView.mSkbRoot.height
                     } else bottomPaddingValue
                     initialTouchY = event.rawY
-                    if(EnvironmentSingleton.instance.isLandscape || ThemeManager.prefs.keyboardModeFloat.getValue()) {
+                    if(EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
                         inputView.bottomPadding = bottomPaddingValue
                     } else {
                         inputView.mSkbRoot.bottomPadding = bottomPaddingValue

@@ -13,11 +13,11 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import kotlin.math.max
 import kotlin.math.min
@@ -65,8 +65,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     override fun setSoftKeyboard(softSkb: SoftKeyboard) {
         super.setSoftKeyboard(softSkb)
-        isKeyBorder = prefs.keyBorder.getValue()
-        keyRadius = prefs.keyRadius.getValue()
+        isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
+        keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
         mActiveTheme = activeTheme
         mPaint.color = mActiveTheme.keyTextColor
         // Hint to reallocate the buffer if the size changed
@@ -96,8 +96,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      * 重置主题
      */
     open fun setTheme(theme: Theme) {
-        isKeyBorder = prefs.keyBorder.getValue()
-        keyRadius = prefs.keyRadius.getValue()
+        isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
+        keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
         mActiveTheme = theme
         mPaint.color = mActiveTheme.keyTextColor
         invalidateView()
@@ -254,8 +254,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon
-        val keyboardSymbol = prefs.keyboardSymbol.getValue()
-        val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
+        val keyboardSymbol = AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
+        val keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
         val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
