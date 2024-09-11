@@ -224,9 +224,8 @@ object RimeEngine {
     private fun getCurrentComposition(candidates: Array<CandidateListItem>): String {
         val compositionText = Rime.compositionText
         return when {
+            compositionText.isEmpty() -> ""
             candidates.isEmpty() -> compositionText
-            candidates.first().comment.isBlank() -> compositionText
-            compositionText.isEmpty() -> compositionText
             Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_T9  -> {
                 val compositionList: List<String> =compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
                 val pinyinList: List<String> = candidates.first().comment.split(" ")
@@ -422,7 +421,6 @@ object RimeEngine {
 
             fun copy(posInInput: Int) = PinyinKey(pinyin, posInInput)
 
-            @OptIn(ExperimentalStdlibApi::class)
             fun inputKeys() = "${pinyin.lowercase()}'"
         }
     }
