@@ -92,9 +92,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mRVCandidates = RecyclerView(context)
-            mRVCandidates.layoutManager =  object : LinearLayoutManager(context, HORIZONTAL, false) {
-                override fun canScrollHorizontally(): Boolean { return false }
-            }
+            mRVCandidates.layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             mRVCandidates.layoutParams = LinearLayout.LayoutParams(0, candidatesAreaHeight, 1f)
             mCandidatesAdapter = CandidatesBarAdapter(context, mDecInfo.mCandidatesList)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
