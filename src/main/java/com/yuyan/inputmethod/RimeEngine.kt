@@ -255,7 +255,9 @@ object RimeEngine {
                 }
             }
             Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()  -> {
-                keyRecordStack.getkeyRecords().joinToString("") { (it as InputKey.QwertKey).keyChar}
+                keyRecordStack.getkeyRecords().joinToString("") {
+                    if(it is InputKey.QwertKey) it.keyChar else "\'"
+                }
             }
             else -> {
                 compositionText.replace(" ", "'")
