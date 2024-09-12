@@ -18,6 +18,7 @@ import com.yuyan.imemodule.adapter.SymbolTypeAdapter
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.SymbolsManager
@@ -52,10 +53,10 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         mRVSymbolsView = RecyclerView(context)
         mLLSymbolType.visibility = VISIBLE
         val ivDelete = mLLSymbolType.findViewById<ImageView>(R.id.iv_symbols_emoji_type_delete)
-        val isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
+        val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         if (isKeyBorder) {
             val mActiveTheme = activeTheme
-            val keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
+            val keyRadius = ThemeManager.prefs.keyRadius.getValue()
             val bg = GradientDrawable()
             bg.setColor(mActiveTheme.keyBackgroundColor)
             bg.shape = GradientDrawable.RECTANGLE
