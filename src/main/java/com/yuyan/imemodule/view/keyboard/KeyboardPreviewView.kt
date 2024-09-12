@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
@@ -40,7 +41,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     fun setTheme(theme: Theme) {
         initView()
         qwerTextContainer?.setTheme(theme)
-        background = theme.backgroundDrawable(AppPrefs.getInstance().keyboardSetting.keyBorder.getValue())
+        background = theme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
         layoutParams?.width = instance.skbWidth
         layoutParams?.height = instance.inputAreaHeight
     }

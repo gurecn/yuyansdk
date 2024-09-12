@@ -83,7 +83,7 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
             SkbMenuMode.NumberRow -> AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
             SkbMenuMode.JianFan -> AppPrefs.getInstance().input.chineseFanTi.getValue()
             SkbMenuMode.LockEnglish -> AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.getValue()
-            SkbMenuMode.SymbolShow -> AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
+            SkbMenuMode.SymbolShow -> ThemeManager.prefs.keyboardSymbol.getValue()
             SkbMenuMode.Mnemonic -> AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
             SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()

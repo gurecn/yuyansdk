@@ -64,8 +64,8 @@ class EnvironmentSingleton private constructor() {
         heightForComposingView = (heightForCandidates*0.7f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
-        keyXMargin = AppPrefs.getInstance().keyboardSetting.keyXMargin.getValue() / 1000f
-        keyYMargin = AppPrefs.getInstance().keyboardSetting.keyYMargin.getValue() / 1000f
+        keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
+        keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
         candidateTextSize = (heightForCandidates * (0.4f + AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue()/100f)).toInt()
         inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
     }

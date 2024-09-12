@@ -157,7 +157,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     // 刷新主题
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
-        mSkbRoot.background = activeTheme.backgroundDrawable(getInstance().keyboardSetting.keyBorder.getValue())
+        mSkbRoot.background = activeTheme.backgroundDrawable(prefs.keyBorder.getValue())
         mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
     }
@@ -712,8 +712,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.SymbolShow -> {
-                val keyboardSymbol = getInstance().keyboardSetting.keyboardSymbol.getValue()
-                getInstance().keyboardSetting.keyboardSymbol.setValue(!keyboardSymbol)
+                val keyboardSymbol = prefs.keyboardSymbol.getValue()
+                prefs.keyboardSymbol.setValue(!keyboardSymbol)
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }

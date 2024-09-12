@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
@@ -33,12 +34,12 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
         isClicks = showType
         mTheme = activeTheme
         itemWidth = (instance.skbWidth - dip2px(90f)) / 6
-        val isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
+        val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         keyBackground = GradientDrawable()
         pressKeyBackground = GradientDrawable()
         if (isKeyBorder) {
             val mActiveTheme = activeTheme
-            val keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
+            val keyRadius = ThemeManager.prefs.keyRadius.getValue()
             keyBackground.setColor(mActiveTheme.keyBackgroundColor)
             keyBackground.setShape(GradientDrawable.RECTANGLE)
             keyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径

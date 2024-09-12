@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.utils
 
 import android.view.KeyEvent
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
@@ -70,7 +71,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x2000 -> {  // 2000  T9键键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                val keyDeleteOrder = if(AppPrefs.getInstance().keyboardSetting.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keyDeleteOrder = if(ThemeManager.prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, keyDeleteOrder.first),
                     arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR),
@@ -145,7 +146,7 @@ class KeyboardLoaderUtil private constructor() {
             }
             0x5000 -> {  // 5000 数字键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
-                val keyDelete = if(AppPrefs.getInstance().keyboardSetting.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keyDelete = if(ThemeManager.prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 8, 9, 10, keyDelete.first),
                     arrayOf(11, 12, 13, 0),

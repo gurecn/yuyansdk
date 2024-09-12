@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -55,7 +56,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
         mContainer.background = GradientDrawable().apply {
             setColor(activeTheme.keyBackgroundColor)
             setShape(GradientDrawable.RECTANGLE)
-            setCornerRadius(AppPrefs.getInstance().keyboardSetting.keyRadius.getValue().toFloat()) // 设置圆角半径
+            setCornerRadius(ThemeManager.prefs.keyRadius.getValue().toFloat()) // 设置圆角半径
         }
 
         val viewContext = TextView(mContext)

@@ -12,6 +12,7 @@ import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
@@ -65,8 +66,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     override fun setSoftKeyboard(softSkb: SoftKeyboard) {
         super.setSoftKeyboard(softSkb)
-        isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
-        keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
+        isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
+        keyRadius = ThemeManager.prefs.keyRadius.getValue()
         mActiveTheme = activeTheme
         mPaint.color = mActiveTheme.keyTextColor
         // Hint to reallocate the buffer if the size changed
@@ -96,8 +97,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      * 重置主题
      */
     open fun setTheme(theme: Theme) {
-        isKeyBorder = AppPrefs.getInstance().keyboardSetting.keyBorder.getValue()
-        keyRadius = AppPrefs.getInstance().keyboardSetting.keyRadius.getValue()
+        isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
+        keyRadius = ThemeManager.prefs.keyRadius.getValue()
         mActiveTheme = theme
         mPaint.color = mActiveTheme.keyTextColor
         invalidateView()
@@ -254,7 +255,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon
-        val keyboardSymbol = AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
+        val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
         val keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
         val textColor = mActiveTheme.keyTextColor

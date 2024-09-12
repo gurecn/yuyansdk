@@ -24,7 +24,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
     private var showingContainerUi:PopupContainerUi? = null
 
     private val popupRadius by lazy {
-        AppPrefs.getInstance().keyboardSetting.keyRadius.getValue().toFloat()
+        ThemeManager.prefs.keyRadius.getValue().toFloat()
     }
 
     val root by lazy {

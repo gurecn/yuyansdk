@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.ManagedPreferenceCategory
+import com.yuyan.imemodule.view.preference.ManagedPreference
 
 class ThemePrefs(sharedPreferences: SharedPreferences) :
     ManagedPreferenceCategory(R.string.theme, sharedPreferences) {
@@ -24,8 +25,8 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         return pref
     }
 
-//    // 主题设置title
-//    val themeSetting = category(R.string.theme)
+    // 主题设置title
+    val themeSetting = category(R.string.theme)
     /**
      * When [followSystemDayNightTheme] is disabled, this theme is used.
      * This is effectively an internal preference which does not need UI.
@@ -64,4 +65,49 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         lightModeTheme.key,
         darkModeTheme.key
     )
+
+    // 键盘设置title
+    val titleKeyboardSetting = category(R.string.setting_ime_keyboard)
+
+    val keyBorder = switch(R.string.key_border, "key_border", true)
+
+    val keyXMargin: ManagedPreference.PInt
+    val keyYMargin: ManagedPreference.PInt
+
+    init {
+        val (primary, secondary) = twinInt(
+            R.string.keyboard_key_margin,
+            R.string.key_horizontal_margin,
+            "keyboard_key_margin_x",
+            10,
+            R.string.key_vertical_margin,
+            "keyboard_key_margin_y",
+            20,
+            0,
+            100,
+            "",
+            defaultLabel = R.string.system_default
+        ) {
+            keyBorder.getValue()
+        }
+        keyXMargin = primary
+        keyYMargin = secondary
+    }
+
+    val keyRadius = int(
+        R.string.key_radius,
+        "key_radius",
+        20,
+        0,
+        60,
+        "dp"
+    ) {
+        keyBorder.getValue()
+    }
+
+    val keyboardSymbol =
+        switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
+
+    val deleteLocationTop =
+        switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
 }
