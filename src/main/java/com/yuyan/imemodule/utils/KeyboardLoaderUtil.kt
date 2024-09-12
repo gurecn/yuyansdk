@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.utils
 
 import android.view.KeyEvent
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
@@ -8,7 +9,14 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.entity.keyboard.ToggleState
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.view.keyboard.doubleAbcPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.doubleFlyPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.doubleMSPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.doubleNaturalPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.doubleSogouPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.doubleZiguangPYKeyPreset
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
@@ -20,7 +28,7 @@ import java.util.LinkedList
  * 键盘加载类  包括中文9键  中文26键 英文26键
  */
 class KeyboardLoaderUtil private constructor() {
-
+    private var rimeValue: String? = null
     fun clearKeyboardMap() {
         mSoftKeyboardMap.clear()
     }
@@ -41,11 +49,20 @@ class KeyboardLoaderUtil private constructor() {
         }
         when(skbValue){
             0x1000 -> {  // 1000  拼音全键
+                rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()
                 var keyBeans = mutableListOf<SoftKey>()
-                val keys = arrayListOf(
-                    arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44),
-                    arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40),
-                    arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL),)
+                val keys = when (rimeValue) {
+                    CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.mspy,
+                    CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.sogou,
+                    CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.ziguang -> arrayListOf(
+                        arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44),
+                        arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40),
+                        arrayOf(74, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL),)
+                    else -> arrayListOf(
+                        arrayOf(45, 51, 33, 46, 48, 53, 49, 37, 43, 44),
+                        arrayOf(29, 47, 32, 34, 35, 36, 38, 39, 40),
+                        arrayOf(75, 54, 52, 31, 50, 30, 42, 41, KeyEvent.KEYCODE_DEL),)
+                }
                 var qwertyKeys = createQwertyPYKeys(keys[0])
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
@@ -212,17 +229,8 @@ class KeyboardLoaderUtil private constructor() {
         enterToggleStates.add(ToggleState("下一个", 3))
         enterToggleStates.add(ToggleState("完成", 4))
         val keyBeans = mutableListOf<SoftKey>()
-        val t9Keys =
-        if(isNumKeyboard){
-            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4,
-                InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6, 7, KeyEvent.KEYCODE_SPACE))
-        } else if(!numberLine){
-            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4,
-                InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
-        } else {
-            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4,
-                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
-        }
+        val t9Keys = createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
+            KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
         if(t9Keys.size == 5){
             t9Keys[0].widthF = 0.09f
             t9Keys[1].widthF = 0.09f
@@ -317,10 +325,19 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     private fun createQwertyPYKeys(codes: Array<Int>): Array<SoftKey> {
+        val keyPreset = when (rimeValue) {
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.flypy -> doubleFlyPYKeyPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.abc -> doubleAbcPYKeyPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.mspy -> doubleMSPYKeyPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.natural -> doubleNaturalPYKeyPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.sogou -> doubleSogouPYKeyPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.ziguang -> doubleZiguangPYKeyPreset
+            else -> qwertyPYKeyPreset
+        }
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
-            val labels = qwertyPYKeyPreset[code]
-            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "").apply {
+            val labels = keyPreset[code]
+            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", labels?.getOrNull(2) ?: "").apply {
                 widthF = 0.099f
             })
         }
@@ -331,7 +348,7 @@ class KeyboardLoaderUtil private constructor() {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
             val labels = qwertyKeyPreset[code]
-            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "").apply {
+            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", labels?.getOrNull(2) ?: "").apply {
                 widthF = 0.099f
             })
         }

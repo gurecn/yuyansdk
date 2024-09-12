@@ -84,7 +84,7 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
             SkbMenuMode.JianFan -> AppPrefs.getInstance().input.chineseFanTi.getValue()
             SkbMenuMode.LockEnglish -> AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.getValue()
             SkbMenuMode.SymbolShow -> ThemeManager.prefs.keyboardSymbol.getValue()
-            SkbMenuMode.Mnemonic -> AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
+            SkbMenuMode.Mnemonic -> ThemeManager.prefs.keyboardMnemonic.getValue()
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
             SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
             SkbMenuMode.FlowerTypeface -> LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled
@@ -94,8 +94,8 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
             SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY
             SkbMenuMode.PinyinHandWriting -> rimeValue == CustomConstant.SCHEMA_ZH_HANDWRITING
-            SkbMenuMode.Pinyin26Double -> rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY
             SkbMenuMode.PinyinLx17 -> rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_LX17
+            SkbMenuMode.Pinyin26Double -> rimeValue.startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && rimeValue != CustomConstant.SCHEMA_ZH_DOUBLE_LX17
             else -> false
         }
         return result

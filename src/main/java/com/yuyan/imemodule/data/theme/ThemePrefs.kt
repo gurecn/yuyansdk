@@ -108,6 +108,8 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val keyboardSymbol =
         switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
 
+    val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
+
     val deleteLocationTop =
         switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
 }

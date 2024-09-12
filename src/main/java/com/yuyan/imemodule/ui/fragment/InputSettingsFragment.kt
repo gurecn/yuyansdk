@@ -5,6 +5,8 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
@@ -22,6 +24,8 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
         val inputMode = 0x1000 or InputModeSwitcherManager.MASK_LANGUAGE_CN or InputModeSwitcherManager.MASK_CASE_UPPER
         AppPrefs.getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         AppPrefs.getInstance().internal.pinyinModeRime.setValue(doublePYSchema)
+        KeyboardLoaderUtil.instance.clearKeyboardMap()
+        KeyboardManager.instance.clearKeyboard()
         Kernel.initWiIme(doublePYSchema)
     }
 

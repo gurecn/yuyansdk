@@ -256,7 +256,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon
         val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-        val keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
+        val keyboardMnemonic = ThemeManager.prefs.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
         val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {

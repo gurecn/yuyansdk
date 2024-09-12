@@ -55,6 +55,7 @@ object RimeEngine {
                 keyCode - (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON) + 'A'.code
             }
             KeyEvent.KEYCODE_APOSTROPHE -> '\''.code
+            KeyEvent.KEYCODE_SEMICOLON -> ';'.code
             in PINYIN_T9_1..PINYIN_T9_9 -> keyCode + PINYIN_T9_0
             else -> keyCode
         }

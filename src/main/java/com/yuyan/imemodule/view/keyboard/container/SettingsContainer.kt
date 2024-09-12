@@ -20,6 +20,7 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import java.util.Collections
 import java.util.LinkedList
 
@@ -214,6 +215,8 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         AppPrefs.getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         AppPrefs.getInstance().internal.pinyinModeRime.setValue(value)
         mInputModeSwitcher!!.saveInputMode(inputMode)
+        KeyboardLoaderUtil.instance.clearKeyboardMap()
+        KeyboardManager.instance.clearKeyboard()
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
     }
 }

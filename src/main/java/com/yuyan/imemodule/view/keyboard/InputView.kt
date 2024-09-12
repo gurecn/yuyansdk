@@ -167,7 +167,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             getInstance().keyboardSetting.oneHandedModSwitch.setValue(!getInstance().keyboardSetting.oneHandedModSwitch.getValue())
         } else {
             val oneHandedMod = getInstance().keyboardSetting.oneHandedMod.getValue()
-            AppPrefs.getInstance().keyboardSetting.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)
+            getInstance().keyboardSetting.oneHandedMod.setValue(if (oneHandedMod == KeyboardOneHandedMod.LEFT) KeyboardOneHandedMod.RIGHT else KeyboardOneHandedMod.LEFT)
         }
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
@@ -346,7 +346,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun processStateIdle(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyChar == '\''.code){
+        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             mDecInfo.inputAction(keyCode, event)
             // 对输入的拼音进行查询
             updateCandidate()
@@ -373,7 +373,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun processStateInput(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyChar == '\''.code) {
+        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
             mDecInfo.inputAction(keyCode, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
             updateCandidate()
@@ -410,7 +410,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun processStatePredict(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyChar == '\''.code){
+        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             changeToStateInput()
             // 加一个字符进输入的拼音字符串中
             mDecInfo.inputAction(keyCode, event)
@@ -452,7 +452,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun processStateEditComposing(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyChar == '\''.code) {
+        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
             mDecInfo.inputAction(keyCode, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
             updateCandidate()
@@ -718,8 +718,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.Mnemonic -> {
-                val keyboardMnemonic = getInstance().keyboardSetting.keyboardMnemonic.getValue()
-                getInstance().keyboardSetting.keyboardMnemonic.setValue(!keyboardMnemonic)
+                val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
+                prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
