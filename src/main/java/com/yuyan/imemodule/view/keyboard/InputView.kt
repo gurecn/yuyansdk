@@ -285,22 +285,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         val abcSearchEnglishCell = mInputModeSwitcher.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
         if(abcSearchEnglishCell){
             result = processEnglishKey(event)
-        }else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish  || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
+        } else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish  || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
             result = when (mImeState) {
                 ImeState.STATE_IDLE -> processStateIdle(event)
                 ImeState.STATE_INPUT -> processStateInput(event)
                 ImeState.STATE_PREDICT -> processStatePredict(event)
                 ImeState.STATE_COMPOSING -> processStateEditComposing(event)
             }
-        } else { // 数字、符号处理 && 英语、未开启智能英文
-            val keyChar = event.unicodeChar
-            if (0 != keyChar) {
-                sendKeyChar(
-                    if (mInputModeSwitcher.isEnglishLower) Character.toLowerCase(keyChar.toChar())
-                    else  Character.toUpperCase(keyChar.toChar())
-                )
-                result = true
-            }
+        } else { // 数字、符号处理
+            result = processEnglishKey(event)
         }
         return result
     }
@@ -310,17 +303,24 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     private fun processEnglishKey(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
+        var keyChar = event.unicodeChar
         if (keyCode == KeyEvent.KEYCODE_DEL || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
             sendKeyEvent(keyCode)
             return true
-        }
-        val upperCase = !mInputModeSwitcher.isEnglishLower
-        var keyChar = event.unicodeChar
-        if (keyChar != 0) {
-            if (upperCase) keyChar = keyChar - 'a'.code + 'A'.code
-            sendKeyChar(keyChar.toChar())
+        } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
+            val upperCase = !mInputModeSwitcher.isEnglishLower
+            if (keyChar != 0) {
+                if (upperCase) keyChar = keyChar - 'a'.code + 'A'.code
+                sendKeyChar(keyChar.toChar())
+                return true
+            }
+        } else if (keyCode != 0) {
+            sendKeyEvent(keyCode)
             return true
+        } else if (keyChar != 0) {
+            sendKeyChar(keyChar.toChar())
         }
+
         return false
     }
 
