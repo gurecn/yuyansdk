@@ -62,7 +62,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
                 AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
         root.apply {
             add(popup.root, lParams(bounds.width(), bounds.height()) {
-                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + bottomPadding - bounds.top
+                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + bottomPadding - bounds.bottom
                 leftMargin = bounds.left
             })
         }
@@ -87,7 +87,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
             AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
         root.apply {
             add(keyboardUi.root, lParams {
-                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight  + bottomPadding - bounds.top
+                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight  + bottomPadding - bounds.bottom
                 leftMargin = bounds.left + keyboardUi.offsetX
             })
         }
