@@ -14,6 +14,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.accessibility.AccessibilityManager
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -134,7 +135,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     open fun onBufferDraw() {}
     private fun openPopupIfRequired() {
-        if (mCurrentKey != null && !TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
+        val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
+        if (keyboardSymbol && mCurrentKey != null && !TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
             val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
                     mCurrentKey!!.keyLabel.lowercase()
                 } else {
