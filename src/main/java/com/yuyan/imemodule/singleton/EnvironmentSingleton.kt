@@ -61,7 +61,7 @@ class EnvironmentSingleton private constructor() {
         holderWidth = if (oneHandedMod) (AppPrefs.getInstance().internal.keyboardHolderWidthRatio.getValue() * screenWidthVertical).toInt() else 0
         skbWidth = screenWidthVertical - holderWidth
         heightForCandidates = (screenHeightVertical * 0.3 * 0.2f).toInt()
-        heightForComposingView = (heightForCandidates*0.4f).toInt()
+        heightForComposingView = (heightForCandidates*0.5f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
         keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
