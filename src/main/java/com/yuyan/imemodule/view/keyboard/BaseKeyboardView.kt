@@ -181,8 +181,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     init {
-        mAccessibilityManager =
-            mContext?.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+        mAccessibilityManager = mContext?.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         swipeEnabled = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()
     }
 
