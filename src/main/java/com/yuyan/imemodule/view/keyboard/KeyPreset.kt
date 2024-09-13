@@ -31,7 +31,7 @@ val qwertyKeyPreset: Map<Int, Array<String>> = hashMapOf(
     50 to arrayOf("V", "&"),
     30 to arrayOf("B", "?"),
     42 to arrayOf("N", "!"),
-    41 to arrayOf("M", "……"),
+    41 to arrayOf("M", "…"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
