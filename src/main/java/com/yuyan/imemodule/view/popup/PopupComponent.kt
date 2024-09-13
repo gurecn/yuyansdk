@@ -111,6 +111,19 @@ class PopupComponent private constructor(){
         showingContainerUi= keyboardUi
     }
 
+    fun showKeyboardMenu(mCurrentKey: SoftKey?, bounds: Rect) {
+        if(mCurrentKey == null) return
+        val keys = when(mCurrentKey.keyCode) {
+            InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> arrayOf("🌐")
+            InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> arrayOf("拼写", "直输")
+            KeyEvent.KEYCODE_DEL -> arrayOf("🚮", "🔄")
+            else -> emptyArray()
+        }
+        if(keys.isEmpty()) return
+        showingEntryUi?.setText("") ?: showPopup("", bounds)
+        reallyShowKeyboard(keys, bounds)
+    }
+
     private fun reallyShowKeyboard(keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(bounds, { dismissPopup() }, popupRadius, popupWidth, keys)

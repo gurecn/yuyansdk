@@ -17,6 +17,7 @@ import android.view.accessibility.AccessibilityManager
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
@@ -135,20 +136,26 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     open fun onBufferDraw() {}
     private fun openPopupIfRequired() {
-        val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-        if (keyboardSymbol && mCurrentKey != null && !TextUtils.isEmpty(mCurrentKey!!.getkeyLabel())) {
-            val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
-                    mCurrentKey!!.keyLabel.lowercase()
-                } else {
-                    mCurrentKey!!.keyLabel
-                }
-            val bounds = Rect(mCurrentKey!!.mLeft, mCurrentKey!!.mTop, mCurrentKey!!.mRight, mCurrentKey!!.mBottom)
-            popupComponent.showKeyboard( keyLabel, mService, bounds)
-            mLongPressKey = true
-        } else if (mCurrentKey != null){  // 实现功能键长按操作
-            mLongPressKey = true
-            mSwipeMoveKey = true
-            dismissPreview()
+        if(mCurrentKey != null) {
+            val softKey = mCurrentKey!!
+            val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
+            if (keyboardSymbol && !TextUtils.isEmpty(softKey.getkeyLabel())) {
+                val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty()))
+                    softKey.keyLabel.lowercase()  else softKey.keyLabel
+                val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
+                popupComponent.showKeyboard(keyLabel, mService, bounds)
+                mLongPressKey = true
+            } else if (softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 ||
+                    softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 ||
+                    softKey.keyCode == KeyEvent.KEYCODE_DEL){
+                val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
+                popupComponent.showKeyboardMenu(softKey, bounds)
+                mLongPressKey = true
+            } else {
+                mLongPressKey = true
+                mSwipeMoveKey = true
+                dismissPreview()
+            }
         }
     }
 
