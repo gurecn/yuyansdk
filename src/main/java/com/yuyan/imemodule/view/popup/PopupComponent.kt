@@ -87,7 +87,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
         val keys = when(mCurrentKey.keyCode) {
             InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> arrayOf("🌐")
             InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> arrayOf("拼写", "直输")
-            KeyEvent.KEYCODE_DEL -> arrayOf("🚮", "🔄")
+            KeyEvent.KEYCODE_DEL -> arrayOf("🔙", "🚮", "🔄")
             else -> emptyArray()
         }
         if(keys.isEmpty()) return

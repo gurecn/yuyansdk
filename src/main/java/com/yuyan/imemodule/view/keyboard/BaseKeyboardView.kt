@@ -311,7 +311,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun repeatKey(): Boolean {
-        detectAndSendKey(mCurrentKey, mLastTapTime)
+        if (mCurrentKey != null) {
+            mService?.responseKeyEvent(mCurrentKey!!)
+            mLastSentIndex = mCurrentKey
+        }
         return true
     }
 
