@@ -32,7 +32,7 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
 
     init {
         inflater = LayoutInflater.from(context)
-        itemHeight = EnvironmentSingleton.instance.heightForCandidates
+        itemHeight = (EnvironmentSingleton.instance.heightForCandidates * 0.7f).toInt()
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {

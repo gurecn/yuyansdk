@@ -15,14 +15,12 @@ import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.data.menuSkbFunsPreset
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
@@ -44,10 +42,14 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private val mFunItems: MutableList<SkbFunItem> = LinkedList()
     private lateinit var mRVContainerMenu:RecyclerView   // 候选词栏菜单
     private lateinit var mCandidatesMenuAdapter: CandidatesMenuAdapter
+    private var mMenuHeight: Int = 0
+    private var mMenuPadding: Int = 0
 
     fun initialize(cvListener: CandidateViewListener, decInfo: DecodingInfo) {
         mDecInfo = decInfo
         mCvListener = cvListener
+        mMenuHeight = (instance.heightForCandidates * 0.7f).toInt()
+        mMenuPadding = (instance.heightForCandidates * 0.3f).toInt()
         initMenuView()
         initCandidateView()
     }
@@ -58,18 +60,14 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCandidatesDataContainer = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
                 visibility = GONE
-                this.layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             }
-            val candidatesAreaHeight = instance.heightForCandidates
             mRightArrowBtn = ImageView(context).apply {
                 isClickable = true
                 isEnabled = true
+                setPadding(mMenuPadding,0, mMenuPadding,0)
                 setImageResource(R.drawable.sdk_level_list_candidates_display)
-                val margin = dip2px(10f)
-                val size = (candidatesAreaHeight * 0.2).toInt()
-                this.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 0f).apply {
-                    setMargins(margin, size, margin, size)
-                }
+                layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
             }
             mRightArrowBtn.setOnClickListener { v: View ->
                 when (val level = (v as ImageView).drawable.level) {
@@ -93,7 +91,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mRVCandidates = RecyclerView(context)
             mRVCandidates.layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            mRVCandidates.layoutParams = LinearLayout.LayoutParams(0, candidatesAreaHeight, 1f)
+            mRVCandidates.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
             mCandidatesAdapter = CandidatesBarAdapter(context, mDecInfo.mCandidatesList)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
                 mCvListener.onClickChoice(position)
@@ -120,20 +118,16 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         if(!::mCandidatesMenuContainer.isInitialized) {
             mCandidatesMenuContainer = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
-                this.layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT).apply {
-                    setMargins(dip2px(10f), 0, dip2px(10f) , 0)
-                }
             }
             val ivMenuSetting = ImageView(context).apply {
                 setImageResource(R.drawable.app_icon_circle)
                 isClickable = true
                 isEnabled = true
+                setPadding(mMenuPadding, 0,0,0)
                 setOnClickListener{mCvListener.onClickSetting()}
             }
-            ivMenuSetting.layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
             mRVContainerMenu = RecyclerView(context).apply {
                 layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             }
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context, mFunItems)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -146,7 +140,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setImageResource(R.drawable.sdk_level_candidates_menu)
                 isClickable = true
                 isEnabled = true
-                this.layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
+                setPadding( 0,0,mMenuPadding,0)
                 setOnClickListener {
                     val container = KeyboardManager.instance.currentContainer
                     if (container is ClipBoardContainer) {
@@ -156,10 +150,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     }
                 }
             }
-            mCandidatesMenuContainer.addView(ivMenuSetting)
-            mCandidatesMenuContainer.addView(mRVContainerMenu)
-            mCandidatesMenuContainer.addView(mIvMenuCloseSKB)
-            this.addView(mCandidatesMenuContainer)
+            mCandidatesMenuContainer.addView(ivMenuSetting, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
+            mCandidatesMenuContainer.addView(mRVContainerMenu, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, mMenuHeight, 1f))
+            mCandidatesMenuContainer.addView(mIvMenuCloseSKB, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
+            this.addView(mCandidatesMenuContainer, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
         mFunItems.clear()
         val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")

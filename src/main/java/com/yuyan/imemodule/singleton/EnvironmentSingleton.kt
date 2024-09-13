@@ -60,13 +60,13 @@ class EnvironmentSingleton private constructor() {
         // 键盘占位宽度（用于单手模式），值是相对于竖屏宽度，横屏高度。
         holderWidth = if (oneHandedMod) (AppPrefs.getInstance().internal.keyboardHolderWidthRatio.getValue() * screenWidthVertical).toInt() else 0
         skbWidth = screenWidthVertical - holderWidth
-        heightForCandidates = (screenHeightVertical * 0.3 * 0.15f).toInt()
-        heightForComposingView = (heightForCandidates*0.7f).toInt()
+        heightForCandidates = (screenHeightVertical * 0.3 * 0.2f).toInt()
+        heightForComposingView = (heightForCandidates*0.4f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
         keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
         keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
-        candidateTextSize = (heightForCandidates * (0.4f + AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue()/100f)).toInt()
+        candidateTextSize = (heightForCandidates * (0.3f + AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue()/100f)).toInt()
         inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
     }
 
