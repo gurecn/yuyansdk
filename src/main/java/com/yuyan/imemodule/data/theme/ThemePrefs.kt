@@ -26,7 +26,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     }
 
     // 主题设置title
-    val themeSetting = category(R.string.theme)
+    val themeSetting = category(R.string.theme_select)
     /**
      * When [followSystemDayNightTheme] is disabled, this theme is used.
      * This is effectively an internal preference which does not need UI.
@@ -67,7 +67,19 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     )
 
     // 键盘设置title
-    val titleKeyboardSetting = category(R.string.setting_ime_keyboard)
+    val titleKeyboardSetting = category(R.string.setting_ime_keyboard_show)
+
+
+    val keyboardFontBold =
+        switch(R.string.keyboard_font_bold, "keyboard_font_bold_enable", true)
+
+    val keyboardSymbol =
+        switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
+
+    val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
+
+    val deleteLocationTop =
+        switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
 
     val keyBorder = switch(R.string.key_border, "key_border", true)
 
@@ -104,12 +116,4 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     ) {
         keyBorder.getValue()
     }
-
-    val keyboardSymbol =
-        switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
-
-    val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
-
-    val deleteLocationTop =
-        switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
 }

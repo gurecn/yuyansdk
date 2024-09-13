@@ -13,9 +13,8 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
@@ -23,8 +22,6 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.ui.utils.InputMethodUtil
-import com.yuyan.imemodule.utils.LogUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -51,6 +48,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     private var isKeyBorder = false // 启用按键边框
     protected lateinit var mActiveTheme: Theme
     private var keyRadius = 0
+    private var keyboardFontBold = false
+    private var keyboardSymbol = false
+    private var keyboardMnemonic = false
 
     /**
      * 构造方法
@@ -58,6 +58,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     init {
         mPaint.isAntiAlias = true
         mFmi = mPaint.fontMetricsInt
+        keyboardFontBold = prefs.keyboardFontBold.getValue()
+        keyboardSymbol = prefs.keyboardSymbol.getValue()
+        keyboardMnemonic = prefs.keyboardMnemonic.getValue()
     }
 
     override fun getKeyIndices(x: Int, y: Int): SoftKey? {
@@ -71,8 +74,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     override fun setSoftKeyboard(softSkb: SoftKeyboard) {
         super.setSoftKeyboard(softSkb)
-        isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
-        keyRadius = ThemeManager.prefs.keyRadius.getValue()
+        isKeyBorder = prefs.keyBorder.getValue()
+        keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = activeTheme
         mPaint.color = mActiveTheme.keyTextColor
         // Hint to reallocate the buffer if the size changed
@@ -102,8 +105,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      * 重置主题
      */
     open fun setTheme(theme: Theme) {
-        isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
-        keyRadius = ThemeManager.prefs.keyRadius.getValue()
+        isKeyBorder = prefs.keyBorder.getValue()
+        keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = theme
         mPaint.color = mActiveTheme.keyTextColor
         invalidateView()
@@ -242,8 +245,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon
-        val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-        val keyboardMnemonic = ThemeManager.prefs.keyboardMnemonic.getValue()
         val weightHeigth = softKey.height() / 4f
         val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
@@ -271,6 +272,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             val switchIMEKey = AppPrefs.getInstance().keyboardSetting.switchIMEKey.getValue()
             if( softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 && switchIMEKey) {
                 val keyIMEIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_language_24)
+                (keyIMEIcon as? VectorDrawable)?.setTint(mActiveTheme.keyTextColor)
                 val padWidth = softKey.width() /8
                 val padHeight = (softKey.width() /3.5).toInt()
                 keyIMEIcon?.setBounds(softKey.mLeft + marginLeft + padWidth, softKey.mTop + marginTop -  padHeight, softKey.mRight - marginRight - padWidth, softKey.mBottom - marginBottom - padHeight)
@@ -278,7 +280,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             }
         } else if (!TextUtils.isEmpty(keyLabel)) { //Label位于中间
             mPaint.color = textColor
-            mPaint.setTypeface(Typeface.DEFAULT_BOLD)
+            if(keyboardFontBold) mPaint.setTypeface(Typeface.DEFAULT_BOLD)
             mPaint.textSize =  if(keyLabel.length == 1) mNormalKeyTextSize * 1.4f else mNormalKeyTextSize.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabel)) / 2.0f
             val fontHeight = mFmi.bottom - mFmi.top
