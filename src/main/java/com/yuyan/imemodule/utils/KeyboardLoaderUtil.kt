@@ -229,20 +229,17 @@ class KeyboardLoaderUtil private constructor() {
         enterToggleStates.add(ToggleState("下一个", 3))
         enterToggleStates.add(ToggleState("完成", 4))
         val keyBeans = mutableListOf<SoftKey>()
-        val t9Keys = createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
-            KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
-        if(t9Keys.size == 5){
-            t9Keys[0].widthF = 0.09f
-            t9Keys[1].widthF = 0.09f
-            t9Keys[2].widthF = 0.147f
-            t9Keys[3].widthF = 0.336f
-            t9Keys[4].widthF = 0.147f
+        val t9Keys = if(isNumKeyboard){
+            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6,
+                7, KeyEvent.KEYCODE_SPACE))
         } else {
-            t9Keys[0].widthF = 0.18f
-            t9Keys[1].widthF = 0.147f
-            t9Keys[2].widthF = 0.336f
-            t9Keys[3].widthF = 0.147f
+            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
+                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
         }
+        t9Keys[0].widthF = 0.18f
+        t9Keys[1].widthF = 0.147f
+        t9Keys[2].widthF = 0.336f
+        t9Keys[3].widthF = 0.147f
         keyBeans.addAll(t9Keys)
         val softKeyToggle = createKeyToggle(KeyEvent.KEYCODE_ENTER)
         softKeyToggle.widthF = 0.18f
