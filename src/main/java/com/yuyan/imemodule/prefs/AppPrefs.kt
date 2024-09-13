@@ -17,7 +17,6 @@ import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.view.preference.ManagedPreference
 
 
 class AppPrefs(private val sharedPreferences: SharedPreferences) {
@@ -181,7 +180,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val abcNumberLine = switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
 
-        val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_key_enable", false)
+        val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
 
         val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
 
