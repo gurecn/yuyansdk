@@ -2,7 +2,6 @@ package com.yuyan.imemodule.manager
 
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
@@ -67,6 +66,8 @@ class InputModeSwitcherManager {
          */
         get() = mInputMode and MASK_SKB_LAYOUT
 
+    // 记录SHIFT点击时间，作为双击判断
+    private var lsatClickTime = 0L
     /**
      * 通过我们定义的软键盘的按键，切换输入法模式。
      */
@@ -74,14 +75,14 @@ class InputModeSwitcherManager {
         var newInputMode = MODE_UNSET
         if (USER_DEF_KEYCODE_SHIFT_1 == userKey) {
             // shift键：显示“，” 或者 大小写图标的按键。
-            if (MODE_SKB_ENGLISH_LOWER == mInputMode) {
-                newInputMode = MODE_SKB_ENGLISH_UPPER
-            } else if (MODE_SKB_ENGLISH_UPPER == mInputMode) {
-                //变成大写锁定
-                newInputMode = MODE_SKB_ENGLISH_UPPER_LOCK
-            } else if (MODE_SKB_ENGLISH_UPPER_LOCK == mInputMode) {
-                newInputMode = MODE_SKB_ENGLISH_LOWER
+            newInputMode = if(System.currentTimeMillis() - lsatClickTime < 300){
+                MODE_SKB_ENGLISH_UPPER_LOCK
+            } else if (MODE_SKB_ENGLISH_LOWER == mInputMode) {
+                MODE_SKB_ENGLISH_UPPER
+            } else {
+                MODE_SKB_ENGLISH_LOWER
             }
+            lsatClickTime = System.currentTimeMillis()
         } else if (USER_DEF_KEYCODE_LANG_2 == userKey) {
             // 语言键：显示中文或者英文、中符、英符的键
             newInputMode = if (isChinese) {
