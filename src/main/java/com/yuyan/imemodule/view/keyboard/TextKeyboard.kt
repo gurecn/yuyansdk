@@ -11,6 +11,9 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
+import androidx.core.content.ContextCompat
+import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
@@ -20,6 +23,8 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.ui.utils.InputMethodUtil
+import com.yuyan.imemodule.utils.LogUtil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -195,12 +200,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             bg.setColor(mActiveTheme.keyPressHighlightColor)
             bg.shape = GradientDrawable.RECTANGLE
             bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
-            bg.setBounds(
-                softKey.mLeft + keyXMargin,
-                softKey.mTop + keyYMargin,
-                softKey.mRight - keyXMargin,
-                softKey.mBottom - keyYMargin
-            )
+            bg.setBounds(softKey.mLeft + keyXMargin, softKey.mTop + keyYMargin, softKey.mRight - keyXMargin, softKey.mBottom - keyYMargin)
             bg.draw(canvas)
         } else if (isKeyBorder) {
             val background = when (softKey.keyCode) {
@@ -217,15 +217,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             bg.setColor(background)
             bg.shape = GradientDrawable.RECTANGLE
             bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
-            bg.setBounds(
-                softKey.mLeft + keyXMargin,
-                softKey.mTop + keyYMargin,
-                softKey.mRight - keyXMargin,
-                softKey.mBottom - keyYMargin
-            )
+            bg.setBounds(softKey.mLeft + keyXMargin, softKey.mTop + keyYMargin, softKey.mRight - keyXMargin, softKey.mBottom - keyYMargin)
             bg.draw(canvas)
-        } else {
-           if(softKey.keyCode == KeyEvent.KEYCODE_ENTER) {
+        } else if(softKey.keyCode == KeyEvent.KEYCODE_ENTER) {
                bg.setColor(mActiveTheme.accentKeyBackgroundColor)
                bg.shape = GradientDrawable.OVAL
                val bgWidth = softKey.width() - 2 * keyXMargin
@@ -233,15 +227,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                val radius = min(bgWidth, bgHeight)*2/3
                val keyMarginX = (bgWidth - radius)/2
                val keyMarginY = (bgHeight - radius)/2
-                bg.setBounds(
-                    softKey.mLeft + keyMarginX,
-                    softKey.mTop + keyMarginY,
-                    softKey.mRight - keyMarginX,
-                    softKey.mBottom - keyMarginY
-                )
+                bg.setBounds(softKey.mLeft + keyMarginX, softKey.mTop + keyMarginY, softKey.mRight - keyMarginX, softKey.mBottom - keyMarginY)
                 bg.draw(canvas)
-            }
-
         }
         val keyLabel = if(mService != null && mService!!.mInputModeSwitcher.isEnglish) {
             if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
@@ -281,6 +268,14 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             (keyIcon as? VectorDrawable)?.setTint(mActiveTheme.keyTextColor)
             keyIcon.setBounds(softKey.mLeft + marginLeft, softKey.mTop + marginTop, softKey.mRight - marginRight, softKey.mBottom - marginBottom)
             keyIcon.draw(canvas)
+            val switchIMEKey = AppPrefs.getInstance().keyboardSetting.switchIMEKey.getValue()
+            if( softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 && switchIMEKey) {
+                val keyIMEIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_language_24)
+                val padWidth = softKey.width() /8
+                val padHeight = (softKey.width() /3.5).toInt()
+                keyIMEIcon?.setBounds(softKey.mLeft + marginLeft + padWidth, softKey.mTop + marginTop -  padHeight, softKey.mRight - marginRight - padWidth, softKey.mBottom - marginBottom - padHeight)
+                keyIMEIcon?.draw(canvas)
+            }
         } else if (!TextUtils.isEmpty(keyLabel)) { //Label位于中间
             mPaint.color = textColor
             mPaint.setTypeface(Typeface.DEFAULT_BOLD)
