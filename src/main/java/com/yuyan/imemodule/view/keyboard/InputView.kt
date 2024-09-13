@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -30,7 +31,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -240,10 +240,24 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mDecInfo.reset()
         }
         if(sKey != null){
-            val switchIMEKey = getInstance().keyboardSetting.switchIMEKey.getValue()
-            if( sKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 && switchIMEKey) {
-                InputMethodUtil.showPicker()
-            } else if(!showText.isNullOrBlank()){
+            val handled = when(sKey.keyCode){
+                InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> {
+                    if(getInstance().keyboardSetting.switchIMEKey.getValue()) {
+                        InputMethodUtil.showPicker()
+                    }
+                    true
+                }
+                InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
+                    getInstance().input.abcSearchEnglishCell.setValue("拼写" == showText)
+                    true
+                }
+                KeyEvent.KEYCODE_DEL -> {
+                    clearORRestoreText("\uD83D\uDEAE" == showText)  // 🚮 清空
+                    true
+                }
+                else -> false
+            }
+            if(!handled && !showText.isNullOrBlank()){
                 commitText(showText)
             }
         } else {
@@ -900,6 +914,23 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun sendKeyChar(char: Char) {
         service.sendKeyChar(char)
     }
+
+    private var textBeforeCursor:String = ""
+    /**
+     * 发送候选词字符串给编辑框
+     */
+    private fun clearORRestoreText(isClear:Boolean) {
+        if(isClear) {
+            val inputConnection = service.getCurrentInputConnection()
+            textBeforeCursor = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
+            inputConnection.deleteSurroundingText(1000, 0)
+        } else {
+            commitText(textBeforeCursor)
+            textBeforeCursor = ""
+        }
+    }
+
+
 
     private fun initNavbarBackground(service: ImeService) {
         service.window.window!!.also {

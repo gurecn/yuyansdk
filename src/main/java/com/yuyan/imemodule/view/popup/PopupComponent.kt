@@ -2,9 +2,12 @@
 package com.yuyan.imemodule.view.popup
 
 import android.graphics.Rect
+import android.view.KeyEvent
 import android.view.View
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -75,6 +78,19 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
         } else {
             PopupPreset[label] ?: return
         }
+        showingEntryUi?.setText("") ?: showPopup("", bounds)
+        reallyShowKeyboard(keys, bounds)
+    }
+
+    fun showKeyboardMenu(mCurrentKey: SoftKey?, bounds: Rect) {
+        if(mCurrentKey == null) return
+        val keys = when(mCurrentKey.keyCode) {
+            InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> arrayOf("🌐")
+            InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> arrayOf("拼写", "直输")
+            KeyEvent.KEYCODE_DEL -> arrayOf("🚮", "🔄")
+            else -> emptyArray()
+        }
+        if(keys.isEmpty()) return
         showingEntryUi?.setText("") ?: showPopup("", bounds)
         reallyShowKeyboard(keys, bounds)
     }
