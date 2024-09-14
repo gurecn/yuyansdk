@@ -142,6 +142,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
+        mLlKeyboardBottomHolder.removeAllViews()
         if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()){
             bottomPadding = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
                 else getInstance().internal.keyboardBottomPaddingFloat).getValue()
@@ -163,7 +164,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mSkbRoot.bottomPadding = getInstance().internal.keyboardBottomPadding.getValue()
             mSkbRoot.rightPadding = getInstance().internal.keyboardRightPadding.getValue()
             mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
-            mLlKeyboardBottomHolder.removeAllViews()
         }
         updateTheme()
     }
