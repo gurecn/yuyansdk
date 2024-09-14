@@ -667,7 +667,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
             } else {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                updateCandidateBar()
             }
         }
 
@@ -793,7 +792,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
                     (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
                 }
-                updateCandidateBar()
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)

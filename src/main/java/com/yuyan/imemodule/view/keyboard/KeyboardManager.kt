@@ -75,6 +75,7 @@ class KeyboardManager {
         mKeyboardRootView.showView(container)
         mCurrentKeyboardName = keyboardName
         currentContainer = container
+        mInputView.updateCandidateBar()
     }
 
     val isInputKeyboard: Boolean
