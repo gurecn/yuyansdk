@@ -8,12 +8,14 @@ import android.text.InputType
 import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.view.ViewCompat
@@ -31,6 +33,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.manager.SymbolsManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -51,11 +54,13 @@ import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
+import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
+import kotlin.math.absoluteValue
 
 /**
  * 输入法主界面。
@@ -91,6 +96,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         initView(context)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context) {
         if (!::mSkbRoot.isInitialized) {
             mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
@@ -144,14 +150,74 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
             mLlKeyboardBottomHolder.minimumHeight = 0
+            val mIvKeyboardMove = ImageView(context).apply {
+                setImageResource(R.drawable.sdk_vector_keyboard_horizontal_line)
+                isClickable = true
+                isEnabled = true
+            }
+            mLlKeyboardBottomHolder.addView(mIvKeyboardMove)
+            mIvKeyboardMove.setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
         } else {
             bottomPadding = 0
             rightPadding = 0
             mSkbRoot.bottomPadding = getInstance().internal.keyboardBottomPadding.getValue()
             mSkbRoot.rightPadding = getInstance().internal.keyboardRightPadding.getValue()
             mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            mLlKeyboardBottomHolder.removeAllViews()
         }
         updateTheme()
+    }
+
+    private var initialTouchX = 0f
+    private var initialTouchY = 0f
+    private var rightPaddingValue = 0  // 右侧边距
+    private var bottomPaddingValue = 0  // 底部边距
+    private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                bottomPaddingValue = bottomPadding
+                rightPaddingValue = rightPadding
+                initialTouchX = event.rawX
+                initialTouchY = event.rawY
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val dx: Float = event.rawX - initialTouchX
+                val dy: Float = event.rawY - initialTouchY
+                if(dx.absoluteValue > 10) {
+                    rightPaddingValue -= dx.toInt()
+                    rightPaddingValue = if(rightPaddingValue < 0) 0
+                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width) {
+                        EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width
+                    } else rightPaddingValue
+                    initialTouchX = event.rawX
+                    if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
+                        rightPadding = rightPaddingValue
+                    } else {
+                        mSkbRoot.rightPadding = rightPaddingValue
+                    }
+                }
+                if(dy.absoluteValue > 10 ) {
+                    bottomPaddingValue -= dy.toInt()
+                    bottomPaddingValue = if(bottomPaddingValue < 0) 0
+                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height) {
+                        EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height
+                    } else bottomPaddingValue
+                    initialTouchY = event.rawY
+                    if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
+                        bottomPadding = bottomPaddingValue
+                    } else {
+                        mSkbRoot.bottomPadding = bottomPaddingValue
+                    }
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                getInstance().internal.keyboardRightPaddingFloat.setValue(rightPaddingValue)
+                getInstance().internal.keyboardBottomPaddingFloat.setValue(bottomPaddingValue)
+            }
+        }
+        return false
     }
 
     // 刷新主题
