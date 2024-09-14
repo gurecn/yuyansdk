@@ -426,7 +426,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun processStateIdle(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
+        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON ){
             mDecInfo.inputAction(keyCode, event)
             // 对输入的拼音进行查询
             updateCandidate()
@@ -480,6 +480,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 requestHideSelf()
                 return true
             }
+        } else if (keyCode == KeyEvent.KEYCODE_AT) {
+            // 选择高亮的候选词
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
+                chooseAndUpdate(0)
+            }
+            sendKeyChar(keyChar.toChar())
+            return true
         }
         return false
     }
@@ -522,6 +529,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
+        } else if (keyCode == KeyEvent.KEYCODE_AT) {
+            // 选择高亮的候选词
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
+                chooseAndUpdate(0)
+            }
+            sendKeyChar(keyChar.toChar())
+            return true
         }
         return false
     }
@@ -561,6 +575,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 requestHideSelf()
                 return true
             }
+        } else if (keyCode == KeyEvent.KEYCODE_AT) {
+            // 选择高亮的候选词
+            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
+                chooseAndUpdate(0)
+            }
+            sendKeyChar(keyChar.toChar())
+            return true
         }
         return false
     }
@@ -712,7 +733,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
             } else {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                updateCandidateBar()
             }
         }
 
@@ -731,8 +751,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
         override fun onClickClearClipBoard() {
             LauncherModel.instance.mClipboardDao?.clearAllClipBoardContent()
-            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-            resetToIdleState()
+            (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
         }
     }
 
@@ -835,11 +854,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             SkbMenuMode.ClipBoard -> {
                 if(KeyboardManager.instance.currentContainer is ClipBoardContainer) {
                     KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                    return
+                } else {
+                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                    (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
                 }
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                updateCandidateBar()
-                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
