@@ -686,8 +686,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
         override fun onClickClearClipBoard() {
             LauncherModel.instance.mClipboardDao?.clearAllClipBoardContent()
-            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-            resetToIdleState()
+            (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
         }
     }
 
@@ -790,11 +789,11 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             SkbMenuMode.ClipBoard -> {
                 if(KeyboardManager.instance.currentContainer is ClipBoardContainer) {
                     KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                    return
+                } else {
+                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                    (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
                 }
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
                 updateCandidateBar()
-                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)

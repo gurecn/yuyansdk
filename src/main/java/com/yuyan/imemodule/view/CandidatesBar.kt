@@ -144,7 +144,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setOnClickListener {
                     val container = KeyboardManager.instance.currentContainer
                     if (container is ClipBoardContainer) {
-                        mCvListener.onClickClearClipBoard()
+                        if(mIvMenuCloseSKB.drawable.level == 1){
+                            mIvMenuCloseSKB.drawable.setLevel(2)
+                        } else if(mIvMenuCloseSKB.drawable.level == 2){
+                            mCvListener.onClickClearClipBoard()
+                            mIvMenuCloseSKB.drawable.setLevel(1)
+                        }
                     } else {
                         mCvListener.onClickCloseKeyboard()
                     }
