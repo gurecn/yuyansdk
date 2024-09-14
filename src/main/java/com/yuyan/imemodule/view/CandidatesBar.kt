@@ -46,6 +46,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private lateinit var mCandidatesMenuAdapter: CandidatesMenuAdapter
     private var mMenuHeight: Int = 0
     private var mMenuPadding: Int = 0
+    private var mLastMenuHeight: Int = 0
 
     fun initialize(cvListener: CandidateViewListener, decInfo: DecodingInfo) {
         mDecInfo = decInfo
@@ -58,7 +59,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     // 初始化候选词界面
     private fun initCandidateView() {
-        if(!::mCandidatesDataContainer.isInitialized) {
+        if(!::mCandidatesDataContainer.isInitialized || mLastMenuHeight != mMenuHeight) {
             mCandidatesDataContainer = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
                 visibility = GONE
@@ -100,6 +101,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mRVCandidates.setAdapter(mCandidatesAdapter)
             this.addView(mCandidatesDataContainer)
+            mLastMenuHeight = mMenuHeight
         } else {
             (mRightArrowBtn.parent as ViewGroup).removeView(mRightArrowBtn)
             (mRVCandidates.parent as ViewGroup).removeView(mRVCandidates)
@@ -117,7 +119,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     //初始化标题栏
     fun initMenuView() {
-        if(!::mCandidatesMenuContainer.isInitialized) {
+        if(!::mCandidatesMenuContainer.isInitialized || mLastMenuHeight != mMenuHeight) {
+            this.removeAllViews()
             mCandidatesMenuContainer = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
             }
