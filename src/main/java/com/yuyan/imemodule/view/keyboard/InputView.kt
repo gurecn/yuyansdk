@@ -314,7 +314,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     true
                 }
                 KeyEvent.KEYCODE_DEL -> {
-                    clearORRestoreText("\uD83D\uDEAE" == showText)  // 🚮 清空
+                    clearORRestoreText(showText)  // 🚮 清空
                     true
                 }
                 else -> false
@@ -1001,12 +1001,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     /**
      * 发送候选词字符串给编辑框
      */
-    private fun clearORRestoreText(isClear:Boolean) {
-        if(isClear) {
+    private fun clearORRestoreText(showText:String?) {
+        if("\uD83D\uDEAE" == showText) {  // 清空
             val inputConnection = service.getCurrentInputConnection()
             textBeforeCursor = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
             inputConnection.deleteSurroundingText(1000, 0)
-        } else {
+        } else if("\uD83D\uDD04" == showText) {  // 还原
             commitText(textBeforeCursor)
             textBeforeCursor = ""
         }
