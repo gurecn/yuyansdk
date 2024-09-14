@@ -157,10 +157,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         }
         mFunItems.clear()
         val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
-        for(item in keyboardBarMenuCommon){
-            val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item)]
-            if(skbMenuMode != null){
-                mFunItems.add(skbMenuMode)
+        for (item in keyboardBarMenuCommon) {
+            if(item.isNotBlank()) {
+                val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item)]
+                if (skbMenuMode != null) {
+                    mFunItems.add(skbMenuMode)
+                }
             }
         }
         mCandidatesMenuAdapter.notifyDataSetChanged()
