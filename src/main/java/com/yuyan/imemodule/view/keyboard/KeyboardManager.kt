@@ -51,6 +51,7 @@ class KeyboardManager {
             else -> KeyboardType.T9
         }
         switchKeyboard(keyboardName)
+        mInputView.updateCandidateBar()
     }
 
     fun switchKeyboard(keyboardName: KeyboardType) {
@@ -75,7 +76,6 @@ class KeyboardManager {
         mKeyboardRootView.showView(container)
         mCurrentKeyboardName = keyboardName
         currentContainer = container
-        mInputView.updateCandidateBar()
     }
 
     val isInputKeyboard: Boolean

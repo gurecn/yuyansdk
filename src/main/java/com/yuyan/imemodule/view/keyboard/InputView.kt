@@ -269,9 +269,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 val symbols = SymbolsManager.instance!!.getmSymbols(symbolType)
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(
-                    symbolType
-                )
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(symbolType)
             } else {
                 mInputModeSwitcher.switchModeForUserKey(keyCode)
                 resetToIdleState()
@@ -731,6 +729,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             if (KeyboardManager.instance.isInputKeyboard) {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
+                updateCandidateBar()
             } else {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
@@ -770,6 +769,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             SkbMenuMode.SwitchKeyboard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSkbSelelctModeView()
+                updateCandidateBar()
             }
             SkbMenuMode.KeyboardHeight -> {
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
@@ -784,9 +784,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 }
                 ThemeManager.setNormalModeTheme(theme)
                 KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(
-                    mInputModeSwitcher.skbLayout
-                )
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.Feedback -> {
                 AppUtil.launchSettingsToKeyboard(context)
@@ -857,11 +855,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 } else {
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
                     (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
+                    updateCandidateBar()
                 }
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.enableDragItem(true)
+                updateCandidateBar()
             }
             else ->{}
         }
