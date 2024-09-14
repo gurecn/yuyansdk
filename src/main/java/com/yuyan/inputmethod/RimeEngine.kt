@@ -229,28 +229,33 @@ object RimeEngine {
             compositionText.isEmpty() -> ""
             candidates.isEmpty() -> compositionText
             Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_T9  -> {
-                val compositionList: List<String> =compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
-                val pinyinList: List<String> = candidates.first().comment.split(" ")
-                buildSpannedString {
-                    append(compositionText.filter { it.code > 0xFF })
-                    pinyinList.zip(compositionList).forEach { (pinyin, composition) ->
-                        val py = if (composition.length >= pinyin.length) {
-                            pinyin
-                        } else {
-                            pinyin.substring(0, composition.length)
-                        }
-                        if (composition.isDigitsOnly()) {
-                            append(py)
-                        } else {
-                            underline {
-                                append(py)
+                if(candidates.first().comment.isBlank()){
+                    compositionText
+                } else {
+                    val compositionList: List<String> =
+                        compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
+                    val pinyinList: List<String> = candidates.first().comment.split(" ")
+                    buildSpannedString {
+                        append(compositionText.filter { it.code > 0xFF })
+                        pinyinList.zip(compositionList).forEach { (pinyin, composition) ->
+                            val py = if (composition.length >= pinyin.length) {
+                                pinyin
+                            } else {
+                                pinyin.substring(0, composition.length)
                             }
+                            if (composition.isDigitsOnly()) {
+                                append(py)
+                            } else {
+                                underline {
+                                    append(py)
+                                }
+                            }
+                            append("'")
                         }
-                        append("'")
-                    }
-                    // 不以分词结束的则去掉拼音末尾的分词符号
-                    if (keyRecordStack.getTop() !is InputKey.Apostrophe && isNotEmpty()) {
-                        delete(length - 1, length)
+                        // 不以分词结束的则去掉拼音末尾的分词符号
+                        if (keyRecordStack.getTop() !is InputKey.Apostrophe && isNotEmpty()) {
+                            delete(length - 1, length)
+                        }
                     }
                 }
             }
