@@ -863,6 +863,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             else ->{}
         }
+        freshCandidatesMenuBar()
     }
 
 
