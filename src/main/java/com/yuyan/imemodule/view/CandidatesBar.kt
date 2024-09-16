@@ -206,6 +206,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     mCvListener.onClickMore(0, lastItemPosition)
                 } else {
                     mRightArrowBtn.drawable.setLevel(0)
+                    val layoutManager = mRVCandidates.layoutManager
+                    layoutManager?.scrollToPosition(0)
                 }
             }
             mCandidatesAdapter.notifyDataSetChanged()
