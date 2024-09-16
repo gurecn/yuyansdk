@@ -35,6 +35,7 @@ open class ImeSdkApplication : Application() {
 
     private fun currentInit() {
         LauncherModel.initSingleton(context) //初始化启动相关设置
+        ClipboardHelper.init()
     }
 
     /**
@@ -49,7 +50,6 @@ open class ImeSdkApplication : Application() {
             if (isFollowSystemDayNight) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             }
-            ClipboardHelper.init()
         }
     }
 
