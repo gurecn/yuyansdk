@@ -711,6 +711,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             resetToIdleState()
         }
+        freshCandidatesMenuBar()
     }
 
     /**
