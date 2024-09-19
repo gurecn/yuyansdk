@@ -1,8 +1,7 @@
 package com.yuyan.imemodule.view.keyboard
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
@@ -13,7 +12,6 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.accessibility.AccessibilityManager
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
@@ -30,17 +28,13 @@ import kotlin.math.abs
  */
 open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val popupComponent: PopupComponent = get()
-    private var swipeEnabled: Boolean
     protected var mSoftKeyboard: SoftKeyboard? = null
-    /** The accessibility manager for accessibility support  */
-    private val mAccessibilityManager: AccessibilityManager
-    private var mDownTime: Long = 0
     private var mLastMoveTime: Long = 0
     private var mLastKey: SoftKey? = null
     private var mLastCodeX = 0
     private var mLastCodeY = 0
     private var mCurrentKeyPressed: SoftKey? = null // 按下的按键，用于界面更新
-    var mCurrentKey: SoftKey? = null
+    private var mCurrentKey: SoftKey? = null
     private var mLastKeyTime: Long = 0
     private var mCurrentKeyTime: Long = 0
     private var mGestureDetector: GestureDetector? = null
@@ -49,24 +43,14 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var mAbortKey = false
     private var mLongPressKey = false
     private var mSwipeMoveKey = false
-    private val mSwipeTracker = SwipeTracker()
     private var mOldPointerX = 0f
     private var mOldPointerY = 0f
+    private var mOldPointerCount = 1
     private var mLastSentIndex: SoftKey? = null
     private var mLastTapTime: Long = 0
     private var mHandler: Handler? = null
     /** Whether the keyboard bitmap needs to be redrawn before it's blitted.  */
     protected var mDrawPending = false
-    /** The dirty region in the keyboard bitmap  */
-    protected var mDirtyRect = Rect()
-    /** The keyboard bitmap for faster updates  */
-    protected var mBuffer: Bitmap? = null
-    /** Notes if the keyboard just changed, so that we could possibly reallocate the mBuffer.  */
-    protected var mKeyboardChanged = false
-    /** The canvas for the above mutable keyboard bitmap  */
-    protected var mCanvas: Canvas? = null
-    protected var mClipRegion = Rect(0, 0, 0, 0)
-    private var mOldPointerCount = 1
 
     //输入法服务
     protected var mService: InputView? = null
@@ -121,7 +105,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     fun invalidateAllKeys() {
-        mDirtyRect.union(0, 0, width, height)
         mDrawPending = true
         invalidate()
     }
@@ -129,9 +112,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     fun invalidateKey(key: SoftKey?) {
         mInvalidatedKey = key
         if (key == null) return
-        mDirtyRect.union(key.mLeft, key.mTop, key.mRight, key.mBottom)
         onBufferDraw()
-        invalidate(key.mLeft, key.mTop, key.mRight, key.mBottom)
+        invalidate()
     }
 
     open fun onBufferDraw() {}
@@ -159,32 +141,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
-    override fun onHoverEvent(event: MotionEvent): Boolean {
-        if (mAccessibilityManager.isTouchExplorationEnabled && event.pointerCount == 1) {
-            val action = event.action
-            when (action) {
-                MotionEvent.ACTION_HOVER_ENTER -> {
-                    event.action = MotionEvent.ACTION_DOWN
-                }
-
-                MotionEvent.ACTION_HOVER_MOVE -> {
-                    event.action = MotionEvent.ACTION_MOVE
-                }
-
-                MotionEvent.ACTION_HOVER_EXIT -> {
-                    event.action = MotionEvent.ACTION_UP
-                }
-            }
-            return onTouchEvent(event)
-        }
-        return true
-    }
-
-    init {
-        mAccessibilityManager = mContext?.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        swipeEnabled = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(me: MotionEvent): Boolean {
         val pointerCount = me.pointerCount
         val action = me.action
@@ -199,10 +156,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     result = onModifiedTouchEvent(me)
                 }
             } else {
-                val up = MotionEvent.obtain(
-                    now, now, MotionEvent.ACTION_UP,
-                    mOldPointerX, mOldPointerY, me.metaState
-                )
+                val up = MotionEvent.obtain(now, now, MotionEvent.ACTION_UP, mOldPointerX, mOldPointerY, me.metaState)
                 result = onModifiedTouchEvent(up)
                 up.recycle()
             }
@@ -225,8 +179,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val action = me.action
         val eventTime = me.eventTime
         val keyIndex = getKeyIndices(touchX, touchY)
-        if (action == MotionEvent.ACTION_DOWN) mSwipeTracker.clear()
-        mSwipeTracker.addMovement(me)
         if (mAbortKey && action != MotionEvent.ACTION_DOWN) {
             return true
         }
@@ -244,8 +196,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mCurrentKeyTime = 0
                 mLastKey = null
                 mCurrentKey = keyIndex
-                mDownTime = me.eventTime
-                mLastMoveTime = mDownTime
+                mLastMoveTime = me.eventTime
                 checkMultiTap(eventTime, keyIndex)
                 if(keyIndex != null)onPress(keyIndex)
                 if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
@@ -296,7 +247,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     private fun dispatchGestureEvent(countX: Int, countY: Int) : Boolean {
         var result = false
-        if (swipeEnabled) {
+        if (AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {
             val absCountX = abs(countX.toDouble()).toInt()
             if (absCountX > 2) {
                 mSwipeMoveKey = true
@@ -339,67 +290,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if (key == null) return
         if (eventTime > mLastTapTime + MULTITAP_INTERVAL || key !== mLastSentIndex) {
             resetMultiTap()
-        }
-    }
-
-    private class SwipeTracker {
-        val mPastX = FloatArray(NUM_PAST)
-        val mPastY = FloatArray(NUM_PAST)
-        val mPastTime = LongArray(NUM_PAST)
-        fun clear() {
-            mPastTime[0] = 0
-        }
-
-        fun addMovement(ev: MotionEvent) {
-            val time = ev.eventTime
-            val h = ev.historySize
-            for (i in 0 until h) {
-                addPoint(
-                    ev.getHistoricalX(i), ev.getHistoricalY(i),
-                    ev.getHistoricalEventTime(i)
-                )
-            }
-            addPoint(ev.x, ev.y, time)
-        }
-
-        private fun addPoint(x: Float, y: Float, time: Long) {
-            var drop = -1
-            val pastTime = mPastTime
-            var i = 0
-            while (i < NUM_PAST) {
-                if (pastTime[i] == 0L) {
-                    break
-                } else if (pastTime[i] < time - LONGEST_PAST_TIME) {
-                    drop = i
-                }
-                i++
-            }
-            if (i == NUM_PAST && drop < 0) {
-                drop = 0
-            }
-            if (drop == i) drop--
-            val pastX = mPastX
-            val pastY = mPastY
-            if (drop >= 0) {
-                val start = drop + 1
-                val count = NUM_PAST - drop - 1
-                System.arraycopy(pastX, start, pastX, 0, count)
-                System.arraycopy(pastY, start, pastY, 0, count)
-                System.arraycopy(pastTime, start, pastTime, 0, count)
-                i -= drop + 1
-            }
-            pastX[i] = x
-            pastY[i] = y
-            pastTime[i] = time
-            i++
-            if (i < NUM_PAST) {
-                pastTime[i] = 0
-            }
-        }
-
-        companion object {
-            const val NUM_PAST = 4
-            const val LONGEST_PAST_TIME = 200
         }
     }
 
