@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.FontMetricsInt
 import android.graphics.PorterDuff
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.VectorDrawable
@@ -33,17 +34,17 @@ import kotlin.math.min
  * @date: 2017/12/12
  */
 open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
-    /**
-     * 正常按键的文本大小
-     */
-    private var mNormalKeyTextSize = 0
-
-    /**
-     * 正常按键的文本大小(小值)
-     */
-    private var mNormalKeyTextSizeSmall = 0
-    //绘制按键的画笔
-    private val mPaint: Paint = Paint()
+    /** Notes if the keyboard just changed, so that we could possibly reallocate the mBuffer.  */
+    private var mKeyboardChanged = false
+    /** The dirty region in the keyboard bitmap  */
+    private var mDirtyRect = Rect()
+    /** The keyboard bitmap for faster updates  */
+    private var mBuffer: Bitmap? = null
+    /** The canvas for the above mutable keyboard bitmap  */
+    private var mCanvas: Canvas? = null
+    private var mNormalKeyTextSize = 0   //正常按键的文本大小
+    private var mNormalKeyTextSizeSmall = 0  //正常按键的文本大小(小值)
+    private val mPaint: Paint = Paint()   //绘制按键的画笔
     private val mFmi: FontMetricsInt
     private var isKeyBorder = false // 启用按键边框
     protected lateinit var mActiveTheme: Theme
@@ -161,16 +162,15 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         if (mSoftKeyboard == null) return
         mCanvas!!.save()
         val canvas = mCanvas
-        canvas?.clipRect(mDirtyRect)
-        val clipRegion = mClipRegion
         val invalidKey = mInvalidatedKey
         var drawSingleKey = false
-        if (invalidKey != null && canvas!!.getClipBounds(clipRegion)) {
-            // Is clipRegion completely contained within the invalidated key?
-            if (invalidKey.mLeft <= clipRegion.left && invalidKey.mTop <= clipRegion.top && invalidKey.mRight >= clipRegion.right && invalidKey.mBottom >= clipRegion.bottom) {
-                drawSingleKey = true
-            }
+        if (invalidKey != null) {
+            mDirtyRect.union(invalidKey.mLeft, invalidKey.mTop, invalidKey.mRight, invalidKey.mBottom)
+            drawSingleKey = true
+        } else {
+            mDirtyRect.union(0, 0, width, height)
         }
+        canvas?.clipRect(mDirtyRect)
         canvas?.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
         val env = instance
         mNormalKeyTextSize = env.keyTextSize
