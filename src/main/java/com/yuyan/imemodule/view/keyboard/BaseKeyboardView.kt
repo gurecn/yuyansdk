@@ -34,7 +34,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var mCurrentKeyPressed: SoftKey? = null // 按下的按键，用于界面更新
     private var mCurrentKey: SoftKey? = null
     private var mGestureDetector: GestureDetector? = null
-    private var mRepeatKeyIndex: SoftKey? = null
     protected var mInvalidatedKey: SoftKey? = null
     private var mAbortKey = false
     private var mLongPressKey = false
@@ -185,14 +184,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mCurrentKey = keyIndex
                 if(keyIndex != null)onPress(keyIndex)
                 if (keyIndex != null && keyIndex.repeatable()) {
-                    mRepeatKeyIndex = keyIndex
                     val msg = mHandler!!.obtainMessage(MSG_REPEAT)
                     mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY.toLong())
-                    repeatKey()
-                    if (mAbortKey) {
-                        mRepeatKeyIndex = null
-                        return true
-                    }
+                    if (mAbortKey) return true
                 }
                 if (keyIndex != null) {
                     val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
@@ -204,13 +198,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             MotionEvent.ACTION_UP -> {
                 removeMessages()
                 mCurrentKey = keyIndex
-                if (mRepeatKeyIndex == null && !mAbortKey && !mSwipeMoveKey) {
+                if (!mAbortKey && !mSwipeMoveKey) {
                     if (!mLongPressKey && keyIndex != null) {
                         mService?.responseKeyEvent(keyIndex)
                     }
 
                 }
-                mRepeatKeyIndex = null
                 dismissPreview()
             }
             MotionEvent.ACTION_CANCEL -> {
