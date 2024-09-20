@@ -19,6 +19,8 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
+import java.util.LinkedList
+import java.util.Queue
 import kotlin.math.abs
 
 /**
@@ -29,25 +31,14 @@ import kotlin.math.abs
 open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val popupComponent: PopupComponent = get()
     protected var mSoftKeyboard: SoftKeyboard? = null
-    private var mLastMoveTime: Long = 0
-    private var mLastKey: SoftKey? = null
-    private var mLastCodeX = 0
-    private var mLastCodeY = 0
     private var mCurrentKeyPressed: SoftKey? = null // 按下的按键，用于界面更新
     private var mCurrentKey: SoftKey? = null
-    private var mLastKeyTime: Long = 0
-    private var mCurrentKeyTime: Long = 0
     private var mGestureDetector: GestureDetector? = null
     private var mRepeatKeyIndex: SoftKey? = null
     protected var mInvalidatedKey: SoftKey? = null
     private var mAbortKey = false
     private var mLongPressKey = false
     private var mSwipeMoveKey = false
-    private var mOldPointerX = 0f
-    private var mOldPointerY = 0f
-    private var mOldPointerCount = 1
-    private var mLastSentIndex: SoftKey? = null
-    private var mLastTapTime: Long = 0
     private var mHandler: Handler? = null
     /** Whether the keyboard bitmap needs to be redrawn before it's blitted.  */
     protected var mDrawPending = false
@@ -84,7 +75,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             mGestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
                 override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
                     if(!mLongPressKey && mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE) {
-                        if(!dispatchGestureEvent(distanceX.toInt(), distanceY.toInt())){
+                        if(!dispatchGestureEvent(distanceX.toInt())){
                             popupComponent.changeFocus( e2.x - e1!!.x, e2.y - e1.y)
                         }
                     } else {
@@ -97,11 +88,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
-    private fun detectAndSendKey(key: SoftKey?, eventTime: Long) {
+    private fun detectAndSendKey(key: SoftKey?) {
         if (mLongPressKey || key == null) return
         mService?.responseKeyEvent(key)
-        mLastSentIndex = key
-        mLastTapTime = eventTime
     }
 
     fun invalidateAllKeys() {
@@ -141,35 +130,39 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
+
+    private var motionEventQueue: Queue<MotionEvent> = LinkedList()
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(me: MotionEvent): Boolean {
-        val pointerCount = me.pointerCount
-        val action = me.action
-        var result: Boolean
-        val now = me.eventTime
-        if (pointerCount != mOldPointerCount) {
-            if (pointerCount == 1) {
-                val down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, me.x, me.y, me.metaState)
-                result = onModifiedTouchEvent(down)
-                down.recycle()
-                if (action == MotionEvent.ACTION_UP) {
+        val result: Boolean
+        when (val action = me.actionMasked) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                val actionIndex = me.actionIndex
+                val x = me.getX(actionIndex)
+                val y = me.getY(actionIndex)
+                val now = me.eventTime
+                val down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, x, y, me.metaState)
+                motionEventQueue.offer(down)
+                result = onModifiedTouchEvent(me)
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
+                val first = motionEventQueue.poll()
+                if (first != null) {
+                    val now = me.eventTime
+                    val act = if(action == MotionEvent.ACTION_CANCEL)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP
+                    val up = MotionEvent.obtain(now, now, act, first.x, first.y, me.metaState)
+                    result = onModifiedTouchEvent(up)
+                    up.recycle()
+                    first.recycle()
+                } else {
                     result = onModifiedTouchEvent(me)
                 }
-            } else {
-                val up = MotionEvent.obtain(now, now, MotionEvent.ACTION_UP, mOldPointerX, mOldPointerY, me.metaState)
-                result = onModifiedTouchEvent(up)
-                up.recycle()
             }
-        } else {
-            if (pointerCount == 1) {
+            else -> {
                 result = onModifiedTouchEvent(me)
-                mOldPointerX = me.x
-                mOldPointerY = me.y
-            } else {
-                result = true
             }
         }
-        mOldPointerCount = pointerCount
         return result
     }
 
@@ -177,7 +170,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val touchX = me.x.toInt()
         val touchY = me.y.toInt()
         val action = me.action
-        val eventTime = me.eventTime
         val keyIndex = getKeyIndices(touchX, touchY)
         if (mAbortKey && action != MotionEvent.ACTION_DOWN) {
             return true
@@ -190,17 +182,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mAbortKey = false
                 mSwipeMoveKey = false
                 mLongPressKey = false
-                mLastCodeX = touchX
-                mLastCodeY = touchY
-                mLastKeyTime = 0
-                mCurrentKeyTime = 0
-                mLastKey = null
                 mCurrentKey = keyIndex
-                mLastMoveTime = me.eventTime
-                checkMultiTap(eventTime, keyIndex)
                 if(keyIndex != null)onPress(keyIndex)
-                if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
-                    mRepeatKeyIndex = mCurrentKey
+                if (keyIndex != null && keyIndex.repeatable()) {
+                    mRepeatKeyIndex = keyIndex
                     val msg = mHandler!!.obtainMessage(MSG_REPEAT)
                     mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY.toLong())
                     repeatKey()
@@ -209,29 +194,21 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                         return true
                     }
                 }
-                if (mCurrentKey != null) {
+                if (keyIndex != null) {
                     val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
                     mHandler!!.sendMessageDelayed(msg, AppPrefs.getInstance().keyboardSetting.longPressTimeout.getValue().toLong())
                 }
-                showPreview(mCurrentKey)
+                showPreview(keyIndex)
             }
 
             MotionEvent.ACTION_UP -> {
                 removeMessages()
-                if (keyIndex === mCurrentKey) {
-                    mCurrentKeyTime += eventTime - mLastMoveTime
-                } else {
-                    resetMultiTap()
-                    mLastKey = mCurrentKey
-                    mLastKeyTime = mCurrentKeyTime + eventTime - mLastMoveTime
-                    mCurrentKey = keyIndex
-                    mCurrentKeyTime = 0
-                }
-                if (mCurrentKeyTime < mLastKeyTime && mCurrentKeyTime < DEBOUNCE_TIME && mLastKey != null) {
-                    mCurrentKey = mLastKey
-                }
+                mCurrentKey = keyIndex
                 if (mRepeatKeyIndex == null && !mAbortKey && !mSwipeMoveKey) {
-                    detectAndSendKey(mCurrentKey, eventTime)
+                    if (!mLongPressKey && keyIndex != null) {
+                        mService?.responseKeyEvent(keyIndex)
+                    }
+
                 }
                 mRepeatKeyIndex = null
                 dismissPreview()
@@ -245,7 +222,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return true
     }
 
-    private fun dispatchGestureEvent(countX: Int, countY: Int) : Boolean {
+    private fun dispatchGestureEvent(countX: Int) : Boolean {
         var result = false
         if (AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {
             val absCountX = abs(countX.toDouble()).toInt()
@@ -263,7 +240,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private fun repeatKey(): Boolean {
         if (mCurrentKey != null) {
             mService?.responseKeyEvent(mCurrentKey!!)
-            mLastSentIndex = mCurrentKey
         }
         return true
     }
@@ -279,18 +255,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     public override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         closing()
-    }
-
-    private fun resetMultiTap() {
-        mLastSentIndex = null
-        mLastTapTime = -1
-    }
-
-    private fun checkMultiTap(eventTime: Long, key: SoftKey?) {
-        if (key == null) return
-        if (eventTime > mLastTapTime + MULTITAP_INTERVAL || key !== mLastSentIndex) {
-            resetMultiTap()
-        }
     }
 
     /**
@@ -358,9 +322,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         private const val MSG_SHOW_PREVIEW = 1
         private const val MSG_REPEAT = 3
         private const val MSG_LONGPRESS = 4
-        private const val DEBOUNCE_TIME = 70
         private const val REPEAT_INTERVAL = 50 // ~20 keys per second
         private const val REPEAT_START_DELAY = 400
-        private const val MULTITAP_INTERVAL = 800 // milliseconds
     }
 }
