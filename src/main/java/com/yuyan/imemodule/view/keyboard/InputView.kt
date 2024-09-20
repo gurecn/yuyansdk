@@ -53,6 +53,7 @@ import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
+import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 import splitties.bitflags.hasFlag
@@ -87,6 +88,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private lateinit var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
     private lateinit var mLlKeyboardBottomHolder: LinearLayout
+    private lateinit var mRightPaddingKey: ManagedPreference.PInt
+    private lateinit var mBottomPaddingKey: ManagedPreference.PInt
 
     init {
         this.service = service
@@ -142,10 +145,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         mLlKeyboardBottomHolder.removeAllViews()
         if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()){
-            bottomPadding = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
-                else getInstance().internal.keyboardBottomPaddingFloat).getValue()
-            rightPadding = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscapeFloat
-            else getInstance().internal.keyboardRightPaddingFloat).getValue()
+            mBottomPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
+                else getInstance().internal.keyboardBottomPaddingFloat)
+            mRightPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscapeFloat
+            else getInstance().internal.keyboardRightPaddingFloat)
+            bottomPadding = mBottomPaddingKey.getValue()
+            rightPadding = mRightPaddingKey.getValue()
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
             mLlKeyboardBottomHolder.minimumHeight = 0
@@ -159,8 +164,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         } else {
             bottomPadding = 0
             rightPadding = 0
-            mSkbRoot.bottomPadding = getInstance().internal.keyboardBottomPadding.getValue()
-            mSkbRoot.rightPadding = getInstance().internal.keyboardRightPadding.getValue()
+            mBottomPaddingKey =  getInstance().internal.keyboardBottomPadding
+            mRightPaddingKey =  getInstance().internal.keyboardRightPadding
+            mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
+            mSkbRoot.rightPadding = mRightPaddingKey.getValue()
             mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
         }
         updateTheme()
@@ -173,8 +180,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
-                bottomPaddingValue = bottomPadding
-                rightPaddingValue = rightPadding
+                bottomPaddingValue = mBottomPaddingKey.getValue()
+                rightPaddingValue = mRightPaddingKey.getValue()
                 initialTouchX = event.rawX
                 initialTouchY = event.rawY
                 return true
@@ -211,8 +218,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                getInstance().internal.keyboardRightPaddingFloat.setValue(rightPaddingValue)
-                getInstance().internal.keyboardBottomPaddingFloat.setValue(bottomPaddingValue)
+                mRightPaddingKey.setValue(rightPaddingValue)
+                mBottomPaddingKey.setValue(bottomPaddingValue)
             }
         }
         return false
@@ -343,19 +350,18 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if (processFunctionKeys(event)) {
             return true
         }
-        var result = false
         val abcSearchEnglishCell = mInputModeSwitcher.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
-        if(abcSearchEnglishCell){
-            result = processEnglishKey(event)
+        val result = if(abcSearchEnglishCell){
+            processEnglishKey(event)
         } else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish  || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
-            result = when (mImeState) {
+            when (mImeState) {
                 ImeState.STATE_IDLE -> processStateIdle(event)
                 ImeState.STATE_INPUT -> processStateInput(event)
                 ImeState.STATE_PREDICT -> processStatePredict(event)
                 ImeState.STATE_COMPOSING -> processStateEditComposing(event)
             }
         } else { // 数字、符号处理
-            result = processEnglishKey(event)
+            processEnglishKey(event)
         }
         return result
     }
