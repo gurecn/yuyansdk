@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
@@ -16,12 +15,12 @@ import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 
 /**
  * 候选词键盘容器
@@ -31,7 +30,7 @@ import com.yuyan.imemodule.view.keyboard.InputView
  */
 @SuppressLint("ViewConstructor")
 class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
-    private var mRVSymbolsView: RecyclerView? = null
+    private lateinit var mRVSymbolsView: RecyclerView
     private var mRVLeftPrefix: RecyclerView? = null
     private var isLoadingMore = false // 正在加载更多
     private var noMoreData = false // 没有更多数据
@@ -43,11 +42,11 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
 
     private fun initView(context: Context) {
         mRVSymbolsView = RecyclerView(context)
-        mRVSymbolsView!!.setHasFixedSize(true)
-        mRVSymbolsView!!.setItemAnimator(null)
-        val manager = FlexboxLayoutManager(context)
+        mRVSymbolsView.setHasFixedSize(true)
+        mRVSymbolsView.setItemAnimator(null)
+        val manager = CustomFlexboxLayoutManager(context)
         manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
-        mRVSymbolsView!!.setLayoutManager(manager)
+        mRVSymbolsView.setLayoutManager(manager)
         mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
         val prefixLayoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
         mRVLeftPrefix!!.setLayoutManager(prefixLayoutManager)
@@ -59,7 +58,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVLeftPrefix!!.visibility = GONE
         val layoutParams2 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         layoutParams2.addRule(RIGHT_OF, mRVLeftPrefix!!.id)
-        mRVSymbolsView!!.setLayoutParams(layoutParams2)
+        mRVSymbolsView.setLayoutParams(layoutParams2)
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
@@ -104,13 +103,13 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             ThreadPoolUtils.executeSingleton {
                 if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
                     isLoadingMore = true
-                    val lastItem = (recyclerView.layoutManager as FlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
+                    val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
                     val adapterSize = mDecInfo!!.mCandidatesList.size
                     if (dy > 0 && adapterSize - lastItem <= 30) { // 未加载中、未加载完、向下滑动、还有10个数据滑动到底
                         val num = mDecInfo!!.nextPageCandidates
                         if (num > 0) {
                             post {
-                                (mRVSymbolsView!!.adapter as CandidatesAdapter?)!!.updateData(
+                                (mRVSymbolsView.adapter as CandidatesAdapter?)!!.updateData(
                                     num
                                 )
                             }
@@ -134,7 +133,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         if(mDecInfo!!.mCandidatesList.size == 10){
             mDecInfo!!.nextPageCandidates
         }
-        val adapter = CandidatesAdapter(context, mDecInfo, candidatesStart)
+        val adapter = CandidatesAdapter(context, mDecInfo, 0)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is PrefixAdapter) {
                 parent.getSymbolData(position)
@@ -143,10 +142,10 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 inputView.onChoiceTouched(parent.getItem(position))
             }
         }
-        mRVSymbolsView!!.setAdapter(adapter)
-        if (scrollListener != null) mRVSymbolsView!!.removeOnScrollListener(scrollListener!!)
+        mRVSymbolsView.setAdapter(adapter)
+        if (scrollListener != null) mRVSymbolsView.removeOnScrollListener(scrollListener!!)
         scrollListener = RecyclerViewScrollListener()
-        mRVSymbolsView!!.addOnScrollListener(scrollListener!!)
+        mRVSymbolsView.addOnScrollListener(scrollListener!!)
         if (mInputModeSwitcher!!.isChineseT9) {
             mRVLeftPrefix!!.visibility = VISIBLE
             updatePrefixsView()
@@ -176,9 +175,5 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             }
         }
         mRVLeftPrefix!!.setAdapter(adapter)
-    }
-
-    companion object {
-        private val TAG = CandidatesContainer::class.java.getSimpleName()
     }
 }
