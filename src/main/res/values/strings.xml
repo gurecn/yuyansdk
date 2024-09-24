@@ -16,7 +16,7 @@
     <string name="keyboard_mnemonic_show">双拼辅助显示</string>
     <string name="keyboard_double_input_key">双拼显示完整拼音</string>
     <string name="keyboard_flower_typeface">花漾字</string>
-    <string name="keyboard_symbol_show">长按选择符号</string>
+    <string name="keyboard_symbol_show">上划选择符号</string>
     <string name="candidate_size_input_setting">候选词字体大小</string>
     <string name="keyboard_font_bold">键盘字体加粗</string>
     <string name="changeKeyboard">切换键盘</string>

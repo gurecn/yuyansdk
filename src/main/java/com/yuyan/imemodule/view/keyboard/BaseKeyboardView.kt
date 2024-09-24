@@ -72,13 +72,11 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private fun initGestureDetector() {
         if (mGestureDetector == null) {
             mGestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-                override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                    if(!mLongPressKey && mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE) {
-                        if(!dispatchGestureEvent(distanceX.toInt())){
-                            popupComponent.changeFocus( e2.x - e1!!.x, e2.y - e1.y)
-                        }
+                override fun onScroll(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+                    if(mLongPressKey){
+                        popupComponent.changeFocus(currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
                     } else {
-                        popupComponent.changeFocus(e2.x - e1!!.x, e2.y - e1.y)
+                        dispatchGestureEvent(downEvent, currentEvent, distanceX, distanceY)
                     }
                     return true
                 }
@@ -215,24 +213,48 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return true
     }
 
-    private fun dispatchGestureEvent(countX: Int) : Boolean {
+    private var lastEventX:Float = -1f
+    private var lastEventY:Float = -1f
+    private var lastEventActionIndex:Int = 0
+    private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float) : Boolean {
         var result = false
-        if (AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {
-            val absCountX = abs(countX.toDouble()).toInt()
-            if (absCountX > 2) {
+        val currentX = currentEvent.x
+        val currentY = currentEvent.y
+        if(currentEvent.pointerCount > 1) return false    // 避免多指触控导致上屏
+        if(lastEventX < 0 || lastEventActionIndex != currentEvent.actionIndex) {   // 避免多指触控导致符号上屏
+            lastEventX = currentX
+            lastEventY = currentY
+            lastEventActionIndex = currentEvent.actionIndex
+            return false
+        }
+        val relDiffX = currentX - lastEventX
+        val relDiffY = currentY - lastEventY
+        if(mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {
+            if (abs(relDiffX) > 10) {
+                lastEventX = currentX
+                lastEventY = currentY
                 mSwipeMoveKey = true
                 val key = SoftKey()
-                key.keyCode = if (countX > 1) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-                mService!!.responseKeyEvent(key)
+                key.keyCode = if (distanceX > 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
+                mService!!.responseKeyEvent(key, false)
                 result = true
             }
+        } else if (abs(relDiffY) > 30  && ThemeManager.prefs.keyboardSymbol.getValue()){
+            lastEventX = currentX
+            lastEventY = currentY
+            lastEventActionIndex = currentEvent.actionIndex
+            mLongPressKey = true
+            mService?.responseLongKeyEvent(null, mCurrentKey?.getmKeyLabelSmall())
+            result = true
+        } else {
+            popupComponent.changeFocus( currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
         }
         return result
     }
 
     private fun repeatKey(): Boolean {
         if (mCurrentKey != null) {
-            mService?.responseKeyEvent(mCurrentKey!!)
+            mService?.responseKeyEvent(mCurrentKey!!, false)
         }
         return true
     }
@@ -283,6 +305,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
         popupComponent.dismissPopup()
         mCurrentKeyPressed = null
+        lastEventX = -1f
     }
 
     open fun closing() {
