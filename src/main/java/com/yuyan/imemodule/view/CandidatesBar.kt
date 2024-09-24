@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
@@ -93,6 +94,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mRVCandidates = RecyclerView(context)
+            mRVCandidates.setItemAnimator(null)
             mRVCandidates.layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             mRVCandidates.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
             mCandidatesAdapter = CandidatesBarAdapter(context, mDecInfo.mCandidatesList)
@@ -100,6 +102,19 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 mCvListener.onClickChoice(position)
             }
             mRVCandidates.setAdapter(mCandidatesAdapter)
+            mRVCandidates.addOnScrollListener(object : OnScrollListener(){
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                    val itemCount = recyclerView.adapter?.itemCount
+                    if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && lastVisibleItemPosition == itemCount - 1) {
+                        val num = mDecInfo.nextPageCandidates
+                        if (num > 0) {
+                            mCandidatesAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+            })
             this.addView(mCandidatesDataContainer)
             mLastMenuHeight = mMenuHeight
         } else {

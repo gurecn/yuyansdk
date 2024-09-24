@@ -59,11 +59,7 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
             holder.textView.text = "          "
         }
         holder.textView.setOnClickListener { view: View? ->
-            mOnItemClickListener?.onItemClick(
-                this@CandidatesAdapter,
-                view,
-                realPos
-            )
+            mOnItemClickListener?.onItemClick(this@CandidatesAdapter, view, realPos)
         }
     }
 
