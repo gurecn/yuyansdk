@@ -42,9 +42,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        if (!restarting) {
-            mInputView.onStartInputView(editorInfo)
-        }
+        mInputView.onStartInputView(editorInfo)
     }
 
     override fun onDestroy() {
