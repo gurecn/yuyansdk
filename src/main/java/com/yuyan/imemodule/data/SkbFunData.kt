@@ -5,6 +5,7 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 val commonSkbFuns = arrayOf(
+    SkbMenuMode.CloseSKB.name,
     SkbMenuMode.Settings.name,
     SkbMenuMode.JianFan.name,
     SkbMenuMode.ClipBoard.name,
@@ -27,6 +28,7 @@ val allSkbFuns = arrayOf(
     SkbMenuMode.FlowerTypeface.name,
     SkbMenuMode.Custom.name,
     SkbMenuMode.Settings.name,
+    SkbMenuMode.CloseSKB.name,
 )
 
 
@@ -45,4 +47,5 @@ val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
     SkbMenuMode.FlowerTypeface to SkbFunItem(ImeSdkApplication.context.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface),
     SkbMenuMode.Custom to SkbFunItem(ImeSdkApplication.context.getString(R.string.skb_item_custom), R.drawable.sdk_vector_menu_custom, SkbMenuMode.Custom),
     SkbMenuMode.Settings to SkbFunItem(ImeSdkApplication.context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings),
+    SkbMenuMode.CloseSKB to SkbFunItem(ImeSdkApplication.context.getString(R.string.keyboard_iv_menu_close), R.drawable.sdk_skb_close_icon, SkbMenuMode.CloseSKB),
 )

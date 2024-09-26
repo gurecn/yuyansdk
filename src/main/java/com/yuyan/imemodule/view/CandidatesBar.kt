@@ -171,7 +171,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                             mIvMenuCloseSKB.drawable.setLevel(1)
                         }
                     } else {
-                        mCvListener.onClickCloseKeyboard()
+                        mCvListener.onClickMenu(SkbMenuMode.decode(SkbMenuMode.CloseSKB.name))
                     }
                 }
             }

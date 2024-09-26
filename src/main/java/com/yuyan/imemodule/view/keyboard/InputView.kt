@@ -745,10 +745,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             onSettingsMenuClick(skbMenuMode)
         }
 
-        override fun onClickCloseKeyboard() {
-            requestHideSelf()
-        }
-
         override fun onClickClearCandidate() {
             resetToIdleState()
             KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
@@ -868,6 +864,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.enableDragItem(true)
                 updateCandidateBar()
+            }
+            SkbMenuMode.CloseSKB -> {
+                requestHideSelf()
             }
             else ->{}
         }

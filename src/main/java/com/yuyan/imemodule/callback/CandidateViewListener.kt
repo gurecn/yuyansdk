@@ -7,14 +7,10 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
  * @ClassName CandidateViewListener
  */
 interface CandidateViewListener {
-    /**
-     * 选择了候选词的处理函数
-     */
-    fun onClickChoice(choiceId: Int)
-    fun onClickMore(level: Int, position: Int)
-    fun onClickSetting()
-    fun onClickMenu(skbMenuMode: SkbMenuMode)
-    fun onClickCloseKeyboard()
-    fun onClickClearCandidate()
-    fun onClickClearClipBoard()
+    fun onClickChoice(choiceId: Int)  //选择候选词的处理函数
+    fun onClickMore(level: Int, position: Int)  // 加载更多候选词
+    fun onClickSetting()  //切换设置界面
+    fun onClickMenu(skbMenuMode: SkbMenuMode)  //选择设置菜单
+    fun onClickClearCandidate()  //清空候选词
+    fun onClickClearClipBoard() //清空剪切板
 }

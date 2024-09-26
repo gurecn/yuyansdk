@@ -25,7 +25,8 @@ enum class SkbMenuMode {
     PinyinLx17,
     PinyinHandWriting,
     Pinyin26Double,
-    ClipBoard;
+    ClipBoard,
+    CloseSKB;
 
     companion object : ManagedPreference.StringLikeCodec<SkbMenuMode> {
         override fun decode(raw: String): SkbMenuMode =
