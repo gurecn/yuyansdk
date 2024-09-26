@@ -216,6 +216,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var lastEventX:Float = -1f
     private var lastEventY:Float = -1f
     private var lastEventActionIndex:Int = 0
+    // 处理手势滑动
     private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float) : Boolean {
         var result = false
         val currentX = currentEvent.x
@@ -230,7 +231,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val relDiffX = currentX - lastEventX
         val relDiffY = currentY - lastEventY
         if(mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {
-            if (abs(relDiffX) > 10) {
+            if (abs(relDiffX) > 10) {  // 左右滑动
                 lastEventX = currentX
                 lastEventY = currentY
                 mSwipeMoveKey = true
@@ -239,13 +240,17 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mService!!.responseKeyEvent(key, false)
                 result = true
             }
-        } else if (abs(relDiffY) > 30  && ThemeManager.prefs.keyboardSymbol.getValue()){
+        } else if (abs(relDiffY) > 30  && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
             lastEventX = currentX
             lastEventY = currentY
             lastEventActionIndex = currentEvent.actionIndex
             mLongPressKey = true
-            mService?.responseLongKeyEvent(null, mCurrentKey?.getmKeyLabelSmall())
-            result = true
+            val keyLableSmall = mCurrentKey?.getmKeyLabelSmall()
+            if(keyLableSmall?.isNotBlank() == true) {
+                mHandler!!.removeMessages(MSG_LONGPRESS)
+                mService?.responseLongKeyEvent(null, mCurrentKey?.getmKeyLabelSmall())
+                result = true
+            }
         } else {
             popupComponent.changeFocus( currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
         }
