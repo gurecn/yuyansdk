@@ -230,7 +230,7 @@ class KeyboardLoaderUtil private constructor() {
         enterToggleStates.add(ToggleState("完成", 4))
         val keyBeans = mutableListOf<SoftKey>()
         val t9Keys = if(isNumKeyboard){
-            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6,
+            createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6,
                 7, KeyEvent.KEYCODE_SPACE))
         } else {
             createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
