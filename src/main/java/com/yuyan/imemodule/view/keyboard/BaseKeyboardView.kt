@@ -230,8 +230,10 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
         val relDiffX = currentX - lastEventX
         val relDiffY = currentY - lastEventY
-        if(mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {
-            if (abs(relDiffX) > 10) {  // 左右滑动
+        if (abs(relDiffX) > 10) {  // 左右滑动
+            val isSwipeKey = mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE || mCurrentKey?.keyCode == KeyEvent.KEYCODE_0
+            if (isSwipeKey && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {  // 左右滑动
+                mHandler!!.removeMessages(MSG_LONGPRESS)
                 lastEventX = currentX
                 lastEventY = currentY
                 mSwipeMoveKey = true
@@ -240,7 +242,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mService!!.responseKeyEvent(key, false)
                 result = true
             }
-        } else if (abs(relDiffY) > 30  && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
+        } else if (abs(relDiffY) > 20  && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
             lastEventX = currentX
             lastEventY = currentY
             lastEventActionIndex = currentEvent.actionIndex
