@@ -26,6 +26,7 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
+import com.yuyan.imemodule.view.keyboard.manager.CustomLinearLayoutManager
 import java.util.LinkedList
 
 /**
@@ -95,7 +96,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mRVCandidates = RecyclerView(context)
             mRVCandidates.setItemAnimator(null)
-            mRVCandidates.layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            mRVCandidates.layoutManager =  CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             mRVCandidates.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
             mCandidatesAdapter = CandidatesBarAdapter(context, mDecInfo.mCandidatesList)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -108,8 +109,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val itemCount = recyclerView.adapter?.itemCount
                     if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && lastVisibleItemPosition == itemCount - 1) {
-                        val num = mDecInfo.nextPageCandidates
-                        if (num > 0) {
+                        if ( mDecInfo.nextPageCandidates > 0) {
                             mCandidatesAdapter.notifyDataSetChanged()
                         }
                     }
@@ -147,7 +147,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setOnClickListener{mCvListener.onClickSetting()}
             }
             mRVContainerMenu = RecyclerView(context).apply {
-                layoutManager =  LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
+                layoutManager =  CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context, mFunItems)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -205,8 +205,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             showViewVisibility(mCandidatesMenuContainer)
         } else if (mDecInfo.isCandidatesListEmpty) {
             mIvMenuCloseSKB.drawable.setLevel(0)
+            mCandidatesAdapter.notifyDataSetChanged()
             showViewVisibility(mCandidatesMenuContainer)
         } else {
+            mCandidatesAdapter.notifyDataSetChanged()
             showViewVisibility(mCandidatesDataContainer)
             if (mDecInfo.isAssociate) {
                 mRightArrowBtn.drawable.setLevel(3)
@@ -225,7 +227,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     layoutManager?.scrollToPosition(0)
                 }
             }
-            mCandidatesAdapter.notifyDataSetChanged()
 
         }
     }
