@@ -21,14 +21,12 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     RecyclerView.Adapter<PrefixAdapter.SymbolTypeHolder>() {
     private val inflater: LayoutInflater
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
-    private val textColor: Int
+    private val textColor: Int = activeTheme.keyTextColor
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
 
     init {
-        val theme = activeTheme
-        textColor = theme.keyTextColor
         inflater = LayoutInflater.from(context)
     }
 

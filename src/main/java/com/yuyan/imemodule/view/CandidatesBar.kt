@@ -1,21 +1,28 @@
 package com.yuyan.imemodule.view
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Spinner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
+import com.yuyan.imemodule.adapter.CustomSpinnerAdapter
+import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
+import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.menuSkbFunsPreset
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -42,6 +49,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private lateinit var mRVCandidates: RecyclerView    //候选词列表
     private lateinit var mIvMenuCloseSKB: ImageView
     private lateinit var mIvMenuSetting: ImageView
+    private lateinit var mLlContainer: LinearLayout
     private lateinit var mCandidatesAdapter: CandidatesBarAdapter
     private val mFunItems: MutableList<SkbFunItem> = LinkedList()
     private lateinit var mRVContainerMenu:RecyclerView   // 候选词栏菜单
@@ -146,8 +154,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setPadding(mMenuPadding, 0,0,0)
                 setOnClickListener{mCvListener.onClickSetting()}
             }
+            mLlContainer = LinearLayout(context).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                visibility = GONE
+            }
             mRVContainerMenu = RecyclerView(context).apply {
-                layoutManager =  CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                layoutManager =  CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
             }
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context, mFunItems)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -176,6 +188,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mCandidatesMenuContainer.addView(mIvMenuSetting, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
+            mCandidatesMenuContainer.addView(mLlContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, instance.heightForCandidates,0f))
             mCandidatesMenuContainer.addView(mRVContainerMenu, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, mMenuHeight, 1f))
             mCandidatesMenuContainer.addView(mIvMenuCloseSKB, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
             this.addView(mCandidatesMenuContainer, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
@@ -197,7 +210,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      * 显示候选词
      */
     fun showCandidates() {
-        // mIvMenuCloseSKB.drawable.setLevel(0)
         val container = KeyboardManager.instance.currentContainer
         mIvMenuSetting.drawable.setLevel( if(container is InputBaseContainer) 0 else 1)
         if (container is ClipBoardContainer) {
@@ -235,54 +247,37 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      * 选择花漾字
      */
     fun showFlowerTypeface() {
-//        showViewVisibility(mCandidatesMenuContainer)
-//        val flower = SkbFunItem(context.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface)
-//        if(LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled && !mFunItems.contains(flower)){
-//            mFunItems.add(0, flower)
-//        } else if(LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled && !mFunItems.contains(flower)){
-//
-//        }
-//        mCandidatesMenuAdapter.notifyItemInserted(0)
-
-//        val funItems: MutableList<SkbFunItem> = LinkedList()
-//        if(LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled){
-//            funItems.add(SkbFunItem(context.getString(R.string.keyboard_flower_typeface), R.drawable.sdk_vector_menu_skb_flower, SkbMenuMode.FlowerTypeface))
-//        }
-//        funItems.add(SkbFunItem(context.getString(R.string.changeKeyboard), R.drawable.sdk_vector_menu_skb_keyboard, SkbMenuMode.SwitchKeyboard))
-//        if(AppPrefs.getInstance().clipboard.clipboardListening.getValue()) {
-//            funItems.add(SkbFunItem(context.getString(R.string.clipboard), R.drawable.ic_clipboard, SkbMenuMode.ClipBoard))
-//        }
-//        funItems.add(SkbFunItem(context.getString(R.string.keyboard_theme_night), R.drawable.sdk_vector_menu_skb_dark, SkbMenuMode.DarkTheme))
-//        funItems.add(SkbFunItem(context.getString(R.string.setting_jian_fan), R.drawable.sdk_vector_menu_skb_fanti, SkbMenuMode.JianFan))
-//        funItems.add(SkbFunItem(context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings))
-//        mCandidatesMenuAdapter.setData(funItems)
-//        if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) {
-//            val spinner = Spinner(context)
-//            spinner.layoutParams = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
-//            val flowerTypefaces = arrayOf(FlowerTypefaceMode.Mars, FlowerTypefaceMode.FlowerVine, FlowerTypefaceMode.Messy, FlowerTypefaceMode.Germinate,
-//                FlowerTypefaceMode.Fog,FlowerTypefaceMode.ProhibitAccess, FlowerTypefaceMode.Grass, FlowerTypefaceMode.Wind, FlowerTypefaceMode.Disabled)
-//            val flowerTypefacesName = resources.getStringArray(R.array.FlowerTypeface)
-//            val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, flowerTypefacesName)
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//            spinner.adapter = adapter
-//            spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener {
-//                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                    val select = flowerTypefaces[position]
-//                    LauncherModel.instance.flowerTypeface = select
-//                    if(select == FlowerTypefaceMode.Disabled){
-//                        mRVContainerMenu.removeAllViews()
-//                    }
-//                }
-//                override fun onNothingSelected(parent: AdapterView<*>?) {
-//                    LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
-//                }
-//            }
-//            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Mars
-//            mRVContainerMenu.addView(spinner)
-//        } else {
-//            mRVContainerMenu.removeAllViews()
-//            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
-//        }
+        if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) {
+            val spinner = Spinner(context).apply {
+                setPopupBackgroundDrawable(ColorDrawable(ThemeManager.activeTheme.barColor))
+            }
+            val flowerTypefaces = arrayOf(FlowerTypefaceMode.Mars, FlowerTypefaceMode.FlowerVine, FlowerTypefaceMode.Messy, FlowerTypefaceMode.Germinate,
+                FlowerTypefaceMode.Fog,FlowerTypefaceMode.ProhibitAccess, FlowerTypefaceMode.Grass, FlowerTypefaceMode.Wind, FlowerTypefaceMode.Disabled)
+            val flowerTypefacesName = resources.getStringArray(R.array.FlowerTypeface)
+            val spinnerAdapter = CustomSpinnerAdapter(context, android.R.layout.simple_spinner_item, flowerTypefacesName)
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = spinnerAdapter
+            spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val select = flowerTypefaces[position]
+                    LauncherModel.instance.flowerTypeface = select
+                    if(select == FlowerTypefaceMode.Disabled){
+                        mLlContainer.removeAllViews()
+                        mLlContainer.visibility = GONE
+                    }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
+                }
+            }
+            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Mars
+            mLlContainer.addView(spinner, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+            mLlContainer.visibility = VISIBLE
+        } else {
+            mLlContainer.removeAllViews()
+            mLlContainer.visibility = GONE
+            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -302,5 +297,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mIvMenuCloseSKB.drawable.setTint(textColor)
         mRightArrowBtn.drawable.setTint(textColor)
         mCandidatesAdapter.updateTextColor(textColor)
+        showFlowerTypeface()
     }
 }

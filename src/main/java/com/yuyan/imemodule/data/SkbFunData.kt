@@ -5,7 +5,6 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 val commonSkbFuns = arrayOf(
-    SkbMenuMode.CloseSKB.name,
     SkbMenuMode.Settings.name,
     SkbMenuMode.JianFan.name,
     SkbMenuMode.ClipBoard.name,
@@ -28,7 +27,6 @@ val allSkbFuns = arrayOf(
     SkbMenuMode.FlowerTypeface.name,
     SkbMenuMode.Custom.name,
     SkbMenuMode.Settings.name,
-    SkbMenuMode.CloseSKB.name,
 )
 
 
