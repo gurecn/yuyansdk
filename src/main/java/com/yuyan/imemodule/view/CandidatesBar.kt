@@ -248,6 +248,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      */
     fun showFlowerTypeface() {
         if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) {
+            mLlContainer.removeAllViews()
+            mLlContainer.visibility = GONE
+        } else {
             val spinner = Spinner(context).apply {
                 setPopupBackgroundDrawable(ColorDrawable(ThemeManager.activeTheme.barColor))
             }
@@ -270,13 +273,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
                 }
             }
-            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Mars
             mLlContainer.addView(spinner, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             mLlContainer.visibility = VISIBLE
-        } else {
-            mLlContainer.removeAllViews()
-            mLlContainer.visibility = GONE
-            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Disabled
         }
     }
 
