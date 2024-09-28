@@ -117,7 +117,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                     }
                     AppPrefs.getInstance().internal.keyboardBarMenuCommon.setValue(keyboardBarMenuCommon.joinToString())
                     inputView.freshCandidatesMenuBar()
-                    adapter?.notifyItemChanged(position)
+                    adapter?.notifyDataSetChanged()
                 }
             }
             itemTouchHelper.attachToRecyclerView(mRVMenuLayout)
