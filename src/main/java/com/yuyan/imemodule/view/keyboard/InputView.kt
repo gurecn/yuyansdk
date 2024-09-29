@@ -278,7 +278,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(symbolType)
-            } else if (InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 == keyCode || InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 == keyCode || InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 == keyCode) {
+            } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 mInputModeSwitcher.switchModeForUserKey(keyCode)
                 resetToIdleState()
             }else if(sKey.keyLabel.isNotBlank()){

@@ -217,7 +217,7 @@ class InputModeSwitcherManager {
         const val USER_DEF_KEYCODE_LANG_2 = -2
 
         /**
-         * User defined key code, used by soft keyboard. 语言键的code,表符号键盘切换键。
+         * User defined key code, used by soft keyboard. 语言键的code,符号键盘切换键。
          */
         const val USER_DEF_KEYCODE_SYMBOL_3 = -3
 
