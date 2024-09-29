@@ -25,11 +25,10 @@ object ClipboardHelper : OnPrimaryClipChangedListener {
                     ?.let { b ->
                         val data = if (b.text.length > 5000) b.text.substring(0, 4999) else b.text.toString()
                         if (AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()) {
-                            LauncherModel.instance.mLastClipboardContent = data
-                            LauncherModel.instance.mLastClipboardTime = System.currentTimeMillis()
+                            AppPrefs.getInstance().internal.clipboardUpdateTime.setValue(System.currentTimeMillis())
+                            AppPrefs.getInstance().internal.clipboardUpdateContent.setValue(data)
                         }
                         LauncherModel.instance.mClipboardDao?.insertClopboard(data)
-
                     }
             }
         }

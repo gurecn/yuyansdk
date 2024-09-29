@@ -17,6 +17,7 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.view.preference.ManagedPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,13 +28,24 @@ import kotlinx.coroutines.launch
  */
 class ImeService : InputMethodService() {
     private lateinit var mInputView: InputView
-    private val onThemeChangeListener =
-        OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme() }
-
+    private val clipboardItemTimeout = getInstance().clipboard.clipboardItemTimeout.getValue()
+    private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme() }
+    private val clipboardUpdateContent = getInstance().internal.clipboardUpdateContent
+    private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
+        if(getInstance().clipboard.clipboardSuggestion.getValue()){
+            if(value.isNotBlank()) {
+                if (::mInputView.isInitialized && mInputView.isShown) {
+                    mInputView.showSymbols(arrayOf(value))
+                    getInstance().internal.clipboardUpdateTime.setValue(0L)
+                }
+            }
+        }
+    }
     override fun onCreate() {
         super.onCreate()
         Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
         addOnChangedListener(onThemeChangeListener)
+        clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
     }
 
     override fun onCreateInputView(): View {
@@ -43,6 +55,16 @@ class ImeService : InputMethodService() {
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         mInputView.onStartInputView(editorInfo)
+        if(getInstance().clipboard.clipboardSuggestion.getValue()){
+            val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
+            if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
+                val lastClipboardContent = getInstance().internal.clipboardUpdateContent.getValue()
+                if(lastClipboardContent.isNotBlank()) {
+                    mInputView.showSymbols(arrayOf(lastClipboardContent))
+                    getInstance().internal.clipboardUpdateTime.setValue(0L)
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -50,6 +72,7 @@ class ImeService : InputMethodService() {
         if (::mInputView.isInitialized) mInputView.resetToIdleState()
         ThreadPoolUtils.executeSingleton { Kernel.freeIme() }
         removeOnChangedListener(onThemeChangeListener)
+        clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
     }
 
     /**

@@ -39,6 +39,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val keyboardBarMenuCommon = string("keyboard_bar_menu_common", commonSkbFuns.joinToString())     //缓存候选词菜单栏
         val keyboardSettingMenuAll = string("keyboard_bar_menu_all", allSkbFuns.joinToString())     //缓存候键盘设置菜单
+
+        val clipboardUpdateTime = long("clipboard_update_time", 0)     //剪切板更新时间
+        val clipboardUpdateContent = string("clipboard_update_content","")     //剪切板更新内容
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {

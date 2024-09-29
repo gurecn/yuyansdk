@@ -73,8 +73,7 @@ import kotlin.math.absoluteValue
  */
 
 @SuppressLint("ViewConstructor")
-class InputView(context: Context, service: ImeService) : RelativeLayout(context),
-    IResponseKeyEvent {
+class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
     val mDecInfo = DecodingInfo() // 词库解码操作对象
@@ -932,19 +931,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         currentInputEditorInfo = editorInfo
         mInputModeSwitcher.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-        if(getInstance().clipboard.clipboardSuggestion.getValue()){
-            val lastClipboardTime = LauncherModel.instance.mLastClipboardTime
-            val lastClipboardContent = LauncherModel.instance.mLastClipboardContent
-            if(lastClipboardContent.isNotBlank()) {
-                val clipboardItemTimeout = getInstance().clipboard.clipboardItemTimeout.getValue()
-                if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
-                    showSymbols(arrayOf(lastClipboardContent))
-                }
-                LauncherModel.instance.mLastClipboardTime = 0L
-                LauncherModel.instance.mLastClipboardContent = ""
-            }
-
-        }
     }
 
     /**
