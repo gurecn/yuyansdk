@@ -9,19 +9,15 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
-import androidx.core.content.ContextCompat
-import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import kotlin.math.max
 import kotlin.math.min
@@ -266,18 +262,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             val marginRight = softKey.width() - intrinsicWidth - marginLeft
             val marginTop = (softKey.height() - intrinsicHeight) / 2
             val marginBottom = softKey.height() - intrinsicHeight - marginTop
-            (keyIcon as? VectorDrawable)?.setTint(mActiveTheme.keyTextColor)
+            keyIcon.setTint(mActiveTheme.keyTextColor)
             keyIcon.setBounds(softKey.mLeft + marginLeft, softKey.mTop + marginTop, softKey.mRight - marginRight, softKey.mBottom - marginBottom)
             keyIcon.draw(canvas)
-            val switchIMEKey = AppPrefs.getInstance().keyboardSetting.switchIMEKey.getValue()
-            if( softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 && switchIMEKey) {
-                val keyIMEIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_language_24)
-                (keyIMEIcon as? VectorDrawable)?.setTint(mActiveTheme.keyTextColor)
-                val padWidth = softKey.width() /8
-                val padHeight = (softKey.width() /3.5).toInt()
-                keyIMEIcon?.setBounds(softKey.mLeft + marginLeft + padWidth, softKey.mTop + marginTop -  padHeight, softKey.mRight - marginRight - padWidth, softKey.mBottom - marginBottom - padHeight)
-                keyIMEIcon?.draw(canvas)
-            }
         } else if (!TextUtils.isEmpty(keyLabel)) { //Label位于中间
             mPaint.color = textColor
             if(keyboardFontBold) mPaint.setTypeface(Typeface.DEFAULT_BOLD)
