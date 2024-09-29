@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
@@ -32,7 +33,6 @@ class SetupActivity : FragmentActivity() {
 
     private val viewModel: SetupViewModel by viewModels()
 
-    private lateinit var skipButton: Button
     private lateinit var prevButton: Button
     private lateinit var nextButton: Button
 
@@ -46,10 +46,6 @@ class SetupActivity : FragmentActivity() {
             windowInsets
         }
         setContentView(binding.root)
-        skipButton = binding.skipButton.apply {
-            text = getString(R.string.skip)
-            setOnClickListener { finish() }
-        }
         prevButton = binding.prevButton.apply {
             text = getString(R.string.prev)
             setOnClickListener { viewPager.currentItem -= 1 }
@@ -65,10 +61,7 @@ class SetupActivity : FragmentActivity() {
             adapter = Adapter()
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
-                    // manually call following observer when page changed
-                    // intentionally before changing the text of nextButton
                     viewModel.isAllDone.value = viewModel.isAllDone.value
-                    // hide prev button for the first page
                     prevButton.visibility = if (position != 0) View.VISIBLE else View.GONE
                     nextButton.text =
                         getString(if (position.isLastPage()) R.string.done else R.string.next)
@@ -76,9 +69,6 @@ class SetupActivity : FragmentActivity() {
             })
         }
         viewModel.isAllDone.observe(this) { allDone ->
-            skipButton.apply {
-                visibility = if (allDone) View.GONE else View.VISIBLE
-            }
             nextButton.apply {
                 // hide next button for the last page when allDone == false
                 (allDone || !viewPager.currentItem.isLastPage()).let {
@@ -86,10 +76,11 @@ class SetupActivity : FragmentActivity() {
                 }
             }
         }
-        // skip to undone page
         firstUndonePage()?.let { viewPager.currentItem = it.ordinal }
-        shown = true
         createNotificationChannel()
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {}
+        })
     }
 
     override fun onStart() {
@@ -157,9 +148,8 @@ class SetupActivity : FragmentActivity() {
     }
 
     companion object {
-        private var shown = false
         private const val CHANNEL_ID = "setup"
         private const val NOTIFY_ID = 233
-        fun shouldShowUp() = !shown && SetupPage.hasUndonePage()
+        fun shouldShowUp() = SetupPage.hasUndonePage()
     }
 }
