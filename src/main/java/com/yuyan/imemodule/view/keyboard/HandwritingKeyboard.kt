@@ -159,8 +159,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
 
     override fun onPress(key: SoftKey) {  // 手写界面点击按键时先选择第一个候选词，然后在按键释放时响应onRelease按键。
         if (key.keyCode != KeyEvent.KEYCODE_DEL && mSBPoint.isNotEmpty()) {
-            val keyTemp = SoftKey()
-            mService!!.responseKeyEvent(keyTemp)
+            mService!!.responseKeyEvent(SoftKey())
         }
         mSBPoint.clear()
         mDrawing.clear()
