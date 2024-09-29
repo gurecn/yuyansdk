@@ -50,8 +50,7 @@ class PopupKeyboardUi(
     private val keyWidth: Int,
     private val keyHeight: Int,
     private val popupHeight: Int,
-    private val keys: Array<String>,
-    private val labels: Array<String>
+    private val keys: Array<String>
 ) : PopupContainerUi(ctx, theme, bounds, onDismissSelf) {
 
     class PopupKeyUi(override val ctx: Context, val theme: Theme, val text: String) : Ui {
@@ -107,7 +106,6 @@ class PopupKeyboardUi(
         val keyCount: Float = keys.size.toFloat()
         rowCount = ceil(keyCount / 5).toInt()
         columnCount = (keyCount / rowCount).roundToInt()
-
         focusRow = 0
         focusColumn = calcInitialFocusedColumn(columnCount, keyWidth, bounds)
         lastX = 0f
@@ -167,7 +165,7 @@ class PopupKeyboardUi(
 
     private var focusedIndex = keyOrders[focusRow][focusColumn]
 
-    private val keyUis = labels.map {
+    private val keyUis = keys.map {
         PopupKeyUi(ctx, theme, it)
     }
 

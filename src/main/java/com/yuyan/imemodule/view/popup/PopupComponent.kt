@@ -74,8 +74,10 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
     fun showKeyboard(label: String, labelSmall: String, bounds: Rect) {
         showingEntryUi?.setText("") ?: showPopup("", bounds)
         val labels =  (PopupSmallPreset[labelSmall] ?: emptyArray<String>()).plus(PopupPreset[label] ?: emptyArray())
-        if(label.isNotBlank()) {
+        if(labels.isNotEmpty()) {
             reallyShowKeyboard(labels, bounds)
+        } else {
+            dismissPopup()
         }
     }
 
@@ -94,7 +96,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
 
     private fun reallyShowKeyboard(keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
-        val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys, keys)
+        val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys)
         val bottomPadding =
         if(!EnvironmentSingleton.instance.isLandscape && !AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()){
             AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
