@@ -46,20 +46,12 @@ object DevicesUtils {
         hapticFeedback(view!!)
     }
 
-    /**
-     * 播放按键按下的声音
-     */
-	@JvmStatic
-	fun tryPlayKeyDown() {
-        val soundEffect = SoundEffect.Standard
-        soundEffect(soundEffect)
-    }
 
     /**
      * 播放按键按下的声音
      */
 	@JvmStatic
-	fun tryPlayKeyDown(softKey: SoftKey?) {
+	fun tryPlayKeyDown(softKey: SoftKey? = null) {
         var soundEffect = SoundEffect.Standard
         if (softKey != null) {
             soundEffect = when (softKey.keyCode) {

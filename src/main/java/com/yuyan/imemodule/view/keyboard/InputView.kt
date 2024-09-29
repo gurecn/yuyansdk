@@ -252,11 +252,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseKeyEvent(sKey: SoftKey, isFeedback:Boolean) {
-        // 播放按键声音和震动
-        if(isFeedback) {
-            DevicesUtils.tryPlayKeyDown(sKey)
-            DevicesUtils.tryVibrate(this)
-        }
         isSkipEngineMode = false
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理

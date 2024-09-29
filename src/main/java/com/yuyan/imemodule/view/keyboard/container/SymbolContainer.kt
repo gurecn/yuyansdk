@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -22,28 +23,24 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.SymbolsManager
-import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 
 
 /**
  * 符号键盘容器
- *
  * 包含符号界面、符号类型行（居底）。
- *
  * 与输入键哦安不同的是，此处两个界面均使用RecyclerView实现。
- *
  * 其中：
- *
  * 符号界面使用RecyclerView + FlexboxLayoutManager实现Grid布局。
- *
  * 符号类型行使用RecyclerView + LinearLayoutManager实现水平ListView效果。
  */
 @SuppressLint("ViewConstructor")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null
+    @SuppressLint("ClickableViewAccessibility")
     private fun initView(context: Context) {
         val mLLSymbolType = LayoutInflater.from(getContext())
             .inflate(R.layout.sdk_view_symbols_emoji_type, this, false) as LinearLayout
@@ -63,10 +60,20 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             ivDelete.background = bg
         }
-        ivDelete.setOnClickListener {
-            val softKey = SoftKey()
-            softKey.keyCode = KeyEvent.KEYCODE_DEL
-            inputView.responseKeyEvent(softKey)
+
+        ivDelete.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // 播放按键声音和震动
+                    DevicesUtils.tryPlayKeyDown(SoftKey(KeyEvent.KEYCODE_DEL))
+                    DevicesUtils.tryVibrate(this)
+                }
+                MotionEvent.ACTION_MOVE -> { }
+                MotionEvent.ACTION_UP -> {
+                    inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                }
+            }
+            true
         }
         val layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
@@ -99,6 +106,8 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             LauncherModel.instance.usedEmoticonsDao!!.insertUsedEmoticons(result, System.currentTimeMillis())
         }
         val softKey = SoftKey(result)
+        DevicesUtils.tryPlayKeyDown(softKey)
+        DevicesUtils.tryVibrate(this)
         inputView.responseKeyEvent(softKey)
     }
 
@@ -138,17 +147,15 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     fun setSymbolsView(showType: Int) {
         lastPosition = showType
         updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            onItemClickOperate(
-                parent,
-                position
-            )
+            onItemClickOperate(parent, position)
         }, showType)
         val data = resources.getStringArray(R.array.symbolType)
         val adapter = SymbolTypeAdapter(context, data, showType)
         adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            onTypeItemClickOperate(
-                position
-            )
+            // 播放按键声音和震动
+            DevicesUtils.tryPlayKeyDown()
+            DevicesUtils.tryVibrate(this)
+            onTypeItemClickOperate(position)
         }
         mRVSymbolsType!!.setAdapter(adapter)
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
@@ -64,6 +66,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(ivDelete)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun getIvDelete(): ImageView {
         val ivDelete = ImageView(context)
         ivDelete.setImageResource(R.drawable.sdk_skb_key_delete_icon)
@@ -81,10 +84,19 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         }
         ivDelete.isClickable = true
         ivDelete.setEnabled(true)
-        ivDelete.setOnClickListener { _: View? ->
-            val softKey = SoftKey()
-            softKey.keyCode = KeyEvent.KEYCODE_DEL
-            inputView.responseKeyEvent(softKey)
+        ivDelete.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // 播放按键声音和震动
+                    DevicesUtils.tryPlayKeyDown(SoftKey(KeyEvent.KEYCODE_DEL))
+                    DevicesUtils.tryVibrate(this)
+                }
+                MotionEvent.ACTION_MOVE -> { }
+                MotionEvent.ACTION_UP -> {
+                    inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                }
+            }
+            true
         }
         val layoutParams3 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         layoutParams3.setMargins(paddingBorder, paddingBorder, paddingBorder, paddingBorder)
@@ -171,6 +183,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 }
             } else {
                 val softKey = SoftKey(s)
+                // 播放按键声音和震动
+                DevicesUtils.tryPlayKeyDown(softKey)
+                DevicesUtils.tryVibrate(this)
                 inputView.responseKeyEvent(softKey)
             }
         }

@@ -17,6 +17,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import java.util.LinkedList
@@ -83,11 +84,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             })
             mGestureDetector!!.setIsLongpressEnabled(false)
         }
-    }
-
-    private fun detectAndSendKey(key: SoftKey?) {
-        if (mLongPressKey || key == null) return
-        mService?.responseKeyEvent(key)
     }
 
     fun invalidateAllKeys() {
@@ -240,7 +236,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mSwipeMoveKey = true
                 val key = SoftKey()
                 key.keyCode = if (distanceX > 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-                mService!!.responseKeyEvent(key, false)
+                mService!!.responseKeyEvent(key)
                 result = true
             }
         } else if (isVertical && relDiffY > 10  && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
@@ -262,7 +258,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     private fun repeatKey(): Boolean {
         if (mCurrentKey != null) {
-            mService?.responseKeyEvent(mCurrentKey!!, false)
+            mService?.responseKeyEvent(mCurrentKey!!)
         }
         return true
     }
@@ -340,7 +336,11 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return mSoftKeyboard!!
     }
 
-    open fun onPress(key: SoftKey) {}
+    open fun onPress(key: SoftKey) {
+        // 播放按键声音和震动
+        DevicesUtils.tryPlayKeyDown(key)
+        DevicesUtils.tryVibrate(this)
+    }
 
     companion object {
         private const val MSG_SHOW_PREVIEW = 1

@@ -10,6 +10,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -99,6 +100,9 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
                 }
             } else {
                 val softKey = SoftKey(symbol)
+                // 播放按键声音和震动
+                DevicesUtils.tryPlayKeyDown(softKey)
+                DevicesUtils.tryVibrate(this)
                 inputView.responseKeyEvent(softKey)
             }
         }

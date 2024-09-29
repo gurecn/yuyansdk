@@ -9,6 +9,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
@@ -57,6 +58,9 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
         val adapter = PrefixAdapter(context, strs)
         adapter.setOnItemClickLitener { _, _, position ->
             val softKey = SoftKey(strs[position])
+            // 播放按键声音和震动
+            DevicesUtils.tryPlayKeyDown(softKey)
+            DevicesUtils.tryVibrate(this)
             inputView.responseKeyEvent(softKey)
         }
         mRVLeftPrefix.setAdapter(adapter)
