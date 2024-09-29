@@ -247,6 +247,16 @@ class InputModeSwitcherManager {
         const val USER_DEF_KEYCODE_LEFT_SYMBOL_12 = -12
 
         /**
+         * User defined key code, used by soft keyboard. 语言键的code,逗号（中文：，;英文：,）。
+         */
+        const val USER_DEF_KEYCODE_LEFT_COMMA_13 = -13
+        /**
+         * User defined key code, used by soft keyboard. 语言键的code,句号（中文：。;英文：.）。
+         */
+        const val USER_DEF_KEYCODE_LEFT_PERIOD_14 = -14
+
+
+        /**
          * Bits used to indicate soft keyboard layout. If none bit is set, the
          * current input mode does not require a soft keyboard.
          * 第8位指明软键盘的布局。如果最8位为0，那么就表明当前输入法模式不需要软键盘。

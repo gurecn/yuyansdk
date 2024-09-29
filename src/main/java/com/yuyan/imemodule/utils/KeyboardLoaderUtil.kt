@@ -87,7 +87,7 @@ class KeyboardLoaderUtil private constructor() {
                 }
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
-                keyBeans = lastRows(numberLine)
+                keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
             0x2000 -> {  // 2000  T9键键
@@ -117,7 +117,7 @@ class KeyboardLoaderUtil private constructor() {
                 t9Key.last().widthF = 0.18f
                 keyBeans.addAll(t9Key)
                 rows.add(keyBeans)
-                keyBeans = lastRows(numberLine)
+                keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
             0x3000 -> {// 3000 手写键盘
@@ -132,7 +132,7 @@ class KeyboardLoaderUtil private constructor() {
                 handwritingKey.mLeftF = 0.815f
                 keyBeans.add(handwritingKey)
                 rows.add(keyBeans)
-                keyBeans = lastRows(numberLine)
+                keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
             0x4000 -> {// 4000 英文全键
@@ -161,7 +161,7 @@ class KeyboardLoaderUtil private constructor() {
                     widthF = 0.147f
                 }
                 rows.add(keyBeans)
-                keyBeans = lastRows(numberLine)
+                keyBeans = lastRows(skbValue)
                 keyBeans[keyBeans.size -2].stateId = 1
                 rows.add(keyBeans)
             }
@@ -170,7 +170,7 @@ class KeyboardLoaderUtil private constructor() {
                 val keyDelete = if(ThemeManager.prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 8, 9, 10, keyDelete.first),
-                    arrayOf(11, 12, 13, 0),
+                    arrayOf(11, 12, 13, 56),
                     arrayOf(14, 15, 16, keyDelete.second),)
                 var t9Keys = createT9NumberKeys(keys[0])
                 t9Keys.first().apply {
@@ -194,7 +194,7 @@ class KeyboardLoaderUtil private constructor() {
                 t9Keys.last().widthF = 0.18f
                 keyBeans.addAll(t9Keys)
                 rows.add(keyBeans)
-                keyBeans = lastRows(numberLine, true)
+                keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
             0x6000 -> {     // 6000 乱序17键盘
@@ -214,7 +214,7 @@ class KeyboardLoaderUtil private constructor() {
                 lX17Keys = createLX17Keys(keys[2])
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
-                keyBeans = lastRows(numberLine)
+                keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
         }
@@ -224,7 +224,7 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     // 键盘最后一行（各键盘统一，数字键盘稍微不同）
-    private fun lastRows(numberLine: Boolean, isNumKeyboard: Boolean = false): MutableList<SoftKey> {
+    private fun lastRows(skbValue: Int): MutableList<SoftKey> {
         // enter键状态
         val enterToggleStates = LinkedList<ToggleState>()
         enterToggleStates.add(ToggleState("去往", 0))
@@ -232,23 +232,41 @@ class KeyboardLoaderUtil private constructor() {
         enterToggleStates.add(ToggleState("发送", 2))
         enterToggleStates.add(ToggleState("下一个", 3))
         enterToggleStates.add(ToggleState("完成", 4))
-        val keyBeans = mutableListOf<SoftKey>()
-        val t9Keys = if(isNumKeyboard){
-            createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6,
-                7, KeyEvent.KEYCODE_SPACE))
-        } else {
-            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
-                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
-        }
-        t9Keys[0].widthF = 0.18f
-        t9Keys[1].widthF = 0.147f
-        t9Keys[2].widthF = 0.336f
-        t9Keys[3].widthF = 0.147f
-        keyBeans.addAll(t9Keys)
         val softKeyToggle = createKeyToggle(KeyEvent.KEYCODE_ENTER)
         softKeyToggle.widthF = 0.18f
         softKeyToggle.stateId = 0
         softKeyToggle.setToggleStates(enterToggleStates)
+        val keyBeans = mutableListOf<SoftKey>()
+        val t9Keys = if(0x5000 == skbValue){  // 数字键盘
+            createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6, 7, KeyEvent.KEYCODE_SPACE)).apply {
+                this[0].widthF = 0.18f
+                this[1].widthF = 0.147f
+                this[2].widthF = 0.336f
+                this[3].widthF = 0.147f
+            }
+        } else if(0x2000 == skbValue){ // T9键盘
+            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)).apply {
+                this[0].widthF = 0.18f
+                this[1].widthF = 0.147f
+                this[2].widthF = 0.336f
+                this[3].widthF = 0.147f
+            }
+        } else if(0x4000 == skbValue){ // 英文键盘
+            softKeyToggle.widthF = 0.147f
+            createQwertyKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14,
+                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)).apply {
+                this[0].widthF = 0.147f
+                this[3].widthF = 0.396f
+            }
+        } else {
+            softKeyToggle.widthF = 0.147f
+            createQwertyPYKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13,
+                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)).apply {
+                this[0].widthF = 0.147f
+                this[3].widthF = 0.396f
+            }
+        }
+        keyBeans.addAll(t9Keys)
         keyBeans.add(softKeyToggle)
         return keyBeans
     }
