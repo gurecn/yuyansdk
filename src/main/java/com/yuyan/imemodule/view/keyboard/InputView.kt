@@ -316,9 +316,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(sKey != null){
             val handled = when(sKey.keyCode){
                 InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> {
-                    if(getInstance().keyboardSetting.switchIMEKey.getValue()) {
+//                    if(getInstance().keyboardSetting.switchIMEKey.getValue()) {
                         InputMethodUtil.showPicker()
-                    }
+//                    }
                     true
                 }
                 InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
