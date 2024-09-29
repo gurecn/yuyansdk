@@ -11,12 +11,13 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.view.keyboard.doubleAbcPYKeyPreset
-import com.yuyan.imemodule.view.keyboard.doubleFlyPYKeyPreset
-import com.yuyan.imemodule.view.keyboard.doubleMSPYKeyPreset
-import com.yuyan.imemodule.view.keyboard.doubleNaturalPYKeyPreset
-import com.yuyan.imemodule.view.keyboard.doubleSogouPYKeyPreset
-import com.yuyan.imemodule.view.keyboard.doubleZiguangPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.doubleAbcMnemonicPreset
+import com.yuyan.imemodule.view.keyboard.doubleFlyMnemonicPreset
+import com.yuyan.imemodule.view.keyboard.doubleMSMnemonicPreset
+import com.yuyan.imemodule.view.keyboard.doubleNaturalMnemonicPreset
+import com.yuyan.imemodule.view.keyboard.doubleSogouMnemonicPreset
+import com.yuyan.imemodule.view.keyboard.doubleZiguangMnemonicPreset
+import com.yuyan.imemodule.view.keyboard.lx17MnemonicPreset
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
@@ -322,19 +323,19 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     private fun createQwertyPYKeys(codes: Array<Int>): Array<SoftKey> {
-        val keyPreset = when (rimeValue) {
-            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.flypy -> doubleFlyPYKeyPreset
-            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.abc -> doubleAbcPYKeyPreset
-            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.mspy -> doubleMSPYKeyPreset
-            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.natural -> doubleNaturalPYKeyPreset
-            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.sogou -> doubleSogouPYKeyPreset
-            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.ziguang -> doubleZiguangPYKeyPreset
-            else -> qwertyPYKeyPreset
+        val keyMnemonicPreset = when (rimeValue) {
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.flypy -> doubleFlyMnemonicPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.abc -> doubleAbcMnemonicPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.mspy -> doubleMSMnemonicPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.natural -> doubleNaturalMnemonicPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.sogou -> doubleSogouMnemonicPreset
+            CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.ziguang -> doubleZiguangMnemonicPreset
+            else -> emptyMap()
         }
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
-            val labels = keyPreset[code]
-            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", labels?.getOrNull(2) ?: "").apply {
+            val labels = qwertyPYKeyPreset[code]
+            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", keyMnemonicPreset[code] ?: "").apply {
                 widthF = 0.099f
             })
         }
@@ -375,7 +376,7 @@ class KeyboardLoaderUtil private constructor() {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
             val labels = lx17PYKeyPreset[code]
-            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", labels?.getOrNull(2) ?: "").apply {
+            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", lx17MnemonicPreset[code] ?: "").apply {
                 widthF = 0.165f
             })
         }

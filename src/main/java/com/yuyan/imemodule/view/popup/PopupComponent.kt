@@ -10,7 +10,6 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.view.keyboard.InputView
 import org.mechdancer.dependency.Dependent
 import org.mechdancer.dependency.UniqueComponent
 import org.mechdancer.dependency.manager.ManagedHandler
@@ -72,14 +71,12 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
         showingEntryUi = popup
     }
 
-    fun showKeyboard(label: String, service: InputView?, bounds: Rect) {
-        val keys = if(service != null && service.mInputModeSwitcher.isChinese) {
-            PopupChinesePreset[label] ?: return
-        } else {
-            PopupPreset[label] ?: return
-        }
+    fun showKeyboard(label: String, labelSmall: String, bounds: Rect) {
         showingEntryUi?.setText("") ?: showPopup("", bounds)
-        reallyShowKeyboard(keys, bounds)
+        val labels =  (PopupSmallPreset[labelSmall] ?: emptyArray<String>()).plus(PopupPreset[label] ?: emptyArray())
+        if(label.isNotBlank()) {
+            reallyShowKeyboard(labels, bounds)
+        }
     }
 
     fun showKeyboardMenu(mCurrentKey: SoftKey?, bounds: Rect) {

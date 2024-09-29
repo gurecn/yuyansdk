@@ -128,9 +128,7 @@ object StringUtils {
     fun converted2FlowerTypeface(src: String): String {
          return  when(LauncherModel.instance.flowerTypeface) {
             FlowerTypefaceMode.Mars -> {  //焱暒妏
-                 src.map {
-                    simplified2HotPreset[it]?:it
-                }.joinToString("")
+                 src.map { simplified2HotPreset[it]?:it }.joinToString("")
             }
             FlowerTypefaceMode.FlowerVine -> {   // ζั͡花ั͡藤ั͡字ั͡✾
                 "ζั͡" + src.map { it }.joinToString("ั͡").plus("ั͡✾")

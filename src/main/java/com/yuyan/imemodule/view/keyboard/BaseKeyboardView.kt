@@ -111,7 +111,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty()))
                     softKey.keyLabel.lowercase()  else softKey.keyLabel
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
-                popupComponent.showKeyboard(keyLabel, mService, bounds)
+                popupComponent.showKeyboard(keyLabel, softKey.getmKeyLabelSmall(), bounds)
                 mLongPressKey = true
             } else if (softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 ||
                     softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 ||
