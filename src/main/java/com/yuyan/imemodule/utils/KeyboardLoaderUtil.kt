@@ -19,7 +19,9 @@ import com.yuyan.imemodule.view.keyboard.doubleSogouMnemonicPreset
 import com.yuyan.imemodule.view.keyboard.doubleZiguangMnemonicPreset
 import com.yuyan.imemodule.view.keyboard.lx17MnemonicPreset
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
+import com.yuyan.imemodule.view.keyboard.qwertyKeyNumberPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
+import com.yuyan.imemodule.view.keyboard.qwertyPYKeyNumberPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9NumberKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9PYKeyPreset
@@ -30,6 +32,7 @@ import java.util.LinkedList
  */
 class KeyboardLoaderUtil private constructor() {
     private var rimeValue: String? = null
+    private var numberLine: Boolean = false
     fun clearKeyboardMap() {
         mSoftKeyboardMap.clear()
     }
@@ -42,7 +45,7 @@ class KeyboardLoaderUtil private constructor() {
         shiftToggleStates.add(ToggleState(2))
 
         val softKeyboard: SoftKeyboard?
-        val numberLine = AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
+        numberLine = AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
         val rows: MutableList<List<SoftKey>> = LinkedList()
         if (numberLine) {
             val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
@@ -333,8 +336,9 @@ class KeyboardLoaderUtil private constructor() {
             else -> emptyMap()
         }
         val softKeys = mutableListOf<SoftKey>()
+        val keyPreset = if(numberLine)qwertyPYKeyPreset else qwertyPYKeyNumberPreset
         for(code in codes){
-            val labels = qwertyPYKeyPreset[code]
+            val labels = keyPreset[code]
             softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", keyMnemonicPreset[code] ?: "").apply {
                 widthF = 0.099f
             })
@@ -345,7 +349,8 @@ class KeyboardLoaderUtil private constructor() {
     private fun createQwertyKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
-            val labels = qwertyKeyPreset[code]
+            val keyPreset = if(numberLine)qwertyKeyPreset else qwertyKeyNumberPreset
+            val labels = keyPreset[code]
             softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", labels?.getOrNull(2) ?: "").apply {
                 widthF = 0.099f
             })
@@ -354,7 +359,8 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     private fun createHandwritingKey(code: Int): SoftKey {
-        val labels = qwertyPYKeyPreset[code]
+        val keyPreset = if(numberLine)qwertyPYKeyPreset else qwertyPYKeyNumberPreset
+        val labels = keyPreset[code]
         return SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "").apply {
             widthF = 0.18f
         }
