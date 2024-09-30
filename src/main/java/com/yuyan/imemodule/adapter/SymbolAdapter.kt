@@ -46,11 +46,7 @@ class SymbolAdapter(context: Context?, private val mDatas: Array<String>, val vi
         }
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->
-                mOnItemClickListener!!.onItemClick(
-                    this@SymbolAdapter,
-                    view,
-                    position
-                )
+                mOnItemClickListener!!.onItemClick(this@SymbolAdapter, view, position)
             }
         }
     }

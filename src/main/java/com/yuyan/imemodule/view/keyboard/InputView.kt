@@ -266,12 +266,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     resetToIdleState()
                 }
             }
-            if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode || InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 == keyCode) {  // 点击标点、表情按钮
-                val symbolType = if (keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4) { 4 } else if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
+            if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
+                val symbolType = if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
                 val symbols = SymbolsManager.instance!!.getmSymbols(symbolType)
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(symbolType)
+            } else  if (InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 == keyCode) {  // 点击表情按钮
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(4)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 mInputModeSwitcher.switchModeForUserKey(keyCode)
                 resetToIdleState()

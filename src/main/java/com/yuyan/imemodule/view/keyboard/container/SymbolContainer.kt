@@ -2,17 +2,18 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
+import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.SymbolAdapter
 import com.yuyan.imemodule.adapter.SymbolTypeAdapter
@@ -22,10 +23,14 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.manager.EmojiconManager
 import com.yuyan.imemodule.manager.SymbolsManager
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import splitties.dimensions.dp
+import kotlin.math.ceil
 
 
 /**
@@ -38,12 +43,17 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
  */
 @SuppressLint("ViewConstructor")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
+    private lateinit var mPaint : Paint // 测量字符串长度
+    private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
+    private var mShowType = 0
+    private var mSymbolsEmoji : HashMap<Int, Array<String>>? = null
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null
     @SuppressLint("ClickableViewAccessibility")
     private fun initView(context: Context) {
-        val mLLSymbolType = LayoutInflater.from(getContext())
-            .inflate(R.layout.sdk_view_symbols_emoji_type, this, false) as LinearLayout
+        mPaint = Paint()
+        mPaint.textSize = dp(22f)
+        val mLLSymbolType = LayoutInflater.from(getContext()).inflate(R.layout.sdk_view_symbols_emoji_type, this, false) as LinearLayout
         mRVSymbolsType = mLLSymbolType.findViewById(R.id.rv_symbols_emoji_type)
         val layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
         mRVSymbolsType?.setLayoutManager(layoutManager)
@@ -82,10 +92,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         layoutParams.addRule(ALIGN_PARENT_BOTTOM)
         mLLSymbolType.layoutParams = layoutParams
         this.addView(mLLSymbolType)
-        val layoutParams2 = LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT
-        )
+        val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams2.addRule(ABOVE, mLLSymbolType.id)
         mRVSymbolsView!!.layoutParams = layoutParams2
         this.addView(mRVSymbolsView)
@@ -111,7 +118,6 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         inputView.responseKeyEvent(softKey)
     }
 
-    private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
 
     init {
         initView(context)
@@ -120,8 +126,10 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private fun onTypeItemClickOperate(position: Int) {
         if (position < 0) return
         if (lastPosition != position) {
-            val symbols = SymbolsManager.instance!!.getmSymbols(position)
-            inputView.showSymbols(symbols)
+            if(mShowType != 4) {
+                val symbols = SymbolsManager.instance!!.getmSymbols(position)
+                inputView.showSymbols(symbols)
+            }
             updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)
         } else {
             inputView.resetToIdleState()
@@ -130,27 +138,76 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     }
 
     //显示表情和符号
-    private fun updateSymbols(listener: OnRecyclerItemClickListener, viewType: Int) {
-        lastPosition = viewType
-        val faceData = SymbolsManager.instance!!.getmSymbolsData(viewType)
-        val mSymbolAdapter = SymbolAdapter(context, faceData, viewType)
-        val manager = FlexboxLayoutManager(context)
-        manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
-        mRVSymbolsView!!.setLayoutManager(manager)
-        mSymbolAdapter.setOnItemClickLitener(listener)
-        mRVSymbolsView!!.setAdapter(mSymbolAdapter)
+    private fun updateSymbols(listener: OnRecyclerItemClickListener, position: Int) {
+        lastPosition = position
+        val faceData = mSymbolsEmoji?.get(position)
+        if(!faceData.isNullOrEmpty()) {
+            calculateColumn(faceData)
+            val mSymbolAdapter = SymbolAdapter(context, faceData, mShowType)
+            val layoutManager = GridLayoutManager(context, 6)
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(i: Int): Int {
+                    return mHashMapSymbols[i] ?: 1
+                }
+            }
+            mRVSymbolsView!!.setLayoutManager(layoutManager)
+            mSymbolAdapter.setOnItemClickLitener(listener)
+            mRVSymbolsView!!.setAdapter(mSymbolAdapter)
+        }
+    }
+
+    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
+
+    /**
+     * 计算符号列表实际所占列数
+     */
+    private fun calculateColumn(data: Array<String>) {
+        mHashMapSymbols.clear()
+        val itemWidth = if(mShowType == 4) EnvironmentSingleton.instance.skbWidth/6 - dp(20)
+        else EnvironmentSingleton.instance.skbWidth/6 - dp(40)
+        var mCurrentColumn = 0
+        for (position in data.indices) {
+            val candidate = data[position]
+            var count = getSymbolsCount(candidate, itemWidth)
+            var nextCount = 0
+            if (data.size > position + 1) {
+                val nextCandidate = data[position + 1]
+                nextCount = getSymbolsCount(nextCandidate, itemWidth)
+            }
+            if (mCurrentColumn + count + nextCount > 6) {
+                count = 6 - mCurrentColumn
+                mCurrentColumn = 0
+            } else {
+                mCurrentColumn = (mCurrentColumn + count) % 6
+            }
+            mHashMapSymbols[position] = count
+        }
+    }
+
+    /**
+     * 根据词长计算当前候选词需占的列数
+     */
+    private fun getSymbolsCount(data: String, itemWidth:Int): Int {
+        return if (!TextUtils.isEmpty(data)) {
+            ceil(mPaint.measureText(data).div(itemWidth)).toInt()
+        } else 0
     }
 
     /**
      * 切换显示界面
      */
     fun setSymbolsView(showType: Int) {
-        lastPosition = showType
-        updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            onItemClickOperate(parent, position)
-        }, showType)
-        val data = resources.getStringArray(R.array.symbolType)
-        val adapter = SymbolTypeAdapter(context, data, showType)
+        mShowType = showType
+        var pos = showType
+        mSymbolsEmoji = if(mShowType == 4){
+            pos = 0
+            EmojiconManager.instance!!.getmSymbolsData()
+        } else {
+            SymbolsManager.instance!!.getmSymbolsData()
+        }
+        updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int -> onItemClickOperate(parent, position) }, pos)
+        val data = resources.getStringArray(if(mShowType == 4)R.array.emojiconType else R.array.symbolType)
+        val adapter = SymbolTypeAdapter(context, data, lastPosition)
         adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             // 播放按键声音和震动
             DevicesUtils.tryPlayKeyDown()

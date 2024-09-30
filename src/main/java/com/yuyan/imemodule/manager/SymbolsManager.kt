@@ -1,43 +1,20 @@
 package com.yuyan.imemodule.manager
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
 import com.yuyan.imemodule.application.LauncherModel
-import com.yuyan.imemodule.entity.emojicon.PeopleEmoji
-import com.yuyan.imemodule.utils.StringUtils.convertListToString
-import java.io.IOException
-import java.util.Collections
 
 /**
  * 标点符号管理类和表情
  */
-class SymbolsManager private constructor(private val mContext: Context) {
+class SymbolsManager private constructor() {
     private val mSymbolsEmoji : HashMap<Int, Array<String>> = HashMap()
 
-    fun getmSymbolsData(position: Int): Array<String> {
-        return mSymbolsEmoji[position]!!
+    fun getmSymbolsData(): HashMap<Int, Array<String>> {
+        return mSymbolsEmoji
     }
 
     fun getmSymbols(position: Int): Array<String> {
-        var data: Array<String>
-        if (position == 5) { //常用颜文字
-            data = LauncherModel.instance.usedEmoticonsDao!!.allUsedEmoticons
-            if (data.isEmpty()) {
-                data = getmSymbolsData(5)
-            }
-        } else if (position == 4) {  //常用表情
-            data = LauncherModel.instance.usedEmojiDao!!.allUsedEmoji
-            if (data.isEmpty()) {
-                data = getmSymbolsData(4)
-            }
-        } else {  //常用符号
-            data = LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
-            if (data.isEmpty()) {
-                data = getmSymbolsData(0)
-            }
-        }
-        return data
+        return LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
     }
 
     init {
@@ -45,13 +22,11 @@ class SymbolsManager private constructor(private val mContext: Context) {
         mSymbolsEmoji[1] = ENGLISH_DATA
         mSymbolsEmoji[2] = SHUXUE
         mSymbolsEmoji[3] = TESHU
-        mSymbolsEmoji[4] = PeopleEmoji.DATA
-        mSymbolsEmoji[5] = SMILE
     }
 
     companion object {
-        fun initInstance(context: Context) {
-            instance = SymbolsManager(context)
+        fun initInstance() {
+            instance = SymbolsManager()
         }
 
         @SuppressLint("StaticFieldLeak")
@@ -93,35 +68,6 @@ class SymbolsManager private constructor(private val mContext: Context) {
             "↑",  "↓",  "←",  "→",  "↔",  "↕",  "◤",  "◣",  "◥",  "◢",  "ⓐ",  "ⓑ",  "ⓒ",  "ⓓ",
              "ⓔ",  "ⓕ",  "ⓖ",  "ⓗ",  "ⓘ",  "ⓙ",  "ⓚ",  "ⓛ",  "ⓜ",  "ⓝ",  "ⓞ",  "ⓟ",  "ⓠ",  "ⓡ",
              "ⓢ",  "ⓣ",  "ⓤ",  "ⓥ",  "ⓦ",  "ⓧ",  "ⓨ",  "ⓩ", )
-        val SMILE: Array<String> = arrayOf(
-            "^_^","> <",">_<",">_<||","-_-b","-_-C","-_-||","-_-#","←_←","→_→","|ω·)","ↁ_ↁ","●rz","★rz","口rz","○rz",
-            "囧rz","冏rz","崮rz","莔rz","商rz","囧rz=З","\\囧/","\\莔/","Ծ‸Ծ","- -","- -~","- -?","= =","= =~",
-            "= =?","=.=","=。=","=3=","=W=","XD","^^","ToT","T_T","TAT","0.0","ಠ_ಠ","o_O","@_@",":)",":D",
-            ":P",":(",":-)",":-D",":-P",":-(",";-)",":-O","●︿●","●﹏●","●０●","●▽●","๑乛◡乛๑","(ㅍ_ㅍ)","(つд⊂)",
-            "ฅ^ω^ฅ","(〃ω〃)","(≧ω≦)","(눈_눈)","(ΘωΘ)","◑﹏◐","╯﹏╰","(⌒▽⌒)","(￣3￣)","(･∀･)","(<_<)","(>_>)",
-            "(˘❥˘)","*^_^*","⊙﹏⊙‖∣","⊙︿⊙","⊙﹏⊙","(⊙０⊙)","(⊙ｏ⊙)","(┬＿┬)","(＞﹏＜)","(ˉ﹃ˉ)","(￣▽￣)","凸^-^凸",
-            "凹^-^凹","︻┳═一","︻︼─一","▄︻┳一·","▄︻┳═一","(☆_☆)","(￣.￣)","(ಥ_ಥ)","(⊙ꇴ⊙)","一 一+","(ˇ︿ˇ﹀","(･ิω･ิ)",
-            "(⁄ ⁄•⁄ω⁄•⁄ ⁄)","(๑¯◡¯๑)","( ¯•ω•¯ )","(╬◣д◢)","✧( ु•⌄• )◞","( ¯•ω•¯ )","ヽ(‘ ∇‘ )ノ","(இдஇ; )","(o´ω`o)",
-            "(•౪• )","(๑꒪⍘꒪๑)","∠( ᐛ 」∠)＿","(๑•̀ㅂ•́) ✧","ლ(╹◡╹ლ)","_(:з」∠)_","( •̥́ ˍ •̀ू )","(๑•́ ∀ •̀๑)","(ง •̀_•́)ง",
-            "(⇀‸↼‶)","(。・ω・)","(=・ω・=)","(/・ω・\\)","(°∀°)ﾉ","(\"▔□▔)/","(;¬_¬)","((^ω^))","( *・ω・)✄╰ひ╯",
-        "(=^・・^=)","(￣(工)￣)","(￣▽￣\")","（/TДT)/","(｡･ω･｡)","(^・ω・^ )","(´･_･`)","(-_-#)","ヽ(`Д´)ﾉ",
-        ">////<","ლ(･ิω･ิლ)","(๑•̀.̫•́๑)","(ʘдʘ╬)","d(ŐдŐ๑)","\\(^o^)/","└(^o^)┘","Y(^_^)Y","::>_<::","~>_<~+","o(-\"-)o",
-            "^*(- -)*^","($ _ $)","(⊙_⊙)?","(>^ω^<)","\\(≥ω≤)/","(^。^)y-~~","(^_^)∠※","(#‵′)凸","<(‵^′)>","(─.─|||",
-            "ψ(╰_╯)","(ㄒoㄒ)//","Σ(ﾟдﾟ;)","√(─皿─)√","(/ □ \\)","<(‵□′)/","\\(\"▔□▔)/","((‵□′))","<(￣︶￣)>","╭(′▽`)╯",
-            "╰(′▽`)╮","( ´ ▽ ` )ﾉ","╮(╯▽╰)╭","( # ▽ # )","╮(╯3╰)╭","╭(╯^╰)╮","\\(0^◇^0)/","≡[。。]≡","∑(°Д.°)","(;￣ェ￣)",
-            "(⌒-⌒; )","(=・ω・=)","( ´_ゝ｀)","(´；ω；`)","(＃－－)/ .","(｀・ω・´)","( •̥́ ˍ •̀ू )","(〜￣△￣)〜","╮(￣▽￣)╭",
-            "(ﾟДﾟ≡ﾟдﾟ)!?","Σ( ￣□￣||)","(￣ε(#￣) Σ","ㄟ(￣▽￣ㄟ)","（●＾o＾●）","(╯°口°)╯(┴—┴","（#-_-)┯━┯","‵（*∩_∩*）′",
-            "‵（*^﹏^*）′","^_^o~ 努力！","-_-。sorry！","~\\(≧▽≦)/~","(～﹃～)~zZ","o(一＾一+)o","╭(￣m￣*)╮","<(￣oo,￣)/",
-            "ㄟ(川.一ㄟ)","(～￣▽￣)ノ","(*￣(工)￣)","(●￣(ｴ)￣●)","╭(﹊∩∩﹊#)╮","p(*///▽///*)q","ε=ε=(ノ≧∇≦)ノ","(≧∇≦)/(*^ω^*)",
-            "(￣o￣) . z Z","(〜￣▽￣)〜","(๑＞ڡ＜)","☆ (´▽｀)ノ♪","ε٩(๑> ₃ <)۶з","(^_^メ)","(❁´ω`❁)","(｡･ω･｡)ﾉ♡","(ಡ艸ಡ)噗",
-            "(◉ω◉ )","(*^▽^)/★*☆","ԅ(¯㉨¯ԅ)","(\"▔㉨▔)","（*/㉨＼*）","(๑‾᷅㉨‾᷅๑)","(  •㉨•¯ ;)","(〜 ;￣㉨￣)〜","( ;·̀㉨·́)ง",
-            "ヽ(○^㉨^)ﾉ♪","(∪㉨∪)｡｡｡zzz","「◦㉨◦」不会吧","(๑•̀㉨•́ฅ✧ 早","(｡˘•㉨•˘｡)心疼..","♪～(´ε｀　)","（ ´^ิω^ิ｀）","ヾ(@゜∇゜@)ノ",
-            "_(:3」∠❀)_","ヾ(Ő∀Ő๑)ﾉ太好惹","(=´∀｀)人(´∀｀=)","(ノ=Д=)ノ┻━┻","(╯°Д°)╯︵┴┴","(/≧▽≦)/~┴┴","（╯‵□′）╯︵┴─┴",
-            "╭(￣▽￣)╯╧═╧","（\\#-_-)\\┯━┯","┴┴~(≧▽≦)/~┴┴","＼（´Ｏ‘）／","(+﹏+)~狂晕","(ˇ?ˇ)  想～","o(︶︿︶)o 唉","(￣︶￣)↗ 涨",
-            "(┬＿┬)↘ 跌","哼(ˉ(∞)ˉ)唧","( ^_^ )/~~拜拜","d(╯﹏╰)b 咕~~","(^人^) 拜托啦~","( ^_^ )不错嘛!","o(∩_∩)o 哈哈","(*^__^*) 嘻嘻",
-            "o(≧v≦)o~~好棒","o(>﹏<)o不要啊！","(*+﹏+*)~ 受不了！","(°ο°)~@ 晕倒了..","~\\(≧▽≦)/~啦啦啦","<(￣▽￣)> 哇哈哈…",
-            "(Θ㉨Θ)你们还是图样","┣▇▇▇═─","▄︻┻═┳一","(｡･ω･｡)ﾉ♡(>﹏<)","٩( ;•̀㉨•́ ;)و get！","( ⌒㉨⌒)人(⌒㉨⌒ )v","( •̥́ ㉨ •̀ू )嘤嘤嘤~",
-            "( ͡ ͡° ͜ ʖ ͡ ͡°)","ヽ(*^㉨^)人(^㉨^*)ノ","┐( ;‾᷅㉨‾᷅ ;)┌ ;怪我咯","( ,,´･㉨･)ﾉ\"(´っω･｀｡)摸头","╭( ′• ㉨ •′ )╭☞警察叔叔！就是这个人！",
-            "ε=ε=ε=ε=ε=ε=┌(;ˉ㉨ˉ)┘","( ´°̥̥̥̥̥̥̥̥ω°̥̥̥̥̥̥̥̥`)","ε=ε=ε=(ﾉ*~㉨~)ﾉε=ε=ε=(ﾟ㉨ﾟﾉ)ﾉ","(•̤̀ᵕ•̤́๑)ᵒᵏᵎᵎᵎᵎ","(*◑∇◑)☞☜(◐∇◐*)","╭( ′• o •′ )╭☞就是这个人！",)
+
     }
 }

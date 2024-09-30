@@ -9,7 +9,8 @@ import androidx.emoji.text.EmojiCompat
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
-import com.yuyan.imemodule.manager.SymbolsManager.Companion.initInstance
+import com.yuyan.imemodule.manager.EmojiconManager
+import com.yuyan.imemodule.manager.SymbolsManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.ClipboardHelper
 import com.yuyan.imemodule.ui.utils.isDarkMode
@@ -44,7 +45,8 @@ open class ImeSdkApplication : Application() {
     private fun onInitDataChildThread() {
         ThreadPoolUtils.executeSingleton {
             imeInit()
-            initInstance(context) //初始化符合和表情管理类
+            SymbolsManager.initInstance() //初始化符合和表情管理类
+            EmojiconManager.initInstance() //初始化符合和表情管理类
             //初始化键盘主题
             val isFollowSystemDayNight = prefs.followSystemDayNightTheme.getValue()
             if (isFollowSystemDayNight) {

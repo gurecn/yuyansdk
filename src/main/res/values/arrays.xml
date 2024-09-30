@@ -14,8 +14,16 @@
         <item>"英文"</item>
         <item>"数学"</item>
         <item>"其他"</item>
-        <item>"😄"</item>
-        <item>"Ծ‸Ծ"</item>
+    </string-array>
+
+    <string-array name="emojiconType">
+        <item>"常用"</item>
+        <item>"人物"</item>
+        <item>"动物"</item>
+        <item>"食物"</item>
+        <item>"建筑"</item>
+        <item>"符号"</item>
+        <item>"颜文字"</item>
     </string-array>
 
     <string-array name="SymbolRealNine">
