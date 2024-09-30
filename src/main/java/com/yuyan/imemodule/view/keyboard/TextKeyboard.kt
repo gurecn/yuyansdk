@@ -32,8 +32,6 @@ import kotlin.math.min
 open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     /** Notes if the keyboard just changed, so that we could possibly reallocate the mBuffer.  */
     private var mKeyboardChanged = false
-    /** The dirty region in the keyboard bitmap  */
-    private var mDirtyRect = Rect()
     /** The keyboard bitmap for faster updates  */
     private var mBuffer: Bitmap? = null
     /** The canvas for the above mutable keyboard bitmap  */
@@ -158,15 +156,16 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         if (mSoftKeyboard == null) return
         mCanvas!!.save()
         val canvas = mCanvas
+        canvas?.clipRect(mDirtyRect)
+        val clipRegion = Rect(0, 0, 0, 0)
         val invalidKey = mInvalidatedKey
         var drawSingleKey = false
-        if (invalidKey != null) {
-            mDirtyRect.union(invalidKey.mLeft, invalidKey.mTop, invalidKey.mRight, invalidKey.mBottom)
-            drawSingleKey = true
-        } else {
-            mDirtyRect.union(0, 0, width, height)
+        if (invalidKey != null && canvas!!.getClipBounds(clipRegion)) {
+            if (invalidKey.mLeft <= clipRegion.left && invalidKey.mTop <= clipRegion.top
+                && invalidKey.mRight >= clipRegion.right && invalidKey.mBottom >= clipRegion.bottom) {
+                drawSingleKey = true
+            }
         }
-        canvas?.clipRect(mDirtyRect)
         canvas?.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
         val env = instance
         mNormalKeyTextSize = env.keyTextSize

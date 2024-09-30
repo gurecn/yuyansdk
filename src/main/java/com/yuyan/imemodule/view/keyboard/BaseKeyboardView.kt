@@ -2,6 +2,8 @@ package com.yuyan.imemodule.view.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
@@ -42,7 +44,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var mHandler: Handler? = null
     /** Whether the keyboard bitmap needs to be redrawn before it's blitted.  */
     protected var mDrawPending = false
-
+    /** The dirty region in the keyboard bitmap  */
+    protected var mDirtyRect = Rect()
     //输入法服务
     protected var mService: InputView? = null
     fun setResponseKeyEvent(service: InputView?) {
@@ -87,6 +90,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     fun invalidateAllKeys() {
+        mDirtyRect.union(0, 0, width, height)
         mDrawPending = true
         invalidate()
     }
@@ -94,6 +98,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     fun invalidateKey(key: SoftKey?) {
         mInvalidatedKey = key
         if (key == null) return
+        mDirtyRect.union(key.mLeft, key.mTop, key.mRight, key.mBottom)
         onBufferDraw()
         invalidate()
     }
