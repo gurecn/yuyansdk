@@ -140,7 +140,9 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     //显示表情和符号
     private fun updateSymbols(listener: OnRecyclerItemClickListener, position: Int) {
         lastPosition = position
-        val faceData = mSymbolsEmoji?.get(position)
+        val faceData =  if(mShowType == 4 && position == 0){
+            EmojiconManager.instance?.getmSymbols()
+        } else mSymbolsEmoji?.get(position)
         if(!faceData.isNullOrEmpty()) {
             calculateColumn(faceData)
             val mSymbolAdapter = SymbolAdapter(context, faceData, mShowType)
