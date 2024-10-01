@@ -2,18 +2,15 @@ package com.yuyan.imemodule.adapter
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.VectorDrawable
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
@@ -22,6 +19,7 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.DevicesUtils.px2dip
+import com.yuyan.imemodule.utils.LogUtil
 import splitties.views.dsl.core.margin
 
 /**
@@ -56,7 +54,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
                 setMargins(marginValue, marginValue, marginValue, marginValue)
             }
         } else {
-            mContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            mContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                 setMargins(marginValue*2, marginValue, marginValue*2, marginValue)
             }
@@ -77,17 +75,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
             LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
             margin = marginValue
         }
-        val viewRightBtn = ImageView(mContext)
-        viewRightBtn.id = R.id.clipboard_adapter_delete
-        viewRightBtn.isClickable = true
-        viewRightBtn.setEnabled(true)
-        viewRightBtn.setImageResource(R.drawable.ic_baseline_delete)
-        viewRightBtn.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT, 0f).apply {
-            margin = marginValue
-        }
         mContainer.addView(viewContext)
-        mContainer.addView(viewRightBtn)
         return SymbolHolder(mContainer)
     }
 
@@ -97,26 +85,24 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
         holder.textView.setOnClickListener { view: View? ->
             mOnItemClickListener!!.onItemClick(this@ClipBoardAdapter, view, position)
         }
-        holder.deleteView.setOnClickListener{ _: View? ->
-            LauncherModel.instance.mClipboardDao?.deleteClipboard(dataBean)
-            mDatas.removeAt(position)
-            notifyItemRemoved(position)
-        }
     }
 
     override fun getItemCount(): Int {
         return mDatas.size
     }
 
+    fun removePosition(position: Int):ClipBoardDataBean? {
+        LogUtil.d("11111111111", "removePosition  mDatas:${mDatas.size}   position:$position")
+        if(mDatas.size > position) return mDatas.removeAt(position)
+        return null
+    }
+
     inner class SymbolHolder(view: LinearLayout) : RecyclerView.ViewHolder(view) {
         var textView: TextView
-        var deleteView: ImageView
         init {
             textView = view.findViewById(R.id.clipboard_adapter_content)
             textView.setTextColor(textColor)
             textView.textSize = px2dip(EnvironmentSingleton.instance.candidateTextSize.toFloat()).toFloat()
-            deleteView = view.findViewById(R.id.clipboard_adapter_delete)
-            (deleteView.getDrawable() as VectorDrawable).setTint(textColor)
         }
     }
 }
