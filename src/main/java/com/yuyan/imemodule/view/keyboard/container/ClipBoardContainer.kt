@@ -5,8 +5,8 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.JustifyContent
@@ -21,7 +21,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
-import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.textResource
 
 /**
@@ -47,6 +46,15 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         }
         mRVSymbolsView = RecyclerView(context)
         mRVSymbolsView!!.setItemAnimator(null)
+        val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        mRVSymbolsView!!.layoutParams = layoutParams2
+        this.addView(mRVSymbolsView)
+    }
+
+    /**
+     * 显示候选词界面 , 点击候选词时执行
+     */
+    fun showClipBoardView() {
         val manager = if(AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
             mRVSymbolsView!!.setHasFixedSize(false)
             CustomFlexboxLayoutManager(context).apply {
@@ -57,15 +65,6 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
         mRVSymbolsView!!.setLayoutManager(manager)
-        val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        mRVSymbolsView!!.layoutParams = layoutParams2
-        this.addView(mRVSymbolsView)
-    }
-
-    /**
-     * 显示候选词界面 , 点击候选词时执行
-     */
-    fun showClipBoardView() {
         val copyContents : MutableList<ClipBoardDataBean> = LauncherModel.instance.mClipboardDao?.getAllClipboardContent("") ?: return
         val viewParent = mTVLable?.parent
         if (viewParent != null) {
@@ -74,19 +73,32 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         if(copyContents.size == 0){
             this.addView(mTVLable, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         }
-        val words = ArrayList<CandidateListItem?>()
-        for (clipBoardDataBean in copyContents) {
-            val copyContent = clipBoardDataBean.copyContent
-            if(!copyContent.isNullOrEmpty()) {
-                words.add(CandidateListItem("", copyContent))
-            }
-        }
         val adapter = ClipBoardAdapter(context, copyContents)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is ClipBoardAdapter) {
                 inputView.responseLongKeyEvent(SoftKey(), copyContents[position].copyContent)
             }
         }
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
+                return makeMovementFlags(0, swipeFlags)
+            }
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.getBindingAdapterPosition()
+                val item = (mRVSymbolsView?.adapter as ClipBoardAdapter).removePosition(position)
+                if(item != null) {
+                    LauncherModel.instance.mClipboardDao?.deleteClipboard(item)
+                    mRVSymbolsView?.adapter?.notifyItemRemoved(position)
+                } else {
+                    showClipBoardView()
+                }
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(mRVSymbolsView)
         mRVSymbolsView!!.setAdapter(adapter)
     }
 }
