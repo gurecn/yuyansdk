@@ -71,7 +71,7 @@ abstract class ManagedPreferenceCategory(
     ): ManagedPreference.PInt {
         val pref = ManagedPreference.PInt(sharedPreferences, key, defaultValue)
         // Int can overflow when min < 0 && max == Int.MAX_VALUE
-        val ui = if ((max.toLong() - min.toLong()) / step.toLong() >= 240L)
+        val ui = if ((max.toLong() - min.toLong()) / step.toLong() >= 500L)
             ManagedPreferenceUi.EditTextInt(
                 title, key, defaultValue, min, max, unit, enableUiOn
             )

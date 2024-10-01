@@ -194,7 +194,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
     }
 
     private fun deleteOverageItems() {
-        val clipboardHistoryLimit = AppPrefs.getInstance().clipboard.clipboardHistoryLimit.getValue() - 1
+        val clipboardHistoryLimit = AppPrefs.getInstance().clipboard.clipboardHistoryLimit.getValue()
         val commonWhere = ClipboardTable.CONTENT_ID + " not in (select " + ClipboardTable.CONTENT_ID + " from " + ClipboardTable.TABLE_NAME + " order by " + ClipboardTable.COPY_TIME + " desc limit " + clipboardHistoryLimit +")"
         mHelper.clearDatabase(ClipboardTable.TABLE_NAME, commonWhere)
     }
