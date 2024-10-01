@@ -274,7 +274,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(symbolType)
             } else  if (InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 == keyCode) {  // 点击表情按钮
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(4)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 mInputModeSwitcher.switchModeForUserKey(keyCode)
                 resetToIdleState()
@@ -763,8 +763,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                     return
                 }
-                val symbols = SymbolsManager.instance!!.getmSymbols(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             }
