@@ -268,6 +268,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             200,
             "秒"
         ) { clipboardListening.getValue() && clipboardSuggestion.getValue() }
+
+        val clipboardLayoutCompact = switch(R.string.clipboard_layout_compact_mode, "clipboard_layout_compact_enable", false) { clipboardListening.getValue() }
     }
 
     private val providers = mutableListOf<ManagedPreferenceProvider>()

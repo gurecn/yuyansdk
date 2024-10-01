@@ -5,18 +5,22 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.textResource
 
@@ -42,9 +46,16 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize.toFloat()).toFloat()
         }
         mRVSymbolsView = RecyclerView(context)
-        mRVSymbolsView!!.setHasFixedSize(true)
         mRVSymbolsView!!.setItemAnimator(null)
-        val manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val manager = if(AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
+            mRVSymbolsView!!.setHasFixedSize(false)
+            CustomFlexboxLayoutManager(context).apply {
+                justifyContent = JustifyContent.FLEX_START // 设置主轴对齐方式为居左
+            }
+        } else {
+            mRVSymbolsView!!.setHasFixedSize(true)
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        }
         mRVSymbolsView!!.setLayoutManager(manager)
         val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         mRVSymbolsView!!.layoutParams = layoutParams2

@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
@@ -32,6 +33,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     private val mContext: Context
     private var textColor: Int
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
+    private var clipboardLayoutCompact:Boolean
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
@@ -41,15 +43,23 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
         val theme = activeTheme
         textColor = theme.keyTextColor
         mContext = context
+        clipboardLayoutCompact = AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
         val mContainer = LinearLayout(mContext)
         mContainer.gravity = Gravity.CENTER_VERTICAL
         val marginValue = dip2px(3)
-        mContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+        if(clipboardLayoutCompact){
+            mContainer.layoutParams = FlexboxLayoutManager.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayoutManager.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(marginValue, marginValue, marginValue, marginValue)
+            }
+        } else {
+            mContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                 setMargins(marginValue*2, marginValue, marginValue*2, marginValue)
+            }
         }
         val paddingValue = dip2px(5)
         mContainer.setPadding(paddingValue, paddingValue, paddingValue ,paddingValue)
