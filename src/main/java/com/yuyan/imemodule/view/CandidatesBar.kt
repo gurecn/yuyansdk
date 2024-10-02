@@ -20,6 +20,7 @@ import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -221,14 +222,22 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     /**
      * 显示候选词
      */
-    fun showCandidates() {
+    fun showCandidates(showType: Int = 0) {
         val container = KeyboardManager.instance.currentContainer
         mIvMenuSetting.drawable.setLevel( if(container is InputBaseContainer) 0 else 1)
         if (container is ClipBoardContainer) {
             showViewVisibility(mCandidatesMenuContainer)
-            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("ClearClipBoard")]!!, menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!)
+            mCandidatesMenuAdapter.items = listOf( menuSkbFunsPreset[SkbMenuMode.decode("ClearClipBoard")]!!,
+                menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!)
             Handler(Looper.getMainLooper()).postDelayed({
                     mCandidatesMenuAdapter.notifyDataSetChanged()
+            }, 0)
+        } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA) {
+            showViewVisibility(mCandidatesMenuContainer)
+            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!, menuSkbFunsPreset[SkbMenuMode.decode("Doutu")]!!,
+                menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!, menuSkbFunsPreset[SkbMenuMode.decode("EmojiHot")]!!)
+            Handler(Looper.getMainLooper()).postDelayed({
+                mCandidatesMenuAdapter.notifyDataSetChanged()
             }, 0)
         } else if (mDecInfo.isCandidatesListEmpty) {
             showViewVisibility(mCandidatesMenuContainer)

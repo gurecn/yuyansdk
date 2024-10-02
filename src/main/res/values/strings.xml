@@ -103,6 +103,7 @@
     <string name="build_git_hash">构建哈希</string>
     <string name="build_time">构建时间</string>
     <string name="clipboard">剪贴板</string>
+    <string name="phrases">常用语</string>
     <string name="keyboard">键盘</string>
     <string name="keyboard_feedback">按键效果</string>
     <string name="clipboard_suggestion_timeout">剪贴板提示超时</string>
@@ -237,4 +238,9 @@
     <string name="space_swipe_move_cursor">滑动空格键移动光标</string>
     <string name="keyboard_delete_location_top">九宫格删除键位置居顶</string>
     <string name="keyboard_menu_float">悬浮键盘</string>
+
+    <string name="emoticons">颜文字</string>
+    <string name="doutu">斗图</string>
+    <string name="emoji">表情</string>
+    <string name="emoji_hot">热门表情</string>
 </resources>
