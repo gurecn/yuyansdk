@@ -4,11 +4,13 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.RelativeLayout
 import android.widget.Spinner
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -176,12 +178,18 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setOnClickListener {
                     val container = KeyboardManager.instance.currentContainer
                     if (container is ClipBoardContainer) {
-                        if(mIvMenuCloseSKB.drawable.level == 1){
-                            mIvMenuCloseSKB.drawable.setLevel(2)
-                        } else if(mIvMenuCloseSKB.drawable.level == 2){
-                            mCvListener.onClickClearClipBoard()
-                            mIvMenuCloseSKB.drawable.setLevel(1)
+                        val popupMenu = PopupMenu(context, it).apply {
+                            menuInflater.inflate(R.menu.clear_clipboard, menu)
+                            setOnMenuItemClickListener { menuItem ->
+                                when (menuItem.itemId) {
+                                    R.id.clear -> {
+                                        mCvListener.onClickClearClipBoard()
+                                    }
+                                }
+                                false
+                            }
                         }
+                        popupMenu.show()
                     } else {
                         mCvListener.onClickMenu(SkbMenuMode.decode(SkbMenuMode.CloseSKB.name))
                     }

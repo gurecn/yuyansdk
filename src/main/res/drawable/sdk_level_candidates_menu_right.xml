@@ -6,7 +6,4 @@
     <item
         android:drawable="@drawable/ic_baseline_delete"
         android:maxLevel="1" />
-    <item
-        android:drawable="@drawable/baseline_check_circle_outline_24"
-        android:maxLevel="2" />
 </level-list>

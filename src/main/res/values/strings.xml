@@ -93,6 +93,7 @@
     <string name="clipboard_layout_mode_list">单列布局</string>
     <string name="clipboard_layout_mode_grid">双列布局</string>
     <string name="clipboard_layout_mode_flexbox">紧凑布局</string>
+    <string name="clipboard_clear">清空剪贴板</string>
     <string name="clipboard_empty_ltip">无任何复制内容</string>
     <string name="about">关于</string>
     <string name="feedback">吐槽与反馈</string>
