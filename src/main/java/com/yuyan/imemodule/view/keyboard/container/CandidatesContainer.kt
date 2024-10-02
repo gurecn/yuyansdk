@@ -138,7 +138,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     /**
      * 显示候选词界面 , 点击候选词时执行
      */
-    fun showCandidatesView(candidatesStart: Int) {
+    fun showCandidatesView() {
         if (mDecInfo == null || mDecInfo!!.isCandidatesListEmpty) {
             return
         }

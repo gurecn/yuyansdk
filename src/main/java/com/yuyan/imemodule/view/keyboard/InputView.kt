@@ -716,14 +716,14 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             onChoiceTouched(choiceId)
         }
 
-        override fun onClickMore(level: Int, position: Int) {
+        override fun onClickMore(level: Int) {
             if (ImeState.STATE_COMPOSING == mImeState) {
                 changeToStateInput()
             }
             if (level == 0) {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
                 val candidatesContainer = KeyboardManager.instance.currentContainer as CandidatesContainer?
-                candidatesContainer?.showCandidatesView(position)
+                candidatesContainer?.showCandidatesView()
             } else {
                 val container = KeyboardManager.instance.currentContainer
                 (container as? T9TextContainer)?.updateSymbolListView()

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.LauncherModel
@@ -22,10 +23,16 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 /**
  * 候选词界面适配器
  */
-class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem>) : RecyclerView.Adapter<CandidatesMenuAdapter.SymbolHolder>() {
+class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<CandidatesMenuAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private val itemHeight: Int
+    var items: List<SkbFunItem> = emptyList()
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(MyDiffCallback(field, value))
+            field = value
+            diffResult.dispatchUpdatesTo(this)
+        }
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
@@ -46,13 +53,10 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CandidatesMenuAdapter.SymbolHolder {
-        val view = inflater.inflate(R.layout.sdk_item_recyclerview_candidates_menu, parent, false)
-        return SymbolHolder(view)
+        return SymbolHolder(inflater.inflate(R.layout.sdk_item_recyclerview_candidates_menu, parent, false))
     }
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
+    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: CandidatesMenuAdapter.SymbolHolder, position: Int) {
         val item = items[position]
@@ -66,14 +70,8 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
             }
         }
     }
-    fun setData(data: MutableList<SkbFunItem>) {
-        this.items = data
-    }
 
-    fun getMenuMode(position: Int): SkbMenuMode {
-        return items[position].skbMenuMode
-    }
-
+    fun getMenuMode(position: Int): SkbMenuMode = items[position].skbMenuMode
 
     private fun isSettingsMenuSelect(data: SkbFunItem): Boolean {
         val rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()
@@ -89,7 +87,6 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
             SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
             SkbMenuMode.FlowerTypeface -> LauncherModel.instance.flowerTypeface != FlowerTypefaceMode.Disabled
             SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()
-
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
             SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY
@@ -99,5 +96,14 @@ class CandidatesMenuAdapter(context: Context?, var items: MutableList<SkbFunItem
             else -> false
         }
         return result
+    }
+
+    class MyDiffCallback(private val oldList: List<SkbFunItem>, private val newList: List<SkbFunItem>) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = true
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].funName == newList[newItemPosition].funName
+        }
     }
 }

@@ -26,6 +26,7 @@ enum class SkbMenuMode {
     PinyinHandWriting,
     Pinyin26Double,
     ClipBoard,
+    ClearClipBoard,
     CloseSKB;
 
     companion object : ManagedPreference.StringLikeCodec<SkbMenuMode> {
