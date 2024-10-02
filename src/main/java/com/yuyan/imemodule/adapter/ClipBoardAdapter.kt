@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
@@ -16,10 +17,10 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.DevicesUtils.px2dip
-import com.yuyan.imemodule.utils.LogUtil
 import splitties.views.dsl.core.margin
 
 /**
@@ -31,7 +32,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     private val mContext: Context
     private var textColor: Int
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
-    private var clipboardLayoutCompact:Boolean
+    private var clipboardLayoutCompact: ClipboardLayoutMode
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
@@ -48,15 +49,25 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
         val mContainer = LinearLayout(mContext)
         mContainer.gravity = Gravity.CENTER_VERTICAL
         val marginValue = dip2px(3)
-        if(clipboardLayoutCompact){
-            mContainer.layoutParams = FlexboxLayoutManager.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                FlexboxLayoutManager.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(marginValue, marginValue, marginValue, marginValue)
+
+        when (clipboardLayoutCompact){
+            ClipboardLayoutMode.ListView -> {
+                mContainer.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    setMargins(marginValue*2, marginValue, marginValue*2, marginValue)
+                }
             }
-        } else {
-            mContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(marginValue*2, marginValue, marginValue*2, marginValue)
+            ClipboardLayoutMode.GridView -> {
+                mContainer.layoutParams = GridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    setMargins(marginValue, marginValue, marginValue, marginValue)
+                }
+            }
+            ClipboardLayoutMode.FlexboxView -> {
+                mContainer.layoutParams = FlexboxLayoutManager.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    setMargins(marginValue, marginValue, marginValue, marginValue)
+                }
             }
         }
         val paddingValue = dip2px(5)
@@ -81,7 +92,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val dataBean = mDatas[position]
-        holder.textView.text = dataBean.copyContent
+        holder.textView.text = dataBean.copyContent?.replace("\n", "\\n")
         holder.textView.setOnClickListener { view: View? ->
             mOnItemClickListener!!.onItemClick(this@ClipBoardAdapter, view, position)
         }
@@ -92,7 +103,6 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     }
 
     fun removePosition(position: Int):ClipBoardDataBean? {
-        LogUtil.d("11111111111", "removePosition  mDatas:${mDatas.size}   position:$position")
         if(mDatas.size > position) return mDatas.removeAt(position)
         return null
     }

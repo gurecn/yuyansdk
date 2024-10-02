@@ -14,6 +14,7 @@ import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
+import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -269,7 +270,24 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             "秒"
         ) { clipboardListening.getValue() && clipboardSuggestion.getValue() }
 
-        val clipboardLayoutCompact = switch(R.string.clipboard_layout_compact_mode, "clipboard_layout_compact_enable", false) { clipboardListening.getValue() }
+        val clipboardLayoutCompact = list(
+            R.string.clipboard_layout_compact_mode,
+            "clipboard_layout_mode",
+            ClipboardLayoutMode.ListView,
+            ClipboardLayoutMode,
+            listOf(
+                ClipboardLayoutMode.ListView,
+                ClipboardLayoutMode.GridView,
+                ClipboardLayoutMode.FlexboxView
+            ),
+            listOf(
+                R.string.clipboard_layout_mode_list,
+                R.string.clipboard_layout_mode_grid,
+                R.string.clipboard_layout_mode_flexbox
+            )
+        ) {
+            clipboardListening.getValue()
+        }
     }
 
     private val providers = mutableListOf<ManagedPreferenceProvider>()

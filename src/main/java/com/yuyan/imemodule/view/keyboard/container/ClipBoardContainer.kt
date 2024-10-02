@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -55,14 +57,21 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showClipBoardView() {
-        val manager = if(AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
-            mRVSymbolsView!!.setHasFixedSize(false)
-            CustomFlexboxLayoutManager(context).apply {
-                justifyContent = JustifyContent.FLEX_START // 设置主轴对齐方式为居左
+        val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
+            ClipboardLayoutMode.ListView -> {
+                mRVSymbolsView!!.setHasFixedSize(true)
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             }
-        } else {
-            mRVSymbolsView!!.setHasFixedSize(true)
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            ClipboardLayoutMode.GridView -> {
+                mRVSymbolsView!!.setHasFixedSize(true)
+                GridLayoutManager(context, 2)
+            }
+            ClipboardLayoutMode.FlexboxView -> {
+                mRVSymbolsView!!.setHasFixedSize(false)
+                CustomFlexboxLayoutManager(context).apply {
+                    justifyContent = JustifyContent.FLEX_START // 设置主轴对齐方式为居左
+                }
+            }
         }
         mRVSymbolsView!!.setLayoutManager(manager)
         val copyContents : MutableList<ClipBoardDataBean> = LauncherModel.instance.mClipboardDao?.getAllClipboardContent("") ?: return
