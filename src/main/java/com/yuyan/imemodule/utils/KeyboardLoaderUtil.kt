@@ -18,6 +18,7 @@ import com.yuyan.imemodule.view.keyboard.doubleNaturalMnemonicPreset
 import com.yuyan.imemodule.view.keyboard.doubleSogouMnemonicPreset
 import com.yuyan.imemodule.view.keyboard.doubleZiguangMnemonicPreset
 import com.yuyan.imemodule.view.keyboard.lx17MnemonicPreset
+import com.yuyan.imemodule.view.keyboard.lx17PYKeyNumberPreset
 import com.yuyan.imemodule.view.keyboard.lx17PYKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyNumberPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
@@ -225,46 +226,42 @@ class KeyboardLoaderUtil private constructor() {
 
     // 键盘最后一行（各键盘统一，数字键盘稍微不同）
     private fun lastRows(skbValue: Int): MutableList<SoftKey> {
-        // enter键状态
-        val enterToggleStates = LinkedList<ToggleState>()
-        enterToggleStates.add(ToggleState("去往", 0))
-        enterToggleStates.add(ToggleState("搜索", 1))
-        enterToggleStates.add(ToggleState("发送", 2))
-        enterToggleStates.add(ToggleState("下一个", 3))
-        enterToggleStates.add(ToggleState("完成", 4))
+        val enterToggleStates = listOf(ToggleState("去往", 0), ToggleState("搜索", 1), ToggleState("发送", 2),
+            ToggleState("下一个", 3), ToggleState("完成", 4))
         val softKeyToggle = createKeyToggle(KeyEvent.KEYCODE_ENTER)
         softKeyToggle.widthF = 0.18f
         softKeyToggle.stateId = 0
         softKeyToggle.setToggleStates(enterToggleStates)
         val keyBeans = mutableListOf<SoftKey>()
-        val t9Keys = if(0x5000 == skbValue){  // 数字键盘
-            createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6, 7, KeyEvent.KEYCODE_SPACE)).apply {
-                this[0].widthF = 0.18f
-                this[1].widthF = 0.147f
-                this[2].widthF = 0.336f
-                this[3].widthF = 0.147f
+        val t9Keys = when(skbValue){
+            0x2000, 0x3000 ->{
+                createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
+                    KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
             }
-        } else if(0x2000 == skbValue){ // T9键盘
-            createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)).apply {
-                this[0].widthF = 0.18f
-                this[1].widthF = 0.147f
-                this[2].widthF = 0.336f
-                this[3].widthF = 0.147f
+            0x4000 -> {
+                createQwertyKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
+                    InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
             }
-        } else if(0x4000 == skbValue){ // 英文键盘
+            0x5000 -> {
+                createT9NumberKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6, 7, KeyEvent.KEYCODE_SPACE))
+            }
+            0x6000 -> {
+                createLX17Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
+                    InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
+            }
+            else -> {  //0x1000
+                createQwertyPYKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
+                    InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
+            }
+        }
+        if(t9Keys.size == 5){
             softKeyToggle.widthF = 0.147f
-            createQwertyKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14,
-                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)).apply {
-                this[0].widthF = 0.147f
-                this[3].widthF = 0.396f
-            }
-        } else {
-            softKeyToggle.widthF = 0.147f
-            createQwertyPYKeys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13,
-                KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)).apply {
-                this[0].widthF = 0.147f
-                this[3].widthF = 0.396f
-            }
+            t9Keys[0].widthF = 0.147f;t9Keys[1].widthF = 0.099f;
+            t9Keys[2].widthF = 0.099f;t9Keys[3].widthF = 0.396f
+            t9Keys[4].widthF = 0.099f
+        } else{
+            t9Keys[0].widthF = 0.18f;t9Keys[1].widthF = 0.147f
+            t9Keys[2].widthF = 0.336f;t9Keys[3].widthF = 0.147f
         }
         keyBeans.addAll(t9Keys)
         keyBeans.add(softKeyToggle)
@@ -398,8 +395,9 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun createLX17Keys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
+        val keyPreset = if(numberLine)lx17PYKeyPreset else lx17PYKeyNumberPreset
         for(code in codes){
-            val labels = lx17PYKeyPreset[code]
+            val labels = keyPreset[code]
             softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", lx17MnemonicPreset[code] ?: "").apply {
                 widthF = 0.165f
             })
