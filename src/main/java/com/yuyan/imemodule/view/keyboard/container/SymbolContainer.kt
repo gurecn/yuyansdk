@@ -127,7 +127,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         if (position < 0) return
         if (lastPosition != position) {
             if(mShowType != 4) {
-                val symbols = SymbolsManager.instance!!.getmSymbols(position)
+                val symbols = SymbolsManager.instance!!.getmSymbols()
                 inputView.showSymbols(symbols)
             }
             updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)

@@ -13,8 +13,9 @@ class SymbolsManager private constructor() {
         return mSymbolsEmoji
     }
 
-    fun getmSymbols(position: Int): Array<String> {
-        return LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
+    fun getmSymbols(): Array<String> {
+        val symbols = LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
+        return if(symbols.isEmpty())mSymbolsEmoji[0]!! else symbols
     }
 
     init {
