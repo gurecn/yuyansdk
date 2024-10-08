@@ -74,7 +74,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             }
         }
         mRVSymbolsView!!.setLayoutManager(manager)
-        val copyContents : MutableList<ClipBoardDataBean> = LauncherModel.instance.mClipboardDao?.getAllClipboardContent("") ?: return
+        val copyContents : MutableList<ClipBoardDataBean> = LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
         val viewParent = mTVLable?.parent
         if (viewParent != null) {
             (viewParent as ViewGroup).removeView(mTVLable)
@@ -102,8 +102,6 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 if(item != null) {
                     LauncherModel.instance.mClipboardDao?.deleteClipboard(item)
                     mRVSymbolsView?.adapter?.notifyItemRemoved(position)
-                } else {
-                    showClipBoardView()
                 }
             }
         })
