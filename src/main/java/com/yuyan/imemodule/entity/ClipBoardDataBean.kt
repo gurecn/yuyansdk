@@ -6,7 +6,7 @@ class ClipBoardDataBean {
     var isKeep = false
     var copyTime = ""
 
-    constructor(copyContentId: String?, copyContent: String?, isKeep: Boolean, copyTime: String = "") {
+    constructor(copyContentId: String?, copyContent: String?, isKeep: Boolean = false, copyTime: String = "") {
         this.copyContentId = copyContentId
         this.copyContent = copyContent
         this.isKeep = isKeep

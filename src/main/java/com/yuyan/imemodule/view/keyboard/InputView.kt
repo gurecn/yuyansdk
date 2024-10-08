@@ -753,7 +753,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
         override fun onClickClearClipBoard() {
             LauncherModel.instance.mClipboardDao?.clearAllClipBoardContent()
-            (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
+            (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
     }
 
@@ -853,13 +853,14 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
             SkbMenuMode.ClipBoard -> {
-                if(KeyboardManager.instance.currentContainer is ClipBoardContainer) {
-                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                } else {
-                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                    (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView()
-                    updateCandidateBar()
-                }
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.ClipBoard)
+                updateCandidateBar()
+            }
+            SkbMenuMode.Phrases -> {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.Phrases)
+                updateCandidateBar()
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)

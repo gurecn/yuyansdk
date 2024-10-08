@@ -227,8 +227,17 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mIvMenuSetting.drawable.setLevel( if(container is InputBaseContainer) 0 else 1)
         if (container is ClipBoardContainer) {
             showViewVisibility(mCandidatesMenuContainer)
-            mCandidatesMenuAdapter.items = listOf( menuSkbFunsPreset[SkbMenuMode.decode("ClearClipBoard")]!!,
-                menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!)
+            mCandidatesMenuAdapter.items = if(container.getMenuMode() == SkbMenuMode.ClipBoard) {
+                listOf(menuSkbFunsPreset[SkbMenuMode.decode("ClearClipBoard")]!!,
+                    menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,
+                    menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
+                )
+            } else {
+                listOf(menuSkbFunsPreset[SkbMenuMode.decode("AddPhrases")]!!,
+                    menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,
+                    menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
+                )
+            }
             Handler(Looper.getMainLooper()).postDelayed({
                     mCandidatesMenuAdapter.notifyDataSetChanged()
             }, 0)

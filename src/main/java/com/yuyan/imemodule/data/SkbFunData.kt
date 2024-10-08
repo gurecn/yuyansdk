@@ -19,6 +19,7 @@ val allSkbFuns = arrayOf(
     SkbMenuMode.SwitchKeyboard.name,
     SkbMenuMode.KeyboardHeight.name,
     SkbMenuMode.ClipBoard.name,
+    SkbMenuMode.Phrases.name,
     SkbMenuMode.DarkTheme.name,
     SkbMenuMode.Feedback.name,
     SkbMenuMode.OneHanded.name,
@@ -50,8 +51,8 @@ val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
     SkbMenuMode.Settings to SkbFunItem(ImeSdkApplication.context.getString(R.string.skb_item_settings), R.drawable.sdk_vector_menu_skb_setting, SkbMenuMode.Settings),
     SkbMenuMode.CloseSKB to SkbFunItem(ImeSdkApplication.context.getString(R.string.keyboard_iv_menu_close), R.drawable.ic_baseline_arrow_down, SkbMenuMode.CloseSKB),
     SkbMenuMode.ClearClipBoard to SkbFunItem(ImeSdkApplication.context.getString(R.string.clipboard_clear), R.drawable.ic_baseline_delete_24, SkbMenuMode.ClearClipBoard),
-    SkbMenuMode.ClearClipBoard to SkbFunItem(ImeSdkApplication.context.getString(R.string.clipboard_clear), R.drawable.ic_baseline_delete_24, SkbMenuMode.ClearClipBoard),
     SkbMenuMode.Doutu to SkbFunItem(ImeSdkApplication.context.getString(R.string.doutu), R.drawable.sdk_vector_menu_skb_doutu, SkbMenuMode.Doutu),
     SkbMenuMode.EmojiHot to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoji_hot), R.drawable.sdk_vector_menu_skb_emoji_hot, SkbMenuMode.EmojiHot),
     SkbMenuMode.Emoticons to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoticons), R.drawable.sdk_vector_menu_skb_emoticons, SkbMenuMode.Emoticons),
+    SkbMenuMode.AddPhrases to SkbFunItem(ImeSdkApplication.context.getString(R.string.add_phrases), R.drawable.baseline_add_circle_24, SkbMenuMode.AddPhrases),
     )
