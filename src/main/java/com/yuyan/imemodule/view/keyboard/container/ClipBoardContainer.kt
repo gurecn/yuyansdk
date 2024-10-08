@@ -14,16 +14,19 @@ import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.application.LauncherModel
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 import splitties.views.textResource
+import java.io.File
 
 /**
  * 粘贴板列表键盘容器
@@ -34,6 +37,7 @@ import splitties.views.textResource
 class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVSymbolsView: RecyclerView? = null
     private var mTVLable: TextView? = null
+    private var itemMode:SkbMenuMode? = null
 
     init {
         initView(context)
@@ -56,7 +60,8 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     /**
      * 显示候选词界面 , 点击候选词时执行
      */
-    fun showClipBoardView() {
+    fun showClipBoardView(item: SkbMenuMode) {
+        itemMode = item
         val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
             ClipboardLayoutMode.ListView -> {
                 mRVSymbolsView!!.setHasFixedSize(true)
@@ -74,7 +79,14 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             }
         }
         mRVSymbolsView!!.setLayoutManager(manager)
-        val copyContents : MutableList<ClipBoardDataBean> = LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
+        val copyContents : MutableList<ClipBoardDataBean> =
+            if(itemMode == SkbMenuMode.ClipBoard) LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
+        else {
+                File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt")
+                    .readLines().filter { !it.startsWith("#") }.map { line ->
+                        ClipBoardDataBean("",line.split("\t".toRegex())[0])
+                    }.toMutableList()
+        }
         val viewParent = mTVLable?.parent
         if (viewParent != null) {
             (viewParent as ViewGroup).removeView(mTVLable)
@@ -98,7 +110,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             }
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.getBindingAdapterPosition()
-                val item = (mRVSymbolsView?.adapter as ClipBoardAdapter).removePosition(position)
+                val item: ClipBoardDataBean? = (mRVSymbolsView?.adapter as ClipBoardAdapter).removePosition(position)
                 if(item != null) {
                     LauncherModel.instance.mClipboardDao?.deleteClipboard(item)
                     mRVSymbolsView?.adapter?.notifyItemRemoved(position)
@@ -107,5 +119,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         })
         itemTouchHelper.attachToRecyclerView(mRVSymbolsView)
         mRVSymbolsView!!.setAdapter(adapter)
+    }
+
+    fun getMenuMode():SkbMenuMode? {
+       return itemMode
     }
 }
