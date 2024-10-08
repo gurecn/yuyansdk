@@ -20,10 +20,6 @@ class ClipboardDao(dataProvider: BaseDataProvider?) {
         return mClipboardDatabaseHelper.insertClipboard(copyCotent)
     }
 
-    @Synchronized
-    fun editOrInsertClopboard(copyCotentBean: ClipBoardDataBean?, isKeepCick: Boolean): Boolean {
-        return mClipboardDatabaseHelper.editOrInsertClopboard(copyCotentBean!!, isKeepCick)
-    }
 
     @Synchronized
     fun deleteClipboard(copyCotentBean: ClipBoardDataBean?): Boolean {
@@ -35,19 +31,10 @@ class ClipboardDao(dataProvider: BaseDataProvider?) {
     }
 
     @Synchronized
-    fun getAllClipboardContent(timestamp: String?): MutableList<ClipBoardDataBean> {
-        return mClipboardDatabaseHelper.getAllClipboardContent(timestamp)
+    fun getAllClipboardContent(): MutableList<ClipBoardDataBean> {
+        return mClipboardDatabaseHelper.getAllClipboardContent()
     }
 
-    @Synchronized
-    fun getAllClipboardContents(timestamp: String?): List<String> {
-        return mClipboardDatabaseHelper.getAllClipboardContents(timestamp)
-    }
-
-    @Synchronized
-    fun getLastClipboardContent():ClipBoardDataBean? {
-        return mClipboardDatabaseHelper.getLastClipboardContent();
-    }
     @Synchronized
     fun clearAllClipBoardContent() {
         mClipboardDatabaseHelper.clearAllClipBoardContent()
