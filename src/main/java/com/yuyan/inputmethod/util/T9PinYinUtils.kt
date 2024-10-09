@@ -285,5 +285,5 @@ object T9PinYinUtils {
             .split(",").toTypedArray()
     }
 
-    fun pinyin2T9Key(pinyin: Char): String = t9KeyMap[pinyin]!!
+    fun pinyin2T9Key(pinyin: Char): String = t9KeyMap[pinyin]?:pinyin.toString()
 }

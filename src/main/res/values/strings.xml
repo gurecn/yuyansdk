@@ -106,7 +106,7 @@
     <string name="phrases">常用语</string>
     <string name="add_phrases">增加常用语</string>
     <string name="add_phrases_input_hint">输入常用内容</string>
-    <string name="add_phrases_input_tips">快捷输入码为拼音首字母：</string>
+    <string name="add_phrases_input_tips">快捷输入为拼音首字母前3位</string>
     <string name="keyboard">键盘</string>
     <string name="keyboard_feedback">按键效果</string>
     <string name="clipboard_suggestion_timeout">剪贴板提示超时</string>

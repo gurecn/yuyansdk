@@ -29,14 +29,11 @@ object RimeEngine {
 
     fun selectSchema(mod: String, inputMode:InputModeSwitcherManager? = null): Boolean {
         mInputModeSwitcher= inputMode
-        if(mod != Rime.getCurrentRimeSchema()) {
-            keyRecordStack.clear()
-            val shareDir = CustomConstant.RIME_DICT_PATH
-            val userDir = CustomConstant.RIME_DICT_PATH
-            Rime.startupRime(shareDir, userDir, true)
-            return Rime.selectSchema(mod)
-        }
-        return true
+        keyRecordStack.clear()
+        val shareDir = CustomConstant.RIME_DICT_PATH
+        val userDir = CustomConstant.RIME_DICT_PATH
+        Rime.startupRime(shareDir, userDir, true)
+        return Rime.selectSchema(mod)
     }
 
     /**

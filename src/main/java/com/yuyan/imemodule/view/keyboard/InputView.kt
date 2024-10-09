@@ -5,8 +5,10 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -43,11 +45,12 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.ui.utils.AppUtil
+import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
+import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
@@ -61,10 +64,16 @@ import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
+import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 import kotlin.math.absoluteValue
+
 
 /**
  * 输入法主界面。
@@ -80,6 +89,7 @@ import kotlin.math.absoluteValue
 class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
     var isAddPhrases = false
     private var mEtAddPhrasesContent:EditText? = null
+    private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
     val mDecInfo = DecodingInfo() // 词库解码操作对象
@@ -256,6 +266,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         bg.shape = GradientDrawable.RECTANGLE
         bg.cornerRadius = prefs.keyRadius.getValue().toFloat() // 设置圆角半径
         mEtAddPhrasesContent?.background = bg
+        mEtAddPhrasesContent?.setTextColor(activeTheme.keyTextColor)
+        mEtAddPhrasesContent?.setHintTextColor(activeTheme.keyTextColor)
+        tvAddPhrasesTips?.setTextColor(activeTheme.keyTextColor)
     }
 
     private fun onClick(view: View) {
@@ -881,6 +894,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
+                mEtAddPhrasesContent?.setText("")
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                 (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
@@ -892,13 +906,48 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     private fun handleAddPhrasesView() {
         mEtAddPhrasesContent =  mAddPhrasesLayout.findViewById(R.id.et_add_phrases_content)
-        mEtAddPhrasesContent?.setTextColor(activeTheme.keyTextColor)
-        mEtAddPhrasesContent?.setHintTextColor(activeTheme.keyTextColor)
-        val tvAddPhrasesTips =  mAddPhrasesLayout.findViewById<TextView>(R.id.tv_add_phrases_tips)
-        tvAddPhrasesTips.setTextColor(activeTheme.keyTextColor)
+        tvAddPhrasesTips =  mAddPhrasesLayout.findViewById(R.id.tv_add_phrases_tips)
+        val tips = "快捷输入为拼音首字母前3位:"
+        mEtAddPhrasesContent?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                editable.let {
+                    val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(it.toString())
+                    val pinYinHeadChar3 = if (pinYinHeadChar.length >= 3) pinYinHeadChar.substring(0, 3) else pinYinHeadChar
+                    tvAddPhrasesTips?.text = buildString {
+                        append(tips)
+                        append(pinYinHeadChar3)
+                    }
+                }
+            }
+        })
     }
 
     private fun addPhrasesHandle() {
+        val content = mEtAddPhrasesContent?.text.toString()
+        if(content.isNotBlank()) {
+            val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
+            val pinYinHead = if (pinYinHeadChar.length >= 3) pinYinHeadChar.substring(0, 3) else pinYinHeadChar
+            val pinYinHeadT9 = pinYinHead.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
+            val writerPy = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + "/custom_phrase.txt"), true))
+            val writerT9 = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt"), true))
+            val writerDp = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_double.txt"), true))
+            try {
+                writerPy.newLine()
+                writerPy.write(content + "\t" + pinYinHead)
+                writerPy.flush()
+                writerT9.newLine()
+                writerT9.write(content + "\t" + pinYinHeadT9)
+                writerT9.flush()
+                writerDp.newLine()
+                writerDp.write(content + "\t" + pinYinHead)
+                writerDp.flush()
+                Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     /**
@@ -980,9 +1029,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 }
                 KeyEvent.KEYCODE_ENTER ->{
                     isAddPhrases = false
+                    addPhrasesHandle()
                     initView(context)
                     onSettingsMenuClick(SkbMenuMode.Phrases)
-                    addPhrasesHandle()
+                }
+                else -> {
+                    val unicodeChar: Char = KeyEvent(KeyEvent.ACTION_DOWN, keyCode).unicodeChar.toChar()
+                    if (unicodeChar != Character.MIN_VALUE) {
+                        mEtAddPhrasesContent?.append(unicodeChar.toString())
+                    }
                 }
             }
 
@@ -1017,9 +1072,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 向输入框提交预选词
      */
     private fun setComposingText(text: CharSequence) {
-        if(isAddPhrases){
-            mEtAddPhrasesContent?.setText(text)
-        } else {
+        if(!isAddPhrases){
             service.getCurrentInputConnection()?.setComposingText(text, 1)
         }
     }
