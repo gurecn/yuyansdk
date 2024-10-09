@@ -2,8 +2,6 @@ package com.yuyan.imemodule.view.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
@@ -48,7 +46,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     protected var mDirtyRect = Rect()
     //输入法服务
     protected var mService: InputView? = null
-    fun setResponseKeyEvent(service: InputView?) {
+    fun setResponseKeyEvent(service: InputView) {
         mService = service
     }
 

@@ -84,13 +84,13 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     fun updateStates(switcherManager: InputModeSwitcherManager) {
         if (switcherManager.isEnglish) {
             var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
-            softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)
+            softKey.enableToggleState( if(mService!!.isAddPhrases)4 else switcherManager.mToggleStates.mStateEnter)
             softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) as SoftKeyToggle??: return
             softKey.enableToggleState(switcherManager.mToggleStates.charCase)
             invalidateView()
         } else {
             val softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
-            if (softKey.enableToggleState(switcherManager.mToggleStates.mStateEnter)) {
+            if (softKey.enableToggleState(if(mService!!.isAddPhrases)4 else switcherManager.mToggleStates.mStateEnter)) {
                 invalidateKey(softKey)
             }
         }

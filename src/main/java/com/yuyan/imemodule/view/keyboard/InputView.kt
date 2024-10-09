@@ -52,6 +52,7 @@ import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
@@ -77,7 +78,7 @@ import kotlin.math.absoluteValue
 
 @SuppressLint("ViewConstructor")
 class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
-    private var isAddPhrases = false
+    var isAddPhrases = false
     private var mEtAddPhrasesContent:EditText? = null
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
@@ -138,7 +139,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
         if(isAddPhrases){
             mAddPhrasesLayout.visibility = View.VISIBLE
-            handleAddPhrases()
+            handleAddPhrasesView()
         } else {
             mAddPhrasesLayout.visibility = View.GONE
         }
@@ -881,6 +882,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
             }
             else ->{}
@@ -888,12 +890,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         freshCandidatesMenuBar()
     }
 
-    private fun handleAddPhrases() {
+    private fun handleAddPhrasesView() {
         mEtAddPhrasesContent =  mAddPhrasesLayout.findViewById(R.id.et_add_phrases_content)
         mEtAddPhrasesContent?.setTextColor(activeTheme.keyTextColor)
         mEtAddPhrasesContent?.setHintTextColor(activeTheme.keyTextColor)
         val tvAddPhrasesTips =  mAddPhrasesLayout.findViewById<TextView>(R.id.tv_add_phrases_tips)
         tvAddPhrasesTips.setTextColor(activeTheme.keyTextColor)
+    }
+
+    private fun addPhrasesHandle() {
     }
 
     /**
@@ -945,7 +950,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
 
     private fun requestHideSelf() {
         resetToIdleState()
-        service.requestHideSelf(InputMethodManager.HIDE_NOT_ALWAYS)
+        if(isAddPhrases){
+            isAddPhrases = false
+            initView(context)
+        } else {
+            service.requestHideSelf(InputMethodManager.HIDE_NOT_ALWAYS)
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -972,9 +982,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                     isAddPhrases = false
                     initView(context)
                     onSettingsMenuClick(SkbMenuMode.Phrases)
-                }
-                KeyEvent.KEYCODE_CLEAR ->{
-
+                    addPhrasesHandle()
                 }
             }
 
@@ -1002,6 +1010,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
         }
     }
+
+
 
     /**
      * 向输入框提交预选词
