@@ -3,6 +3,7 @@ package com.yuyan.imemodule.view.keyboard
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.InputType
 import android.text.TextUtils
@@ -14,10 +15,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -74,6 +77,8 @@ import kotlin.math.absoluteValue
 
 @SuppressLint("ViewConstructor")
 class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
+    private var isAddPhrases = false
+    private var mEtAddPhrasesContent:EditText? = null
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
     val mDecInfo = DecodingInfo() // 词库解码操作对象
@@ -87,6 +92,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
+    private lateinit var mAddPhrasesLayout: RelativeLayout
     private lateinit var mLlKeyboardBottomHolder: LinearLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
@@ -101,15 +107,21 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun initView(context: Context) {
         if (!::mSkbRoot.isInitialized) {
             mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
+            addView(mSkbRoot)
             mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
             mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
             mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
+            mAddPhrasesLayout = LayoutInflater.from(context).inflate(R.layout.skb_add_phrases_container, mSkbRoot, false) as RelativeLayout
+            addView(mAddPhrasesLayout,  LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                addRule(ABOVE, mSkbRoot.id)
+                addRule(ALIGN_LEFT, mSkbRoot.id)
+            })
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
             mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
-            addView(mSkbRoot)
             mComposingView = ComposingView(context)
             mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
+
             addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 addRule(ABOVE, mSkbRoot.id)
                 addRule(ALIGN_LEFT, mSkbRoot.id)
@@ -123,6 +135,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 addRule(ALIGN_BOTTOM, mSkbRoot.id)
                 addRule(ALIGN_LEFT, mSkbRoot.id)
             })
+        }
+        if(isAddPhrases){
+            mAddPhrasesLayout.visibility = View.VISIBLE
+            handleAddPhrases()
+        } else {
+            mAddPhrasesLayout.visibility = View.GONE
         }
         mSkbCandidatesBarView.initialize(mChoiceNotifier, mDecInfo)
         val oneHandedModSwitch = getInstance().keyboardSetting.oneHandedModSwitch.getValue()
@@ -231,6 +249,12 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mSkbRoot.background = activeTheme.backgroundDrawable(prefs.keyBorder.getValue())
         mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
+        mAddPhrasesLayout.setBackgroundColor(activeTheme.barColor)
+        val bg = GradientDrawable()
+        bg.setColor(activeTheme.keyBackgroundColor)
+        bg.shape = GradientDrawable.RECTANGLE
+        bg.cornerRadius = prefs.keyRadius.getValue().toFloat() // 设置圆角半径
+        mEtAddPhrasesContent?.background = bg
     }
 
     private fun onClick(view: View) {
@@ -314,9 +338,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(sKey != null){
             val handled = when(sKey.keyCode){
                 InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> {
-//                    if(getInstance().keyboardSetting.switchIMEKey.getValue()) {
-                        InputMethodUtil.showPicker()
-//                    }
+                    InputMethodUtil.showPicker()
                     true
                 }
                 InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
@@ -529,13 +551,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 sendKeyEvent(keyCode)
             }
             resetToIdleState()
-        } else if (keyCode == KeyEvent.KEYCODE_SPACE) {
+        }  else if (keyCode == KeyEvent.KEYCODE_AT || keyCode == KeyEvent.KEYCODE_SPACE) {
             // 选择候选词
-            if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
-                chooseAndUpdate(0)
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_AT) {
-            // 选择高亮的候选词
             if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
@@ -760,10 +777,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode) {
         when (skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
-                if(KeyboardManager.instance.currentContainer is SymbolContainer) {
-                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
-                    return
-                }
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
@@ -852,14 +865,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 }
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }
-            SkbMenuMode.ClipBoard -> {
+            SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.ClipBoard)
-                updateCandidateBar()
-            }
-            SkbMenuMode.Phrases -> {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.Phrases)
+                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(skbMenuMode)
                 updateCandidateBar()
             }
             SkbMenuMode.Custom -> {
@@ -870,12 +878,23 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             SkbMenuMode.CloseSKB -> {
                 requestHideSelf()
             }
+            SkbMenuMode.AddPhrases -> {
+                isAddPhrases = true
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                initView(context)
+            }
             else ->{}
         }
         freshCandidatesMenuBar()
     }
 
-
+    private fun handleAddPhrases() {
+        mEtAddPhrasesContent =  mAddPhrasesLayout.findViewById(R.id.et_add_phrases_content)
+        mEtAddPhrasesContent?.setTextColor(activeTheme.keyTextColor)
+        mEtAddPhrasesContent?.setHintTextColor(activeTheme.keyTextColor)
+        val tvAddPhrasesTips =  mAddPhrasesLayout.findViewById<TextView>(R.id.tv_add_phrases_tips)
+        tvAddPhrasesTips.setTextColor(activeTheme.keyTextColor)
+    }
 
     /**
      * 输入法状态
@@ -888,7 +907,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     /**
      * 点击花漾字菜单
      */
-    fun showFlowerTypeface() {
+    private fun showFlowerTypeface() {
         mSkbCandidatesBarView.showFlowerTypeface()
     }
 
@@ -924,7 +943,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         mImeState = ImeState.STATE_PREDICT
     }
 
-    fun requestHideSelf() {
+    private fun requestHideSelf() {
         resetToIdleState()
         service.requestHideSelf(InputMethodManager.HIDE_NOT_ALWAYS)
     }
@@ -940,23 +959,45 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     /**
      * 模拟按键点击
      */
-    fun sendKeyEvent(keyCode: Int) {
-        if(keyCode != KeyEvent.KEYCODE_ENTER) {
-            service.sendDownUpKeyEvents(keyCode)
+    private fun sendKeyEvent(keyCode: Int) {
+        if(isAddPhrases){
+            when(keyCode){
+                KeyEvent.KEYCODE_DEL ->{
+                    val text = mEtAddPhrasesContent?.text.toString()
+                    if (text.isNotBlank()) {
+                        mEtAddPhrasesContent?.setText(text.substring(0, text.length - 1))
+                    }
+                }
+                KeyEvent.KEYCODE_ENTER ->{
+                    isAddPhrases = false
+                    initView(context)
+                    onSettingsMenuClick(SkbMenuMode.Phrases)
+                }
+                KeyEvent.KEYCODE_CLEAR ->{
+
+                }
+            }
+
         } else {
-            val inputConnection = service.getCurrentInputConnection()
-            currentInputEditorInfo?.run {
-                if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
-                    service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
-                    return
-                }
-                if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
-                    inputConnection.performEditorAction(actionId)
-                    return
-                }
-                when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
-                    EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> service.sendDownUpKeyEvents(keyCode)
-                    else -> inputConnection.performEditorAction(action)
+            if (keyCode != KeyEvent.KEYCODE_ENTER) {
+                service.sendDownUpKeyEvents(keyCode)
+            } else {
+                val inputConnection = service.getCurrentInputConnection()
+                currentInputEditorInfo?.run {
+                    if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
+                        service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                        return
+                    }
+                    if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+                        inputConnection.performEditorAction(actionId)
+                        return
+                    }
+                    when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
+                        EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> service.sendDownUpKeyEvents(
+                            keyCode
+                        )
+                        else -> inputConnection.performEditorAction(action)
+                    }
                 }
             }
         }
@@ -966,16 +1007,22 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 向输入框提交预选词
      */
     private fun setComposingText(text: CharSequence) {
-        val inputConnection = service.getCurrentInputConnection()
-        inputConnection?.setComposingText(text, 1)
+        if(isAddPhrases){
+            mEtAddPhrasesContent?.setText(text)
+        } else {
+            service.getCurrentInputConnection()?.setComposingText(text, 1)
+        }
     }
 
     /**
      * 发送字符串给编辑框
      */
     private fun commitText(resultText: String) {
-        val inputConnection = service.getCurrentInputConnection()
-        inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
+        if(isAddPhrases){
+            mEtAddPhrasesContent?.append(resultText)
+        } else {
+            service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
+        }
     }
 
     /**
@@ -983,33 +1030,44 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     private fun commitDecInfoText(resultText: String?) {
         if(resultText == null) return
-        val inputConnection = service.getCurrentInputConnection()
-        inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-        if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
-            inputConnection.commitText(" ", 1)
+        if(isAddPhrases){
+            mEtAddPhrasesContent?.append(resultText)
+        } else {
+            val inputConnection = service.getCurrentInputConnection()
+            inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
+            if (mInputModeSwitcher.isEnglish && mDecInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
+                inputConnection.commitText(" ", 1)
+            }
         }
     }
 
     private fun sendKeyChar(char: Char) {
-        service.sendKeyChar(char)
+        if(isAddPhrases){
+            mEtAddPhrasesContent?.append(char.toString())
+        } else {
+            service.sendKeyChar(char)
+        }
     }
 
     private var textBeforeCursor:String = ""
+
     /**
      * 发送候选词字符串给编辑框
      */
     private fun clearORRestoreText(showText:String?) {
         if("\uD83D\uDEAE" == showText) {  // 清空
-            val inputConnection = service.getCurrentInputConnection()
-            textBeforeCursor = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
-            inputConnection.deleteSurroundingText(1000, 0)
+            if(isAddPhrases){
+                mEtAddPhrasesContent?.setText("")
+            } else {
+                val inputConnection = service.getCurrentInputConnection()
+                textBeforeCursor = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
+                inputConnection.deleteSurroundingText(1000, 0)
+            }
         } else if("\uD83D\uDD04" == showText) {  // 还原
             commitText(textBeforeCursor)
             textBeforeCursor = ""
         }
     }
-
-
 
     private fun initNavbarBackground(service: ImeService) {
         service.window.window!!.also {
@@ -1023,6 +1081,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
+        }
+    }
+
+    fun onWindowHidden() {
+        if(isAddPhrases){
+            isAddPhrases = false
+            initView(context)
         }
     }
 }

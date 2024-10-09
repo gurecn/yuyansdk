@@ -132,4 +132,9 @@ class ImeService : InputMethodService() {
             }
         }
     }
+
+    override fun onWindowHidden() {
+        if (::mInputView.isInitialized) mInputView.onWindowHidden()
+        super.onWindowHidden()
+    }
 }
