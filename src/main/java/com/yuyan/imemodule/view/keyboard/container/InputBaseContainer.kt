@@ -2,17 +2,8 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import com.yuyan.imemodule.R
-import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
-import kotlin.math.abs
 
 /**
  * 输入键盘容器父类，用于进行输入键盘相关处理（判断）。
