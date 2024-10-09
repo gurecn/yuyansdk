@@ -82,10 +82,12 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         val copyContents : MutableList<ClipBoardDataBean> =
             if(itemMode == SkbMenuMode.ClipBoard) LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
         else {
-                File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt")
+                val phrases = File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt")
                     .readLines().filter { !it.startsWith("#") }.map { line ->
                         ClipBoardDataBean("",line.split("\t".toRegex())[0])
                     }.toMutableList()
+                phrases.reverse()
+                phrases
         }
         val viewParent = mTVLable?.parent
         if (viewParent != null) {
