@@ -1,8 +1,6 @@
 package com.yuyan.imemodule.utils.pinyin4j.multipinyin;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -121,19 +119,6 @@ public class Trie {
                 inputStreamReader.close();
             if (bufferedReader != null)
                 bufferedReader.close();
-        }
-    }
-
-    /**
-     * 加载用户自定义的扩展词库
-     */
-    public void loadMultiPinyinExtend() throws IOException {
-        String path = MultiPinyinConfig.multiPinyinPath;
-        if (path != null) {
-            File userMultiPinyinFile = new File(path);
-            if (userMultiPinyinFile.exists()) {
-                loadMultiPinyin(new FileInputStream(userMultiPinyinFile));
-            }
         }
     }
 

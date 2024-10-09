@@ -62,14 +62,9 @@ class ChineseToPinyinResource {
         try {
             final String resourceName = "pinyindb/unicode_to_hanyu_pinyin.txt";
             final String resourceMultiName = "pinyindb/multi_pinyin.txt";
-
             setUnicodeToHanyuPinyinTable(new Trie());
             getUnicodeToHanyuPinyinTable().load(ResourceHelper.getResourceInputStream(resourceName));
-
             getUnicodeToHanyuPinyinTable().loadMultiPinyin(ResourceHelper.getResourceInputStream(resourceMultiName));
-
-            getUnicodeToHanyuPinyinTable().loadMultiPinyinExtend();
-
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -77,75 +72,15 @@ class ChineseToPinyinResource {
         }
     }
 
-    Trie getHanyuPinyinTrie(char ch) {
-
-        String codepointHexStr = Integer.toHexString((int) ch).toUpperCase();
-
-        // fetch from hashtable
-        return getUnicodeToHanyuPinyinTable().get(codepointHexStr);
-    }
-
-    /**
-     * Get the unformatted Hanyu Pinyin representations of the given Chinese
-     * character in array format.
-     *
-     * @param ch given Chinese character in Unicode
-     * @return The Hanyu Pinyin strings of the given Chinese character in array
-     * format; return null if there is no corresponding Pinyin string.
-     */
-    String[] getHanyuPinyinStringArray(char ch) {
-        String pinyinRecord = getHanyuPinyinRecordFromChar(ch);
-        return parsePinyinString(pinyinRecord);
-    }
-
     String[] parsePinyinString(String pinyinRecord) {
-
         if (null != pinyinRecord) {
             int indexOfLeftBracket = pinyinRecord.indexOf(Field.LEFT_BRACKET);
             int indexOfRightBracket = pinyinRecord.lastIndexOf(Field.RIGHT_BRACKET);
-
-            String stripedString =
-                    pinyinRecord.substring(indexOfLeftBracket + Field.LEFT_BRACKET.length(),
-                            indexOfRightBracket);
-
+            String stripedString = pinyinRecord.substring(indexOfLeftBracket + Field.LEFT_BRACKET.length(), indexOfRightBracket);
             return stripedString.split(Field.COMMA);
 
         } else
             return null; // no record found or mal-formatted record
-    }
-
-    /**
-     * @param record given record string of Hanyu Pinyin
-     * @return return true if record is not null and record is not "none0" and
-     * record is not mal-formatted, else return false
-     */
-    private boolean isValidRecord(String record) {
-        final String noneStr = "(none0)";
-
-        return (null != record) && !record.equals(noneStr) && record.startsWith(Field.LEFT_BRACKET)
-                && record.endsWith(Field.RIGHT_BRACKET);
-    }
-
-    /**
-     * @param ch given Chinese character in Unicode
-     * @return corresponding Hanyu Pinyin Record in Properties file; null if no
-     * record found
-     */
-    private String getHanyuPinyinRecordFromChar(char ch) {
-        // convert Chinese character to code point (integer)
-        // please refer to http://www.unicode.org/glossary/#code_point
-        // Another reference: http://en.wikipedia.org/wiki/Unicode
-        int codePointOfChar = ch;
-
-        String codepointHexStr = Integer.toHexString(codePointOfChar).toUpperCase();
-
-        // fetch from hashtable
-        Trie trie = getUnicodeToHanyuPinyinTable().get(codepointHexStr);
-        String foundRecord = null;
-        if (trie != null)
-            foundRecord = trie.getPinyin();
-
-        return isValidRecord(foundRecord) ? foundRecord : null;
     }
 
     /**
