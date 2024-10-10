@@ -972,7 +972,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     fun freshCandidatesMenuBar() {
         mSkbCandidatesBarView.initMenuView()
-        mSkbCandidatesBarView.showCandidates()
     }
 
     /**

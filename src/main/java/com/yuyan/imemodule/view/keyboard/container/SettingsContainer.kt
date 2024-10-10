@@ -116,7 +116,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                         keyboardBarMenuCommon.add(v.skbMenuMode.name)
                     }
                     AppPrefs.getInstance().internal.keyboardBarMenuCommon.setValue(keyboardBarMenuCommon.joinToString())
-                    inputView.freshCandidatesMenuBar()
+                    inputView.updateCandidateBar()
                     adapter?.notifyDataSetChanged()
                 }
             }
