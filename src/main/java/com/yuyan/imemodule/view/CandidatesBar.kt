@@ -241,10 +241,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             Handler(Looper.getMainLooper()).postDelayed({
                     mCandidatesMenuAdapter.notifyDataSetChanged()
             }, 0)
-        } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA) {
+        } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA || showType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) {
             showViewVisibility(mCandidatesMenuContainer)
-            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!, menuSkbFunsPreset[SkbMenuMode.decode("Doutu")]!!,
-                menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!, menuSkbFunsPreset[SkbMenuMode.decode("EmojiHot")]!!)
+            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
             Handler(Looper.getMainLooper()).postDelayed({
                 mCandidatesMenuAdapter.notifyDataSetChanged()
             }, 0)

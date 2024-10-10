@@ -794,6 +794,11 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             }
+            SkbMenuMode.Emoticons -> {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
+                mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
+            }
             SkbMenuMode.SwitchKeyboard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSkbSelelctModeView()

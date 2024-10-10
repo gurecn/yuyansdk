@@ -92,7 +92,8 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.isLandscape || AppPrefs.getInstance().keyboardSetting.keyboardModeFloat.getValue()
             SkbMenuMode.ClipBoard -> KeyboardManager.instance.currentContainer is ClipBoardContainer && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard
             SkbMenuMode.Phrases -> KeyboardManager.instance.currentContainer is ClipBoardContainer && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.Phrases
-            SkbMenuMode.EmojiKeyboard -> KeyboardManager.instance.currentContainer is SymbolContainer
+            SkbMenuMode.EmojiKeyboard -> KeyboardManager.instance.currentContainer is SymbolContainer  && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_FACE_DATA
+            SkbMenuMode.Emoticons -> KeyboardManager.instance.currentContainer is SymbolContainer && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_SMILE_TEXT
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
             SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY
