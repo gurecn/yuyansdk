@@ -11,12 +11,14 @@ import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
 import com.yuyan.imemodule.data.theme.ThemeManager.removeOnChangedListener
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,8 +37,14 @@ class ImeService : InputMethodService() {
         if(getInstance().clipboard.clipboardSuggestion.getValue()){
             if(value.isNotBlank()) {
                 if (::mInputView.isInitialized && mInputView.isShown) {
-                    mInputView.showSymbols(arrayOf(value))
-                    getInstance().internal.clipboardUpdateTime.setValue(0L)
+                    if(KeyboardManager.instance.currentContainer is ClipBoardContainer
+                        && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard ){
+                        (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
+                        getInstance().internal.clipboardUpdateTime.setValue(0L)
+                    } else {
+                        mInputView.showSymbols(arrayOf(value))
+                        getInstance().internal.clipboardUpdateTime.setValue(0L)
+                    }
                 }
             }
         }
