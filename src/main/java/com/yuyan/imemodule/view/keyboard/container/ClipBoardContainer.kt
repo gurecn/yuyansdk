@@ -171,7 +171,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
     private fun calculateColumn(data : MutableList<ClipBoardDataBean>) {
         mHashMapSymbols.clear()
-        val itemWidth = EnvironmentSingleton.instance.skbWidth/6 - dp(40)
+        val itemWidth = EnvironmentSingleton.instance.skbWidth/6 - dp(10)
         var mCurrentColumn = 0
         val contents = data.map { it.copyContent }
         contents.forEachIndexed { position, candidate ->
