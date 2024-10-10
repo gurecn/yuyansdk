@@ -20,6 +20,6 @@ class UsedEmojiDao(dataProvider: BaseDataProvider?) {
     }
 
     @get:Synchronized
-    val allUsedEmoji: Array<String>
+    val allUsedEmoji: List<String>
         get() = mCalllogDatabaseHelper!!.allUsedEmoji
 }

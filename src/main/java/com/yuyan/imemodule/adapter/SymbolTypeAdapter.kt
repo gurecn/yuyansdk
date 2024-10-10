@@ -12,13 +12,12 @@ import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.utils.DevicesUtils.dip2px
+import com.yuyan.imemodule.data.emojicon.EmojiconData
 
 /**
  * 符号，表情底部导航栏Adapter
  */
-class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, showType: Int) :
+class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData.Category>, showType: Int) :
     RecyclerView.Adapter<SymbolTypeAdapter.SymbolTypeHolder>() {
     private val inflater: LayoutInflater
     private val keyBackground: GradientDrawable
@@ -26,13 +25,11 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private var isClicks = 0
     private val mTheme: Theme
-    private val itemWidth: Int
 
     init {
         inflater = LayoutInflater.from(context)
         isClicks = showType
         mTheme = activeTheme
-        itemWidth = (instance.skbWidth - dip2px(90f)) / 6
         val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         keyBackground = GradientDrawable()
         pressKeyBackground = GradientDrawable()
@@ -54,14 +51,13 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: Array<String>, sh
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolTypeHolder {
         val view = inflater.inflate(R.layout.sdk_item_recycler_symbol_type, parent, false) as EmojiAppCompatTextView
-        view.setMinimumWidth(itemWidth)
         return SymbolTypeHolder(view)
     }
 
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
         val tvSymbolType = holder.itemView as EmojiAppCompatTextView
         tvSymbolType.setTextColor(mTheme.keyTextColor)
-        tvSymbolType.text = mDatas[position]
+        tvSymbolType.text = mDatas[position].name
         tvSymbolType.background = if (isClicks == position) pressKeyBackground else keyBackground
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener { v: View? ->
