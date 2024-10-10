@@ -41,6 +41,33 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
         return result
     }
 
+    /**
+     * 更新置顶模式
+     */
+    fun updateClipboard(copyCotentBean: ClipBoardDataBean): Boolean {
+        val result: Boolean
+        val contentId = checkExist(copyCotentBean.copyContent)
+        if (contentId.isBlank()) {
+            deleteOverageItems()
+            val contentValues = ContentValues()
+            contentValues.put(ClipboardTable.COPY_CONTENT, copyCotentBean.copyContent)
+            contentValues.put(ClipboardTable.IS_KEEP, if(copyCotentBean.isKeep) 1 else 0)
+            val list = ArrayList<InsertParams>()
+            val insert = InsertParams(ClipboardTable.TABLE_NAME, contentValues)
+            list.add(insert)
+            result = mHelper.insert(list)
+        } else {
+            val list = ArrayList<UpdatePamas>()
+            val values = ContentValues()
+            values.put(ClipboardTable.CONTENT_ID, contentId)
+            values.put(ClipboardTable.IS_KEEP, if(copyCotentBean.isKeep) 1 else 0)
+            val updatePamas = UpdatePamas(ClipboardTable.TABLE_NAME, values, ClipboardTable.CONTENT_ID + " = ? ", arrayOf(contentId))
+            list.add(updatePamas)
+            result = mHelper.update(list)
+        }
+        return result
+    }
+
     fun deleteClipboard(copyCotentBean: ClipBoardDataBean): Boolean {
         val contentId = checkExist(copyCotentBean.copyContent)
         if (contentId.isNotBlank()) {
@@ -86,7 +113,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
      */
     fun getAllClipboardContent(): MutableList<ClipBoardDataBean> {
         val copyContents = mutableListOf<ClipBoardDataBean>()
-        val orderBy = ClipboardTable.COPY_TIME + " DESC"
+        val orderBy = ClipboardTable.IS_KEEP + " DESC, "+ ClipboardTable.COPY_TIME + " DESC"
         val cursor: Cursor? = mHelper.query(ClipboardTable.TABLE_NAME, null, null, null, orderBy)
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -106,7 +133,7 @@ class ClipBoardDBHelper(private val mHelper: BaseDataProvider) {
 
     private fun deleteOverageItems() {
         val clipboardHistoryLimit = AppPrefs.getInstance().clipboard.clipboardHistoryLimit.getValue()
-        val commonWhere = ClipboardTable.CONTENT_ID + " not in (select " + ClipboardTable.CONTENT_ID + " from " + ClipboardTable.TABLE_NAME + " order by " + ClipboardTable.COPY_TIME + " desc limit " + clipboardHistoryLimit +")"
+        val commonWhere = ClipboardTable.CONTENT_ID + " not in (select " + ClipboardTable.CONTENT_ID + " from " + ClipboardTable.TABLE_NAME + " order by " + ClipboardTable.IS_KEEP + " desc, " + ClipboardTable.COPY_TIME + " desc limit " + clipboardHistoryLimit +")"
         mHelper.clearDatabase(ClipboardTable.TABLE_NAME, commonWhere)
     }
 }

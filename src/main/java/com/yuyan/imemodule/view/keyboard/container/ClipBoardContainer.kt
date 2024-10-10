@@ -2,15 +2,18 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Paint
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.JustifyContent
+import com.yanzhenjie.recyclerview.SwipeMenu
+import com.yanzhenjie.recyclerview.SwipeMenuBridge
+import com.yanzhenjie.recyclerview.SwipeMenuItem
+import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.application.LauncherModel
@@ -24,9 +27,10 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
+import splitties.dimensions.dp
 import splitties.views.textResource
 import java.io.File
+import kotlin.math.ceil
 
 /**
  * 粘贴板列表键盘容器
@@ -35,11 +39,13 @@ import java.io.File
  */
 @SuppressLint("ViewConstructor")
 class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
-    private var mRVSymbolsView: RecyclerView? = null
+    private val mPaint : Paint = Paint() // 测量字符串长度
+    private val mRVSymbolsView: SwipeRecyclerView = SwipeRecyclerView(context)
     private var mTVLable: TextView? = null
     private var itemMode:SkbMenuMode? = null
 
     init {
+        mPaint.textSize = dp(22f)
         initView(context)
     }
 
@@ -50,10 +56,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             setTextColor(ThemeManager.activeTheme.keyTextColor)
             textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize.toFloat()).toFloat()
         }
-        mRVSymbolsView = RecyclerView(context)
-        mRVSymbolsView!!.setItemAnimator(null)
+        mRVSymbolsView.setItemAnimator(null)
         val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        mRVSymbolsView!!.layoutParams = layoutParams2
+        mRVSymbolsView.layoutParams = layoutParams2
         this.addView(mRVSymbolsView)
     }
 
@@ -62,33 +67,30 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
      */
     fun showClipBoardView(item: SkbMenuMode) {
         itemMode = item
-        val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
-            ClipboardLayoutMode.ListView -> {
-                mRVSymbolsView!!.setHasFixedSize(true)
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            }
-            ClipboardLayoutMode.GridView -> {
-                mRVSymbolsView!!.setHasFixedSize(true)
-                GridLayoutManager(context, 2)
-            }
-            ClipboardLayoutMode.FlexboxView -> {
-                mRVSymbolsView!!.setHasFixedSize(false)
-                CustomFlexboxLayoutManager(context).apply {
-                    justifyContent = JustifyContent.FLEX_START // 设置主轴对齐方式为居左
-                }
-            }
-        }
-        mRVSymbolsView!!.setLayoutManager(manager)
+        mRVSymbolsView.setHasFixedSize(true)
         val copyContents : MutableList<ClipBoardDataBean> =
             if(itemMode == SkbMenuMode.ClipBoard) LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
-        else {
+            else {
                 val phrases = File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt")
                     .readLines().filter { !it.startsWith("#") }.map { line ->
                         ClipBoardDataBean("",line.split("\t".toRegex())[0])
                     }.toMutableList()
                 phrases.reverse()
                 phrases
+            }
+        val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
+            ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            ClipboardLayoutMode.GridView -> GridLayoutManager(context, 2)
+            ClipboardLayoutMode.FlexboxView -> {
+                calculateColumn(copyContents)
+                GridLayoutManager(context, 6).apply {
+                    spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(i: Int) = mHashMapSymbols[i] ?: 1
+                    }
+                }
+            }
         }
+        mRVSymbolsView.setLayoutManager(manager)
         val viewParent = mTVLable?.parent
         if (viewParent != null) {
             (viewParent as ViewGroup).removeView(mTVLable)
@@ -97,32 +99,72 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             this.addView(mTVLable, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         }
         val adapter = ClipBoardAdapter(context, copyContents)
-        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            if (parent is ClipBoardAdapter) {
+        mRVSymbolsView.setAdapter(null)
+        mRVSymbolsView.setOnItemClickListener{ _: View?, position: Int ->
                 inputView.responseLongKeyEvent(SoftKey(), copyContents[position].copyContent)
-            }
         }
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
-                return makeMovementFlags(0, swipeFlags)
+        mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, position: Int ->
+            val topItem = SwipeMenuItem(mContext).apply {
+                setImage(if(itemMode == SkbMenuMode.ClipBoard) {
+                    val data: ClipBoardDataBean = copyContents[position]
+                    if(data.isKeep)R.drawable.ic_baseline_untop_circle_32
+                    else R.drawable.ic_baseline_top_circle_32
+                }
+                else R.drawable.ic_baseline_edit_circle_32)
             }
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                return false
+            rightMenu.addMenuItem(topItem)
+            val deleteItem = SwipeMenuItem(mContext).apply {
+                setImage(R.drawable.ic_baseline_delete_circle_32)
             }
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.getBindingAdapterPosition()
-                val item: ClipBoardDataBean? = (mRVSymbolsView?.adapter as ClipBoardAdapter).removePosition(position)
-                if(item != null) {
-                    LauncherModel.instance.mClipboardDao?.deleteClipboard(item)
-                    mRVSymbolsView?.adapter?.notifyItemRemoved(position)
+            rightMenu.addMenuItem(deleteItem)
+        }
+        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: SwipeMenuBridge, position: Int ->
+            menuBridge.closeMenu()
+            if(itemMode == SkbMenuMode.ClipBoard){
+                if(menuBridge.position == 0) {
+                    val data: ClipBoardDataBean = copyContents[position]
+                    data.isKeep = !data.isKeep
+                    LauncherModel.instance.mClipboardDao?.updateClopboard(data)
+                    showClipBoardView(SkbMenuMode.ClipBoard)
+                } else if(menuBridge.position == 1){
+                    val data: ClipBoardDataBean = copyContents.removeAt(position)
+                    LauncherModel.instance.mClipboardDao?.deleteClipboard(data)
+                    mRVSymbolsView.adapter?.notifyItemRemoved(position)
+                }
+            } else {
+                if(menuBridge.position == 0) {
+
+                } else if(menuBridge.position == 1){
                 }
             }
-        })
-        itemTouchHelper.attachToRecyclerView(mRVSymbolsView)
-        mRVSymbolsView!!.setAdapter(adapter)
+        }
+        mRVSymbolsView.setAdapter(adapter)
     }
 
+    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
+    private fun calculateColumn(data : MutableList<ClipBoardDataBean>) {
+        mHashMapSymbols.clear()
+        val itemWidth = EnvironmentSingleton.instance.skbWidth/6 - dp(40)
+        var mCurrentColumn = 0
+        val contents = data.map { it.copyContent }
+        contents.forEachIndexed { position, candidate ->
+            var count = getSymbolsCount(candidate!!, itemWidth)
+            var nextCount = 0
+            if (contents.size > position + 1) {
+                val nextCandidate = contents[position + 1]!!
+                nextCount = getSymbolsCount(nextCandidate, itemWidth)
+            }
+            mCurrentColumn = if (mCurrentColumn + count + nextCount > 6) {
+                count = 6 - mCurrentColumn
+                0
+            } else  (mCurrentColumn + count) % 6
+            mHashMapSymbols[position] = count
+        }
+    }
+
+    private fun getSymbolsCount(data: String, itemWidth:Int): Int {
+        return if (!TextUtils.isEmpty(data)) ceil(mPaint.measureText(data).div(itemWidth)).toInt() else 0
+    }
     fun getMenuMode():SkbMenuMode? {
        return itemMode
     }
