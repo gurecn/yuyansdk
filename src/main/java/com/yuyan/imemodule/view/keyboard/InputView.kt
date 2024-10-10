@@ -788,7 +788,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         }
     }
 
-    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode) {
+    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:String = "") {
         when (skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
@@ -894,10 +894,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
-                mEtAddPhrasesContent?.setText("")
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                 (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
+                mEtAddPhrasesContent?.setText(extra)
             }
             else ->{}
         }
@@ -930,23 +930,21 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
             val pinYinHead = if (pinYinHeadChar.length >= 3) pinYinHeadChar.substring(0, 3) else pinYinHeadChar
             val pinYinHeadT9 = pinYinHead.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
-            val writerPy = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + "/custom_phrase.txt"), true))
-            val writerT9 = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt"), true))
-            val writerDp = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_double.txt"), true))
-            try {
-                writerPy.newLine()
-                writerPy.write(content + "\t" + pinYinHead)
-                writerPy.flush()
-                writerT9.newLine()
-                writerT9.write(content + "\t" + pinYinHeadT9)
-                writerT9.flush()
-                writerDp.newLine()
-                writerDp.write(content + "\t" + pinYinHead)
-                writerDp.flush()
-                Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+            writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHead)
+            writerPhrases("/custom_phrase_t9.txt", content + "\t" + pinYinHeadT9)
+            writerPhrases("/custom_phrase_double.txt", content + "\t" + pinYinHead)
+            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
+        }
+    }
+
+    private fun writerPhrases(fileName: String, content: String) {
+        val writer = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + fileName), true))
+        try {
+            writer.newLine()
+            writer.write(content)
+            writer.flush()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 

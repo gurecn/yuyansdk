@@ -26,10 +26,19 @@ import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.LogUtil
+import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.inputmethod.core.Kernel
+import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.dimensions.dp
 import splitties.views.textResource
+import java.io.BufferedReader
+import java.io.BufferedWriter
 import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+import java.io.IOException
 import kotlin.math.ceil
 
 /**
@@ -132,13 +141,31 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                     mRVSymbolsView.adapter?.notifyItemRemoved(position)
                 }
             } else {
+                val content = copyContents[position].copyContent!!
+                removePhrasesHandle(content)
                 if(menuBridge.position == 0) {
-
+                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, content)
                 } else if(menuBridge.position == 1){
+                    showClipBoardView(SkbMenuMode.Phrases)
                 }
+                Kernel.initWiIme(AppPrefs.getInstance().internal.pinyinModeRime.getValue())
             }
         }
         mRVSymbolsView.setAdapter(adapter)
+    }
+
+    private fun removePhrasesHandle(content:String) {
+        if(content.isNotBlank()) {
+            deleteLinesStartingWith("/custom_phrase.txt", content+"\t")
+            deleteLinesStartingWith("/custom_phrase_t9.txt", content+"\t")
+            deleteLinesStartingWith("/custom_phrase_double.txt", content+"\t")
+        }
+    }
+
+    private fun deleteLinesStartingWith(fileName: String, content: String) {
+        val file = File(CustomConstant.RIME_DICT_PATH + fileName)
+        val lines = file.readLines().filter { !it.startsWith(content) }
+        file.writeText(lines.joinToString(separator = "\n"))
     }
 
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
