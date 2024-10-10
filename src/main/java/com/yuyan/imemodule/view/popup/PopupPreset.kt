@@ -1,8 +1,6 @@
 
 package com.yuyan.imemodule.view.popup
 
-import com.yuyan.imemodule.entity.emojicon.PeopleEmoji
-
 val PopupPreset: Map<String, Array<String>> = hashMapOf(
 
     //
@@ -114,7 +112,7 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     "。" to arrayOf("，", "。", "？", "！", "：", "；", "@", "（", "）"),
     "@" to arrayOf(",", "，", ".", "。", "?", "？", "!", "！", ":", "：", ";", "；"),
     "符号" to arrayOf(",", "，", ".", "。", "?", "？", "!", "！", ":", "：", ";", "；"),
-    "表情" to PeopleEmoji.DATA.copyOfRange(0, 10),
+    "表情" to arrayOf("😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃",),
     "123" to arrayOf( "0", "1", "2", "3", "4","5", "6", "7", "8", "9"),
 )
 val PopupSmallPreset: Map<String, Array<String>> = hashMapOf(

@@ -18,7 +18,7 @@ import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
  * Date:2017/7/20
  * I'm glad to share my knowledge with you all.
  */
-class SymbolAdapter(context: Context?, private val mDatas: Array<String>, val viewType: Int) :
+class SymbolAdapter(context: Context?, private val mDatas: List<String>, val viewType: Int) :
     RecyclerView.Adapter<SymbolAdapter.SymbolHolder>() {
     private val textColor: Int
     private val inflater: LayoutInflater

@@ -22,9 +22,8 @@ import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.entity.keyboard.SoftKey
-import com.yuyan.imemodule.manager.EmojiconManager
-import com.yuyan.imemodule.manager.SymbolsManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -46,7 +45,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private lateinit var mPaint : Paint // 测量字符串长度
     private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
     private var mShowType = 0
-    private var mSymbolsEmoji : HashMap<Int, Array<String>>? = null
+    private var mSymbolsEmoji : Map<EmojiconData.Category, List<String>>? = null
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null
     @SuppressLint("ClickableViewAccessibility")
@@ -85,10 +84,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             }
             true
         }
-        val layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.WRAP_CONTENT
-        )
+        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         layoutParams.addRule(ALIGN_PARENT_BOTTOM)
         mLLSymbolType.layoutParams = layoutParams
         this.addView(mLLSymbolType)
@@ -127,8 +123,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         if (position < 0) return
         if (lastPosition != position) {
             if(mShowType != 4) {
-                val symbols = SymbolsManager.instance!!.getmSymbols()
-                inputView.showSymbols(symbols)
+                inputView.showSymbols(LauncherModel.instance.usedCharacterDao!!.allUsedCharacter)
             }
             updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)
         } else {
@@ -141,21 +136,24 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private fun updateSymbols(listener: OnRecyclerItemClickListener, position: Int) {
         lastPosition = position
         val faceData =  if(mShowType == 4 && position == 0){
-            EmojiconManager.instance?.getmSymbols()
-        } else mSymbolsEmoji?.get(position)
-        if(!faceData.isNullOrEmpty()) {
+            LauncherModel.instance.usedEmojiDao!!.allUsedEmoji
+        } else {
+            mSymbolsEmoji?.get(mSymbolsEmoji?.keys!!.toList()[position])
+        }
+        if(faceData == null)return
+        val layoutManager = GridLayoutManager(context, 6)
+        if(faceData.isNotEmpty()) {
             calculateColumn(faceData)
-            val mSymbolAdapter = SymbolAdapter(context, faceData, mShowType)
-            val layoutManager = GridLayoutManager(context, 6)
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(i: Int): Int {
                     return mHashMapSymbols[i] ?: 1
                 }
             }
-            mRVSymbolsView!!.setLayoutManager(layoutManager)
-            mSymbolAdapter.setOnItemClickLitener(listener)
-            mRVSymbolsView!!.setAdapter(mSymbolAdapter)
         }
+        val mSymbolAdapter = SymbolAdapter(context, faceData, mShowType)
+        mRVSymbolsView!!.setLayoutManager(layoutManager)
+        mSymbolAdapter.setOnItemClickLitener(listener)
+        mRVSymbolsView!!.setAdapter(mSymbolAdapter)
     }
 
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
@@ -163,7 +161,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     /**
      * 计算符号列表实际所占列数
      */
-    private fun calculateColumn(data: Array<String>) {
+    private fun calculateColumn(data: List<String>) {
         mHashMapSymbols.clear()
         val itemWidth = if(mShowType == 4) EnvironmentSingleton.instance.skbWidth/6 - dp(20)
         else EnvironmentSingleton.instance.skbWidth/6 - dp(40)
@@ -203,12 +201,12 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         var pos = showType
         mSymbolsEmoji = if(mShowType == 4){
             pos = 0
-            EmojiconManager.instance!!.getmSymbolsData()
+            EmojiconData.emojiconData
         } else {
-            SymbolsManager.instance!!.getmSymbolsData()
+            EmojiconData.symbolData
         }
         updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int -> onItemClickOperate(parent, position) }, pos)
-        val data = resources.getStringArray(if(mShowType == 4)R.array.emojiconType else R.array.symbolType)
+        val data = mSymbolsEmoji?.keys!!.toList()
         val adapter = SymbolTypeAdapter(context, data, lastPosition)
         adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             // 播放按键声音和震动

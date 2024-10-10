@@ -77,7 +77,7 @@ class UsedEmojiDBHelper(dataProvider: BaseDataProvider?) {
         return false
     }
 
-    val allUsedEmoji: Array<String>
+    val allUsedEmoji: List<String>
         /**
          * 查询符号
          */
@@ -95,6 +95,6 @@ class UsedEmojiDBHelper(dataProvider: BaseDataProvider?) {
                 } while (cursor.moveToNext())
                 cursor.close()
             }
-            return emojis.toTypedArray()
+            return emojis
         }
 }

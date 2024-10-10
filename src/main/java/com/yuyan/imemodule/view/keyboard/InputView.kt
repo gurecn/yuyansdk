@@ -38,7 +38,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.manager.SymbolsManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -306,7 +305,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
                 val symbolType = if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
-                val symbols = SymbolsManager.instance!!.getmSymbols()
+                val symbols = LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(symbolType)
