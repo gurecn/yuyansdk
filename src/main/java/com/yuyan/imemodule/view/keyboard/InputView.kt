@@ -911,14 +911,14 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun handleAddPhrasesView() {
         mEtAddPhrasesContent =  mAddPhrasesLayout.findViewById(R.id.et_add_phrases_content)
         tvAddPhrasesTips =  mAddPhrasesLayout.findViewById(R.id.tv_add_phrases_tips)
-        val tips = "快捷输入为拼音首字母前3位:"
+        val tips = "快捷输入为拼音首字母前4位:"
         mEtAddPhrasesContent?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 editable.let {
                     val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(it.toString())
-                    val pinYinHeadChar3 = if (pinYinHeadChar.length >= 3) pinYinHeadChar.substring(0, 3) else pinYinHeadChar
+                    val pinYinHeadChar3 = if (pinYinHeadChar.length > 4) pinYinHeadChar.substring(0, 4) else pinYinHeadChar
                     tvAddPhrasesTips?.text = buildString {
                         append(tips)
                         append(pinYinHeadChar3)
@@ -932,7 +932,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         val content = mEtAddPhrasesContent?.text.toString()
         if(content.isNotBlank()) {
             val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
-            val pinYinHead = if (pinYinHeadChar.length >= 3) pinYinHeadChar.substring(0, 3) else pinYinHeadChar
+            val pinYinHead = if (pinYinHeadChar.length > 4) pinYinHeadChar.substring(0, 4) else pinYinHeadChar
             val pinYinHeadT9 = pinYinHead.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
             writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHead)
             writerPhrases("/custom_phrase_t9.txt", content + "\t" + pinYinHeadT9)
