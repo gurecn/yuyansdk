@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.emoji.widget.EmojiAppCompatTextView
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/gv_item"
-    android:theme="@style/Theme.AppTheme"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="20sp"
     android:singleLine="true"
-    android:layout_centerInParent="true"
-    android:gravity="center"
-    android:layout_margin="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"/>
+    android:ellipsize="none"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:gravity="center"/>

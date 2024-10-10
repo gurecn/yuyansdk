@@ -100,24 +100,21 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.emoji:emoji:1.1.0'
-    implementation 'androidx.emoji:emoji-appcompat:1.1.0'
-    implementation 'androidx.emoji:emoji-bundled:1.1.0'
     implementation 'com.github.promeg:tinypinyin:2.0.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.22"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
     implementation 'androidx.preference:preference:1.2.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
     implementation 'com.louiscad.splitties:splitties-resources:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0'
-    implementation 'com.mikepenz:aboutlibraries-core:10.9.2'
+    implementation 'com.mikepenz:aboutlibraries-core:10.10.0'
     implementation 'io.arrow-kt:arrow-core:1.2.1'
     implementation 'com.vanniktech:android-image-cropper:4.5.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
