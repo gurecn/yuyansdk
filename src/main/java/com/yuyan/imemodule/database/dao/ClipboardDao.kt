@@ -20,14 +20,15 @@ class ClipboardDao(dataProvider: BaseDataProvider?) {
         return mClipboardDatabaseHelper.insertClipboard(copyCotent)
     }
 
+    @Synchronized
+    fun updateClopboard(copy: ClipBoardDataBean): Boolean {
+        return mClipboardDatabaseHelper.updateClipboard(copy)
+    }
+
 
     @Synchronized
     fun deleteClipboard(copyCotentBean: ClipBoardDataBean?): Boolean {
-        return if(copyCotentBean != null) {
-            mClipboardDatabaseHelper.deleteClipboard(copyCotentBean)
-        } else {
-            false
-        }
+        return if(copyCotentBean != null)  mClipboardDatabaseHelper.deleteClipboard(copyCotentBean) else false
     }
 
     @Synchronized

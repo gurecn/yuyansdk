@@ -6,13 +6,13 @@ import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.ClipBoardDataBean
@@ -31,11 +31,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     private var mDatas : MutableList<ClipBoardDataBean>
     private val mContext: Context
     private var textColor: Int
-    private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private var clipboardLayoutCompact: ClipboardLayoutMode
-    fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
-        mOnItemClickListener = mOnItemClickLitener
-    }
 
     init {
         mDatas = datas
@@ -46,10 +42,9 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
-        val mContainer = LinearLayout(mContext)
+        val mContainer = RelativeLayout(mContext)
         mContainer.gravity = Gravity.CENTER_VERTICAL
         val marginValue = dip2px(3)
-
         when (clipboardLayoutCompact){
             ClipboardLayoutMode.ListView -> {
                 mContainer.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -57,45 +52,45 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
                     setMargins(marginValue*2, marginValue, marginValue*2, marginValue)
                 }
             }
-            ClipboardLayoutMode.GridView -> {
+            else -> {
                 mContainer.layoutParams = GridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                     setMargins(marginValue, marginValue, marginValue, marginValue)
                 }
             }
-            ClipboardLayoutMode.FlexboxView -> {
-                mContainer.layoutParams = FlexboxLayoutManager.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                    setMargins(marginValue, marginValue, marginValue, marginValue)
-                }
-            }
         }
-        val paddingValue = dip2px(5)
-        mContainer.setPadding(paddingValue, paddingValue, paddingValue ,paddingValue)
         mContainer.background = GradientDrawable().apply {
             setColor(activeTheme.keyBackgroundColor)
             setShape(GradientDrawable.RECTANGLE)
             setCornerRadius(ThemeManager.prefs.keyRadius.getValue().toFloat()) // 设置圆角半径
         }
-
-        val viewContext = TextView(mContext)
-        viewContext.id = R.id.clipboard_adapter_content
-        viewContext.maxLines = 3
-        viewContext.ellipsize = TextUtils.TruncateAt.END
-        viewContext.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
-            margin = marginValue
+        val viewContext = TextView(mContext).apply {
+            id = R.id.clipboard_adapter_content
+            maxLines = 3
+            ellipsize = TextUtils.TruncateAt.END
+            gravity = Gravity.CENTER
+            layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
+                margin = marginValue
+                addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+            }
+        }
+        val viewIvYopTips = ImageView(mContext).apply {
+            id = R.id.clipboard_adapter_top_tips
+            setImageResource(R.drawable.ic_baseline_top_tips_32)
+            layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
+                addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE)
+            }
         }
         mContainer.addView(viewContext)
+        mContainer.addView(viewIvYopTips)
         return SymbolHolder(mContainer)
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        val dataBean = mDatas[position]
-        holder.textView.text = dataBean.copyContent?.replace("\n", "\\n")
-        holder.textView.setOnClickListener { view: View? ->
-            mOnItemClickListener!!.onItemClick(this@ClipBoardAdapter, view, position)
-        }
+        val data = mDatas[position]
+        holder.textView.text = data.copyContent?.replace("\n", "\\n")
+        holder.ivTopTips.visibility = if(data.isKeep)View.VISIBLE else View.GONE
     }
 
     override fun getItemCount(): Int {
@@ -103,16 +98,17 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
     }
 
     fun removePosition(position: Int):ClipBoardDataBean? {
-        if(mDatas.size > position) return mDatas.removeAt(position)
-        return null
+        return if(mDatas.size > position)  mDatas.removeAt(position) else null
     }
 
-    inner class SymbolHolder(view: LinearLayout) : RecyclerView.ViewHolder(view) {
+    inner class SymbolHolder(view: RelativeLayout) : RecyclerView.ViewHolder(view) {
         var textView: TextView
+        var ivTopTips: ImageView
         init {
             textView = view.findViewById(R.id.clipboard_adapter_content)
             textView.setTextColor(textColor)
             textView.textSize = px2dip(EnvironmentSingleton.instance.candidateTextSize.toFloat()).toFloat()
+            ivTopTips = view.findViewById(R.id.clipboard_adapter_top_tips)
         }
     }
 }
