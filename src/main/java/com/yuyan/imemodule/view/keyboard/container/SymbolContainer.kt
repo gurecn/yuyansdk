@@ -24,6 +24,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -163,7 +164,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
      */
     private fun calculateColumn(data: List<String>) {
         mHashMapSymbols.clear()
-        val itemWidth = if(mShowType == 4) EnvironmentSingleton.instance.skbWidth/6 - dp(20)
+        val itemWidth = if(mShowType == 4 || mShowType == 5 ) EnvironmentSingleton.instance.skbWidth/6 - dp(20)
         else EnvironmentSingleton.instance.skbWidth/6 - dp(40)
         var mCurrentColumn = 0
         for (position in data.indices) {
@@ -199,11 +200,18 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     fun setSymbolsView(showType: Int) {
         mShowType = showType
         var pos = showType
-        mSymbolsEmoji = if(mShowType == 4){
-            pos = 0
-            EmojiconData.emojiconData
-        } else {
-            EmojiconData.symbolData
+        mSymbolsEmoji = when (mShowType) {
+            4 -> {
+                pos = 0
+                EmojiconData.emojiconData
+            }
+            5 -> {
+                pos = 0
+                EmojiconData.emoticonData
+            }
+            else -> {
+                EmojiconData.symbolData
+            }
         }
         updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int -> onItemClickOperate(parent, position) }, pos)
         val data = mSymbolsEmoji?.keys!!.toList()
@@ -215,5 +223,9 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             onTypeItemClickOperate(position)
         }
         mRVSymbolsType!!.setAdapter(adapter)
+    }
+
+    fun getMenuMode(): Int {
+        return mShowType
     }
 }
