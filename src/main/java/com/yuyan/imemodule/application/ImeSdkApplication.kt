@@ -4,8 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.emoji.bundled.BundledEmojiCompatConfig
-import androidx.emoji.text.EmojiCompat
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
@@ -59,9 +57,6 @@ open class ImeSdkApplication : Application() {
             copyFileOrDir(context, "rime", "", CustomConstant.RIME_DICT_PATH, true)
             AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
         }
-        val config = BundledEmojiCompatConfig(context)
-        config.setReplaceAll(true)
-        EmojiCompat.init(config)
     }
 
     companion object {

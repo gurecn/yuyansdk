@@ -3,6 +3,7 @@ package com.yuyan.imemodule.view.keyboard.container
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
@@ -20,13 +21,13 @@ import com.yuyan.imemodule.adapter.SymbolTypeAdapter
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.entity.keyboard.SoftKey
-import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
@@ -52,7 +53,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     @SuppressLint("ClickableViewAccessibility")
     private fun initView(context: Context) {
         mPaint = Paint()
-        mPaint.textSize = dp(22f)
+        mPaint.textSize = dp(20f)
         val mLLSymbolType = LayoutInflater.from(getContext()).inflate(R.layout.sdk_view_symbols_emoji_type, this, false) as LinearLayout
         mRVSymbolsType = mLLSymbolType.findViewById(R.id.rv_symbols_emoji_type)
         val layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -142,7 +143,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             mSymbolsEmoji?.get(mSymbolsEmoji?.keys!!.toList()[position])
         }
         if(faceData == null)return
-        val layoutManager = GridLayoutManager(context, 6)
+        val layoutManager = GridLayoutManager(context, 8)
         if(faceData.isNotEmpty()) {
             calculateColumn(faceData)
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -164,8 +165,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
      */
     private fun calculateColumn(data: List<String>) {
         mHashMapSymbols.clear()
-        val itemWidth = if(mShowType == 4 || mShowType == 5 ) EnvironmentSingleton.instance.skbWidth/6 - dp(20)
-        else EnvironmentSingleton.instance.skbWidth/6 - dp(40)
+        val itemWidth = EnvironmentSingleton.instance.skbWidth/16
         var mCurrentColumn = 0
         for (position in data.indices) {
             val candidate = data[position]
@@ -175,11 +175,11 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                 val nextCandidate = data[position + 1]
                 nextCount = getSymbolsCount(nextCandidate, itemWidth)
             }
-            if (mCurrentColumn + count + nextCount > 6) {
-                count = 6 - mCurrentColumn
+            if (mCurrentColumn + count + nextCount > 8) {
+                count = 8 - mCurrentColumn
                 mCurrentColumn = 0
             } else {
-                mCurrentColumn = (mCurrentColumn + count) % 6
+                mCurrentColumn = (mCurrentColumn + count) % 8
             }
             mHashMapSymbols[position] = count
         }
@@ -190,7 +190,13 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
      */
     private fun getSymbolsCount(data: String, itemWidth:Int): Int {
         return if (!TextUtils.isEmpty(data)) {
-            ceil(mPaint.measureText(data).div(itemWidth)).toInt()
+            val bounds = Rect()
+            mPaint.getTextBounds(data, 0, data.length, bounds)
+            val x = ceil(bounds.width().toFloat().div(itemWidth)).toInt()
+            if(x >= 8) 8
+            else if(x >= 4) 4
+            else if(x > 1) 2
+            else  1
         } else 0
     }
 

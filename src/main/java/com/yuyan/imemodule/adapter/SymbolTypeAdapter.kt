@@ -5,7 +5,7 @@ import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.emoji.widget.EmojiAppCompatTextView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
@@ -50,12 +50,12 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolTypeHolder {
-        val view = inflater.inflate(R.layout.sdk_item_recycler_symbol_type, parent, false) as EmojiAppCompatTextView
+        val view = inflater.inflate(R.layout.sdk_item_recycler_symbol_type, parent, false) as TextView
         return SymbolTypeHolder(view)
     }
 
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
-        val tvSymbolType = holder.itemView as EmojiAppCompatTextView
+        val tvSymbolType = holder.itemView as TextView
         tvSymbolType.setTextColor(mTheme.keyTextColor)
         tvSymbolType.text = mDatas[position].name
         tvSymbolType.background = if (isClicks == position) pressKeyBackground else keyBackground
@@ -72,7 +72,7 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData
         return mDatas.size
     }
 
-    class SymbolTypeHolder(view: EmojiAppCompatTextView?) : RecyclerView.ViewHolder(
+    class SymbolTypeHolder(view: TextView?) : RecyclerView.ViewHolder(
         view!!
     )
 }
