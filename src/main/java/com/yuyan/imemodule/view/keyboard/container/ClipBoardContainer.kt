@@ -142,10 +142,10 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 }
             } else {
                 val content = copyContents[position].copyContent!!
-                removePhrasesHandle(content)
                 if(menuBridge.position == 0) {
                     inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, content)
                 } else if(menuBridge.position == 1){
+                    removePhrasesHandle(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
                 Kernel.initWiIme(AppPrefs.getInstance().internal.pinyinModeRime.getValue())
