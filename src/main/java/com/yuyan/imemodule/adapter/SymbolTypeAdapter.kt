@@ -12,12 +12,11 @@ import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.data.emojicon.EmojiconData
 
 /**
  * 符号，表情底部导航栏Adapter
  */
-class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData.Category>, showType: Int) :
+class SymbolTypeAdapter(context: Context?, private val mDatas: List<String>, showType: Int) :
     RecyclerView.Adapter<SymbolTypeAdapter.SymbolTypeHolder>() {
     private val inflater: LayoutInflater
     private val keyBackground: GradientDrawable
@@ -57,7 +56,7 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
         val tvSymbolType = holder.itemView as TextView
         tvSymbolType.setTextColor(mTheme.keyTextColor)
-        tvSymbolType.text = mDatas[position].name
+        tvSymbolType.text = mDatas[position]
         tvSymbolType.background = if (isClicks == position) pressKeyBackground else keyBackground
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener { v: View? ->

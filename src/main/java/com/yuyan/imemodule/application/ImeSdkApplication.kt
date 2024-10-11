@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -57,6 +58,7 @@ open class ImeSdkApplication : Application() {
             copyFileOrDir(context, "rime", "", CustomConstant.RIME_DICT_PATH, true)
             AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
         }
+        YuyanEmojiCompat.init(context)
     }
 
     companion object {
