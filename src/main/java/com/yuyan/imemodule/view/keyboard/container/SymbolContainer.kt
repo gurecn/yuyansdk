@@ -22,12 +22,12 @@ import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
@@ -47,7 +47,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private lateinit var mPaint : Paint // 测量字符串长度
     private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
     private var mShowType = 0
-    private var mSymbolsEmoji : Map<EmojiconData.Category, List<String>>? = null
+    private var mSymbolsEmoji : Map<String, List<String>>? = null
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null
     @SuppressLint("ClickableViewAccessibility")
@@ -124,7 +124,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private fun onTypeItemClickOperate(position: Int) {
         if (position < 0) return
         if (lastPosition != position) {
-            if(mShowType != 4) {
+            if(mShowType != 4 && mShowType != 5) {
                 inputView.showSymbols(LauncherModel.instance.usedCharacterDao!!.allUsedCharacter)
             }
             updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)
@@ -209,7 +209,13 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         mSymbolsEmoji = when (mShowType) {
             4 -> {
                 pos = 0
-                EmojiconData.emojiconData
+                val emojiCompatInstance = YuyanEmojiCompat.getAsFlow().value
+                EmojiconData.emojiconData.mapValues { (name, emojiList) ->
+                    if(name=="🔥") emojiList
+                    else emojiList.filter { emoji ->
+                            YuyanEmojiCompat.getEmojiMatch(emojiCompatInstance, emoji)
+                    }
+                }
             }
             5 -> {
                 pos = 0

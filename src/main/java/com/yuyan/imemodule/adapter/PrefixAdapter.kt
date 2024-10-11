@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
@@ -50,7 +50,7 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     }
 
     inner class SymbolTypeHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var tvSymbolType: TextView
+        var tvSymbolType: EmojiTextView
 
         init {
             tvSymbolType = view.findViewById(android.R.id.text1)

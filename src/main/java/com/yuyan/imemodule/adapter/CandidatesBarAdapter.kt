@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
@@ -56,7 +56,7 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var textView: TextView
+        var textView: EmojiTextView
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)

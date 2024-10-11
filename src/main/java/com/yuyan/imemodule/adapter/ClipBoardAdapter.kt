@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
@@ -64,7 +65,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
             setShape(GradientDrawable.RECTANGLE)
             setCornerRadius(ThemeManager.prefs.keyRadius.getValue().toFloat()) // 设置圆角半径
         }
-        val viewContext = TextView(mContext).apply {
+        val viewContext = EmojiTextView(mContext).apply {
             id = R.id.clipboard_adapter_content
             maxLines = 3
             ellipsize = TextUtils.TruncateAt.END

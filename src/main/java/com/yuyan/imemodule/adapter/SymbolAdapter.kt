@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
@@ -41,7 +41,7 @@ class SymbolAdapter(context: Context?, private val mDatas: List<String>, val vie
         if (viewType == 0) {
             holder.textView.text = sbc2dbcCase(getItem(position)) // 中文符号显示半角
         } else {
-            holder.textView.setText(getItem(position), TextView.BufferType.SPANNABLE)
+            holder.textView.text = getItem(position)
         }
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->
@@ -55,8 +55,7 @@ class SymbolAdapter(context: Context?, private val mDatas: List<String>, val vie
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var textView: TextView
-
+        var textView: EmojiTextView
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)

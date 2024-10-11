@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
@@ -63,6 +64,7 @@ class ImeService : InputMethodService() {
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         mInputView.onStartInputView(editorInfo)
+        YuyanEmojiCompat.setEditorInfo(editorInfo)
         if(getInstance().clipboard.clipboardSuggestion.getValue()){
             val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
             if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
