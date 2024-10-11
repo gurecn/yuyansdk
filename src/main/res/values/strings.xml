@@ -6,6 +6,7 @@
     <string name="setting_ime_sdk">输入法设置</string>
     <string name="setting_ime_input">输入设置</string>
     <string name="setting_ime_keyboard">键盘设置</string>
+    <string name="setting_ime_prefixs">侧边栏</string>
     <string name="theme_select">主题选择</string>
     <string name="setting_ime_keyboard_show">键盘效果</string>
     <string name="setting_ime_keyboard_height">键盘调节</string>
@@ -246,4 +247,7 @@
     <string name="doutu">斗图</string>
     <string name="emoji">表情</string>
     <string name="emoji_hot">热门表情</string>
+
+    <string name="skb_prefix_pinyin_tips">拼音侧边栏</string>
+    <string name="skb_prefix_number_tips">数字侧边栏</string>
 </resources>

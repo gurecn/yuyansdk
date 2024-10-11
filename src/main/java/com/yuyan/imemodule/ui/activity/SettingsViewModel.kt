@@ -8,7 +8,7 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 
 class SettingsViewModel : ViewModel() {
 
-    val toolbarTitle = MutableLiveData(ImeSdkApplication.context.getString(R.string.skb_item_settings))
+    val toolbarTitle = MutableLiveData(ImeSdkApplication.context.getString(R.string.input_methods))
 
     val toolbarShadow = MutableLiveData(true)
 

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
 
@@ -20,11 +19,7 @@ import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
 class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     RecyclerView.Adapter<PrefixAdapter.SymbolTypeHolder>() {
     private val inflater: LayoutInflater
-    private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private val textColor: Int = activeTheme.keyTextColor
-    fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
-        mOnItemClickListener = mOnItemClickLitener
-    }
 
     init {
         inflater = LayoutInflater.from(context)
@@ -37,12 +32,6 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
 
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
         holder.tvSymbolType.text = sbc2dbcCase(mDatas[position])
-        if (mOnItemClickListener != null) {
-            holder.tvSymbolType.setOnClickListener { v: View? ->
-                mOnItemClickListener!!.onItemClick(this@PrefixAdapter, v, position)
-                notifyDataSetChanged()
-            }
-        }
     }
 
     override fun getItemCount(): Int {

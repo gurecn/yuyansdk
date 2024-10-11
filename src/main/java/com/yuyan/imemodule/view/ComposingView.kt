@@ -7,11 +7,11 @@ import android.graphics.Paint.FontMetricsInt
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
-import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import splitties.dimensions.dp
 
 /**
  * 拼音字符串View，用于显示输入的拼音。
@@ -32,11 +32,10 @@ class ComposingView(context: Context) : View(context) {
 
     init {
         val r = context.resources
-        val mFontSize = r.getDimensionPixelSize(R.dimen.composing_height)
         mPaint = Paint()
         mPaint.setColor(ThemeManager.activeTheme.keyTextColor)
         mPaint.isAntiAlias = true
-        mPaint.textSize = mFontSize.toFloat()
+        mPaint.textSize = dp(16).toFloat()
         mFmi = mPaint.getFontMetricsInt()
         measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }

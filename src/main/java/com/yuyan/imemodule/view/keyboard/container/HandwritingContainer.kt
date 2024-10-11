@@ -2,16 +2,25 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
+import splitties.dimensions.dp
+import splitties.views.dsl.core.margin
 
 /**
  * 手写键盘容器
@@ -23,7 +32,24 @@ import com.yuyan.imemodule.view.keyboard.InputView
 @SuppressLint("ViewConstructor")
 class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘界面上符号(T9左侧、手写右侧)
-    private var mRVRightSymbols: RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
+    private var mRVRightSymbols: SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
+    private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
+        gravity = Gravity.CENTER
+    }
+    init {
+        val ivAddSymbol = ImageView(context).apply {
+            setImageResource(R.drawable.baseline_add_circle_24)
+        }
+        ivAddSymbol.setOnClickListener { _:View ->
+            val arguments = Bundle()
+            arguments.putInt("type", 0)
+            AppUtil.launchSettingsToPrefix(context!!, arguments)
+        }
+        mLlAddSymbol.addView(ivAddSymbol)
+    }
 
     /**
      * 更新软键盘布局
@@ -51,10 +77,14 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
             val parent = mRVRightSymbols.parent as ViewGroup
             parent.removeView(mRVRightSymbols)
         }
+        if (mRVRightSymbols.footerCount <= 0) {
+            mRVRightSymbols.addFooterView(mLlAddSymbol)
+        }
         addView(mRVRightSymbols, createLayoutParams())
-        val strs = resources.getStringArray(R.array.SymbolRealNine)
+        val strs = CustomConstant.PREFIXS_PINYIN
         val adapter = PrefixAdapter(context, strs)
-        adapter.setOnItemClickLitener { _, _, position ->
+        mRVRightSymbols.setAdapter(null)
+        mRVRightSymbols.setOnItemClickListener{ _: View?, position: Int ->
             val softKey = SoftKey(strs[position])
             inputView.responseKeyEvent(softKey)
         }

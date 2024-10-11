@@ -9,13 +9,6 @@
         <attr name="useSimpleSummaryProvider" />
     </declare-styleable>
 
-    <string-array name="symbolType">
-        <item>"中文"</item>
-        <item>"英文"</item>
-        <item>"数学"</item>
-        <item>"其他"</item>
-    </string-array>
-
     <string-array name="emojiconType">
         <item>"常用"</item>
         <item>"人物"</item>
@@ -24,29 +17,6 @@
         <item>"建筑"</item>
         <item>"符号"</item>
         <item>"颜文字"</item>
-    </string-array>
-
-    <string-array name="SymbolRealNine">
-        <item>"，"</item>
-        <item>"。"</item>
-        <item>"？"</item>
-        <item>"！"</item>
-        <item>"……"</item>
-        <item>"："</item>
-        <item>"；"</item>
-        <item>"～"</item>
-        <item>"."</item>
-    </string-array>
-
-
-    <string-array name="SymbolRealNumber">
-        <item>"%"</item>
-        <item>"/"</item>
-        <item>"-"</item>
-        <item>"+"</item>
-        <item>"*"</item>
-        <item>"#"</item>
-        <item>"@"</item>
     </string-array>
 
     <string-array name="FlowerTypeface">
