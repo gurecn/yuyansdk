@@ -87,6 +87,7 @@ import kotlin.math.absoluteValue
 @SuppressLint("ViewConstructor")
 class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
     var isAddPhrases = false
+    private var oldAddPhrases = ""
     private var mEtAddPhrasesContent:EditText? = null
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
@@ -898,6 +899,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
+                oldAddPhrases = extra
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
                 (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
@@ -905,39 +907,44 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             else ->{}
         }
-        freshCandidatesMenuBar()
+        mSkbCandidatesBarView.initMenuView()
     }
 
     private fun handleAddPhrasesView() {
         mEtAddPhrasesContent =  mAddPhrasesLayout.findViewById(R.id.et_add_phrases_content)
+        mEtAddPhrasesContent?.requestFocus()
         tvAddPhrasesTips =  mAddPhrasesLayout.findViewById(R.id.tv_add_phrases_tips)
         val tips = "快捷输入为拼音首字母前4位:"
         mEtAddPhrasesContent?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                editable.let {
-                    val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(it.toString())
-                    val pinYinHeadChar3 = if (pinYinHeadChar.length > 4) pinYinHeadChar.substring(0, 4) else pinYinHeadChar
-                    tvAddPhrasesTips?.text = buildString {
-                        append(tips)
-                        append(pinYinHeadChar3)
-                    }
-                }
+                tvAddPhrasesTips?.text = tips.plus(PinyinHelper.getPinYinHeadChar(editable.toString()))
+                mEtAddPhrasesContent?.setSelection(editable.length)
             }
         })
     }
 
     private fun addPhrasesHandle() {
         val content = mEtAddPhrasesContent?.text.toString()
+        removePhrasesHandle(oldAddPhrases+"\t")
         if(content.isNotBlank()) {
             val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
-            val pinYinHead = if (pinYinHeadChar.length > 4) pinYinHeadChar.substring(0, 4) else pinYinHeadChar
-            val pinYinHeadT9 = pinYinHead.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
-            writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHead)
+            val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
+            writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHeadChar)
             writerPhrases("/custom_phrase_t9.txt", content + "\t" + pinYinHeadT9)
-            writerPhrases("/custom_phrase_double.txt", content + "\t" + pinYinHead)
+            writerPhrases("/custom_phrase_double.txt", content + "\t" + pinYinHeadChar)
             Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
+        }
+    }
+
+    private fun removePhrasesHandle(content:String) {
+        if(content.isNotBlank()) {
+            listOf("/custom_phrase.txt", "/custom_phrase_t9.txt", "/custom_phrase_double.txt").forEach{path->
+                val file = File(CustomConstant.RIME_DICT_PATH + path)
+                val lines = file.readLines().filter { !it.startsWith(content) }
+                file.writeText(lines.joinToString(separator = "\n"))
+            }
         }
     }
 
@@ -965,13 +972,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     private fun showFlowerTypeface() {
         mSkbCandidatesBarView.showFlowerTypeface()
-    }
-
-    /**
-     * 刷新菜单栏
-     */
-    fun freshCandidatesMenuBar() {
-        mSkbCandidatesBarView.initMenuView()
     }
 
     /**
@@ -1051,16 +1051,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 currentInputEditorInfo?.run {
                     if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
                         service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
-                        return
-                    }
-                    if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+                    } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
                         inputConnection.performEditorAction(actionId)
-                        return
-                    }
-                    when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
-                        EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> service.sendDownUpKeyEvents(
-                            keyCode
-                        )
+                    } else when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
+                        EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> service.sendDownUpKeyEvents(keyCode)
                         else -> inputConnection.performEditorAction(action)
                     }
                 }
@@ -1074,20 +1068,15 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 向输入框提交预选词
      */
     private fun setComposingText(text: CharSequence) {
-        if(!isAddPhrases){
-            service.getCurrentInputConnection()?.setComposingText(text, 1)
-        }
+        if(!isAddPhrases)service.getCurrentInputConnection()?.setComposingText(text, 1)
     }
 
     /**
      * 发送字符串给编辑框
      */
     private fun commitText(resultText: String) {
-        if(isAddPhrases){
-            mEtAddPhrasesContent?.append(resultText)
-        } else {
-            service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-        }
+        if(isAddPhrases) mEtAddPhrasesContent?.append(resultText)
+        else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
     }
 
     /**
@@ -1107,11 +1096,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     }
 
     private fun sendKeyChar(char: Char) {
-        if(isAddPhrases){
-            mEtAddPhrasesContent?.append(char.toString())
-        } else {
-            service.sendKeyChar(char)
-        }
+        if(isAddPhrases) mEtAddPhrasesContent?.append(char.toString())
+        else service.sendKeyChar(char)
     }
 
     private var textBeforeCursor:String = ""
@@ -1121,9 +1107,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      */
     private fun clearORRestoreText(showText:String?) {
         if("\uD83D\uDEAE" == showText) {  // 清空
-            if(isAddPhrases){
-                mEtAddPhrasesContent?.setText("")
-            } else {
+            if(isAddPhrases) mEtAddPhrasesContent?.setText("")
+            else {
                 val inputConnection = service.getCurrentInputConnection()
                 textBeforeCursor = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
                 inputConnection.deleteSurroundingText(1000, 0)

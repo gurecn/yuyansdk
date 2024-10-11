@@ -51,6 +51,7 @@ public class PinyinHelper {
                 }
             }
             i = success;
+            if(resultPinyinStrBuf.length() >= 4)break;
         }
         return resultPinyinStrBuf.toString();
     }
