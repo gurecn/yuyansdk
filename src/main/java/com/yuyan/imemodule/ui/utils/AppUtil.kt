@@ -43,6 +43,8 @@ object AppUtil {
     fun launchSettingsToKeyboard(context: Context) =
         launchMainToDest(context, R.id.keyboardFeedbackFragment)
 
+    fun launchSettingsToPrefix(context: Context, arguments: Bundle? = null) =
+        launchMainToDest(context, R.id.prefixSettingsFragment, arguments)
 
     fun launchMainToThemeList(context: Context) =
         launchMainToDest(context, R.id.themeFragment)

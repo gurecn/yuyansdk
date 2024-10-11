@@ -2,17 +2,26 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
+import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
+import splitties.dimensions.dp
+import splitties.views.dsl.core.margin
 
 /**
  * 数字键盘容器
@@ -24,7 +33,24 @@ import com.yuyan.imemodule.view.keyboard.TextKeyboard
 @SuppressLint("ViewConstructor")
 class NumberContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
-    private var mRVLeftPrefix : RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
+    private var mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
+    private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
+        gravity = Gravity.CENTER
+    }
+    init {
+        val ivAddSymbol = ImageView(context).apply {
+            setImageResource(R.drawable.baseline_add_circle_24)
+        }
+        ivAddSymbol.setOnClickListener { _:View ->
+            val arguments = Bundle()
+            arguments.putInt("type", 1)
+            AppUtil.launchSettingsToPrefix(context!!, arguments)
+        }
+        mLlAddSymbol.addView(ivAddSymbol)
+    }
 
     /**
      * 更新软键盘布局
@@ -53,10 +79,14 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
             val parent = mRVLeftPrefix.parent as ViewGroup
             parent.removeView(mRVLeftPrefix)
         }
+        if (mRVLeftPrefix.footerCount <= 0) {
+            mRVLeftPrefix.addFooterView(mLlAddSymbol)
+        }
         addView(mRVLeftPrefix, createLayoutParams())
-        val strs = resources.getStringArray(R.array.SymbolRealNumber)
+        val strs = CustomConstant.PREFIXS_NUMBER
         val adapter = PrefixAdapter(context, strs)
-        adapter.setOnItemClickLitener { _, _, position ->
+        mRVLeftPrefix.setAdapter(null)
+        mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             val softKey = SoftKey(strs[position])
             // 播放按键声音和震动
             DevicesUtils.tryPlayKeyDown(softKey)

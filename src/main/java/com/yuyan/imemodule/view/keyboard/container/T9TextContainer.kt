@@ -2,19 +2,27 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
+import splitties.dimensions.dp
+import splitties.views.dsl.core.margin
 
 /**
  * 九宫格键盘容器
@@ -31,7 +39,23 @@ import com.yuyan.imemodule.view.keyboard.TextKeyboard
 @SuppressLint("ViewConstructor")
 class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
-    private var mRVLeftPrefix : RecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
+    private val mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
+    private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
+        gravity = Gravity.CENTER
+    }
+
+    init {
+        val ivAddSymbol = ImageView(context).apply {
+            setImageResource(R.drawable.baseline_add_circle_24)
+        }
+        ivAddSymbol.setOnClickListener { _:View ->
+            val arguments = Bundle()
+            arguments.putInt("type", 0)
+            AppUtil.launchSettingsToPrefix(context!!, arguments)
+        }
+        mLlAddSymbol.addView(ivAddSymbol)
+    }
 
     /**
      * 更新软键盘布局
@@ -84,16 +108,21 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
     //更新符号显示,九宫格左侧符号栏
     fun updateSymbolListView() {
         var prefixs = mDecInfo!!.prefixs
-        val isPrefixs: Boolean
-        if (prefixs.isEmpty()) { // 有候选拼音显示候选拼音
-            prefixs = resources.getStringArray(R.array.SymbolRealNine)
-            isPrefixs = false
+        val isPrefixs = prefixs.isNotEmpty()
+        if (!isPrefixs) { // 有候选拼音显示候选拼音
+            prefixs = CustomConstant.PREFIXS_PINYIN
+            if (mRVLeftPrefix.footerCount <= 0) {
+                mRVLeftPrefix.addFooterView(mLlAddSymbol)
+            }
         } else {
-            isPrefixs = true
+            if (mRVLeftPrefix.footerCount > 0) {
+                mRVLeftPrefix.removeFooterView(mLlAddSymbol)
+            }
         }
         val adapter = PrefixAdapter(context, prefixs)
-        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            val symbol = (parent as PrefixAdapter?)!!.getSymbolData(position)
+        mRVLeftPrefix.setAdapter(null)
+        mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
+            val symbol = prefixs[position]
             if (isPrefixs) {
                 if (isLetter(symbol)) {
                     inputView.selectPrefix(position)

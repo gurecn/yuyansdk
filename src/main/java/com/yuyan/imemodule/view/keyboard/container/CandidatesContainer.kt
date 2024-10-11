@@ -2,27 +2,38 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.JustifyContent
+import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.PrefixAdapter
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.ui.activity.SettingsActivity
+import com.yuyan.imemodule.ui.utils.AppUtil
+import com.yuyan.imemodule.ui.utils.startActivity
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
+import splitties.dimensions.dp
+import splitties.views.dsl.core.margin
 
 /**
  * 候选词键盘容器
@@ -33,13 +44,27 @@ import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 @SuppressLint("ViewConstructor")
 class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private lateinit var mRVSymbolsView: RecyclerView
-    private var mRVLeftPrefix: RecyclerView? = null
+    private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private var isLoadingMore = false // 正在加载更多
     private var noMoreData = false // 没有更多数据
     private var scrollListener: RecyclerView.OnScrollListener? = null
-
+    private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
+        gravity = Gravity.CENTER
+    }
     init {
         initView(context)
+        val ivAddSymbol = ImageView(context).apply {
+            setImageResource(R.drawable.baseline_add_circle_24)
+        }
+        ivAddSymbol.setOnClickListener { _:View ->
+            val arguments = Bundle()
+            arguments.putInt("type", 0)
+            AppUtil.launchSettingsToPrefix(context!!, arguments)
+        }
+        mLlAddSymbol.addView(ivAddSymbol)
     }
 
     private fun initView(context: Context) {
@@ -49,17 +74,17 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         val manager = CustomFlexboxLayoutManager(context)
         manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
         mRVSymbolsView.setLayoutManager(manager)
-        mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as RecyclerView
+
         val prefixLayoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
-        mRVLeftPrefix!!.setLayoutManager(prefixLayoutManager)
+        mRVLeftPrefix.setLayoutManager(prefixLayoutManager)
         val skbWidth = instance.skbWidth
         val skbHeight = instance.skbHeight
         val prefixLayoutParams = LayoutParams((skbWidth * 0.18).toInt(), LayoutParams.MATCH_PARENT)
         prefixLayoutParams.setMargins(0, (skbHeight * 0.01).toInt(), 0, (skbHeight * 0.01).toInt())
         addView(mRVLeftPrefix, prefixLayoutParams)
-        mRVLeftPrefix!!.visibility = GONE
+        mRVLeftPrefix.visibility = GONE
         val layoutParams2 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        layoutParams2.addRule(RIGHT_OF, mRVLeftPrefix!!.id)
+        layoutParams2.addRule(RIGHT_OF, mRVLeftPrefix.id)
         mRVSymbolsView.setLayoutParams(layoutParams2)
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
@@ -159,7 +184,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         scrollListener = RecyclerViewScrollListener()
         mRVSymbolsView.addOnScrollListener(scrollListener!!)
         if (mInputModeSwitcher!!.isChineseT9) {
-            mRVLeftPrefix!!.visibility = VISIBLE
+            mRVLeftPrefix.visibility = VISIBLE
             updatePrefixsView()
         }
     }
@@ -167,16 +192,21 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     //更新左侧拼音显示
     private fun updatePrefixsView() {
         var prefixs = mDecInfo!!.prefixs
-        val isPrefixs: Boolean
-        if (prefixs.isEmpty()) { // 有候选拼音显示候选拼音
-            prefixs = resources.getStringArray(R.array.SymbolRealNine)
-            isPrefixs = false
-        } else {
-            isPrefixs = true
+        val isPrefixs = prefixs.isNotEmpty()
+        if (!isPrefixs) { // 有候选拼音显示候选拼音
+            prefixs = CustomConstant.PREFIXS_PINYIN
+            if (mRVLeftPrefix.footerCount <= 0) {
+                mRVLeftPrefix.addFooterView(mLlAddSymbol)
+            }
+        } else{
+            if (mRVLeftPrefix.footerCount > 0) {
+                mRVLeftPrefix.removeFooterView(mLlAddSymbol)
+            }
         }
         val adapter = PrefixAdapter(context, prefixs)
-        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            val s = (parent as PrefixAdapter?)!!.getSymbolData(position)
+        mRVLeftPrefix.setAdapter(null)
+        mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
+            val s = prefixs[position]
             if (isPrefixs) {
                 if (isLetter(s)) {
                     inputView.selectPrefix(position)
@@ -189,6 +219,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 inputView.responseKeyEvent(softKey)
             }
         }
-        mRVLeftPrefix!!.setAdapter(adapter)
+        mRVLeftPrefix.setAdapter(adapter)
     }
 }

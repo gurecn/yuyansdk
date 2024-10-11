@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.constant
 
 import com.yuyan.imemodule.application.ImeSdkApplication
+import com.yuyan.imemodule.prefs.AppPrefs
 
 /**
  * 用户自定义常量类
@@ -23,4 +24,6 @@ object CustomConstant {
     const val LICENSE_SPDX_ID = "LGPL-2.1-or-later"
     const val LICENSE_URL = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1"
     const val FEEDBACK_TXC_REPO = "https://txc.qq.com/products/668191"
+    var PREFIXS_PINYIN = AppPrefs.getInstance().internal.keyboardPrefixsPinyin.getValue().split(" ").toTypedArray()
+    val PREFIXS_NUMBER = AppPrefs.getInstance().internal.keyboardPrefixsNumber.getValue().split(" ").toTypedArray()
 }
