@@ -74,7 +74,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
         }
     }
 
-    fun getMenuMode(position: Int): SkbMenuMode = items[position].skbMenuMode
+    fun getMenuMode(position: Int): SkbMenuMode? = if(items.size > position)items[position].skbMenuMode else null
 
     private fun isSettingsMenuSelect(data: SkbFunItem): Boolean {
         val rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()

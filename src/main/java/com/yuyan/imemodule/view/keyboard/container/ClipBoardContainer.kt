@@ -26,19 +26,11 @@ import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.utils.LogUtil
-import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.inputmethod.core.Kernel
-import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.dimensions.dp
 import splitties.views.textResource
-import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
-import java.io.IOException
 import kotlin.math.ceil
 
 /**
