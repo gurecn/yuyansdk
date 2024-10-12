@@ -39,9 +39,10 @@ class PrefixSettingsFragment(pos:Int) : Fragment(){
             spannableString.setSpan( LineHeightSpanCustom(dp(5)), 0, spannableString.length, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
             setText(spannableString)
             requestFocus()
+            background = null
             gravity = Gravity.CENTER_HORIZONTAL
             paintFlags = this.paintFlags or Paint.UNDERLINE_TEXT_FLAG;
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             doBeforeTextChanged { text, _, _, _ ->
                 oldText = text?.toString()?:""
             }
