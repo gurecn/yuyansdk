@@ -44,7 +44,7 @@ object AppUtil {
         launchMainToDest(context, R.id.keyboardFeedbackFragment)
 
     fun launchSettingsToPrefix(context: Context, arguments: Bundle? = null) =
-        launchMainToDest(context, R.id.prefixSettingsFragment, arguments)
+        launchMainToDest(context, R.id.sidebarSymbolFragment, arguments)
 
     fun launchMainToThemeList(context: Context) =
         launchMainToDest(context, R.id.themeFragment)
