@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:text="@string/add_phrases_input_tips"/>
-    <EditText
+    <com.yuyan.imemodule.view.widget.ImeEditText
         android:id="@+id/et_add_phrases_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
