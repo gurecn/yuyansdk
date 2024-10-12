@@ -125,7 +125,7 @@ class ImeService : InputMethodService() {
 
     override fun onComputeInsets(outInsets: Insets) {
         if (!::mInputView.isInitialized) return
-        val (x, y) = intArrayOf(0, 0).also { mInputView.mSkbRoot.getLocationInWindow(it) }
+        val (x, y) = intArrayOf(0, 0).also {if(mInputView.isAddPhrases) mInputView.mAddPhrasesLayout.getLocationInWindow(it) else mInputView.mSkbRoot.getLocationInWindow(it) }
         outInsets.apply {
             if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight

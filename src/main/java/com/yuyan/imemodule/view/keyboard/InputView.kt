@@ -103,7 +103,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
-    private lateinit var mAddPhrasesLayout: RelativeLayout
+    lateinit var mAddPhrasesLayout: RelativeLayout
     private lateinit var mLlKeyboardBottomHolder: LinearLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
