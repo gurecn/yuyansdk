@@ -41,10 +41,8 @@ class ImeService : InputMethodService() {
                     if(KeyboardManager.instance.currentContainer is ClipBoardContainer
                         && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard ){
                         (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
-                        getInstance().internal.clipboardUpdateTime.setValue(0L)
                     } else {
                         mInputView.showSymbols(arrayOf(value))
-                        getInstance().internal.clipboardUpdateTime.setValue(0L)
                     }
                 }
             }
