@@ -11,12 +11,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:textSize="12sp"
         android:text="@string/add_phrases_input_tips"/>
     <com.yuyan.imemodule.view.widget.ImeEditText
         android:id="@+id/et_add_phrases_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="16sp"
         android:padding="10dp"
+        android:cursorVisible="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_below="@+id/tv_add_phrases_tips"
         android:background="@null"
         android:lines="3"

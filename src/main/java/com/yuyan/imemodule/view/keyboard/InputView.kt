@@ -1024,10 +1024,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if(isAddPhrases){
             when(keyCode){
                 KeyEvent.KEYCODE_DEL ->{
-                    val text = mEtAddPhrasesContent?.text.toString()
-                    if (text.isNotBlank()) {
-                        mEtAddPhrasesContent?.setText(text.substring(0, text.length - 1))
-                    }
+                    mEtAddPhrasesContent?.onKeyDown(keyCode, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+                    mEtAddPhrasesContent?.onKeyUp(keyCode, KeyEvent(KeyEvent.ACTION_UP, keyCode))
                 }
                 KeyEvent.KEYCODE_ENTER ->{
                     isAddPhrases = false
