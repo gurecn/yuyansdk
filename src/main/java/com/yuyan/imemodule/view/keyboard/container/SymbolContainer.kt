@@ -26,6 +26,7 @@ import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -103,8 +104,10 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         val viewType = adapter.viewType
         if (viewType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
             LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
-            inputView.resetToIdleState()
-            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+            if(!AppPrefs.getInstance().internal.keyboardLockSymbol.getValue()) {
+                inputView.resetToIdleState()
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+            }
         } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
             LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(result, System.currentTimeMillis())
         } else if (viewType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
