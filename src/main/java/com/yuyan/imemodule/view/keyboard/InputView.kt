@@ -17,7 +17,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -61,6 +60,7 @@ import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
+import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -88,7 +88,7 @@ import kotlin.math.absoluteValue
 class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
     var isAddPhrases = false
     private var oldAddPhrases = ""
-    private var mEtAddPhrasesContent:EditText? = null
+    private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
@@ -904,6 +904,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
                 mEtAddPhrasesContent?.setText(extra)
+                mEtAddPhrasesContent?.setSelection(extra.length)
             }
             else ->{}
         }
@@ -920,7 +921,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(editable: Editable) {
                 tvAddPhrasesTips?.text = tips.plus(PinyinHelper.getPinYinHeadChar(editable.toString()))
-                mEtAddPhrasesContent?.setSelection(editable.length)
             }
         })
     }
@@ -1038,7 +1038,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
                 else -> {
                     val unicodeChar: Char = KeyEvent(KeyEvent.ACTION_DOWN, keyCode).unicodeChar.toChar()
                     if (unicodeChar != Character.MIN_VALUE) {
-                        mEtAddPhrasesContent?.append(unicodeChar.toString())
+                        mEtAddPhrasesContent?.commitText(unicodeChar.toString())
                     }
                 }
             }
@@ -1075,7 +1075,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 发送字符串给编辑框
      */
     private fun commitText(resultText: String) {
-        if(isAddPhrases) mEtAddPhrasesContent?.append(resultText)
+        if(isAddPhrases) mEtAddPhrasesContent?.commitText(resultText)
         else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
     }
 
@@ -1085,7 +1085,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     private fun commitDecInfoText(resultText: String?) {
         if(resultText == null) return
         if(isAddPhrases){
-            mEtAddPhrasesContent?.append(resultText)
+            mEtAddPhrasesContent?.commitText(resultText)
         } else {
             val inputConnection = service.getCurrentInputConnection()
             inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
@@ -1096,7 +1096,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
     }
 
     private fun sendKeyChar(char: Char) {
-        if(isAddPhrases) mEtAddPhrasesContent?.append(char.toString())
+        if(isAddPhrases) mEtAddPhrasesContent?.commitText(char.toString())
         else service.sendKeyChar(char)
     }
 
