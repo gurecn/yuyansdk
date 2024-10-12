@@ -1,46 +1,51 @@
 package com.yuyan.imemodule.adapter
 
+import android.annotation.SuppressLint
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication.Companion.context
-import splitties.dimensions.dp
 import splitties.views.dsl.core.editText
-import splitties.views.dsl.core.margin
-import splitties.views.dsl.core.textView
 
-class PrefixSettingsAdapter ( private val mDatas: Array<String>) : RecyclerView.Adapter<PrefixSettingsAdapter.PrefixSettingsHolder>() {
 
+class PrefixSettingsAdapter ( private val mDatas: MutableList<String>) : RecyclerView.Adapter<PrefixSettingsAdapter.PrefixSettingsHolder>() {
+
+    private var mOnEditTextTextChangedListener: OnEditTextTextChangedListener? = null
+    fun setOnEditTextTextChangedListener(onEditTextTextChangedListener: OnEditTextTextChangedListener?) {
+        mOnEditTextTextChangedListener = onEditTextTextChangedListener
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrefixSettingsHolder {
         val header = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.CENTER_VERTICAL
-            }
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         }.apply {
-            addView(textView {}, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
             addView(editText {
+                    filters = arrayOf<InputFilter>(InputFilter.LengthFilter(3))
                     gravity = Gravity.CENTER
                     id = R.id.et_prefix_setting_content
-                }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { margin = dp(5) }
+                }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             )
-            addView(textView {}, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 3f))
-            addView(ImageView(context).apply {
-                    setImageResource(R.drawable.sdk_vector_vertical_scale)
-                }, LinearLayout.LayoutParams(dp(20), dp(20)).apply { gravity = Gravity.CENTER}
-            )
-            addView(textView {}, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         }
         return PrefixSettingsHolder(header)
     }
 
-    override fun onBindViewHolder(holder: PrefixSettingsHolder, position: Int) {
+    override fun onBindViewHolder(holder: PrefixSettingsHolder, @SuppressLint("RecyclerView") position: Int) {
         holder.etPrefixContent.setText(mDatas[position])
+        holder.etPrefixContent.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(content: Editable) {
+                mOnEditTextTextChangedListener?.onTextChanged(content.toString(), position)
+            }
+        })
+
     }
 
     override fun getItemCount(): Int {
@@ -54,8 +59,8 @@ class PrefixSettingsAdapter ( private val mDatas: Array<String>) : RecyclerView.
             etPrefixContent = view.findViewById(R.id.et_prefix_setting_content)
         }
     }
+}
 
-    fun getSymbolData(position: Int): String {
-        return mDatas[position]
-    }
+fun interface OnEditTextTextChangedListener {
+    fun onTextChanged(content: String, position: Int)
 }

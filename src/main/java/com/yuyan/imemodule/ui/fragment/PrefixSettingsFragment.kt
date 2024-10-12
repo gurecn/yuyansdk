@@ -5,102 +5,71 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.setMargins
+import androidx.core.widget.doBeforeTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.yanzhenjie.recyclerview.SwipeRecyclerView
-import com.yuyan.imemodule.R
-import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.constant.CustomConstant
-import splitties.dimensions.dp
-import splitties.views.dsl.constraintlayout.below
-import splitties.views.dsl.constraintlayout.bottomOfParent
-import splitties.views.dsl.constraintlayout.constraintLayout
-import splitties.views.dsl.constraintlayout.endOfParent
-import splitties.views.dsl.constraintlayout.lParams
-import splitties.views.dsl.constraintlayout.startOfParent
-import splitties.views.dsl.constraintlayout.topOfParent
-import splitties.views.dsl.core.add
-import splitties.views.dsl.core.matchParent
-import splitties.views.dsl.core.textView
-import splitties.views.dsl.core.wrapContent
+import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import splitties.views.dsl.core.editText
 
+class PrefixSettingsFragment(pos:Int) : Fragment(){
+    private var  positon = 0
+    private var  onWaitSave = false
+    private var prefix:String
 
-class PrefixSettingsFragment : Fragment(){
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.setting_ime_prefixs)
+    init {
+        positon = pos
+        prefix = (if(positon == 0)CustomConstant.PREFIXS_PINYIN else CustomConstant.PREFIXS_NUMBER).joinToString ("\n")
     }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
 
-        val pinyinContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER }.apply {
-                addView(ImageView(context).apply {
-                    setImageResource(R.mipmap.skb_prefix_pinyin)
-                }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(100)))
-                addView(textView {
-                    setText(R.string.skb_prefix_pinyin_tips)
-                    gravity = Gravity.CENTER
-                })
-        }
-
-        val numberContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER }.apply {
-                addView(ImageView(context).apply {
-                    setImageResource(R.mipmap.skb_prefix_number)
-                }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(100)))
-                addView(textView {
-                    setText(R.string.skb_prefix_number_tips)
-                    gravity = Gravity.CENTER
-                })
-        }
-        val header = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL   }.apply {
-            addView(pinyinContainer, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-            addView(numberContainer, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-        }
-
-        val mRVSymbolsView = SwipeRecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-        }
-        val adapter = PrefixSettingsAdapter(CustomConstant.PREFIXS_PINYIN)
-        mRVSymbolsView.setAdapter(adapter)
-        val elevation = textView {
-            setBackgroundResource(R.color.skb_shadow_icon_color)
-        }
-
-        mRVSymbolsView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
-            if (bottom < oldBottom) {
-                mRVSymbolsView.post {
-                    if (adapter.itemCount > 0) {
-                        mRVSymbolsView.smoothScrollToPosition(adapter.itemCount - 1)
+        var oldText = ""
+        editText {
+            setText(prefix)
+            requestFocus()
+            gravity = Gravity.CENTER_HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            doBeforeTextChanged { text, _, _, _ ->
+                oldText = text?.toString()?:""
+            }
+            doOnTextChanged { text, start, _, _ ->
+                var onChanged = false
+                val prefixs = text.toString().split("\n".toRegex()).toMutableList()
+                if(prefixs.size > 15){
+                    prefixs.clear()
+                    prefixs.addAll(oldText.split("\n".toRegex()))
+                    onChanged = true
+                    onWaitSave = true
+                }
+                prefixs.forEachIndexed{ index, item ->
+                    if(item.length > 4) {
+                        prefixs[index] = item.substring(0, 4)
+                        onChanged = true
+                        onWaitSave = true
                     }
+                }
+                if(onChanged){
+                    val content = prefixs.joinToString ("\n")
+                    this@editText.setText(content)
+                    this@editText.setSelection(if(start > content.length)content.length else start)
                 }
             }
         }
+    }
 
-        constraintLayout {
-            add(header, lParams(height = wrapContent) {
-                topOfParent()
-                startOfParent()
-                setMargins(dp(20))
-            })
-            add(elevation, lParams(width = matchParent,height = dp(1)) {
-                below(header)
-                setMargins(dp(40),dp(20),dp(40), 0)
-            })
-            add(mRVSymbolsView, lParams {
-                below(elevation)
-                startOfParent()
-                endOfParent()
-                bottomOfParent()
-            })
+    override fun onStop() {
+        super.onStop()
+        if(onWaitSave) {
+            if (positon == 0) {
+                AppPrefs.getInstance().internal.keyboardPrefixsPinyin.setValue(prefix.replace("\n", " "))
+                CustomConstant.PREFIXS_PINYIN = prefix.split("\n".toRegex()).toTypedArray()
+            } else {
+                AppPrefs.getInstance().internal.keyboardPrefixsNumber.setValue(prefix.replace("\n", " "))
+                CustomConstant.PREFIXS_NUMBER = prefix.split("\n".toRegex()).toTypedArray()
+            }
+            KeyboardManager.instance.clearKeyboard()
         }
     }
 }
