@@ -1,26 +1,22 @@
 package com.yuyan.imemodule.ui.fragment
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.prefs.AppPrefs
 import splitties.dimensions.dp
 import splitties.resources.styledColor
 import splitties.views.backgroundColor
 import splitties.views.dsl.constraintlayout.below
 import splitties.views.dsl.constraintlayout.bottomOfParent
-import splitties.views.dsl.constraintlayout.centerHorizontally
 import splitties.views.dsl.constraintlayout.constraintLayout
 import splitties.views.dsl.constraintlayout.endOfParent
 import splitties.views.dsl.constraintlayout.lParams
@@ -38,32 +34,15 @@ class SidebarSymbolFragment : Fragment(){
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.setting_ime_prefixs)
+        AppPrefs.getInstance().internal.keyboardLockSymbol.setValue(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AppPrefs.getInstance().internal.keyboardLockSymbol.setValue(false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
-
-//        val pinyinContainer = LinearLayout(context).apply {
-//            orientation = LinearLayout.VERTICAL
-//            gravity = Gravity.CENTER }.apply {
-//            addView(ImageView(context).apply {
-//                setImageResource(R.mipmap.skb_prefix_pinyin)
-//            }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(100)))
-//        }
-//
-//        val numberContainer = LinearLayout(context).apply {
-//            orientation = LinearLayout.VERTICAL
-//            gravity = Gravity.CENTER }.apply {
-//            addView(ImageView(context).apply {
-//                setImageResource(R.mipmap.skb_prefix_number)
-//            }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(100)))
-//        }
-//        val header = LinearLayout(context).apply {
-//            orientation = LinearLayout.HORIZONTAL   }.apply {
-//            addView(pinyinContainer, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-//            addView(numberContainer, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
-//            setPadding(dp(20))
-//        }
-
 
         tabLayout = TabLayout(this)
 
@@ -91,11 +70,6 @@ class SidebarSymbolFragment : Fragment(){
                 startOfParent()
                 endOfParent()
             })
-//            add(tabLayout, lParams(matchParent, wrapContent) {
-//                below(header)
-//                centerHorizontally()
-//                bottomOfParent()
-//            })
             backgroundColor = styledColor(android.R.attr.colorPrimary)
             elevation = dp(4f)
         }
