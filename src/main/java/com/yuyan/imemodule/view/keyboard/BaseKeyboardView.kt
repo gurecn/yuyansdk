@@ -78,7 +78,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     if(mLongPressKey){
                         popupComponent.changeFocus(currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
                     } else {
-                        dispatchGestureEvent(downEvent, currentEvent, distanceX, distanceY)
+                        dispatchGestureEvent(downEvent, currentEvent, distanceX)
                     }
                     return true
                 }
@@ -216,7 +216,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var lastEventY:Float = -1f
     private var lastEventActionIndex:Int = 0
     // 处理手势滑动
-    private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float) : Boolean {
+    private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float) : Boolean {
         var result = false
         val currentX = currentEvent.x
         val currentY = currentEvent.y

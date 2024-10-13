@@ -31,7 +31,6 @@ class ComposingView(context: Context) : View(context) {
     private var mComposingDisplay:String = ""  //显示拼音
 
     init {
-        val r = context.resources
         mPaint = Paint()
         mPaint.setColor(ThemeManager.activeTheme.keyTextColor)
         mPaint.isAntiAlias = true
