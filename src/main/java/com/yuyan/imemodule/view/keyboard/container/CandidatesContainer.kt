@@ -62,7 +62,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         ivAddSymbol.setOnClickListener { _:View ->
             val arguments = Bundle()
             arguments.putInt("type", 0)
-            AppUtil.launchSettingsToPrefix(context!!, arguments)
+            AppUtil.launchSettingsToPrefix(context, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
     }

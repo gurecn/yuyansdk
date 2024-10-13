@@ -42,7 +42,7 @@ object Kernel {
     /**
      * 传入一个键码
      */
-    fun inputKeyCode(keyCode: Int, event: KeyEvent) {
+    fun inputKeyCode(keyCode: Int) {
         onNormalKey(keyCode)
     }
 
@@ -113,12 +113,12 @@ object Kernel {
         destroy()
     }
 
-    /**
-     * 根据输入的字符查询候选词
-     */
-    fun getAssociateWord(words: String?) {
+//    /**
+//     * 根据输入的字符查询候选词
+//     */
+//    fun getAssociateWord(words: String?) {
 //        RimeEngine.INSTANCE.predictAssociationWords(words);
-    }
+//    }
 
     /**
      * 刷新引擎配置

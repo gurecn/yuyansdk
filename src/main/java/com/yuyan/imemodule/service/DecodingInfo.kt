@@ -33,9 +33,9 @@ class DecodingInfo {
         get() = mCandidatesList.size == 0
 
     // 增加拼写字符
-    fun inputAction(keycode: Int, event: KeyEvent) {
+    fun inputAction(keycode: Int) {
         if (Kernel.unHandWriting()) {
-            Kernel.inputKeyCode(keycode, event)
+            Kernel.inputKeyCode(keycode)
             isAssociate = false
         }
     }

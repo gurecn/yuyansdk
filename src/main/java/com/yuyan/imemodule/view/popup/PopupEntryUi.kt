@@ -15,7 +15,7 @@ import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.view
 import splitties.views.gravityCenter
 
-class PopupEntryUi(override val ctx: Context, theme: Theme, keyHeight: Int, radius: Float) : Ui {
+class PopupEntryUi(override val ctx: Context, theme: Theme, radius: Float) : Ui {
 
     var lastShowTime = -1L
 

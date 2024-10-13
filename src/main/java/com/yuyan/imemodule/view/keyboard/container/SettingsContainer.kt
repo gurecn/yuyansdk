@@ -80,8 +80,8 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 }
                 override fun onMove(recyclerView: RecyclerView, oldHolder: RecyclerView.ViewHolder, targetHolder: RecyclerView.ViewHolder): Boolean {
                     //使用集合工具类Collections，分别把中间所有的item的位置重新交换
-                    val fromPosition: Int = oldHolder.adapterPosition //得到拖动ViewHolder的position
-                    val toPosition: Int = targetHolder.adapterPosition //得到目标ViewHolder的position
+                    val fromPosition: Int = oldHolder.bindingAdapterPosition //得到拖动ViewHolder的position
+                    val toPosition: Int = targetHolder.bindingAdapterPosition //得到目标ViewHolder的position
                     if (fromPosition < toPosition) {
                         for (i in fromPosition until toPosition) {
                             Collections.swap(funItems, i, i + 1)

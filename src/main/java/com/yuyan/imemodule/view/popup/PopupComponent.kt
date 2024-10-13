@@ -55,7 +55,7 @@ class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), D
             return
         }
         val popup = (freeEntryUi.poll()
-            ?: PopupEntryUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds.height(), popupRadius)).apply {
+            ?: PopupEntryUi(ImeSdkApplication.context, ThemeManager.activeTheme, popupRadius)).apply {
             lastShowTime = System.currentTimeMillis()
             setText(content)
         }
