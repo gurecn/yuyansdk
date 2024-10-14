@@ -1,9 +1,9 @@
 package com.yuyan.imemodule.handwriting
 
-import com.yuyan.imemodule.handwriting.entity.HwrRecogResult
+import com.yuyan.imemodule.callback.IHandWritingCallBack
 
 interface HandWritingMonitor {
     fun initHdw(): Boolean
-    fun recognitionData(strokes: List<Short?>, recogResult: HwrRecogResult): Boolean
+    fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack)
     fun hciHwrRelease()
 }
