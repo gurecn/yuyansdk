@@ -37,6 +37,8 @@ class DecodingInfo {
         if (Kernel.unHandWriting()) {
             Kernel.inputKeyCode(keycode)
             isAssociate = false
+        } else if(keycode == KeyEvent.KEYCODE_DEL) {  // 手写删除符号
+            mCandidatesList.clear()
         }
     }
 
@@ -107,11 +109,11 @@ class DecodingInfo {
      * getComposingStrActivePart()取出来。如果candId小于0 ，就对输入的拼音进行查询。
      */
     fun chooseDecodingCandidate(candId: Int) {
-        mCandidatesList.clear()
-        if (candId >= 0) {
-            Kernel.getWordSelectedWord(candId)
+        if (Kernel.unHandWriting()) {
+            mCandidatesList.clear()
+            if (candId >= 0) Kernel.getWordSelectedWord(candId)
+            mCandidatesList.addAll(Kernel.candidates)
         }
-        mCandidatesList.addAll(Kernel.candidates)
     }
 
     /**

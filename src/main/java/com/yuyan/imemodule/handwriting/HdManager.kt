@@ -1,6 +1,6 @@
 package com.yuyan.imemodule.handwriting
 
-import com.yuyan.imemodule.handwriting.entity.HwrRecogResult
+import com.yuyan.imemodule.callback.IHandWritingCallBack
 
 /**
  * User:Gaolei  gurecn@gmail.com
@@ -8,45 +8,15 @@ import com.yuyan.imemodule.handwriting.entity.HwrRecogResult
  * I'm glad to share my knowledge with you all.
  */
 class HdManager private constructor() {
-    private var handWritingMonitor: HandWritingMonitor? = null
-
-    init {
-        if (!sInitState) {
-            initHdw()
-        }
-    }
-
-    /**
-     * 初始化方法
-     */
-    fun initHdw() {
-        handWritingMonitor = HandWritingHanwang()
-        sInitState = (handWritingMonitor as HandWritingHanwang).initHdw()
-    }
+    private var handWritingMonitor: HandWritingMonitor = HandWritingHanwang()
 
     /**
      * 识别手势方法
      */
-    fun recognitionData(strokes: List<Short?>, recogResult: HwrRecogResult): Boolean {
-        if (sInitState && handWritingMonitor != null) {
-            return handWritingMonitor!!.recognitionData(strokes, recogResult)
-        } else {
-            initHdw()
-        }
-        return false
+    fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
+        handWritingMonitor.recognitionData(strokes, recogResult)
     }
-
-    /**
-     * 释放识别资源
-     */
-    fun hciHwrRelease() {
-        sInitState = false
-        manager = null
-        if (handWritingMonitor != null) handWritingMonitor!!.hciHwrRelease()
-    }
-
     companion object {
-        private var sInitState = false
         private var manager: HdManager? = null
 
         @JvmStatic

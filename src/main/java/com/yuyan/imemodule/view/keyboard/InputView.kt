@@ -392,7 +392,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         val abcSearchEnglishCell = mInputModeSwitcher.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
         val result = if(abcSearchEnglishCell){
             processEnglishKey(event)
-        } else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish  || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
+        } else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
             when (mImeState) {
                 ImeState.STATE_IDLE -> processStateIdle(event)
                 ImeState.STATE_INPUT -> processStateInput(event)
@@ -472,6 +472,13 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             // 对输入的拼音进行查询
             updateCandidate()
             return true
+        } else if (keyCode == KeyEvent.KEYCODE_DEL) {
+            if (mDecInfo.mCandidatesList.isEmpty()) {
+                sendKeyEvent(keyCode)
+            } else {
+                mDecInfo.deleteAction()
+                updateCandidate()
+            }
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
             if (!mDecInfo.isCandidatesListEmpty && !mDecInfo.isAssociate) {
                 chooseAndUpdate(0)
@@ -499,7 +506,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mDecInfo.inputAction(keyCode)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (mDecInfo.composingStrForDisplay.isEmpty()) {
+            if (mDecInfo.mCandidatesList.isEmpty()) {
                 sendKeyEvent(keyCode)
             } else {
                 mDecInfo.deleteAction()
@@ -587,7 +594,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mDecInfo.inputAction(keyCode)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (mDecInfo.composingStrForDisplay.isEmpty()) {
+            if (mDecInfo.mCandidatesList.isEmpty()) {
                 sendKeyEvent(keyCode)
             } else {
                 mDecInfo.deleteAction()

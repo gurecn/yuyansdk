@@ -344,7 +344,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             }
             handwriting.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
-                HdManager.instance?.hciHwrRelease()
             }
             keyboardFeedback.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)

@@ -229,7 +229,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 bg.draw(canvas)
         }
         val keyLabel = if(mService != null && mService!!.mInputModeSwitcher.isEnglish) {
-            if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.composingStrForDisplay.isNotEmpty())) {
+            if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.mCandidatesList.isNotEmpty())) {
                 softKey.keyLabel.lowercase()
             } else {
                 softKey.keyLabel

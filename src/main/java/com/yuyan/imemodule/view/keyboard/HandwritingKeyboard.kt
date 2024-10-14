@@ -6,11 +6,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.KeyEvent
 import android.view.MotionEvent
+import com.yuyan.imemodule.callback.IHandWritingCallBack
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.handwriting.HdManager.Companion.instance
-import com.yuyan.imemodule.handwriting.entity.HwrRecogResult
 import com.yuyan.imemodule.handwriting.view.DrawingStrokes
 import com.yuyan.imemodule.handwriting.view.Strokes
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
@@ -140,21 +140,11 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     private fun recognitionData() {
-        val recogResult = HwrRecogResult()
-        val recognitionResult = instance!!.recognitionData(mSBPoint, recogResult)
-        if (recognitionResult) {
-            val recogItemList = recogResult.resultItemList
-            if (recogItemList != null) {
-                val words = ArrayList<CandidateListItem?>()
-                for (index in recogItemList.indices) {
-                    val strTmp = recogItemList[index].result
-                    if(!strTmp.isNullOrEmpty()) {
-                        words.add(CandidateListItem("", strTmp))
-                    }
-                }
-                mService!!.responseHandwritingResultEvent(words)
+        instance!!.recognitionData(mSBPoint, object:IHandWritingCallBack{
+            override fun onSucess(item:ArrayList<CandidateListItem?>){
+                mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
             }
-        }
+        })
     }
 
     override fun onPress(key: SoftKey) {  // 手写界面点击按键时先选择第一个候选词，然后在按键释放时响应onRelease按键。
