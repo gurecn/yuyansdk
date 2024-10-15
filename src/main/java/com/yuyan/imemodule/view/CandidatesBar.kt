@@ -188,6 +188,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mRVContainerMenu = RecyclerView(context).apply {
                 layoutManager =  CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
             }
+            mRVContainerMenu.setItemAnimator(null)
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, view: View?, position: Int ->
                 val skbMenuMode = mCandidatesMenuAdapter.getMenuMode(position)
