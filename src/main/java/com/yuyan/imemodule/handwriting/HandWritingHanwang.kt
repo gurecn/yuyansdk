@@ -2,6 +2,7 @@ package com.yuyan.imemodule.handwriting
 
 import android.util.Base64
 import com.yuyan.imemodule.callback.IHandWritingCallBack
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import org.json.JSONException
@@ -17,14 +18,12 @@ class HandWritingHanwang : HandWritingMonitor {
     }
 
     override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
-        strokes.add(-1)
-        strokes.add(-1)
         val url = ""
         val request = JSONObject()
         request.put("uid", "0.0.0.0")
-        request.put("lang", "chns")
-        request.put("type", 1)
-        request.put("data", strokes.joinToString(","))
+        request.put("lang", "chns")  //中文简体：chns；中文繁体：chnt；英文：en ；数字：number；法语：fr；德语：de；意大利语：it； 日语：ja；韩语：kr；西班牙语：es；葡萄牙语：pt
+        request.put("type", 1)  //请求类型区分：1. 手写轨迹识别2. 获取联想字
+        request.put("data", strokes.joinToString(",") + "-1, -1")
         ThreadPoolUtils.executeSingleton { recognitionData(url, request.toString(), recogResult) }
     }
 
