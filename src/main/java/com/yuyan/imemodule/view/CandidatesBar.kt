@@ -31,7 +31,6 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
@@ -270,7 +269,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }, 0)
         } else {
             mCandidatesAdapter.notifyDataSetChanged()
-            LogUtil.d("NetUtils", " showCandidates   mDecInfo:${mDecInfo.mCandidatesList} ")
             showViewVisibility(mCandidatesDataContainer)
             if (mDecInfo.isAssociate) {
                 mRightArrowBtn.drawable.setLevel(3)
