@@ -17,7 +17,7 @@ class HandWritingHanwang : HandWritingMonitor {
         ThreadPoolUtils.executeSingleton {
             while (true) {
                 if(nextData == null) break
-                val strokesData = nextData?.first
+                val strokesData = nextData?.first?.toMutableList()
                 val recogResultData = nextData?.second
                 nextData = null
                 val request = JSONObject()
@@ -48,8 +48,8 @@ class HandWritingHanwang : HandWritingMonitor {
                 } catch (ignored: JSONException) {
                 }
             }
+            isRecognitionState = false
         }
-        isRecognitionState = false
     }
 
     companion object {
