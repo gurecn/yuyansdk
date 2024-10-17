@@ -10,6 +10,10 @@ import org.json.JSONObject
 
 class HandWritingHanwang : HandWritingMonitor {
 
+    override fun initHdw(): Boolean {
+        nativeMethods.nativeHttpInit()
+        return true
+    }
     override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
         nextData = Pair(strokes, recogResult)
         if(isRecognitionState) return

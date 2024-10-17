@@ -10,6 +10,9 @@ import com.yuyan.imemodule.callback.IHandWritingCallBack
 class HdManager private constructor() {
     private var handWritingMonitor: HandWritingMonitor = HandWritingHanwang()
 
+    init {
+        handWritingMonitor.initHdw()
+    }
     /**
      * 识别手势方法
      */
