@@ -648,7 +648,6 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
      * 重置到空闲状态
      */
     fun resetToIdleState() {
-        if (mInputModeSwitcher.isEnglish) setComposingText("") // 清除预选词
         resetCandidateWindow()
         // 从候选词、符号界面切换到输入键盘
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
