@@ -302,7 +302,7 @@ class KeyboardLoaderUtil private constructor() {
                     if (keyXPos == -1f) keyXPos = lastKeyRight
                     if (keyYPos == -1f) keyYPos = lastKeyTop
                     if (isNumberRow) {
-                        keyBean.setKeyDimensions(keyXPos, keyYPos/1.15f, keyHeight/1.15f)
+                        keyBean.setKeyDimensions(keyXPos, keyYPos/1.2f, keyHeight/1.2f)
                     } else {
                         keyBean.setKeyDimensions(keyXPos, keyYPos)
                     }
@@ -386,7 +386,7 @@ class KeyboardLoaderUtil private constructor() {
         for(code in codes) {
             val softKey = SoftKey(code.toString()).apply {
                 widthF = 0.099f
-                heightF = 0.15f
+                heightF = 0.2f
             }
             softKeys.add(softKey)
         }
