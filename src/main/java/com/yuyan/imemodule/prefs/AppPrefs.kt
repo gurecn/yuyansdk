@@ -11,7 +11,6 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.allSkbFuns
 import com.yuyan.imemodule.data.commonSkbFuns
-import com.yuyan.imemodule.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode

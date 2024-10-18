@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.handwriting
 
 import android.util.Base64
+import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.callback.IHandWritingCallBack
 import com.yuyan.imemodule.network.NativeMethods
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
@@ -11,7 +12,7 @@ import org.json.JSONObject
 class HandWritingHanwang : HandWritingMonitor {
 
     override fun initHdw(): Boolean {
-        nativeMethods.nativeHttpInit()
+        nativeMethods.nativeHttpInit(ImeSdkApplication.context, 0)
         return true
     }
     override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
