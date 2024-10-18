@@ -139,10 +139,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                     if (dy > 0 && adapterSize - lastItem <= 30) { // 未加载中、未加载完、向下滑动、还有10个数据滑动到底
                         val num = mDecInfo!!.nextPageCandidates
                         if (num > 0) {
+                            calculateColumn(mDecInfo!!.mCandidatesList)
                             post {
-                                (mRVSymbolsView.adapter as CandidatesAdapter?)!!.updateData(
-                                    num
-                                )
+                                (mRVSymbolsView.adapter as CandidatesAdapter?)!!.updateData(num)
                             }
                         } else {
                             noMoreData = true
@@ -221,8 +220,8 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     private fun getSymbolsCount(data: String): Int {
         return if (!TextUtils.isEmpty(data)) {
             val x = data.length
-            if(x > 9) 60
-            else if(x >= 7) 30
+            if(x > 8) 60
+            else if(x >= 6) 30
             else if(x >= 4) 20
             else if(x == 3) 15
             else if(x == 2) 12
