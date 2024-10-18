@@ -2,18 +2,18 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.JustifyContent
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
@@ -23,15 +23,13 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.ui.activity.SettingsActivity
 import com.yuyan.imemodule.ui.utils.AppUtil
-import com.yuyan.imemodule.ui.utils.startActivity
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
+import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -71,10 +69,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVSymbolsView = RecyclerView(context)
         mRVSymbolsView.setHasFixedSize(true)
         mRVSymbolsView.setItemAnimator(null)
-        val manager = CustomFlexboxLayoutManager(context)
-        manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
-        mRVSymbolsView.setLayoutManager(manager)
-
         val prefixLayoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
         mRVLeftPrefix.setLayoutManager(prefixLayoutManager)
         val skbWidth = instance.skbWidth
@@ -83,7 +77,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         prefixLayoutParams.setMargins(0, (skbHeight * 0.01).toInt(), 0, (skbHeight * 0.01).toInt())
         addView(mRVLeftPrefix, prefixLayoutParams)
         mRVLeftPrefix.visibility = GONE
-        val layoutParams2 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         layoutParams2.addRule(RIGHT_OF, mRVLeftPrefix.id)
         mRVSymbolsView.setLayoutParams(layoutParams2)
         this.addView(mRVSymbolsView)
@@ -140,7 +134,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             ThreadPoolUtils.executeSingleton {
                 if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
                     isLoadingMore = true
-                    val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
+                    val lastItem = (recyclerView.layoutManager as GridLayoutManager).findLastCompletelyVisibleItemPosition()
                     val adapterSize = mDecInfo!!.mCandidatesList.size
                     if (dy > 0 && adapterSize - lastItem <= 30) { // 未加载中、未加载完、向下滑动、还有10个数据滑动到底
                         val num = mDecInfo!!.nextPageCandidates
@@ -170,6 +164,16 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         if(mDecInfo!!.mCandidatesList.size == 10){
             mDecInfo!!.nextPageCandidates
         }
+        if(!mDecInfo!!.isCandidatesListEmpty) {
+            calculateColumn(mDecInfo!!.mCandidatesList)
+        }
+        val layoutManager = GridLayoutManager(context, 60)
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return mHashMapSymbols[i] ?: 12
+            }
+        }
+        mRVSymbolsView.setLayoutManager(layoutManager)
         val adapter = CandidatesAdapter(context, mDecInfo, 0)
         adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is PrefixAdapter) {
@@ -187,6 +191,43 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             mRVLeftPrefix.visibility = VISIBLE
             updatePrefixsView()
         }
+    }
+
+    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
+    private fun calculateColumn(data: MutableList<CandidateListItem?>) {
+        mHashMapSymbols.clear()
+        var mCurrentColumn = 0
+        for (position in data.indices) {
+            val candidate = data[position]?.text!!
+            var count = getSymbolsCount(candidate)
+            var nextCount = 0
+            if (data.size > position + 1) {
+                val nextCandidate = data[position + 1]?.text!!
+                nextCount = getSymbolsCount(nextCandidate)
+            }
+            if (mCurrentColumn + count + nextCount > 60) {
+                count = 60 - mCurrentColumn
+                mCurrentColumn = 0
+            } else {
+                mCurrentColumn = (mCurrentColumn + count) % 60
+            }
+            mHashMapSymbols[position] = count
+        }
+    }
+
+    /**
+     * 根据词长计算当前候选词需占的列数
+     */
+    private fun getSymbolsCount(data: String): Int {
+        return if (!TextUtils.isEmpty(data)) {
+            val x = data.length
+            if(x > 9) 60
+            else if(x >= 7) 30
+            else if(x >= 4) 20
+            else if(x == 3) 15
+            else if(x == 2) 12
+            else  10
+        } else 0
     }
 
     //更新左侧拼音显示
