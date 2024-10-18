@@ -8,6 +8,7 @@ import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.Collections
 
 class HandWritingHanwang : HandWritingMonitor {
 
@@ -16,15 +17,16 @@ class HandWritingHanwang : HandWritingMonitor {
         return true
     }
     override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
-        nextData = Pair(strokes, recogResult)
+        nextDatas.add(Pair(strokes, recogResult))
         if(isRecognitionState) return
         isRecognitionState = true
         ThreadPoolUtils.executeSingleton {
             while (true) {
-                if(nextData == null) break
-                val strokesData = nextData?.first?.toMutableList()
-                val recogResultData = nextData?.second
-                nextData = null
+                if(nextDatas.size == 0) break
+                val data = nextDatas.removeAt(0)
+                nextDatas.clear()
+                val strokesData = data?.first?.toMutableList()
+                val recogResultData = data?.second
                 val request = JSONObject()
                 request.put("uid", "0.0.0.0")
                 request.put("lang", "chns")  //中文简体：chns；中文繁体：chnt；英文：en ；数字：number；法语：fr；德语：de；意大利语：it； 日语：ja；韩语：kr；西班牙语：es；葡萄牙语：pt
@@ -60,6 +62,6 @@ class HandWritingHanwang : HandWritingMonitor {
     companion object {
         private var isRecognitionState = false
         private val nativeMethods = NativeMethods()
-        private var  nextData: Pair<MutableList<Short?>, IHandWritingCallBack>? = null
+        private var  nextDatas  =  Collections.synchronizedList(mutableListOf<Pair<MutableList<Short?>, IHandWritingCallBack>?>())
     }
 }
