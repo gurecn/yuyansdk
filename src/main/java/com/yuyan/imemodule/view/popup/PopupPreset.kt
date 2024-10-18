@@ -86,7 +86,6 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     "PQRS" to arrayOf("P", "Q", "R", "S", "p", "q", "r", "s"),
     "TUV" to arrayOf("T", "U", "V", "t", "u", "v"),
     "WXYZ" to arrayOf("W", "X", "Y", "Z", "w", "x", "y", "z"),
-    "空格" to arrayOf("0"),
 
     //
     // LX17
