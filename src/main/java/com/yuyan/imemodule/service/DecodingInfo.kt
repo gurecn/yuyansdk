@@ -65,7 +65,7 @@ class DecodingInfo {
     }
 
     val isFinish: Boolean  //是否输入完毕，等待上屏。
-        get() = if(Kernel.unHandWriting()) Kernel.isFinish else true
+        get() = if(Kernel.unHandWriting()) Kernel.isFinish else mCandidatesList.isEmpty()
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = Kernel.wordsShowPinyin
@@ -93,9 +93,11 @@ class DecodingInfo {
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
             mCandidatesList.addAll(Kernel.candidates)
             Kernel.commitText
-        } else {
-            mCandidatesList[candId]?.text?:""
-        }
+        } else if(candId >=0 && mCandidatesList.size > candId){
+            val choice = mCandidatesList[candId]?.text?:""
+            reset()
+            choice
+        } else ""
     }
 
     /**
