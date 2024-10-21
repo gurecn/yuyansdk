@@ -553,7 +553,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (mDecInfo.isCandidatesListEmpty) {  //联想状态且无联想词时，点击删除执行删除操作
+            if (mDecInfo.isFinish) {  //联想状态且无联想词时，点击删除执行删除操作
                 sendKeyEvent(keyCode)
             }
             resetToIdleState()
@@ -670,11 +670,8 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             resetToIdleState()
         } else {
-            mDecInfo.chooseDecodingCandidate(candId)
-            // 选择的候选词上屏
-            if (mDecInfo.isFinish) {
-                var choice: String? = mDecInfo.fullSent
-                if (TextUtils.isEmpty(choice)) choice = mDecInfo.getCandidate(candId)?.text
+            val choice = mDecInfo.chooseDecodingCandidate(candId)
+            if (mDecInfo.isFinish) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
                 resetToIdleState()
             } else {  // 不上屏，继续选择

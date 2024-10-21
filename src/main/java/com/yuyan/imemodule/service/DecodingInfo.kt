@@ -65,18 +65,14 @@ class DecodingInfo {
     }
 
     val isFinish: Boolean  //是否输入完毕，等待上屏。
-        get() = !Kernel.unHandWriting() ||  Kernel.isFinish
+        get() = if(Kernel.unHandWriting()) Kernel.isFinish else true
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = Kernel.wordsShowPinyin
 
     val composingStrForCommit: String   // 获取输入的拼音字符串
         get() = Kernel.wordsShowPinyin.replace("'", "")
-    val fullSent: String
-        /**
-         * 获取当前完整句子
-         */
-        get() = Kernel.commitText
+
     val nextPageCandidates: Int   // 获取下一页的候选词
         get() {
             val candidates = Kernel.nextPageCandidates
@@ -91,11 +87,14 @@ class DecodingInfo {
      * 如果candId〉0，就选择一个候选词，并且重新获取一个候选词列表，选择的候选词存放在mComposingStr中，通过mDecInfo.
      * getComposingStrActivePart()取出来。如果candId小于0 ，就对输入的拼音进行查询。
      */
-    fun chooseDecodingCandidate(candId: Int) {
-        if (Kernel.unHandWriting()) {
+    fun chooseDecodingCandidate(candId: Int): String {
+        return if (Kernel.unHandWriting()) {
             mCandidatesList.clear()
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
             mCandidatesList.addAll(Kernel.candidates)
+            Kernel.commitText
+        } else {
+            mCandidatesList[candId]?.text?:""
         }
     }
 
