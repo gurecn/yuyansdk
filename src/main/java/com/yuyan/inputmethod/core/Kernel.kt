@@ -1,6 +1,5 @@
 package com.yuyan.inputmethod.core
 
-import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
@@ -112,13 +111,6 @@ object Kernel {
     fun freeIme() {
         destroy()
     }
-
-//    /**
-//     * 根据输入的字符查询候选词
-//     */
-//    fun getAssociateWord(words: String?) {
-//        RimeEngine.INSTANCE.predictAssociationWords(words);
-//    }
 
     /**
      * 刷新引擎配置

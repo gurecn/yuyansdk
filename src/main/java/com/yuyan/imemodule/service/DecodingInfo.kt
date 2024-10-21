@@ -23,9 +23,7 @@ class DecodingInfo {
     fun reset() {
         isAssociate = false
         mCandidatesList.clear()
-        if (Kernel.unHandWriting()) {
-            Kernel.reset()
-        }
+        Kernel.reset()
     }
 
     val isCandidatesListEmpty: Boolean
@@ -52,10 +50,7 @@ class DecodingInfo {
         }
     }
 
-    val prefixs: Array<String>
-        /**
-         * 获取拼音组合
-         */
+    val prefixs: Array<String>  //获取拼音组合
         get() = Kernel.prefixs
 
     /**
@@ -69,32 +64,20 @@ class DecodingInfo {
         }
     }
 
-    val isFinish: Boolean
-        /**
-         * 是否输入完毕，等待上屏。
-         */
+    val isFinish: Boolean  //是否输入完毕，等待上屏。
         get() = !Kernel.unHandWriting() ||  Kernel.isFinish
 
-    val composingStrForDisplay: String
-        /**
-         * 获取显示的拼音字符串
-         */
+    val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = Kernel.wordsShowPinyin
 
-    val composingStrForCommit: String
-        /**
-         * 获取显示的拼音字符串
-         */
+    val composingStrForCommit: String   // 获取输入的拼音字符串
         get() = Kernel.wordsShowPinyin.replace("'", "")
     val fullSent: String
         /**
          * 获取当前完整句子
          */
         get() = Kernel.commitText
-    val nextPageCandidates: Int
-        /**
-         * 获取下一页的候选词
-         */
+    val nextPageCandidates: Int   // 获取下一页的候选词
         get() {
             val candidates = Kernel.nextPageCandidates
             if (candidates.isNotEmpty()) {

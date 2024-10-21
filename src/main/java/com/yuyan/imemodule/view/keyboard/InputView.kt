@@ -940,7 +940,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHeadChar)
             writerPhrases("/custom_phrase_t9.txt", content + "\t" + pinYinHeadT9)
             writerPhrases("/custom_phrase_double.txt", content + "\t" + pinYinHeadChar)
-            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
+            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
         }
     }
 

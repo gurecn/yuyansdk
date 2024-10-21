@@ -27,7 +27,7 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.inputmethod.core.Kernel
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
 import splitties.views.textResource
 import java.io.File
@@ -140,7 +140,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                     removePhrasesHandle(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
-                Kernel.initWiIme(AppPrefs.getInstance().internal.pinyinModeRime.getValue())
+                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
         }
         mRVSymbolsView.setAdapter(adapter)

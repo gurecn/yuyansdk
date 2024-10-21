@@ -73,14 +73,6 @@ object RimeEngine {
         return updateCandidatesOrCommitText()
     }
 
-    fun selectCandidateAndForceCommit(index: Int) {
-        Rime.selectCandidate(index)
-        val rimeCommit = Rime.getRimeCommit()
-        val text = rimeCommit?.commitText?: Rime.compositionText
-        reset()
-        preCommitText = text
-    }
-
     fun getNextPageCandidates(): List<CandidateListItem> {
         val candidates = mutableListOf<CandidateListItem>()
         for(i in 0..4){
@@ -105,6 +97,7 @@ object RimeEngine {
         showCandidates = emptyArray()
         pinyinCandidates = emptyArray()
         showComposition = ""
+        preCommitText = ""
         keyRecordStack.clear()
         Rime.clearComposition()
     }

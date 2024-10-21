@@ -20,7 +20,6 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
-import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import java.util.Collections
 import java.util.LinkedList
 
@@ -190,21 +189,17 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 keyboardValue = 0x1000
                 CustomConstant.SCHEMA_ZH_QWERTY
             }
-
             SkbMenuMode.PinyinHandWriting -> {
                 keyboardValue = 0x3000
                 CustomConstant.SCHEMA_ZH_HANDWRITING
             }
-
             SkbMenuMode.PinyinLx17 -> {
                 keyboardValue = 0x6000
                 CustomConstant.SCHEMA_ZH_DOUBLE_LX17
             }
-
             SkbMenuMode.Pinyin26Double -> {
                 keyboardValue = 0x1000
-                val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
-                CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + doublePYSchemaMode
+                CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
             }
             else ->{
                 keyboardValue = 0x2000
@@ -215,8 +210,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         AppPrefs.getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         AppPrefs.getInstance().internal.pinyinModeRime.setValue(value)
         mInputModeSwitcher!!.saveInputMode(inputMode)
-        KeyboardLoaderUtil.instance.clearKeyboardMap()
-        KeyboardManager.instance.clearKeyboard()
+        inputView.resetToIdleState()
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
     }
 }
