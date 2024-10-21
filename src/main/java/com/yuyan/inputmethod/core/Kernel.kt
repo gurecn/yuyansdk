@@ -49,7 +49,7 @@ object Kernel {
         /**
          * 是否输入完毕，等待上屏。
          */
-        get() = !isFinish()
+        get() = isFinish()
     val candidates: Array<CandidateListItem>
         get() {
             return showCandidates

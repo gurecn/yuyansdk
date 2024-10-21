@@ -40,7 +40,7 @@ object RimeEngine {
      * 是否输入完毕，等待上屏。
      */
     fun isFinish(): Boolean {
-        return preCommitText.isEmpty()
+        return showCandidates.isEmpty() && showComposition.isBlank()
     }
 
     fun onNormalKey(keyCode: Int) {
@@ -148,6 +148,8 @@ object RimeEngine {
                     preCommitText = preCommitText.uppercase()
                 }
             }
+            showComposition = ""
+            showCandidates = emptyArray()
             return preCommitText
         }
         val candidates = Rime.getRimeContext()?.candidates ?: emptyArray()

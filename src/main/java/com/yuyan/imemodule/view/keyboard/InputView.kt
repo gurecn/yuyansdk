@@ -473,7 +473,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (mDecInfo.mCandidatesList.isEmpty()) {
+            if (mDecInfo.isFinish) {
                 sendKeyEvent(keyCode)
             } else {
                 mDecInfo.deleteAction()
@@ -506,7 +506,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mDecInfo.inputAction(keyCode)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (mDecInfo.mCandidatesList.isEmpty()) {
+            if (mDecInfo.isFinish) {
                 sendKeyEvent(keyCode)
             } else {
                 mDecInfo.deleteAction()
@@ -594,7 +594,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mDecInfo.inputAction(keyCode)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (mDecInfo.mCandidatesList.isEmpty()) {
+            if (mDecInfo.isFinish) {
                 sendKeyEvent(keyCode)
             } else {
                 mDecInfo.deleteAction()
