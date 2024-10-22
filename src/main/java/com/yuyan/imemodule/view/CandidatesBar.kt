@@ -145,7 +145,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setImageResource(R.drawable.sdk_level_candidates_menu_left)
                 isClickable = true
                 isEnabled = true
-                setPadding(mMenuPadding, 0,0,0)
+                setPadding(mMenuPadding, 0,mMenuPadding/2,0)
                 setOnClickListener{mCvListener.onClickSetting()}
             }
             mLlContainer = LinearLayout(context).apply {
@@ -317,6 +317,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     // 刷新主题
     fun updateTheme(textColor: Int) {
         mRightArrowBtn.drawable.setTint(textColor)
+        mIvMenuSetting.drawable.setTint(textColor)
         mCandidatesAdapter.updateTextColor(textColor)
         mFlowerType.setTextColor(textColor)
     }
