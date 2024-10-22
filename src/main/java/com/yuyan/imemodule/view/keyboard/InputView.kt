@@ -854,6 +854,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             SkbMenuMode.Mnemonic -> {
                 val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
                 prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
+                KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
             }

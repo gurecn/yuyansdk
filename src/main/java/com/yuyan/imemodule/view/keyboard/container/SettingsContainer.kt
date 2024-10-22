@@ -20,6 +20,7 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import java.util.Collections
 import java.util.LinkedList
 
@@ -209,6 +210,9 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         val inputMode = keyboardValue or InputModeSwitcherManager.MASK_LANGUAGE_CN or InputModeSwitcherManager.MASK_CASE_UPPER
         AppPrefs.getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         AppPrefs.getInstance().internal.pinyinModeRime.setValue(value)
+        // 双拼辅助功能,需刷新键盘
+        KeyboardLoaderUtil.instance.clearKeyboardMap()
+        KeyboardManager.instance.clearKeyboard()
         mInputModeSwitcher!!.saveInputMode(inputMode)
         inputView.resetToIdleState()
         KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
