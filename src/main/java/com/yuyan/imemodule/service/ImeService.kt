@@ -50,7 +50,6 @@ class ImeService : InputMethodService() {
     }
     override fun onCreate() {
         super.onCreate()
-        Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue())
         addOnChangedListener(onThemeChangeListener)
         clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
     }
@@ -78,7 +77,6 @@ class ImeService : InputMethodService() {
     override fun onDestroy() {
         super.onDestroy()
         if (::mInputView.isInitialized) mInputView.resetToIdleState()
-        ThreadPoolUtils.executeSingleton { Kernel.freeIme() }
         removeOnChangedListener(onThemeChangeListener)
         clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
     }

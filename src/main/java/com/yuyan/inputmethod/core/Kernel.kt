@@ -25,7 +25,7 @@ object Kernel {
      * 初始化输入法
      */
     @Synchronized
-    fun initWiIme(schema: String, inputMode: InputModeSwitcherManager? = null) {
+    fun initImeSchema(schema: String, inputMode: InputModeSwitcherManager? = null) {
         isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
         selectSchema(schema, inputMode)
         nativeUpdateImeOption()
@@ -100,16 +100,20 @@ object Kernel {
         onDeleteKey()
     }
 
+    /**
+     *  重置输入状态
+     */
     fun reset() {
         RimeEngine.reset()
     }
 
     /**
-     * 释放内存,保存自造词库
+     * 释放内存,重新初始化输入方案
      * 简体和繁体切换需要释放内存
      */
-    fun freeIme() {
+    fun resetIme() {
         destroy()
+        initImeSchema(getInstance().internal.pinyinModeRime.getValue())
     }
 
     /**

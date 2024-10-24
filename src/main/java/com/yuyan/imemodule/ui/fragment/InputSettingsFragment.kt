@@ -26,7 +26,7 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
         AppPrefs.getInstance().internal.pinyinModeRime.setValue(doublePYSchema)
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
-        Kernel.initWiIme(doublePYSchema)
+        Kernel.initImeSchema(doublePYSchema)
     }
 
     override fun onStart() {

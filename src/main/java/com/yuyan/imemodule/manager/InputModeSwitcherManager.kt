@@ -193,9 +193,9 @@ class InputModeSwitcherManager {
         if (isEnglish) {
             val charCase = mInputMode and MASK_CASE
             mToggleStates.charCase = charCase
-            Kernel.initWiIme(CustomConstant.SCHEMA_EN, this)
+            Kernel.initImeSchema(CustomConstant.SCHEMA_EN, this)
         } else {
-            Kernel.initWiIme(getInstance().internal.pinyinModeRime.getValue(), this)
+            Kernel.initImeSchema(getInstance().internal.pinyinModeRime.getValue(), this)
         }
         if (isChinese || isEnglish) {
             mRecentLauageInputMode = mInputMode
