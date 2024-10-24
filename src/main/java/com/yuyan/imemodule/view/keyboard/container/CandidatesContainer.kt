@@ -129,25 +129,27 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         init {
             noMoreData = false
         }
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-            ThreadPoolUtils.executeSingleton {
-                if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
-                    isLoadingMore = true
-                    val lastItem = (recyclerView.layoutManager as GridLayoutManager).findLastCompletelyVisibleItemPosition()
-                    val adapterSize = mDecInfo!!.mCandidatesList.size
-                    if (dy > 0 && adapterSize - lastItem <= 30) { // 未加载中、未加载完、向下滑动、还有10个数据滑动到底
-                        val num = mDecInfo!!.nextPageCandidates
-                        if (num > 0) {
-                            calculateColumn(mDecInfo!!.mCandidatesList)
-                            post {
-                                (mRVSymbolsView.adapter as CandidatesAdapter?)!!.updateData(num)
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                ThreadPoolUtils.executeSingleton {
+                    if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
+                        isLoadingMore = true
+                        val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                        val adapterSize = mDecInfo!!.mCandidatesList.size
+                        if (adapterSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
+                            val num = mDecInfo!!.nextPageCandidates
+                            if (num > 0) {
+                                calculateColumn(mDecInfo!!.mCandidatesList)
+                                post {
+                                    (mRVSymbolsView.adapter as CandidatesAdapter?)!!.updateData(num)
+                                }
+                            } else {
+                                noMoreData = true
                             }
-                        } else {
-                            noMoreData = true
                         }
+                        isLoadingMore = false
                     }
-                    isLoadingMore = false
                 }
             }
         }
@@ -183,6 +185,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             }
         }
         mRVSymbolsView.setAdapter(adapter)
+        noMoreData = false
         if (scrollListener != null) mRVSymbolsView.removeOnScrollListener(scrollListener!!)
         scrollListener = RecyclerViewScrollListener()
         mRVSymbolsView.addOnScrollListener(scrollListener!!)
