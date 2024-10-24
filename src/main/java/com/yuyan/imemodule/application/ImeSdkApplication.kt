@@ -13,6 +13,7 @@ import com.yuyan.imemodule.service.ClipboardHelper
 import com.yuyan.imemodule.ui.utils.isDarkMode
 import com.yuyan.imemodule.utils.AssetUtils.copyFileOrDir
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
+import com.yuyan.inputmethod.core.Kernel
 
 open class ImeSdkApplication : Application() {
     override fun onCreate() {
@@ -58,6 +59,7 @@ open class ImeSdkApplication : Application() {
             copyFileOrDir(context, "rime", "", CustomConstant.RIME_DICT_PATH, true)
             AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
         }
+        Kernel.resetIme()  // 解决词库复制慢，导致先调用初始化问题
         YuyanEmojiCompat.init(context)
     }
 
