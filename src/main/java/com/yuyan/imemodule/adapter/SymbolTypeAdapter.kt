@@ -53,7 +53,8 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
         val category = mDatas[position]
         if(category.icon != 0){
-            holder.imageView.setImageResource(category.icon )
+            holder.imageView.setImageResource(category.icon)
+            holder.imageView.drawable.setTint(mTheme.keyTextColor)
             holder.imageView.visibility = View.VISIBLE
             holder.textView.visibility = View.GONE
         } else {
@@ -82,7 +83,6 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData
             textView = view.findViewById(R.id.tv_recycler_symbol_type)
             imageView = view.findViewById(R.id.iv_recycler_symbol_type)
             textView.setTextColor(mTheme.keyTextColor)
-            imageView.drawable.setTint(mTheme.keyTextColor)
         }
     }
 }
