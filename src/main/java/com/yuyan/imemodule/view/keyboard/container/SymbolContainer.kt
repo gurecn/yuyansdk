@@ -48,7 +48,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private lateinit var mPaint : Paint // 测量字符串长度
     private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
     private var mShowType = 0
-    private var mSymbolsEmoji : Map<String, List<String>>? = null
+    private var mSymbolsEmoji : Map<EmojiconData.Category, List<String>>? = null
     private var mRVSymbolsView: RecyclerView? = null
     private var mRVSymbolsType: RecyclerView? = null
     @SuppressLint("ClickableViewAccessibility")
@@ -61,18 +61,34 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         mRVSymbolsType?.setLayoutManager(layoutManager)
         mRVSymbolsView = RecyclerView(context)
         mLLSymbolType.visibility = VISIBLE
+        val ivReturn = mLLSymbolType.findViewById<ImageView>(R.id.iv_symbols_emoji_type_return)
+        ivReturn.drawable.setTint(activeTheme.keyTextColor)
         val ivDelete = mLLSymbolType.findViewById<ImageView>(R.id.iv_symbols_emoji_type_delete)
+        ivDelete.drawable.setTint(activeTheme.keyTextColor)
         val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         if (isKeyBorder) {
-            val mActiveTheme = activeTheme
             val keyRadius = ThemeManager.prefs.keyRadius.getValue()
             val bg = GradientDrawable()
-            bg.setColor(mActiveTheme.keyBackgroundColor)
+            bg.setColor(activeTheme.keyBackgroundColor)
             bg.shape = GradientDrawable.RECTANGLE
             bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
             ivDelete.background = bg
+            ivReturn.background = bg
         }
-
+        ivReturn.setOnTouchListener { _, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    // 播放按键声音和震动
+                    DevicesUtils.tryPlayKeyDown(SoftKey(KeyEvent.KEYCODE_DEL))
+                    DevicesUtils.tryVibrate(this)
+                }
+                MotionEvent.ACTION_UP -> {
+                    inputView.resetToIdleState()
+                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                }
+            }
+            true
+        }
         ivDelete.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -80,7 +96,6 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                     DevicesUtils.tryPlayKeyDown(SoftKey(KeyEvent.KEYCODE_DEL))
                     DevicesUtils.tryVibrate(this)
                 }
-                MotionEvent.ACTION_MOVE -> { }
                 MotionEvent.ACTION_UP -> {
                     inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
                 }
@@ -213,8 +228,8 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             4 -> {
                 pos = 0
                 val emojiCompatInstance = YuyanEmojiCompat.getAsFlow().value
-                EmojiconData.emojiconData.mapValues { (name, emojiList) ->
-                    if(name=="🔥") emojiList
+                EmojiconData.emojiconData.mapValues { (category, emojiList) ->
+                    if(category.label=="🔥") emojiList
                     else emojiList.filter { emoji ->
                             YuyanEmojiCompat.getEmojiMatch(emojiCompatInstance, emoji)
                     }
