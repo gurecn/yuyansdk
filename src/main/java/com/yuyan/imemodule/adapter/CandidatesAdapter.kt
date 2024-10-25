@@ -35,8 +35,7 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
     init {
         this.mDecInfo = decInfo
         this.candidatesStart = candidatesStart
-        val theme = activeTheme
-        textColor = theme.keyTextColor
+        textColor = activeTheme.keyTextColor
         inflater = LayoutInflater.from(context)
         updateCandidateTextSize()
     }
