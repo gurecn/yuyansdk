@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
 
@@ -17,14 +16,11 @@ import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
  * Date:2017/7/20
  * I'm glad to share my knowledge with you all.
  */
-class SymbolAdapter(context: Context?, private val mDatas: List<String>, val viewType: Int) :
+class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickEmoji: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolHolder>() {
     private val textColor: Int
     private val inflater: LayoutInflater
-    private var mOnItemClickListener: OnRecyclerItemClickListener? = null
-    fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
-        mOnItemClickListener = mOnItemClickLitener
-    }
+    var mDatas: List<String>? = null
 
     init {
         val theme = activeTheme
@@ -43,15 +39,13 @@ class SymbolAdapter(context: Context?, private val mDatas: List<String>, val vie
         } else {
             holder.textView.text = getItem(position)
         }
-        if (mOnItemClickListener != null) {
-            holder.textView.setOnClickListener { view: View? ->
-                mOnItemClickListener!!.onItemClick(this@SymbolAdapter, view, position)
-            }
+        holder.textView.setOnClickListener { _: View? ->
+            onClickEmoji(getItem(position), position)
         }
     }
 
     override fun getItemCount(): Int {
-        return mDatas.size
+        return mDatas?.size?:0
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -63,6 +57,6 @@ class SymbolAdapter(context: Context?, private val mDatas: List<String>, val vie
     }
 
     fun getItem(position: Int): String {
-        return mDatas[position]
+        return mDatas!![position]
     }
 }

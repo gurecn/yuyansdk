@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll_symbols_emoji_type_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,11 +16,15 @@
         android:layout_gravity="center"
         android:scaleType="centerInside"
         android:src="@drawable/ic_arrow_back_24"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_symbols_emoji_type"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_symbols_emoji_type"
+        android:theme="@style/Theme.AppTheme"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        app:tabMaxWidth="45dp"
+        app:tabIndicator="@null"
+        app:tabMode="scrollable"/>
     <ImageView
         android:id="@+id/iv_symbols_emoji_type_delete"
         android:layout_width="50dp"
