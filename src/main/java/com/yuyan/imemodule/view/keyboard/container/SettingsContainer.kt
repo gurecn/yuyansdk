@@ -6,6 +6,7 @@ import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayoutManager
+import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.Theme
@@ -214,13 +215,15 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 SkbMenuMode.Pinyin26Jian
             )
         )
-        funItems.add(
-            SkbFunItem(
-                mContext.getString(R.string.keyboard_name_hand),
-                R.drawable.selece_input_mode_handwriting,
-                SkbMenuMode.PinyinHandWriting
+        if(!BuildConfig.offline) {
+            funItems.add(
+                SkbFunItem(
+                    mContext.getString(R.string.keyboard_name_hand),
+                    R.drawable.selece_input_mode_handwriting,
+                    SkbMenuMode.PinyinHandWriting
+                )
             )
-        )
+        }
         val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
         val doublePinyinSchemaName = when (doublePYSchemaMode) {
             DoublePinyinSchemaMode.flypy -> R.string.double_pinyin_flypy_plus
