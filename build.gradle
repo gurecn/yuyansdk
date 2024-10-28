@@ -39,6 +39,11 @@ android {
         lintOptions {
             abortOnError false
         }
+
+        buildConfigField "String", "versionName", "\"${versionNameDate()}\""
+        buildConfigField "String", "SdkCommitHead", "\"${getSDKGitHead()}\""
+        buildConfigField "String", "AppCommitHead", "\"${getAppGitHead()}\""
+        buildConfigField "String", "AppBuildTime", "\"${getAppBuildTime()}\""
     }
 
     //多渠道打包: app中多渠道配置要一致
@@ -61,10 +66,6 @@ android {
     }
 
     buildTypes {
-        buildConfigField "String", "versionName", ${versionNameDate()}
-        buildConfigField "String", "SdkCommitHead", ${getSDKGitHead()}
-        buildConfigField "String", "AppCommitHead", ${getAppGitHead()}
-        buildConfigField "String", "AppBuildTime", ${getAppBuildTime()}
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
