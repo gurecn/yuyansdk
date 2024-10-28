@@ -2,24 +2,19 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
-import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.adapter.SymbolAdapter
-import com.yuyan.imemodule.adapter.SymbolTypeAdapter
+import com.yuyan.imemodule.adapter.SymbolPagerAdapter
 import com.yuyan.imemodule.application.LauncherModel
-import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
@@ -27,12 +22,9 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import splitties.dimensions.dp
-import kotlin.math.ceil
 
 
 /**
@@ -45,21 +37,37 @@ import kotlin.math.ceil
  */
 @SuppressLint("ViewConstructor")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
-    private lateinit var mPaint : Paint // 测量字符串长度
-    private var lastPosition = 0 // 记录上次选中的位置，再次点击关闭符号界面
     private var mShowType = 0
     private var mSymbolsEmoji : Map<EmojiconData.Category, List<String>>? = null
-    private var mRVSymbolsView: RecyclerView? = null
-    private var mRVSymbolsType: RecyclerView? = null
+    private lateinit var mVPSymbolsView: ViewPager2
+    private lateinit var tabLayout: TabLayout
+
+    init {
+        initView(context)
+    }
     @SuppressLint("ClickableViewAccessibility")
     private fun initView(context: Context) {
-        mPaint = Paint()
-        mPaint.textSize = dp(20f)
+        val pressKeyBackground = GradientDrawable()
+        if (ThemeManager.prefs.keyBorder.getValue()) {
+            val mActiveTheme = activeTheme
+            val keyRadius = ThemeManager.prefs.keyRadius.getValue()
+            pressKeyBackground.setColor(mActiveTheme.genericActiveBackgroundColor)
+            pressKeyBackground.setShape(GradientDrawable.RECTANGLE)
+            pressKeyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
+        }
         val mLLSymbolType = LayoutInflater.from(getContext()).inflate(R.layout.sdk_view_symbols_emoji_type, this, false) as LinearLayout
-        mRVSymbolsType = mLLSymbolType.findViewById(R.id.rv_symbols_emoji_type)
-        val layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
-        mRVSymbolsType?.setLayoutManager(layoutManager)
-        mRVSymbolsView = RecyclerView(context)
+        tabLayout = mLLSymbolType.findViewById<TabLayout?>(R.id.tab_symbols_emoji_type).apply {
+            setOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.view?.background = pressKeyBackground
+                }
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    tab?.view?.background = null
+                }
+                override fun onTabReselected(tab: TabLayout.Tab?) {}
+            })
+        }
+        mVPSymbolsView = ViewPager2(context)
         mLLSymbolType.visibility = VISIBLE
         val ivReturn = mLLSymbolType.findViewById<ImageView>(R.id.iv_symbols_emoji_type_return)
         ivReturn.drawable.setTint(activeTheme.keyTextColor)
@@ -108,24 +116,20 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         this.addView(mLLSymbolType)
         val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         layoutParams2.addRule(ABOVE, mLLSymbolType.id)
-        mRVSymbolsView!!.layoutParams = layoutParams2
-        this.addView(mRVSymbolsView)
+        this.addView(mVPSymbolsView, layoutParams2)
     }
 
-    private fun onItemClickOperate(parent: RecyclerView.Adapter<*>?, position: Int) {
-        val adapter = parent as SymbolAdapter?
-        val s = adapter!!.getItem(position)
-        val result = s.replace("[ \\r]".toRegex(), "")
-        val viewType = adapter.viewType
-        if (viewType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
+    private fun onItemClickOperate(value:String, position: Int) {
+        val result = value.replace("[ \\r]".toRegex(), "")
+        if (mShowType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
             LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
             if(!AppPrefs.getInstance().internal.keyboardLockSymbol.getValue()) {
                 inputView.resetToIdleState()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
-        } else if (viewType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
+        } else if (mShowType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
             LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(result, System.currentTimeMillis())
-        } else if (viewType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
+        } else if (mShowType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
             LauncherModel.instance.usedEmoticonsDao!!.insertUsedEmoticons(result, System.currentTimeMillis())
         }
         val softKey = SoftKey(result)
@@ -134,125 +138,41 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         inputView.responseKeyEvent(softKey)
     }
 
-
-    init {
-        initView(context)
-    }
-
-    private fun onTypeItemClickOperate(position: Int) {
-        if (position < 0) return
-        if (lastPosition != position) {
-            if(mShowType != 4 && mShowType != 5) {
-                inputView.showSymbols(LauncherModel.instance.usedCharacterDao!!.allUsedCharacter)
-            }
-            updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, pos: Int -> onItemClickOperate(parent, pos) }, position)
-        } else {
-            inputView.resetToIdleState()
-            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
-        }
-    }
-
-    //显示表情和符号
-    private fun updateSymbols(listener: OnRecyclerItemClickListener, position: Int) {
-        lastPosition = position
-        val faceData =  if(mShowType == 4 && position == 0){
-            LauncherModel.instance.usedEmojiDao!!.allUsedEmoji
-        } else {
-            mSymbolsEmoji?.get(mSymbolsEmoji?.keys!!.toList()[position])
-        }
-        if(faceData == null)return
-        val layoutManager = GridLayoutManager(context, 8)
-        if(faceData.isNotEmpty()) {
-            calculateColumn(faceData)
-            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(i: Int): Int {
-                    return mHashMapSymbols[i] ?: 1
-                }
-            }
-        }
-        val mSymbolAdapter = SymbolAdapter(context, faceData, mShowType)
-        mRVSymbolsView!!.setLayoutManager(layoutManager)
-        mSymbolAdapter.setOnItemClickLitener(listener)
-        mRVSymbolsView!!.setAdapter(mSymbolAdapter)
-    }
-
-    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
-
-    /**
-     * 计算符号列表实际所占列数
-     */
-    private fun calculateColumn(data: List<String>) {
-        mHashMapSymbols.clear()
-        val itemWidth = EnvironmentSingleton.instance.skbWidth/16
-        var mCurrentColumn = 0
-        for (position in data.indices) {
-            val candidate = data[position]
-            var count = getSymbolsCount(candidate, itemWidth)
-            var nextCount = 0
-            if (data.size > position + 1) {
-                val nextCandidate = data[position + 1]
-                nextCount = getSymbolsCount(nextCandidate, itemWidth)
-            }
-            if (mCurrentColumn + count + nextCount > 8) {
-                count = 8 - mCurrentColumn
-                mCurrentColumn = 0
-            } else {
-                mCurrentColumn = (mCurrentColumn + count) % 8
-            }
-            mHashMapSymbols[position] = count
-        }
-    }
-
-    /**
-     * 根据词长计算当前候选词需占的列数
-     */
-    private fun getSymbolsCount(data: String, itemWidth:Int): Int {
-        return if (!TextUtils.isEmpty(data)) {
-            val bounds = Rect()
-            mPaint.getTextBounds(data, 0, data.length, bounds)
-            val x = ceil(bounds.width().toFloat().div(itemWidth)).toInt()
-            if(x >= 8) 8
-            else if(x >= 4) 4
-            else if(x > 1) 2
-            else  1
-        } else 0
-    }
-
     /**
      * 切换显示界面
      */
     fun setSymbolsView(showType: Int) {
         mShowType = showType
-        var pos = showType
+        var pos = 0
         mSymbolsEmoji = when (mShowType) {
+            5 -> EmojiconData.emoticonData
             4 -> {
-                pos = 0
                 val emojiCompatInstance = YuyanEmojiCompat.getAsFlow().value
                 EmojiconData.emojiconData.mapValues { (category, emojiList) ->
-                    if(category.label=="🔥") emojiList
-                    else emojiList.filter { emoji ->
+                    when (category.label) {
+                        "🔥" -> emojiList
+                        "🕝" -> LauncherModel.instance.usedEmojiDao!!.allUsedEmoji
+                        else -> emojiList.filter { emoji ->
                             YuyanEmojiCompat.getEmojiMatch(emojiCompatInstance, emoji)
+                        }
                     }
                 }
             }
-            5 -> {
-                pos = 0
-                EmojiconData.emoticonData
-            }
             else -> {
+                pos = showType
                 EmojiconData.symbolData
             }
         }
-        updateSymbols({ parent: RecyclerView.Adapter<*>?, _: View?, position: Int -> onItemClickOperate(parent, position) }, pos)
-        val data = mSymbolsEmoji?.keys!!.toList()
-        val adapter = SymbolTypeAdapter(context, data, lastPosition)
-        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            // 播放按键声音和震动
-            DevicesUtils.tryPlayKeyDown()
-            DevicesUtils.tryVibrate(this)
-            onTypeItemClickOperate(position)
+        val mSymbolAdapter = SymbolPagerAdapter(context, mSymbolsEmoji, mShowType){ emojiEntry, position ->
+            onItemClickOperate(emojiEntry, position)
         }
-        mRVSymbolsType!!.setAdapter(adapter)
+        mVPSymbolsView.adapter = mSymbolAdapter
+        val data = mSymbolsEmoji?.keys!!.toList()
+        TabLayoutMediator(tabLayout, mVPSymbolsView) { tab, position ->
+            tab.icon = ContextCompat.getDrawable(context,data[position].icon)
+            tab.view.background = null
+        }.attach()
+        mVPSymbolsView.currentItem = pos
     }
 
     fun getMenuMode(): Int {
