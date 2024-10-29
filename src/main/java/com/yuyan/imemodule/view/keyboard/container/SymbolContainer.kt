@@ -17,7 +17,6 @@ import com.yuyan.imemodule.adapter.SymbolPagerAdapter
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData
-import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -38,7 +37,6 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
 @SuppressLint("ViewConstructor")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mShowType = 0
-    private var mSymbolsEmoji : Map<EmojiconData.Category, List<String>>? = null
     private lateinit var mVPSymbolsView: ViewPager2
     private lateinit var tabLayout: TabLayout
 
@@ -57,7 +55,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         }
         val mLLSymbolType = LayoutInflater.from(getContext()).inflate(R.layout.sdk_view_symbols_emoji_type, this, false) as LinearLayout
         tabLayout = mLLSymbolType.findViewById<TabLayout?>(R.id.tab_symbols_emoji_type).apply {
-            setOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
+            addOnTabSelectedListener(object :TabLayout.OnTabSelectedListener{
                 override fun onTabSelected(tab: TabLayout.Tab?) {
                     tab?.view?.background = pressKeyBackground
                 }
@@ -119,7 +117,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         this.addView(mVPSymbolsView, layoutParams2)
     }
 
-    private fun onItemClickOperate(value:String, position: Int) {
+    private fun onItemClickOperate(value: String) {
         val result = value.replace("[ \\r]".toRegex(), "")
         if (mShowType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
             LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
@@ -127,10 +125,8 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                 inputView.resetToIdleState()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
             }
-        } else if (mShowType == CustomConstant.EMOJI_TYPR_FACE_DATA) {  // Emoji表情
+        } else {  //表情、颜文字
             LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(result, System.currentTimeMillis())
-        } else if (mShowType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) { // 颜文字
-            LauncherModel.instance.usedEmoticonsDao!!.insertUsedEmoticons(result, System.currentTimeMillis())
         }
         val softKey = SoftKey(result)
         DevicesUtils.tryPlayKeyDown(softKey)
@@ -144,30 +140,18 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     fun setSymbolsView(showType: Int) {
         mShowType = showType
         var pos = 0
-        mSymbolsEmoji = when (mShowType) {
+        val mSymbolsEmoji = when (mShowType) {
             5 -> EmojiconData.emoticonData
-            4 -> {
-                val emojiCompatInstance = YuyanEmojiCompat.getAsFlow().value
-                EmojiconData.emojiconData.mapValues { (category, emojiList) ->
-                    when (category.label) {
-                        "🔥" -> emojiList
-                        "🕝" -> LauncherModel.instance.usedEmojiDao!!.allUsedEmoji
-                        else -> emojiList.filter { emoji ->
-                            YuyanEmojiCompat.getEmojiMatch(emojiCompatInstance, emoji)
-                        }
-                    }
-                }
-            }
+            4 -> EmojiconData.emojiconData
             else -> {
                 pos = showType
                 EmojiconData.symbolData
             }
         }
-        val mSymbolAdapter = SymbolPagerAdapter(context, mSymbolsEmoji, mShowType){ emojiEntry, position ->
-            onItemClickOperate(emojiEntry, position)
+        mVPSymbolsView.adapter = SymbolPagerAdapter(context, mSymbolsEmoji, mShowType){ symbol, _ ->
+            onItemClickOperate(symbol)
         }
-        mVPSymbolsView.adapter = mSymbolAdapter
-        val data = mSymbolsEmoji?.keys!!.toList()
+        val data = mSymbolsEmoji.keys.toList()
         TabLayoutMediator(tabLayout, mVPSymbolsView) { tab, position ->
             tab.icon = ContextCompat.getDrawable(context,data[position].icon)
             tab.view.background = null
