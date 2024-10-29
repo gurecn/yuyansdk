@@ -27,8 +27,7 @@ object RimeEngine {
         Rime.getInstance(false)
     }
 
-    fun selectSchema(mod: String, inputMode:InputModeSwitcherManager? = null): Boolean {
-        mInputModeSwitcher= inputMode
+    fun selectSchema(mod: String): Boolean {
         keyRecordStack.clear()
         val shareDir = CustomConstant.RIME_DICT_PATH
         val userDir = CustomConstant.RIME_DICT_PATH
@@ -43,7 +42,8 @@ object RimeEngine {
         return showCandidates.isEmpty() && showComposition.isBlank()
     }
 
-    fun onNormalKey(keyCode: Int) {
+    fun onNormalKey(keyCode: Int, inputMode:InputModeSwitcherManager) {
+        if(mInputModeSwitcher == null)mInputModeSwitcher= inputMode
         val keyChar = when (keyCode) {
             in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
                 keyCode - KeyEvent.KEYCODE_A + 'a'.code
@@ -51,8 +51,8 @@ object RimeEngine {
             in (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON)..(KeyEvent.KEYCODE_Z or KeyEvent.META_SHIFT_RIGHT_ON) -> {
                 keyCode - (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON) + 'A'.code
             }
-            KeyEvent.KEYCODE_APOSTROPHE -> '\''.code
-            KeyEvent.KEYCODE_SEMICOLON -> ';'.code
+            KeyEvent.KEYCODE_APOSTROPHE -> if(isFinish() && mInputModeSwitcher?.isChineseT9 == true) 'v'.code else '\''.code
+            KeyEvent.KEYCODE_SEMICOLON -> '.'.code
             in PINYIN_T9_1..PINYIN_T9_9 -> keyCode + PINYIN_T9_0
             else -> keyCode
         }
@@ -295,13 +295,19 @@ object RimeEngine {
 
         fun pushKey(keyCode: Int): Boolean {
             val lastKey = keyRecords.lastOrNull()
-            if (keyCode == KeyEvent.KEYCODE_APOSTROPHE) {
-                // 连续分词没有意义
-                if (lastKey is InputKey.Apostrophe) return false
-                // 选择拼音之后分词没有意义，但是需要把分词操作入栈
-                if (lastKey == InputKey.SelectPinyinAction) {
-                    keyRecords.add(InputKey.Apostrophe(true))
-                    return false
+            if (lastKey is InputKey.Apostrophe && keyRecords.size == 1) {
+                processDelAction()
+            }else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE) {
+                if(keyRecords.size == 1){
+                    processDelAction()
+                } else {
+                    // 连续分词没有意义
+                    if (lastKey is InputKey.Apostrophe) return false
+                    // 选择拼音之后分词没有意义，但是需要把分词操作入栈
+                    if (lastKey == InputKey.SelectPinyinAction) {
+                        keyRecords.add(InputKey.Apostrophe(true))
+                        return false
+                    }
                 }
             }
             // 选择拼音只是记录其是不是最后一个操作，如果不是在选择之后立即删除，则不需记录

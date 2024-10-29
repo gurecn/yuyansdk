@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.service
 
 import android.view.KeyEvent
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 
@@ -31,9 +32,9 @@ class DecodingInfo {
         get() = mCandidatesList.size == 0
 
     // 增加拼写字符
-    fun inputAction(keycode: Int) {
+    fun inputAction(keycode: Int, inputMode: InputModeSwitcherManager) {
         if (Kernel.unHandWriting()) {
-            Kernel.inputKeyCode(keycode)
+            Kernel.inputKeyCode(keycode, inputMode)
             isAssociate = false
         } else if(keycode == KeyEvent.KEYCODE_DEL) {  // 手写删除符号
             mCandidatesList.clear()

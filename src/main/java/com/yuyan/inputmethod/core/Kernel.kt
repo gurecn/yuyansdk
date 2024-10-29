@@ -25,9 +25,9 @@ object Kernel {
      * 初始化输入法
      */
     @Synchronized
-    fun initImeSchema(schema: String, inputMode: InputModeSwitcherManager? = null) {
+    fun initImeSchema(schema: String) {
         isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
-        selectSchema(schema, inputMode)
+        selectSchema(schema)
         nativeUpdateImeOption()
     }
 
@@ -41,8 +41,8 @@ object Kernel {
     /**
      * 传入一个键码
      */
-    fun inputKeyCode(keyCode: Int) {
-        onNormalKey(keyCode)
+    fun inputKeyCode(keyCode: Int, inputMode:InputModeSwitcherManager) {
+        onNormalKey(keyCode, inputMode)
     }
 
     val isFinish: Boolean

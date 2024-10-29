@@ -468,7 +468,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON ){
-            mDecInfo.inputAction(keyCode)
+            mDecInfo.inputAction(keyCode, mInputModeSwitcher)
             // 对输入的拼音进行查询
             updateCandidate()
             return true
@@ -503,7 +503,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
-            mDecInfo.inputAction(keyCode)
+            mDecInfo.inputAction(keyCode, mInputModeSwitcher)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (mDecInfo.isFinish) {
@@ -548,7 +548,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             changeToStateInput()
             // 加一个字符进输入的拼音字符串中
-            mDecInfo.inputAction(keyCode)
+            mDecInfo.inputAction(keyCode, mInputModeSwitcher)
             // 对输入的拼音进行查询。
             updateCandidate()
             return true
@@ -591,7 +591,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
-            mDecInfo.inputAction(keyCode)
+            mDecInfo.inputAction(keyCode, mInputModeSwitcher)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (mDecInfo.isFinish) {

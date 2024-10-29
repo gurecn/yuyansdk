@@ -46,6 +46,7 @@ engine:
     - recognizer
     - key_binder
     - speller
+    - punctuator
     - selector
     - navigator
     - express_editor
@@ -81,6 +82,9 @@ long_word_filter:
 lunar: 65
 menu:
   page_size: 10
+punctuator:
+  symbols:
+    v: [ "＠", "＃", "＊", "＋", "……", "〜", "（", "）",  "、",  "/" ]
 radical_lookup:
   comment_format:
     - "erase/^.*$//"
@@ -99,7 +103,7 @@ recognizer:
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
     gregorian_to_lunar: "^N[0-9]{1,8}"
     number: "^R[0-9]+[.]?[0-9]*"
-    punct: "^v([0-9]|10|[A-Za-z]+)$"
+    punct: "^v([0-9]|10|[A-Za-z]*?)$"
     radical_lookup: "^uU[a-z]+$"
     underscore: "^[A-Za-z]+_.*"
     unicode: "^U[a-f0-9]+"
