@@ -1,6 +1,5 @@
 package com.yuyan.imemodule.utils
 
-import android.text.TextUtils
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.flower.simplified2HotPreset
@@ -17,34 +16,6 @@ object StringUtils {
     fun isLetter(str: String?): Boolean {
         val pattern = Pattern.compile("[a-zA-Z]*")
         return pattern.matcher(str.toString()).matches()
-    }
-
-    /**
-     * 字符串列表转化成字符串数组
-     *
-     * @param list 需要转化的字符串列表
-     * @return 生成得字符串数组
-     */
-    @JvmStatic
-    fun convertListToString(list: List<String>): Array<String> {
-        return list.toTypedArray<String>()
-    }
-
-    /**
-     * 判断字符串是否是字母，数字，分词
-     */
-    fun isLetterDigit(str: String): Boolean {
-        if (TextUtils.isEmpty(str)) return true
-        val pattern = "['a-zA-Z0-9]+"
-        return str.matches(pattern.toRegex())
-    }
-
-    /**
-     * 判断字符串是否为空
-     */
-    @JvmStatic
-    fun isEmpty(str: String?): Boolean {
-        return str.isNullOrEmpty() || str.equals("null", ignoreCase = true)
     }
 
     // 标点全角半角关系
@@ -92,15 +63,6 @@ object StringUtils {
             c[i] = sbc2dbc(c[i])
         }
         return String(c)
-    }
-
-    // 判断是否是半角
-    fun isDBC(src: String?): Boolean {
-        if (src == null || src.length > 1) {
-            return false
-        }
-        val c = src[0]
-        return c.code in 0..127
     }
 
     /**

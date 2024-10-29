@@ -8,7 +8,6 @@ import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
 
 /**
  * 表情或符号界面适配器
@@ -16,7 +15,7 @@ import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
  * Date:2017/7/20
  * I'm glad to share my knowledge with you all.
  */
-class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickEmoji: (String, Int) -> Unit) :
+class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSymbol: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolHolder>() {
     private val textColor: Int
     private val inflater: LayoutInflater
@@ -29,18 +28,13 @@ class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickEm
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
-        val view = inflater.inflate(R.layout.sdk_item_recyclerview_symbols_emoji, parent, false)
-        return SymbolHolder(view)
+        return SymbolHolder(inflater.inflate(R.layout.sdk_item_recyclerview_symbols_emoji, parent, false))
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        if (viewType == 0) {
-            holder.textView.text = sbc2dbcCase(getItem(position)) // 中文符号显示半角
-        } else {
-            holder.textView.text = getItem(position)
-        }
+        holder.textView.text = mDatas!![position]
         holder.textView.setOnClickListener { _: View? ->
-            onClickEmoji(getItem(position), position)
+            onClickSymbol(mDatas!![position], position)
         }
     }
 
@@ -54,9 +48,5 @@ class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickEm
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)
         }
-    }
-
-    fun getItem(position: Int): String {
-        return mDatas!![position]
     }
 }
