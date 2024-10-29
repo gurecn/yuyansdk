@@ -39,12 +39,12 @@ class SymbolPagerAdapter(context: Context?, private val mDatas: Map<EmojiconData
         }
     }
 
-    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
+    private val mHashMapSymbols = HashMap<Int, List<Int>>() //候选符号列数对应表
     /**
      * 计算符号列表实际所占列数
      */
-    private fun calculateColumn(data: List<String>) {
-        mHashMapSymbols.clear()
+    private fun calculateColumn(index: Int, data: List<String>) {
+        val columns = mutableListOf<Int>()
         val itemWidth = EnvironmentSingleton.instance.skbWidth/16
         var mCurrentColumn = 0
         for (position in data.indices) {
@@ -59,8 +59,9 @@ class SymbolPagerAdapter(context: Context?, private val mDatas: Map<EmojiconData
             } else {
                 mCurrentColumn = (mCurrentColumn + count) % 8
             }
-            mHashMapSymbols[position] = count
+            columns.add(count)
         }
+        mHashMapSymbols[index] = columns
     }
 
     /**
@@ -93,13 +94,13 @@ class SymbolPagerAdapter(context: Context?, private val mDatas: Map<EmojiconData
             (emojiGroupRv.layoutManager as GridLayoutManager).apply {
                 spanCount = 8
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(i: Int): Int {
-                        return mHashMapSymbols[i] ?: 1
+                    override fun getSpanSize(pos: Int): Int {
+                        return mHashMapSymbols[holder.getBindingAdapterPosition()]!![pos]
                     }
                 }
             }
             mSymbolAdapter.apply {
-                calculateColumn(item!!)
+                calculateColumn(position, item!!)
                 mDatas = item
                 notifyDataSetChanged()
             }
