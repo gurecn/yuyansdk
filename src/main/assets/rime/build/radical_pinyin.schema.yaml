@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1725590726
-    default.custom: 1725590726
+    default: 1730283367
+    default.custom: 1730283368
     radical_pinyin.custom: 0
-    radical_pinyin.schema: 1725590726
+    radical_pinyin.schema: 1730283368
 algebra_abc:
   - "xform/^zh/<a>/"
   - "xform/^ch/<e>/"
@@ -240,6 +240,8 @@ key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
     - {accept: equal, send: Page_Down, when: has_menu}
+  select_first_character: bracketleft
+  select_last_character: bracketright
 menu:
   page_size: 10
 schema:

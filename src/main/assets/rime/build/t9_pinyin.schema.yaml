@@ -1,23 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1724118423
-    default.custom: 1724118423
-    pinyin.custom: 0
-    pinyin.schema: 1724118423
-    pinyin_t9.custom: 0
-    pinyin_t9.schema: 1724118423
-    symbols_v: 1724118423
-    symbols_v.custom: 0
-cn_en:
-  comment_format:
-    - "xform/^.+$//"
-  db_class: stabledb
-  dictionary: ""
-  enable_completion: true
-  enable_sentence: false
-  initial_quality: 0.5
-  user_dict: "en_dicts/cn_en"
+    default: 1730283367
+    default.custom: 1730283368
+    t9_pinyin.custom: 0
+    t9_pinyin.schema: 1730283368
 corrector: "{comment}"
 custom_phrase:
   db_class: stabledb
@@ -38,10 +25,18 @@ emoji:
   option_name: emoji
 engine:
   filters:
+    - "lua_filter@*is_in_user_dict"
+    - "lua_filter@*corrector"
+    - "reverse_lookup_filter@radical_reverse_lookup"
+    - "lua_filter@*autocap_filter"
+    - "lua_filter@*v_filter"
+    - "lua_filter@*long_word_filter"
     - "simplifier@emoji"
     - "simplifier@traditionalize"
+    - "lua_filter@*aux_code"
     - uniquifier
   processors:
+    - "lua_processor@select_character"
     - ascii_composer
     - recognizer
     - key_binder
@@ -54,28 +49,28 @@ engine:
     - ascii_segmentor
     - matcher
     - abc_segmentor
+    - "affix_segmentor@radical_lookup"
     - punct_segmentor
     - fallback_segmentor
   translators:
     - punct_translator
     - script_translator
-    - "lua_translator@date_translator"
+    - "lua_translator@*date_translator"
+    - "lua_translator@*lunar"
     - "table_translator@custom_phrase"
-    - "lua_translator@force_gc"
-english:
-  comment_format:
-    - "xform/.*//"
-  dictionary: english
-  enable_sentence: false
-  enable_user_dict: false
-  initial_quality: 1.1
+    - "table_translator@radical_lookup"
+    - "lua_translator@*unicode"
+    - "lua_translator@*number_translator"
+    - "lua_translator@*force_gc"
+    - "lua_translator@*calculator"
 key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
     - {accept: equal, send: Page_Down, when: has_menu}
-    - {accept: at, send: apostrophe, when: has_menu}
   import_preset: default
   search: "`"
+  select_first_character: bracketleft
+  select_last_character: bracketright
 long_word_filter:
   count: 2
   idx: 4
@@ -84,7 +79,7 @@ menu:
   page_size: 10
 punctuator:
   symbols:
-    v: [ "＠", "＃", "＊", "＋", "……", "〜", "（", "）",  "、",  "/" ]
+    "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
 radical_lookup:
   comment_format:
     - "erase/^.*$//"
@@ -100,10 +95,11 @@ radical_reverse_lookup:
 recognizer:
   import_preset: default
   patterns:
+    calculator: "^V.*$"
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
     gregorian_to_lunar: "^N[0-9]{1,8}"
     number: "^R[0-9]+[.]?[0-9]*"
-    punct: "^v([0-9]|10|[A-Za-z]*?)$"
+    punct: "^/([0-9]|10|[A-Za-z]*?)$"
     radical_lookup: "^uU[a-z]+$"
     underscore: "^[A-Za-z]+_.*"
     unicode: "^U[a-f0-9]+"
@@ -111,20 +107,18 @@ recognizer:
 schema:
   author:
     - Dvel
+    - gaboolic
   dependencies:
-    - english
+    - radical_pinyin
   description: |
-    九宫格：雨燕输入法
+    白霜拼音：雨燕输入法-九键拼音
+    https://github.com/gaboolic/rime-frost
 
   name: "九键拼音"
   schema_id: t9_pinyin
   version: 1
 speller:
   algebra:
-    - "erase/^hm$/"
-    - "erase/^m$/"
-    - "erase/^n$/"
-    - "erase/^ng$/"
     - "abbrev/^([a-z]).+$/$1/"
     - "abbrev/^([zcs]h).+$/$1/"
     - "derive/[abc]/2/"
@@ -356,8 +350,7 @@ speller:
     - "derive/[xy]ue/983/"
     - "derive/zui/984/"
     - "derive/[xyz]un|zuo/986/"
-  alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
-  delimiter: " '"
+  alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321`/"
   initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
 switches:
   - name: ascii_mode
@@ -369,6 +362,8 @@ switches:
   - name: emoji
     reset: 1
     states: ["💀", "😄"]
+  - name: full_shape
+    states: ["半角", "全角"]
   - abbrev: ["词", "单"]
     name: search_single_char
     states: ["正常", "单字"]

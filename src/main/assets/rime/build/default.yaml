@@ -1,8 +1,8 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1725590726
-    default.custom: 1725590726
+    default: 1730283367
+    default.custom: 1730283368
 ascii_composer:
   good_old_caps_lock: true
   switch_key:
@@ -11,40 +11,41 @@ ascii_composer:
     Control_R: noop
     Shift_L: commit_code
     Shift_R: noop
-config_version: "2024-02-05"
+config_version: "2024-07-12"
 key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
     - {accept: equal, send: Page_Down, when: has_menu}
+  select_first_character: bracketleft
+  select_last_character: bracketright
 menu:
   page_size: 10
+punctuator:
+  {}
 recognizer:
   patterns:
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
     underscore: "^[A-Za-z]+_.*"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 schema_list:
-  - schema: english
-  - schema: pinyin
   - schema: t9_pinyin
-  - schema: double_pinyin_ls17
+  - schema: pinyin
+  - schema: double_pinyin_natural
+  - schema: double_pinyin_mspy
+  - schema: double_pinyin_sogou
   - schema: double_pinyin_flypy
   - schema: double_pinyin_abc
-  - schema: double_pinyin_mspy
-  - schema: double_pinyin_natural
-  - schema: double_pinyin_sogou
   - schema: double_pinyin_ziguang
+  - schema: double_pinyin_ls17
+  - schema: stroke
 switcher:
   abbreviate_options: true
   caption: "「方案选单」"
   fold_options: true
-  hotkeys:
-    - F4
-    - "Control+grave"
-    - "Control+Shift+grave"
   option_list_separator: " / "
   save_options:
     - ascii_punct
     - traditionalization
     - emoji
+    - full_shape
     - search_single_char
