@@ -1,18 +1,9 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="100dp"
-    android:height="100dp"
+    android:width="88px"
+    android:height="88px"
     android:viewportWidth="100"
     android:viewportHeight="100">
-  <path
-      android:pathData="M0,0h100v100h-100z"
-      android:fillColor="#FFFFFF"
-      android:fillAlpha="0"/>
-  <group>
-    <clip-path
-        android:pathData="M0,0h100v100h-100z"/>
     <path
         android:pathData="M10.65,63.11L8.6,64.09C5.29,58.69 3.31,52.89 3.31,45.8C3.31,38.74 5.29,32.91 8.6,27.54L10.65,28.48C7.52,33.63 6.04,39.68 6.04,45.8C6.04,51.91 7.52,58.01 10.65,63.11ZM93.06,45.8C93.06,52.89 91.07,58.69 87.73,64.09L85.71,63.11C88.8,58.01 90.32,51.91 90.32,45.8C90.32,39.68 88.8,33.63 85.71,28.48L87.73,27.54C91.07,32.91 93.06,38.74 93.06,45.8ZM59.9,29.49L62.09,30.61L48.23,57.53L48.09,57.53L34.23,30.61L36.43,29.49L41.18,38.82L55.15,38.82L59.9,29.49ZM18.14,43.32C18.14,41.66 19.47,40.29 21.13,40.29C22.78,40.29 24.15,41.66 24.15,43.32C24.15,44.97 22.78,46.34 21.13,46.34C19.47,46.34 18.14,44.97 18.14,43.32ZM72.14,43.32C72.14,41.66 73.47,40.29 75.13,40.29C76.78,40.29 78.15,41.66 78.15,43.32C78.15,44.97 76.78,46.34 75.13,46.34C73.47,46.34 72.14,44.97 72.14,43.32ZM42.48,41.26L48.13,52.35L48.2,52.35L53.85,41.26L42.48,41.26Z"
-        android:fillColor="#000000"
-        android:fillType="evenOdd"/>
-  </group>
+        android:fillColor="@color/skb_shadow_icon_color"/>
 </vector>

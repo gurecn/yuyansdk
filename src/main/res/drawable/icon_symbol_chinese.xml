@@ -5,6 +5,6 @@
     android:viewportWidth="88"
     android:viewportHeight="88">
     <path
-        android:fillColor="#000000"
+        android:fillColor="@color/skb_shadow_icon_color"
         android:pathData="M42.373,24.01V31.93H26.621V52.61H29.788V49.838H42.373V64.842H45.629V49.838H58.257V52.61H61.424V31.93H45.629V24.01H42.373ZM29.788,46.758V35.01H42.373V46.758H29.788ZM45.629,46.758V35.01H58.257V46.758H45.629Z"/>
 </vector>

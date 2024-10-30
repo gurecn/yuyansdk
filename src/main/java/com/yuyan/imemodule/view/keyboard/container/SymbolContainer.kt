@@ -47,9 +47,8 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private fun initView(context: Context) {
         val pressKeyBackground = GradientDrawable()
         if (ThemeManager.prefs.keyBorder.getValue()) {
-            val mActiveTheme = activeTheme
             val keyRadius = ThemeManager.prefs.keyRadius.getValue()
-            pressKeyBackground.setColor(mActiveTheme.genericActiveBackgroundColor)
+            pressKeyBackground.setColor(activeTheme.genericActiveBackgroundColor)
             pressKeyBackground.setShape(GradientDrawable.RECTANGLE)
             pressKeyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
         }
@@ -153,8 +152,10 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         }
         val data = mSymbolsEmoji.keys.toList()
         TabLayoutMediator(tabLayout, mVPSymbolsView) { tab, position ->
-            tab.icon = ContextCompat.getDrawable(context,data[position].icon)
             tab.view.background = null
+            tab.icon = ContextCompat.getDrawable(context,data[position].icon).apply {
+                this?.setTint(activeTheme.keyTextColor)
+            }
         }.attach()
         mVPSymbolsView.currentItem = pos
     }
