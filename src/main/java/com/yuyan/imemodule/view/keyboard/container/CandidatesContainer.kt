@@ -222,7 +222,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     private fun getSymbolsCount(data: String): Int {
         return if (!TextUtils.isEmpty(data)) {
-            val x = data.length
+            val x = if(inputView.mInputModeSwitcher.isChinese)data.length else data.length/2
             if(x > 8) 60
             else if(x >= 6) 30
             else if(x >= 4) 20
