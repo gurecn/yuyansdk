@@ -25,7 +25,7 @@ emoji:
   option_name: emoji
 engine:
   filters:
-    - "lua_filter@*is_in_user_dict"
+#    - "lua_filter@*is_in_user_dict"
     - "lua_filter@*corrector"
     - "reverse_lookup_filter@radical_reverse_lookup"
     - "lua_filter@*autocap_filter"
