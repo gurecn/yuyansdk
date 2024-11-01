@@ -243,6 +243,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
         } else if (DecodingInfo.isCandidatesListEmpty) {
             activeCandidate = 0
+            mRVCandidates.layoutManager?.scrollToPosition(0)
+            mRVCandidates.layoutManager?.scrollToPosition(0)
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
@@ -256,12 +258,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mCandidatesMenuAdapter.items = mFunItems
         } else {
-            if(activeCandidate > 0) {
-                mCandidatesAdapter.notifyItemRangeInserted(activeCandidate, DecodingInfo.candidateSize.minus(activeCandidate))
-            } else {
-                mCandidatesAdapter.notifyDataSetChanged()
-                mRVCandidates.layoutManager?.scrollToPosition(0)
-            }
+            mCandidatesAdapter.notifyDataSetChanged()
             showViewVisibility(mCandidatesDataContainer)
             if (DecodingInfo.isAssociate) {
                 mRightArrowBtn.drawable.setLevel(2)

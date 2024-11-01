@@ -202,6 +202,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         updateTheme()
         DecodingInfo.candidatesLiveData.observe(/* owner = */ this){ _ ->
             updateCandidateBar()
+            (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
         }
     }
 
