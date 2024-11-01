@@ -48,7 +48,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         val pressKeyBackground = GradientDrawable()
         if (ThemeManager.prefs.keyBorder.getValue()) {
             val keyRadius = ThemeManager.prefs.keyRadius.getValue()
-            pressKeyBackground.setColor(activeTheme.genericActiveBackgroundColor)
+            pressKeyBackground.setColor(activeTheme.keyPressHighlightColor)
             pressKeyBackground.setShape(GradientDrawable.RECTANGLE)
             pressKeyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
         }
