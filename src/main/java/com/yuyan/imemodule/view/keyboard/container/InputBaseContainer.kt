@@ -21,6 +21,6 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
      * 刷新按键状态，当前主要解决切换键盘时enter键状态切换
      */
     fun updateStates() {
-        mMajorView!!.updateStates(mInputModeSwitcher!!)
+        mMajorView!!.updateStates()
     }
 }

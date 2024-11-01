@@ -82,16 +82,16 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     /**
      * 刷新按键状态
      */
-    fun updateStates(switcherManager: InputModeSwitcherManager) {
-        if (switcherManager.isEnglish) {
+    fun updateStates() {
+        if (InputModeSwitcherManager.isEnglish) {
             var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
-            softKey.enableToggleState( if(mService!!.isAddPhrases)4 else switcherManager.mToggleStates.mStateEnter)
+            softKey.enableToggleState( if(mService!!.isAddPhrases)4 else InputModeSwitcherManager.mToggleStates.mStateEnter)
             softKey = mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) as SoftKeyToggle??: return
-            softKey.enableToggleState(switcherManager.mToggleStates.charCase)
+            softKey.enableToggleState(InputModeSwitcherManager.mToggleStates.charCase)
             invalidateView()
         } else {
             val softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
-            if (softKey.enableToggleState(if(mService!!.isAddPhrases)4 else switcherManager.mToggleStates.mStateEnter)) {
+            if (softKey.enableToggleState(if(mService!!.isAddPhrases)4 else InputModeSwitcherManager.mToggleStates.mStateEnter)) {
                 invalidateKey(softKey)
             }
         }
@@ -229,8 +229,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 bg.setBounds(softKey.mLeft + keyMarginX, softKey.mTop + keyMarginY, softKey.mRight - keyMarginX, softKey.mBottom - keyMarginY)
                 bg.draw(canvas)
         }
-        val keyLabel = if(mService != null && mService!!.mInputModeSwitcher.isEnglish) {
-            if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && !DecodingInfo.isCandidatesListEmpty)) {
+        val keyLabel = if(mService != null && InputModeSwitcherManager.isEnglish) {
+            if (InputModeSwitcherManager.isEnglishLower || (InputModeSwitcherManager.isEnglishUpperCase && !DecodingInfo.isCandidatesListEmpty)) {
                 softKey.keyLabel.lowercase()
             } else {
                 softKey.keyLabel
