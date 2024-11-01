@@ -25,7 +25,7 @@ engine:
     - punct_segmentor
     - fallback_segmentor
   translators:
-    - punct_translator
+    - echo_translator
     - reverse_lookup_translator
     - table_translator
 key_binder:
