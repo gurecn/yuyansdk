@@ -47,7 +47,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private var activeCandidate = 0
     private var isLoadingMore = false // 正在加载更多
-    private var noMoreData = false // 没有更多数据
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -146,14 +145,11 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     }
 
     private inner class RecyclerViewScrollListener : RecyclerView.OnScrollListener() {
-        init {
-            noMoreData = false
-        }
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                 ThreadPoolUtils.executeSingleton {
-                    if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
+                    if (!isLoadingMore) {
                         isLoadingMore = true
                         val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
                         activeCandidate = lastItem
@@ -161,8 +157,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                             val num = DecodingInfo.nextPageCandidates
                             if (num > 0) {
                                 calculateColumn(DecodingInfo.candidates)
-                            } else {
-                                noMoreData = true
                             }
                         }
                         isLoadingMore = false
@@ -177,7 +171,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     fun showCandidatesView() {
         if (DecodingInfo.isCandidatesListEmpty) {
-            noMoreData = false
             activeCandidate = 0
             mRVSymbolsView.scrollToPosition(0)
             return
