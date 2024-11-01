@@ -18,6 +18,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import kotlin.math.max
 import kotlin.math.min
@@ -229,7 +230,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 bg.draw(canvas)
         }
         val keyLabel = if(mService != null && mService!!.mInputModeSwitcher.isEnglish) {
-            if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && !mService!!.mDecInfo.isCandidatesListEmpty)) {
+            if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && !DecodingInfo.isCandidatesListEmpty)) {
                 softKey.keyLabel.lowercase()
             } else {
                 softKey.keyLabel

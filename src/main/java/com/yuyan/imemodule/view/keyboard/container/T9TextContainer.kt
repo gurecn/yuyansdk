@@ -15,6 +15,7 @@ import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
@@ -107,7 +108,7 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
 
     //更新符号显示,九宫格左侧符号栏
     fun updateSymbolListView() {
-        var prefixs = mDecInfo!!.prefixs
+        var prefixs = DecodingInfo.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
             prefixs = CustomConstant.PREFIXS_PINYIN
