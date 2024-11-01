@@ -29,6 +29,15 @@ object DecodingInfo {
         // 候选词列表是否为空
         get() = candidatesLiveData.value.isNullOrEmpty()
 
+    val candidateSize: Int
+        // 候选词列表是否为空
+        get() = if(isCandidatesListEmpty) 0 else candidatesLiveData.value!!.size
+
+
+    val candidates: List<CandidateListItem?>
+        // 候选词列表是否为空
+        get() = candidatesLiveData.value?:emptyList()
+
     // 增加拼写字符
     fun inputAction(keycode: Int, inputMode: InputModeSwitcherManager) {
         if (Kernel.unHandWriting()) {
@@ -64,7 +73,7 @@ object DecodingInfo {
     }
 
     val isFinish: Boolean  //是否输入完毕，等待上屏。
-        get() = if(Kernel.unHandWriting()) Kernel.isFinish else candidatesLiveData.value.isNullOrEmpty()
+        get() = if(Kernel.unHandWriting()) Kernel.isFinish else isCandidatesListEmpty
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = Kernel.wordsShowPinyin
@@ -91,7 +100,7 @@ object DecodingInfo {
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
             candidatesLiveData.postValue(Kernel.candidates.asList())
             Kernel.commitText
-        } else if(candId >=0 && candidatesLiveData.value!!.size > candId){
+        } else if(candId in 0..<candidateSize){
             val choice = candidatesLiveData.value!![candId]?.text?:""
             reset()
             choice

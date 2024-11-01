@@ -85,7 +85,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
-        mCandidatesAdapter = CandidatesAdapter(context, mDecInfo, 0)
+        mCandidatesAdapter = CandidatesAdapter(context, 0)
         mCandidatesAdapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is PrefixAdapter) {
                 parent.getSymbolData(position)
@@ -157,11 +157,10 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                         isLoadingMore = true
                         val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
                         activeCandidate = lastItem
-                        val adapterSize = mDecInfo!!.candidatesLiveData.value!!.size
-                        if (adapterSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
-                            val num = mDecInfo!!.nextPageCandidates
+                        if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
+                            val num = DecodingInfo.nextPageCandidates
                             if (num > 0) {
-                                calculateColumn(mDecInfo!!.candidatesLiveData.value!!)
+                                calculateColumn(DecodingInfo.candidates)
                             } else {
                                 noMoreData = true
                             }
@@ -177,19 +176,19 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showCandidatesView() {
-        if (mDecInfo == null || mDecInfo!!.isCandidatesListEmpty) {
+        if (DecodingInfo.isCandidatesListEmpty) {
             activeCandidate = 0
             return
         }
-        if(mDecInfo!!.candidatesLiveData.value!!.size == 10){
-            mDecInfo!!.nextPageCandidates
+        if(DecodingInfo.candidateSize == 10){
+           DecodingInfo.nextPageCandidates
         }
-        if(!mDecInfo!!.isCandidatesListEmpty) {
-            calculateColumn(mDecInfo!!.candidatesLiveData.value!!)
+        if(!DecodingInfo.isCandidatesListEmpty) {
+            calculateColumn(DecodingInfo.candidatesLiveData.value!!)
         }
         if(activeCandidate > 0) {
             mCandidatesAdapter.notifyItemRangeInserted(
-                activeCandidate, DecodingInfo.candidatesLiveData.value?.size?.minus(activeCandidate) ?: 0)
+                activeCandidate, DecodingInfo.candidateSize.minus(activeCandidate))
         } else {
             mCandidatesAdapter.notifyDataSetChanged()
             mRVSymbolsView.scrollToPosition(0)
@@ -240,7 +239,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
 
     //更新左侧拼音显示
     private fun updatePrefixsView() {
-        var prefixs = mDecInfo!!.prefixs
+        var prefixs =DecodingInfo.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
             prefixs = CustomConstant.PREFIXS_PINYIN

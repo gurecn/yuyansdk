@@ -43,7 +43,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     private lateinit var mCvListener: CandidateViewListener // 候选词视图监听器
     private lateinit var mRightArrowBtn: ImageView // 右边箭头按钮
-    private lateinit var mDecInfo: DecodingInfo  // 词库解码对象
     private lateinit var mCandidatesDataContainer: LinearLayout //候选词视图
     private lateinit var mCandidatesMenuContainer: LinearLayout //控制菜单视图
     private lateinit var mRVCandidates: RecyclerView    //候选词列表
@@ -58,8 +57,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private var mLastMenuHeight: Int = 0
     private var activeCandidate = 0
 
-    fun initialize(cvListener: CandidateViewListener, decInfo: DecodingInfo) {
-        mDecInfo = decInfo
+    fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
         mMenuHeight = (instance.heightForCandidates * 0.7f).toInt()
         mMenuPadding = (instance.heightForCandidates * 0.3f).toInt()
@@ -108,7 +106,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         activeCandidate = lastVisibleItemPosition
                         val itemCount = recyclerView.adapter?.itemCount
                         if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && lastVisibleItemPosition >= itemCount - 1) {
-                            mDecInfo.nextPageCandidates
+                            DecodingInfo.nextPageCandidates
                         }
                     }
                 }
@@ -243,7 +241,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA || showType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) {
             showViewVisibility(mCandidatesMenuContainer)
             mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
-        } else if (mDecInfo.isCandidatesListEmpty) {
+        } else if (DecodingInfo.isCandidatesListEmpty) {
             activeCandidate = 0
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
@@ -259,16 +257,13 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCandidatesMenuAdapter.items = mFunItems
         } else {
             if(activeCandidate > 0) {
-                mCandidatesAdapter.notifyItemRangeInserted(
-                    activeCandidate,
-                    mDecInfo.candidatesLiveData.value?.size?.minus(activeCandidate) ?: 0
-                )
+                mCandidatesAdapter.notifyItemRangeInserted(activeCandidate, DecodingInfo.candidateSize.minus(activeCandidate))
             } else {
                 mCandidatesAdapter.notifyDataSetChanged()
                 mRVCandidates.layoutManager?.scrollToPosition(0)
             }
             showViewVisibility(mCandidatesDataContainer)
-            if (mDecInfo.isAssociate) {
+            if (DecodingInfo.isAssociate) {
                 mRightArrowBtn.drawable.setLevel(2)
             }
         }

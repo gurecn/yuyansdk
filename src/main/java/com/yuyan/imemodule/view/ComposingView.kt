@@ -49,8 +49,8 @@ class ComposingView(context: Context) : View(context) {
     /**
      * 设置 解码操作对象，然后刷新View。
      */
-    fun setDecodingInfo(decInfo: DecodingInfo) {
-        mComposingDisplay = decInfo.composingStrForDisplay
+    fun setDecodingInfo() {
+        mComposingDisplay = DecodingInfo.composingStrForDisplay
         if (mComposingDisplay.isBlank()) {
             visibility = INVISIBLE
         }  else {

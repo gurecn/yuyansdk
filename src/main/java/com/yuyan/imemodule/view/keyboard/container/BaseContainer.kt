@@ -33,12 +33,6 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
     //输入法变换器
     @JvmField
     protected var mInputModeSwitcher: InputModeSwitcherManager? = null
-
-    /**
-     * Decoding result to show. 词库解码对象
-     */
-    @JvmField
-    protected var mDecInfo: DecodingInfo? = null
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
 
@@ -50,7 +44,6 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
 
     init {
         this.inputView = inputView
-        mDecInfo = inputView.mDecInfo
         mInputModeSwitcher = inputView.mInputModeSwitcher
     }
 

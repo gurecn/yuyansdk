@@ -41,8 +41,8 @@ class CandidatesBarAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        if(DecodingInfo.candidatesLiveData.value.isNullOrEmpty()) return
-        holder.textView.text = DecodingInfo.candidatesLiveData.value!![position]?.text
+        if(DecodingInfo.isCandidatesListEmpty) return
+        holder.textView.text = DecodingInfo.candidates[position]?.text
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->
                 mOnItemClickListener!!.onItemClick(this@CandidatesBarAdapter, view, position)
@@ -51,8 +51,7 @@ class CandidatesBarAdapter(context: Context?) :
     }
 
     override fun getItemCount(): Int {
-        if(DecodingInfo.candidatesLiveData.value.isNullOrEmpty()) return 0
-        return DecodingInfo.candidatesLiveData.value!!.size
+        return DecodingInfo.candidateSize
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {

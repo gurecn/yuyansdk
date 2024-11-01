@@ -16,11 +16,10 @@ import com.yuyan.imemodule.utils.DevicesUtils
 /**
  * 候选词界面适配器
  */
-class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesStart: Int) :
+class CandidatesAdapter(context: Context?, candidatesStart: Int) :
     RecyclerView.Adapter<CandidatesAdapter.SymbolHolder>() {
     private val candidatesStart: Int
     private var mCandidateTextSize = 0
-    private var mDecInfo: DecodingInfo? = null
     private val inflater: LayoutInflater
     private val textColor: Int
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
@@ -33,7 +32,6 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
     }
 
     init {
-        this.mDecInfo = decInfo
         this.candidatesStart = candidatesStart
         textColor = activeTheme.keyTextColor
         inflater = LayoutInflater.from(context)
@@ -52,8 +50,8 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val realPos = position + candidatesStart
-        if (realPos < mDecInfo?.candidatesLiveData!!.value!!.size) {
-            holder.textView.text = mDecInfo?.candidatesLiveData!!.value!![realPos]?.text
+        if (realPos < DecodingInfo.candidateSize) {
+            holder.textView.text = DecodingInfo.candidates[realPos]?.text
         } else {
             holder.textView.text = "          "
         }
@@ -63,7 +61,7 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
     }
 
     override fun getItemCount(): Int {
-        return mDecInfo?.candidatesLiveData!!.value!!.size + 1 - candidatesStart
+        return DecodingInfo.candidateSize + 1 - candidatesStart
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
