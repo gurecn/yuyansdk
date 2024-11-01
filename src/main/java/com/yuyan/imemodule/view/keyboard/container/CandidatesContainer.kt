@@ -79,9 +79,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         prefixLayoutParams.setMargins(0, (skbHeight * 0.01).toInt(), 0, (skbHeight * 0.01).toInt())
         addView(mRVLeftPrefix, prefixLayoutParams)
         mRVLeftPrefix.visibility = GONE
-        val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        layoutParams2.addRule(RIGHT_OF, mRVLeftPrefix.id)
-        mRVSymbolsView.setLayoutParams(layoutParams2)
+        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        layoutParams.addRule(RIGHT_OF, mRVLeftPrefix.id)
+        mRVSymbolsView.setLayoutParams(layoutParams)
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
@@ -177,7 +177,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     fun showCandidatesView() {
         if (DecodingInfo.isCandidatesListEmpty) {
+            noMoreData = false
             activeCandidate = 0
+            mRVSymbolsView.scrollToPosition(0)
             return
         }
         if(DecodingInfo.candidateSize == 10){
@@ -186,14 +188,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         if(!DecodingInfo.isCandidatesListEmpty) {
             calculateColumn(DecodingInfo.candidatesLiveData.value!!)
         }
-        if(activeCandidate > 0) {
-            mCandidatesAdapter.notifyItemRangeInserted(
-                activeCandidate, DecodingInfo.candidateSize.minus(activeCandidate))
-        } else {
-            mCandidatesAdapter.notifyDataSetChanged()
-            mRVSymbolsView.scrollToPosition(0)
-        }
-        noMoreData = false
+        mCandidatesAdapter.notifyDataSetChanged()
         if (mInputModeSwitcher!!.isChineseT9) {
             mRVLeftPrefix.visibility = VISIBLE
             updatePrefixsView()
