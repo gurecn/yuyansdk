@@ -1,7 +1,6 @@
 package com.yuyan.inputmethod.core
 
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.inputmethod.RimeEngine
 import com.yuyan.inputmethod.RimeEngine.destroy
@@ -41,8 +40,8 @@ object Kernel {
     /**
      * 传入一个键码
      */
-    fun inputKeyCode(keyCode: Int, inputMode:InputModeSwitcherManager) {
-        onNormalKey(keyCode, inputMode)
+    fun inputKeyCode(keyCode: Int) {
+        onNormalKey(keyCode)
     }
 
     val isFinish: Boolean

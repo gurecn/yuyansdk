@@ -92,7 +92,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
-    val mInputModeSwitcher = InputModeSwitcherManager()
     private var currentInputEditorInfo:EditorInfo? = null
     private var isSkipEngineMode = false //选择候选词栏时，为true则不进行引擎操作。当为切板模式或常用符号模式时为true。
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
@@ -285,7 +284,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
-        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
     /**
@@ -300,16 +299,16 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             processKey(keyEvent)
         } else if (sKey.isUserDefKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-                if(mInputModeSwitcher.isChinese) {
+                if(InputModeSwitcherManager.isChinese) {
                     chooseAndUpdate(0)
-                } else if(mInputModeSwitcher.isEnglish){
+                } else if(InputModeSwitcherManager.isEnglish){
                     val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
                     commitDecInfoText(displayStr)
                     resetToIdleState()
                 }
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
-                val symbolType = if(mInputModeSwitcher.isEnglish) { 1 } else if(mInputModeSwitcher.isNumberSkb) { 2 } else { 0 }
+                val symbolType = if(InputModeSwitcherManager.isEnglish) { 1 } else if(InputModeSwitcherManager.isNumberSkb) { 2 } else { 0 }
                 val symbols = LauncherModel.instance.usedCharacterDao!!.allUsedCharacter
                 showSymbols(symbols)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
@@ -319,16 +318,16 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
-                mInputModeSwitcher.switchModeForUserKey(keyCode)
+                InputModeSwitcherManager.switchModeForUserKey(keyCode)
                 resetToIdleState()
             }else if(sKey.keyLabel.isNotBlank()){
                 commitText(sKey.keyLabel)
             }
         } else if (sKey.isUniStrKey) {  // 字符按键
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-                if(mInputModeSwitcher.isChinese) {
+                if(InputModeSwitcherManager.isChinese) {
                     chooseAndUpdate(0)
-                } else if(mInputModeSwitcher.isEnglish){
+                } else if(InputModeSwitcherManager.isEnglish){
                     val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
                     commitDecInfoText(displayStr)
                     resetToIdleState()
@@ -344,9 +343,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     override fun responseLongKeyEvent(sKey: SoftKey?, showText: String?) {
         if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-            if(mInputModeSwitcher.isChinese) {
+            if(InputModeSwitcherManager.isChinese) {
                 chooseAndUpdate(0)
-            } else if(mInputModeSwitcher.isEnglish){
+            } else if(InputModeSwitcherManager.isEnglish){
                 val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
                 commitDecInfoText(displayStr)
                 resetToIdleState()
@@ -393,10 +392,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if (processFunctionKeys(event)) {
             return true
         }
-        val abcSearchEnglishCell = mInputModeSwitcher.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
+        val abcSearchEnglishCell = InputModeSwitcherManager.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
         val result = if(abcSearchEnglishCell){
             processEnglishKey(event)
-        } else if (!mInputModeSwitcher.mInputTypePassword &&(mInputModeSwitcher.isEnglish || mInputModeSwitcher.isChinese)) { // 中文、英语输入模式
+        } else if (!InputModeSwitcherManager.mInputTypePassword &&(InputModeSwitcherManager.isEnglish || InputModeSwitcherManager.isChinese)) { // 中文、英语输入模式
             when (mImeState) {
                 ImeState.STATE_IDLE -> processStateIdle(event)
                 ImeState.STATE_INPUT -> processStateInput(event)
@@ -419,7 +418,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             sendKeyEvent(keyCode)
             return true
         } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
-            val upperCase = !mInputModeSwitcher.isEnglishLower
+            val upperCase = !InputModeSwitcherManager.isEnglishLower
             if (keyChar != 0) {
                 if (upperCase) keyChar = keyChar - 'a'.code + 'A'.code
                 sendKeyChar(keyChar.toChar())
@@ -451,7 +450,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             return true
         }
         // 中文，智能英文输入单独处理（涉及引擎操作），不在这边处理。
-        if (mInputModeSwitcher.mInputTypePassword || (!mInputModeSwitcher.isChinese && !mInputModeSwitcher.isEnglish)) {
+        if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
             if (keyCode == KeyEvent.KEYCODE_DEL) {
                 sendKeyEvent(keyCode)
                 return true
@@ -472,7 +471,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON ){
-            DecodingInfo.inputAction(keyCode, mInputModeSwitcher)
+            DecodingInfo.inputAction(keyCode)
             // 对输入的拼音进行查询
             updateCandidate()
             return true
@@ -507,7 +506,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
-            DecodingInfo.inputAction(keyCode, mInputModeSwitcher)
+            DecodingInfo.inputAction(keyCode)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (DecodingInfo.isFinish) {
@@ -552,7 +551,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             changeToStateInput()
             // 加一个字符进输入的拼音字符串中
-            DecodingInfo.inputAction(keyCode, mInputModeSwitcher)
+            DecodingInfo.inputAction(keyCode)
             // 对输入的拼音进行查询。
             updateCandidate()
             return true
@@ -595,7 +594,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
-            DecodingInfo.inputAction(keyCode, mInputModeSwitcher)
+            DecodingInfo.inputAction(keyCode)
             updateCandidate()
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (DecodingInfo.isFinish) {
@@ -654,7 +653,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun resetToIdleState() {
         resetCandidateWindow()
         // 从候选词、符号界面切换到输入键盘
-        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         val container = KeyboardManager.instance.currentContainer
         (container as? T9TextContainer)?.updateSymbolListView()
         mComposingView.setDecodingInfo()
@@ -681,7 +680,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             } else {  // 不上屏，继续选择
                 val composing = DecodingInfo.composingStrForDisplay
                 if (ImeState.STATE_IDLE == mImeState || composing.isNotEmpty()) {
-                    if (mInputModeSwitcher.isEnglish) {
+                    if (InputModeSwitcherManager.isEnglish) {
                         setComposingText(composing)
                     }
                     changeToStateComposing()
@@ -702,7 +701,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         DecodingInfo.chooseDecodingCandidate(-1)
         val composing = DecodingInfo.composingStrForDisplay
         if (ImeState.STATE_IDLE == mImeState || composing.isNotEmpty()) {
-            if (mInputModeSwitcher.isEnglish) {
+            if (InputModeSwitcherManager.isEnglish) {
                 setComposingText(composing)
             }
             changeToStateComposing()
@@ -763,7 +762,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
                 (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
             } else {
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
             }
         }
@@ -774,7 +773,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
                 updateCandidateBar()
             } else {
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         }
 
@@ -784,7 +783,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
         override fun onClickClearCandidate() {
             resetToIdleState()
-            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         }
 
         override fun onClickClearClipBoard() {
@@ -811,7 +810,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 updateCandidateBar()
             }
             SkbMenuMode.KeyboardHeight -> {
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 KeyboardManager.instance.currentContainer!!.setKeyboardHeight()
             }
             SkbMenuMode.DarkTheme -> {
@@ -823,7 +822,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 }
                 ThemeManager.setNormalModeTheme(theme)
                 KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.Feedback -> {
                 AppUtil.launchSettingsToKeyboard(context)
@@ -834,37 +833,37 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 //更换键盘模式后 重亲加载键盘
                 KeyboardLoaderUtil.instance.changeSKBNumberRow()
                 KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.JianFan -> {
                 val chineseFanTi = getInstance().input.chineseFanTi.getValue()
                 getInstance().input.chineseFanTi.setValue(!chineseFanTi)
                 Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.LockEnglish -> {
                 val keyboardLockEnglish = getInstance().keyboardSetting.keyboardLockEnglish.getValue()
                 getInstance().keyboardSetting.keyboardLockEnglish.setValue(!keyboardLockEnglish)
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.SymbolShow -> {
                 val keyboardSymbol = prefs.keyboardSymbol.getValue()
                 prefs.keyboardSymbol.setValue(!keyboardSymbol)
                 KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.Mnemonic -> {
                 val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
                 prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.EmojiInput -> {
                 val emojiInput = getInstance().input.emojiInput.getValue()
                 getInstance().input.emojiInput.setValue(!emojiInput)
                 Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.Handwriting -> AppUtil.launchSettingsToHandwriting(context)
             SkbMenuMode.Settings -> AppUtil.launchSettings(context)
@@ -873,12 +872,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 EnvironmentSingleton.instance.initData()
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.FlowerTypeface -> {
                 LauncherModel.instance.flowerTypeface = if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) FlowerTypefaceMode.Mars else FlowerTypefaceMode.Disabled
                 showFlowerTypeface()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.FloatKeyboard -> {
                 if(!EnvironmentSingleton.instance.isLandscape) {  // 横屏强制悬浮键盘，暂不支持关闭
@@ -888,7 +887,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                     KeyboardLoaderUtil.instance.clearKeyboardMap()
                     KeyboardManager.instance.clearKeyboard()
                 }
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
@@ -906,7 +905,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
                 oldAddPhrases = extra
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
                 mEtAddPhrasesContent?.setText(extra)
@@ -940,7 +939,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHeadChar)
             writerPhrases("/custom_phrase_t9.txt", content + "\t" + pinYinHeadT9)
             writerPhrases("/custom_phrase_double.txt", content + "\t" + pinYinHeadChar)
-            KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         }
     }
 
@@ -1019,8 +1018,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun onStartInputView(editorInfo: EditorInfo) {
         resetToIdleState()
         currentInputEditorInfo = editorInfo
-        mInputModeSwitcher.requestInputWithSkb(editorInfo)
-        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+        InputModeSwitcherManager.requestInputWithSkb(editorInfo)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
     /**
@@ -1093,7 +1092,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             val inputConnection = service.getCurrentInputConnection()
             inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-            if (mInputModeSwitcher.isEnglish && DecodingInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
+            if (InputModeSwitcherManager.isEnglish && DecodingInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
                 inputConnection.commitText(" ", 1)
             }
         }

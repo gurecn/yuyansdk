@@ -18,7 +18,6 @@ object RimeEngine {
     private const val PINYIN_T9_9 = 16
 
     private val keyRecordStack = KeyRecordStack()
-    private var mInputModeSwitcher : InputModeSwitcherManager? = null  // 键盘模式
     private var pinyinCandidates: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: Array<CandidateListItem> = emptyArray() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
@@ -42,8 +41,7 @@ object RimeEngine {
         return showCandidates.isEmpty() && showComposition.isBlank()
     }
 
-    fun onNormalKey(keyCode: Int, inputMode:InputModeSwitcherManager) {
-        if(mInputModeSwitcher == null)mInputModeSwitcher= inputMode
+    fun onNormalKey(keyCode: Int) {
         val keyChar = when (keyCode) {
             in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
                 keyCode - KeyEvent.KEYCODE_A + 'a'.code
@@ -51,7 +49,7 @@ object RimeEngine {
             in (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON)..(KeyEvent.KEYCODE_Z or KeyEvent.META_SHIFT_RIGHT_ON) -> {
                 keyCode - (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON) + 'A'.code
             }
-            KeyEvent.KEYCODE_APOSTROPHE -> if(isFinish() && mInputModeSwitcher?.isChineseT9 == true) '/'.code else '\''.code
+            KeyEvent.KEYCODE_APOSTROPHE -> if(isFinish() && InputModeSwitcherManager.isChineseT9) '/'.code else '\''.code
             KeyEvent.KEYCODE_SEMICOLON -> '.'.code
             in PINYIN_T9_1..PINYIN_T9_9 -> keyCode + PINYIN_T9_0
             else -> keyCode
@@ -141,12 +139,10 @@ object RimeEngine {
         if (rimeCommit != null) {
             keyRecordStack.clear()
             preCommitText = rimeCommit.commitText
-            if(mInputModeSwitcher != null) {
-                if (mInputModeSwitcher!!.isEnglishUpperCase) {
-                    preCommitText = preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                } else if (mInputModeSwitcher!!.isEnglishUpperLockCase) {
-                    preCommitText = preCommitText.uppercase()
-                }
+            if (InputModeSwitcherManager.isEnglishUpperCase) {
+                preCommitText = preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
+                preCommitText = preCommitText.uppercase()
             }
             showComposition = ""
             showCandidates = emptyArray()
@@ -154,18 +150,16 @@ object RimeEngine {
         }
         val candidates = Rime.getRimeContext()?.candidates ?: emptyArray()
         var composition = getCurrentComposition(candidates)
-        if(mInputModeSwitcher != null) {
-            if (mInputModeSwitcher!!.isEnglishUpperCase) {
-                for (item in candidates) {
-                    item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                }
-                composition = composition.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            } else if (mInputModeSwitcher!!.isEnglishUpperLockCase) {
-                for (item in candidates) {
-                    item.text = item.text.uppercase()
-                }
-                composition = composition.uppercase()
+        if (InputModeSwitcherManager.isEnglishUpperCase) {
+            for (item in candidates) {
+                item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
+            composition = composition.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
+            for (item in candidates) {
+                item.text = item.text.uppercase()
+            }
+            composition = composition.uppercase()
         }
         var count = Rime.compositionText.count { it in '1'..'9' }
         val pyCandidates =

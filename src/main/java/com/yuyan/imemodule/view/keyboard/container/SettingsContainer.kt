@@ -216,8 +216,8 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         // 双拼辅助功能,需刷新键盘
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
-        mInputModeSwitcher!!.saveInputMode(inputMode)
+        InputModeSwitcherManager.saveInputMode(inputMode)
         inputView.resetToIdleState()
-        KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 }

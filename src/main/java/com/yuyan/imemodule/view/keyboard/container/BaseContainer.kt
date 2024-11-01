@@ -7,10 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.RelativeLayout
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -29,10 +26,6 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
     //输入法服务
     @JvmField
     protected var inputView: InputView
-
-    //输入法变换器
-    @JvmField
-    protected var mInputModeSwitcher: InputModeSwitcherManager? = null
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
 
@@ -44,7 +37,6 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
 
     init {
         this.inputView = inputView
-        mInputModeSwitcher = inputView.mInputModeSwitcher
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

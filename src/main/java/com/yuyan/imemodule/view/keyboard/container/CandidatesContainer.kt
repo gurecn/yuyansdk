@@ -22,6 +22,7 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.ui.utils.AppUtil
@@ -182,7 +183,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             calculateColumn(DecodingInfo.candidatesLiveData.value!!)
         }
         mCandidatesAdapter.notifyDataSetChanged()
-        if (mInputModeSwitcher!!.isChineseT9) {
+        if (InputModeSwitcherManager.isChineseT9) {
             mRVLeftPrefix.visibility = VISIBLE
             updatePrefixsView()
         }
@@ -215,7 +216,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     private fun getSymbolsCount(data: String): Int {
         return if (!TextUtils.isEmpty(data)) {
-            val x = if(inputView.mInputModeSwitcher.isChinese)data.length else data.length/2
+            val x = if(InputModeSwitcherManager.isChinese)data.length else data.length/2
             if(x > 8) 60
             else if(x >= 6) 30
             else if(x >= 4) 20

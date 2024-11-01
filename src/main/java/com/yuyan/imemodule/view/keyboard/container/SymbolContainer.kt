@@ -20,6 +20,7 @@ import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
@@ -89,7 +90,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                 }
                 MotionEvent.ACTION_UP -> {
                     inputView.resetToIdleState()
-                    KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 }
             }
             true
@@ -122,7 +123,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
             if(!AppPrefs.getInstance().internal.keyboardLockSymbol.getValue()) {
                 inputView.resetToIdleState()
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         } else {  //表情、颜文字
             LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(result, System.currentTimeMillis())

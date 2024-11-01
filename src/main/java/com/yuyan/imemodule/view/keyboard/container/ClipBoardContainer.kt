@@ -21,6 +21,7 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -140,7 +141,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                     removePhrasesHandle(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
-                KeyboardManager.instance.switchKeyboard(mInputModeSwitcher!!.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         }
         mRVSymbolsView.setAdapter(adapter)

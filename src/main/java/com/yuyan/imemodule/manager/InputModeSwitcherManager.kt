@@ -9,7 +9,166 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
 /**
  * 输入法模式转换器。设置输入法的软键盘。
  */
-class InputModeSwitcherManager {
+object InputModeSwitcherManager {
+
+    /**
+     * User defined key code, used by soft keyboard.
+     * 用户定义的key的code，用于软键盘。shift键的code。
+     */
+    const val USER_DEF_KEYCODE_SHIFT_1 = -1
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,语言切换键。
+     */
+    const val USER_DEF_KEYCODE_LANG_2 = -2
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,符号键盘切换键。
+     */
+    const val USER_DEF_KEYCODE_SYMBOL_3 = -3
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,表情键盘切换键。
+     */
+    const val USER_DEF_KEYCODE_EMOJI_4 = -4
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,数字键盘切换键。
+     */
+    const val USER_DEF_KEYCODE_NUMBER_5 = -5
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,数字键盘返回按键。
+     */
+    const val USER_DEF_KEYCODE_RETURN_6 = -6
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,光标控制键。
+     */
+    const val USER_DEF_KEYCODE_CURSOR_7 = -7
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,九宫格、手写符号侧栏占位符。
+     */
+    const val USER_DEF_KEYCODE_LEFT_SYMBOL_12 = -12
+
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,逗号（中文：，;英文：,）。
+     */
+    const val USER_DEF_KEYCODE_LEFT_COMMA_13 = -13
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,句号（中文：。;英文：.）。
+     */
+    const val USER_DEF_KEYCODE_LEFT_PERIOD_14 = -14
+
+
+    /**
+     * Bits used to indicate soft keyboard layout. If none bit is set, the
+     * current input mode does not require a soft keyboard.
+     * 第8位指明软键盘的布局。如果最8位为0，那么就表明当前输入法模式不需要软键盘。
+     */
+    const val MASK_SKB_LAYOUT = 0xff00 //不同位代表意义:布局（2位）/语言/大小写/0/0/0/0
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,拼音，十进制：4096
+     */
+    const val MASK_SKB_LAYOUT_QWERTY_PINYIN = 0x1000
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明九宫格软键盘，拼音，十进制：8192
+     */
+    const val MASK_SKB_LAYOUT_T9_PINYIN = 0x2000
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明手写键，十进制：12288
+     */
+    const val MASK_SKB_LAYOUT_HANDWRITING = 0x3000
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,英语，十进制：16384
+     */
+    const val MASK_SKB_LAYOUT_QWERTY_ABC = 0x4000
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明数字键，十进制：20480
+     */
+    const val MASK_SKB_LAYOUT_NUMBER = 0x5000
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明乱序17，十进制：20480
+     */
+    const val MASK_SKB_LAYOUT_LX17 = 0x6000
+
+    /**
+     * 第6位指明语言。
+     */
+    private const val MASK_LANGUAGE = 0x00f0
+
+    /**
+     * Used to indicate the current language. An input mode should be anded with
+     * [.MASK_LANGUAGE] to get this information. 指明中文语言。
+     */
+    const val MASK_LANGUAGE_CN = 0x0010
+
+    /**
+     * Used to indicate the current language. An input mode should be anded with
+     * [.MASK_LANGUAGE] to get this information. 指明英文语言。
+     */
+    private const val MASK_LANGUAGE_EN = 0x0020
+
+    /**
+     * 第5位指明软键盘当前的状态，比如高（大写），低（小写）。
+     */
+    private const val MASK_CASE = 0x000f
+
+    /**
+     * 指明软键盘状态为低（小写）。
+     */
+    private const val MASK_CASE_LOWER = 0x0000
+
+    /**
+     * 指明软键盘状态为高（大写）。
+     */
+    const val MASK_CASE_UPPER = 0x0001
+
+    /**
+     * 指明软键盘状态为高（大写）锁定状态。
+     */
+    private const val MASK_CASE_UPPER_LOCK = 0x0002
+
+    /**
+     * Mode for inputing Chinese with soft keyboard. 九宫格软键盘、中文模式
+     */
+    const val MODE_T9_CHINESE = MASK_SKB_LAYOUT_T9_PINYIN or MASK_LANGUAGE_CN
+
+    /**
+     * Mode for inputing English lower characters with soft keyboard. 标准软键盘、英文、小写模式
+     */
+    private const val MODE_SKB_ENGLISH_LOWER =
+        MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_LOWER
+
+    /**
+     * Mode for inputing English upper characters with soft keyboard. 标准软键盘、英文、大写软键盘模式
+     */
+    private const val MODE_SKB_ENGLISH_UPPER =
+        MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_UPPER
+
+    /**
+     * Mode for inputing English upper characters with soft keyboard. 标准软键盘、英文、大写锁定软键盘模式
+     */
+    private const val MODE_SKB_ENGLISH_UPPER_LOCK =
+        MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_UPPER_LOCK
+
+    /**
+     * Unset mode. 未设置输入法模式。
+     */
+    private const val MODE_UNSET = 0
     /**
      * The input mode for the current edit box. 当前输入法的模式
      */
@@ -202,166 +361,4 @@ class InputModeSwitcherManager {
         }
     }
 
-    companion object {
-        private val TAG = InputModeSwitcherManager::class.java.getSimpleName()
-
-        /**
-         * User defined key code, used by soft keyboard.
-         * 用户定义的key的code，用于软键盘。shift键的code。
-         */
-        const val USER_DEF_KEYCODE_SHIFT_1 = -1
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,语言切换键。
-         */
-        const val USER_DEF_KEYCODE_LANG_2 = -2
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,符号键盘切换键。
-         */
-        const val USER_DEF_KEYCODE_SYMBOL_3 = -3
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,表情键盘切换键。
-         */
-        const val USER_DEF_KEYCODE_EMOJI_4 = -4
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,数字键盘切换键。
-         */
-        const val USER_DEF_KEYCODE_NUMBER_5 = -5
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,数字键盘返回按键。
-         */
-        const val USER_DEF_KEYCODE_RETURN_6 = -6
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,光标控制键。
-         */
-        const val USER_DEF_KEYCODE_CURSOR_7 = -7
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,九宫格、手写符号侧栏占位符。
-         */
-        const val USER_DEF_KEYCODE_LEFT_SYMBOL_12 = -12
-
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,逗号（中文：，;英文：,）。
-         */
-        const val USER_DEF_KEYCODE_LEFT_COMMA_13 = -13
-        /**
-         * User defined key code, used by soft keyboard. 语言键的code,句号（中文：。;英文：.）。
-         */
-        const val USER_DEF_KEYCODE_LEFT_PERIOD_14 = -14
-
-
-        /**
-         * Bits used to indicate soft keyboard layout. If none bit is set, the
-         * current input mode does not require a soft keyboard.
-         * 第8位指明软键盘的布局。如果最8位为0，那么就表明当前输入法模式不需要软键盘。
-         */
-        const val MASK_SKB_LAYOUT = 0xff00 //不同位代表意义:布局（2位）/语言/大小写/0/0/0/0
-
-        /**
-         * A kind of soft keyboard layout. An input mode should be anded with
-         * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,拼音，十进制：4096
-         */
-        const val MASK_SKB_LAYOUT_QWERTY_PINYIN = 0x1000
-
-        /**
-         * A kind of soft keyboard layout. An input mode should be anded with
-         * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明九宫格软键盘，拼音，十进制：8192
-         */
-        const val MASK_SKB_LAYOUT_T9_PINYIN = 0x2000
-
-        /**
-         * A kind of soft keyboard layout. An input mode should be anded with
-         * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明手写键，十进制：12288
-         */
-        const val MASK_SKB_LAYOUT_HANDWRITING = 0x3000
-
-        /**
-         * A kind of soft keyboard layout. An input mode should be anded with
-         * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,英语，十进制：16384
-         */
-        const val MASK_SKB_LAYOUT_QWERTY_ABC = 0x4000
-
-        /**
-         * A kind of soft keyboard layout. An input mode should be anded with
-         * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明数字键，十进制：20480
-         */
-        const val MASK_SKB_LAYOUT_NUMBER = 0x5000
-
-        /**
-         * A kind of soft keyboard layout. An input mode should be anded with
-         * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明乱序17，十进制：20480
-         */
-        const val MASK_SKB_LAYOUT_LX17 = 0x6000
-
-        /**
-         * 第6位指明语言。
-         */
-        private const val MASK_LANGUAGE = 0x00f0
-
-        /**
-         * Used to indicate the current language. An input mode should be anded with
-         * [.MASK_LANGUAGE] to get this information. 指明中文语言。
-         */
-        const val MASK_LANGUAGE_CN = 0x0010
-
-        /**
-         * Used to indicate the current language. An input mode should be anded with
-         * [.MASK_LANGUAGE] to get this information. 指明英文语言。
-         */
-        private const val MASK_LANGUAGE_EN = 0x0020
-
-        /**
-         * 第5位指明软键盘当前的状态，比如高（大写），低（小写）。
-         */
-        private const val MASK_CASE = 0x000f
-
-        /**
-         * 指明软键盘状态为低（小写）。
-         */
-        private const val MASK_CASE_LOWER = 0x0000
-
-        /**
-         * 指明软键盘状态为高（大写）。
-         */
-        const val MASK_CASE_UPPER = 0x0001
-
-        /**
-         * 指明软键盘状态为高（大写）锁定状态。
-         */
-        private const val MASK_CASE_UPPER_LOCK = 0x0002
-
-        /**
-         * Mode for inputing Chinese with soft keyboard. 九宫格软键盘、中文模式
-         */
-        const val MODE_T9_CHINESE = MASK_SKB_LAYOUT_T9_PINYIN or MASK_LANGUAGE_CN
-
-        /**
-         * Mode for inputing English lower characters with soft keyboard. 标准软键盘、英文、小写模式
-         */
-        private const val MODE_SKB_ENGLISH_LOWER =
-            MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_LOWER
-
-        /**
-         * Mode for inputing English upper characters with soft keyboard. 标准软键盘、英文、大写软键盘模式
-         */
-        private const val MODE_SKB_ENGLISH_UPPER =
-            MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_UPPER
-
-        /**
-         * Mode for inputing English upper characters with soft keyboard. 标准软键盘、英文、大写锁定软键盘模式
-         */
-        private const val MODE_SKB_ENGLISH_UPPER_LOCK =
-            MASK_SKB_LAYOUT_QWERTY_ABC or MASK_LANGUAGE_EN or MASK_CASE_UPPER_LOCK
-
-        /**
-         * Unset mode. 未设置输入法模式。
-         */
-        private const val MODE_UNSET = 0
-    }
 }
