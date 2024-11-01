@@ -352,6 +352,7 @@ speller:
     - "derive/[xyz]un|zuo/986/"
   alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321`/"
   initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
+  delimiter: " '"
 switches:
   - name: ascii_mode
     states: ["中", "Ａ"]
