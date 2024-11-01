@@ -22,6 +22,7 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -42,10 +43,11 @@ import splitties.views.dsl.core.margin
 @SuppressLint("ViewConstructor")
 class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private lateinit var mRVSymbolsView: RecyclerView
+    private lateinit var mCandidatesAdapter: CandidatesAdapter
     private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
+    private var activeCandidate = 0
     private var isLoadingMore = false // 正在加载更多
     private var noMoreData = false // 没有更多数据
-    private var scrollListener: RecyclerView.OnScrollListener? = null
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -83,6 +85,24 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
+        mCandidatesAdapter = CandidatesAdapter(context, mDecInfo, 0)
+        mCandidatesAdapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+            if (parent is PrefixAdapter) {
+                parent.getSymbolData(position)
+                inputView.selectPrefix(position)
+            } else if (parent is CandidatesAdapter) {
+                inputView.onChoiceTouched(parent.getItem(position))
+            }
+        }
+        val layoutManager = GridLayoutManager(context, 60)
+        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(i: Int): Int {
+                return mHashMapSymbols[i] ?: 12
+            }
+        }
+        mRVSymbolsView.setLayoutManager(layoutManager)
+        mRVSymbolsView.setAdapter(mCandidatesAdapter)
+        mRVSymbolsView.addOnScrollListener(RecyclerViewScrollListener())
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -136,14 +156,12 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                     if (!isLoadingMore && !noMoreData && recyclerView.layoutManager != null) {
                         isLoadingMore = true
                         val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-                        val adapterSize = mDecInfo!!.mCandidatesList.size
+                        activeCandidate = lastItem
+                        val adapterSize = mDecInfo!!.candidatesLiveData.value!!.size
                         if (adapterSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
                             val num = mDecInfo!!.nextPageCandidates
                             if (num > 0) {
-                                calculateColumn(mDecInfo!!.mCandidatesList)
-                                post {
-                                    (mRVSymbolsView.adapter as CandidatesAdapter?)!!.updateData(num)
-                                }
+                                calculateColumn(mDecInfo!!.candidatesLiveData.value!!)
                             } else {
                                 noMoreData = true
                             }
@@ -160,35 +178,23 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     fun showCandidatesView() {
         if (mDecInfo == null || mDecInfo!!.isCandidatesListEmpty) {
+            activeCandidate = 0
             return
         }
-        if(mDecInfo!!.mCandidatesList.size == 10){
+        if(mDecInfo!!.candidatesLiveData.value!!.size == 10){
             mDecInfo!!.nextPageCandidates
         }
         if(!mDecInfo!!.isCandidatesListEmpty) {
-            calculateColumn(mDecInfo!!.mCandidatesList)
+            calculateColumn(mDecInfo!!.candidatesLiveData.value!!)
         }
-        val layoutManager = GridLayoutManager(context, 60)
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(i: Int): Int {
-                return mHashMapSymbols[i] ?: 12
-            }
+        if(activeCandidate > 0) {
+            mCandidatesAdapter.notifyItemRangeInserted(
+                activeCandidate, DecodingInfo.candidatesLiveData.value?.size?.minus(activeCandidate) ?: 0)
+        } else {
+            mCandidatesAdapter.notifyDataSetChanged()
+            mRVSymbolsView.scrollToPosition(0)
         }
-        mRVSymbolsView.setLayoutManager(layoutManager)
-        val adapter = CandidatesAdapter(context, mDecInfo, 0)
-        adapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            if (parent is PrefixAdapter) {
-                parent.getSymbolData(position)
-                inputView.selectPrefix(position)
-            } else if (parent is CandidatesAdapter) {
-                inputView.onChoiceTouched(parent.getItem(position))
-            }
-        }
-        mRVSymbolsView.setAdapter(adapter)
         noMoreData = false
-        if (scrollListener != null) mRVSymbolsView.removeOnScrollListener(scrollListener!!)
-        scrollListener = RecyclerViewScrollListener()
-        mRVSymbolsView.addOnScrollListener(scrollListener!!)
         if (mInputModeSwitcher!!.isChineseT9) {
             mRVLeftPrefix.visibility = VISIBLE
             updatePrefixsView()
@@ -196,7 +202,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     }
 
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
-    private fun calculateColumn(data: MutableList<CandidateListItem?>) {
+    private fun calculateColumn(data: List<CandidateListItem?>) {
         mHashMapSymbols.clear()
         var mCurrentColumn = 0
         for (position in data.indices) {

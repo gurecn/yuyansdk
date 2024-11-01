@@ -61,6 +61,7 @@ import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.ImeEditText
+import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -85,14 +86,14 @@ import kotlin.math.absoluteValue
  */
 
 @SuppressLint("ViewConstructor")
-class InputView(context: Context, service: ImeService) : RelativeLayout(context), IResponseKeyEvent {
+class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout(context), IResponseKeyEvent {
     var isAddPhrases = false
     private var oldAddPhrases = ""
     private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
     val mInputModeSwitcher = InputModeSwitcherManager()
-    val mDecInfo = DecodingInfo() // 词库解码操作对象
+    val mDecInfo = DecodingInfo // 词库解码操作对象
     private var currentInputEditorInfo:EditorInfo? = null
     private var isSkipEngineMode = false //选择候选词栏时，为true则不进行引擎操作。当为切板模式或常用符号模式时为true。
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
@@ -200,6 +201,9 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
         }
         updateTheme()
+        DecodingInfo.candidatesLiveData.observe(/* owner = */ this){ _ ->
+            updateCandidateBar()
+        }
     }
 
     private var initialTouchX = 0f
@@ -757,12 +761,10 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             }
             if (level == 0) {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
-                val candidatesContainer = KeyboardManager.instance.currentContainer as CandidatesContainer?
-                candidatesContainer?.showCandidatesView()
+                (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
             } else {
-                val container = KeyboardManager.instance.currentContainer
-                (container as? T9TextContainer)?.updateSymbolListView()
                 KeyboardManager.instance.switchKeyboard(mInputModeSwitcher.skbLayout)
+                (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
             }
         }
 

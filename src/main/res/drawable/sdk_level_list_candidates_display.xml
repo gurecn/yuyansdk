@@ -8,5 +8,5 @@
         android:maxLevel="1" />
     <item
         android:drawable="@drawable/ic_baseline_circle_close"
-        android:maxLevel="3" />
+        android:maxLevel="2" />
 </level-list>

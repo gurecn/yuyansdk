@@ -107,7 +107,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             val softKey = mCurrentKey!!
             val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
             if (keyboardSymbol && !TextUtils.isEmpty(softKey.getkeyLabel())) {
-                val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && mService!!.mDecInfo.mCandidatesList.isNotEmpty()))
+                val keyLabel = if (mService!!.mInputModeSwitcher.isEnglishLower || (mService!!.mInputModeSwitcher.isEnglishUpperCase && !mService!!.mDecInfo.isCandidatesListEmpty))
                     softKey.keyLabel.lowercase()  else softKey.keyLabel
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
                 popupComponent.showKeyboard(keyLabel, softKey.getmKeyLabelSmall(), bounds)

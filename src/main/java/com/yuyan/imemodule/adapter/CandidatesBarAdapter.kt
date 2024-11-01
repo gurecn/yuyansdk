@@ -9,16 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.inputmethod.core.CandidateListItem
 
 /**
  * 候选词界面适配器
  */
-class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
+class CandidatesBarAdapter(context: Context?) :
     RecyclerView.Adapter<CandidatesBarAdapter.SymbolHolder>() {
-    private var mDatas: List<CandidateListItem?>
     private val inflater: LayoutInflater
     private var textColor: Int
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
@@ -31,7 +30,6 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     }
 
     init {
-        mDatas = datas
         val theme = activeTheme
         textColor = theme.keyTextColor
         inflater = LayoutInflater.from(context)
@@ -43,7 +41,8 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        holder.textView.text = mDatas[position]?.text
+        if(DecodingInfo.candidatesLiveData.value.isNullOrEmpty()) return
+        holder.textView.text = DecodingInfo.candidatesLiveData.value!![position]?.text
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->
                 mOnItemClickListener!!.onItemClick(this@CandidatesBarAdapter, view, position)
@@ -52,7 +51,8 @@ class CandidatesBarAdapter(context: Context?, datas: List<CandidateListItem?>) :
     }
 
     override fun getItemCount(): Int {
-        return mDatas.size
+        if(DecodingInfo.candidatesLiveData.value.isNullOrEmpty()) return 0
+        return DecodingInfo.candidatesLiveData.value!!.size
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {

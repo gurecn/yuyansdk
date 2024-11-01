@@ -1,8 +1,6 @@
 package com.yuyan.imemodule.view
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
 import com.yuyan.imemodule.application.LauncherModel
@@ -59,6 +56,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private var mMenuHeight: Int = 0
     private var mMenuPadding: Int = 0
     private var mLastMenuHeight: Int = 0
+    private var activeCandidate = 0
 
     fun initialize(cvListener: CandidateViewListener, decInfo: DecodingInfo) {
         mDecInfo = decInfo
@@ -84,16 +82,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setImageResource(R.drawable.sdk_level_list_candidates_display)
                 layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
             }
-            mRightArrowBtn.setOnClickListener { v: View ->
-                when (val level = (v as ImageView).drawable.level) {
+            mRightArrowBtn.setOnClickListener { view: View ->
+                when (val level = (view as ImageView).drawable.level) {
                     3 -> mCvListener.onClickClearCandidate()
-                    0 -> {
-                        mCvListener.onClickMore(level)
-                        v.drawable.setLevel(1)
-                    }
                     else -> {
                         mCvListener.onClickMore(level)
-                        v.drawable.setLevel(0)
+                        view.drawable.setLevel(1 - level)
                     }
                 }
             }
@@ -101,7 +95,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mRVCandidates.setItemAnimator(null)
             mRVCandidates.layoutManager =  CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             mRVCandidates.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
-            mCandidatesAdapter = CandidatesBarAdapter(context, mDecInfo.mCandidatesList)
+            mCandidatesAdapter = CandidatesBarAdapter(context)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
                 mCvListener.onClickChoice(position)
             }
@@ -111,11 +105,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                        activeCandidate = lastVisibleItemPosition
                         val itemCount = recyclerView.adapter?.itemCount
                         if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && lastVisibleItemPosition >= itemCount - 1) {
-                            if (mDecInfo.nextPageCandidates > 0) {
-                                mCandidatesAdapter.notifyDataSetChanged()
-                            }
+                            mDecInfo.nextPageCandidates
                         }
                     }
                 }
@@ -247,16 +240,11 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
                 )
             }
-            Handler(Looper.getMainLooper()).postDelayed({
-                    mCandidatesMenuAdapter.notifyDataSetChanged()
-            }, 0)
         } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA || showType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) {
             showViewVisibility(mCandidatesMenuContainer)
             mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
-            Handler(Looper.getMainLooper()).postDelayed({
-                mCandidatesMenuAdapter.notifyDataSetChanged()
-            }, 0)
         } else if (mDecInfo.isCandidatesListEmpty) {
+            activeCandidate = 0
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
@@ -269,24 +257,20 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mCandidatesMenuAdapter.items = mFunItems
-            Handler(Looper.getMainLooper()).postDelayed({
-                mCandidatesMenuAdapter.notifyDataSetChanged()
-            }, 0)
         } else {
-            mCandidatesAdapter.notifyDataSetChanged()
+            if(activeCandidate > 0) {
+                mCandidatesAdapter.notifyItemRangeInserted(
+                    activeCandidate,
+                    mDecInfo.candidatesLiveData.value?.size?.minus(activeCandidate) ?: 0
+                )
+            } else {
+                mCandidatesAdapter.notifyDataSetChanged()
+                mRVCandidates.layoutManager?.scrollToPosition(0)
+            }
             showViewVisibility(mCandidatesDataContainer)
             if (mDecInfo.isAssociate) {
-                mRightArrowBtn.drawable.setLevel(3)
-            } else {
-                if (container is CandidatesContainer) {
-                    mRightArrowBtn.drawable.setLevel(0)
-                    mCvListener.onClickMore(0)
-                } else {
-                    mRightArrowBtn.drawable.setLevel(0)
-                    mRVCandidates.layoutManager?.scrollToPosition(0)
-                }
+                mRightArrowBtn.drawable.setLevel(2)
             }
-
         }
     }
 

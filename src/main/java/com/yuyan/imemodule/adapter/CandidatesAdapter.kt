@@ -52,8 +52,8 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val realPos = position + candidatesStart
-        if (realPos < mDecInfo?.mCandidatesList!!.size) {
-            holder.textView.text = mDecInfo?.mCandidatesList!![realPos]?.text
+        if (realPos < mDecInfo?.candidatesLiveData!!.value!!.size) {
+            holder.textView.text = mDecInfo?.candidatesLiveData!!.value!![realPos]?.text
         } else {
             holder.textView.text = "          "
         }
@@ -63,7 +63,7 @@ class CandidatesAdapter(context: Context?, decInfo: DecodingInfo?, candidatesSta
     }
 
     override fun getItemCount(): Int {
-        return mDecInfo?.mCandidatesList!!.size + 1 - candidatesStart
+        return mDecInfo?.candidatesLiveData!!.value!!.size + 1 - candidatesStart
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {

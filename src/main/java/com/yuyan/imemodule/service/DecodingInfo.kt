@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.service
 
 import android.view.KeyEvent
+import androidx.lifecycle.MutableLiveData
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
@@ -8,13 +9,10 @@ import com.yuyan.inputmethod.core.Kernel
 /**
  * 词库解码操作对象
  */
-class DecodingInfo {
-    //  候选词列表
-    var mCandidatesList: MutableList<CandidateListItem?> = mutableListOf()
+object DecodingInfo {
+    // 候选词列表
+    val candidatesLiveData = MutableLiveData<List<CandidateListItem?>>()
 
-    /**
-     * 是否是联想词
-     */
     // 是否是联想词
     var isAssociate = false
 
@@ -23,13 +21,13 @@ class DecodingInfo {
      */
     fun reset() {
         isAssociate = false
-        mCandidatesList.clear()
+        candidatesLiveData.postValue(emptyList())
         Kernel.reset()
     }
 
     val isCandidatesListEmpty: Boolean
         // 候选词列表是否为空
-        get() = mCandidatesList.size == 0
+        get() = candidatesLiveData.value.isNullOrEmpty()
 
     // 增加拼写字符
     fun inputAction(keycode: Int, inputMode: InputModeSwitcherManager) {
@@ -37,7 +35,7 @@ class DecodingInfo {
             Kernel.inputKeyCode(keycode, inputMode)
             isAssociate = false
         } else if(keycode == KeyEvent.KEYCODE_DEL) {  // 手写删除符号
-            mCandidatesList.clear()
+            candidatesLiveData.postValue(emptyList())
         }
     }
 
@@ -66,7 +64,7 @@ class DecodingInfo {
     }
 
     val isFinish: Boolean  //是否输入完毕，等待上屏。
-        get() = if(Kernel.unHandWriting()) Kernel.isFinish else mCandidatesList.isEmpty()
+        get() = if(Kernel.unHandWriting()) Kernel.isFinish else candidatesLiveData.value.isNullOrEmpty()
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = Kernel.wordsShowPinyin
@@ -78,7 +76,7 @@ class DecodingInfo {
         get() {
             val candidates = Kernel.nextPageCandidates
             if (candidates.isNotEmpty()) {
-                mCandidatesList.addAll(candidates)
+                candidatesLiveData.postValue(candidatesLiveData.value?.plus(candidates))
                 return candidates.size
             }
             return 0
@@ -90,12 +88,11 @@ class DecodingInfo {
      */
     fun chooseDecodingCandidate(candId: Int): String {
         return if (Kernel.unHandWriting()) {
-            mCandidatesList.clear()
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
-            mCandidatesList.addAll(Kernel.candidates)
+            candidatesLiveData.postValue(Kernel.candidates.asList())
             Kernel.commitText
-        } else if(candId >=0 && mCandidatesList.size > candId){
-            val choice = mCandidatesList[candId]?.text?:""
+        } else if(candId >=0 && candidatesLiveData.value!!.size > candId){
+            val choice = candidatesLiveData.value!![candId]?.text?:""
             reset()
             choice
         } else ""
@@ -105,12 +102,11 @@ class DecodingInfo {
      * 获得指定的候选词
      */
     fun getCandidate(candId: Int): CandidateListItem? {
-        return mCandidatesList.getOrNull(candId)
+        return candidatesLiveData.value?.getOrNull(candId)
     }
 
     // 更新候选词
     fun cacheCandidates(words: ArrayList<CandidateListItem?>) {
-        mCandidatesList.clear()
-        mCandidatesList.addAll(words)
+        candidatesLiveData.postValue(words)
     }
 }
