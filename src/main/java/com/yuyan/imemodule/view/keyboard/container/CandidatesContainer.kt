@@ -84,13 +84,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
         mCandidatesAdapter = CandidatesAdapter(context)
-        mCandidatesAdapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            if (parent is PrefixAdapter) {
-                parent.getSymbolData(position)
-                inputView.selectPrefix(position)
-            } else if (parent is CandidatesAdapter) {
-                inputView.onChoiceTouched(parent.getItem(position))
-            }
+        mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+            inputView.onChoiceTouched(position)
+            mRVSymbolsView.scrollToPosition(0)
         }
         val layoutManager = GridLayoutManager(context, 60)
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -202,6 +198,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             val s = prefixs[position]
             if (isPrefixs) {
                 if (isLetter(s)) {
+                    mRVSymbolsView.scrollToPosition(0)
                     inputView.selectPrefix(position)
                 }
             } else {
