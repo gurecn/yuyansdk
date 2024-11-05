@@ -103,6 +103,9 @@
     <string name="version">版本</string>
     <string name="build_git_hash">构建哈希</string>
     <string name="build_time">构建时间</string>
+    <string name="build_type">SDK类型</string>
+    <string name="build_type_offline">离线版</string>
+    <string name="build_type_online">联网版</string>
     <string name="clipboard">剪贴板</string>
     <string name="phrases">常用语</string>
     <string name="add_phrases">增加常用语</string>

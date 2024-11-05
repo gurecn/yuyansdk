@@ -49,6 +49,7 @@ class AboutFragment : PreferenceFragmentCompat() {
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                 }
                 addPreference(R.string.build_time, BuildConfig.AppBuildTime)
+                addPreference(R.string.build_type, if(BuildConfig.offline)R.string.build_type_offline else R.string.build_type_online )
             }
         }
 

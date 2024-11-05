@@ -11,7 +11,7 @@ static def versionNameDate() {
 }
 
 def getSDKGitHead() {
-    return "git --git-dir=/home/gure/devproject/YuyanIme/yuyansdk/.git rev-parse HEAD".execute().text.trim()
+    return "git --git-dir=/home/gure/devproject/Private/Yuyan/YuyanIme/yuyansdk/.git rev-parse HEAD".execute().text.trim()
 }
 def getAppGitHead() {
     return "git rev-parse HEAD".execute().text.trim()
