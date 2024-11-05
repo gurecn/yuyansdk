@@ -20,7 +20,7 @@ class CandidatesAdapter(context: Context?) :
     RecyclerView.Adapter<CandidatesAdapter.SymbolHolder>() {
     private var mCandidateTextSize = 0
     private val inflater: LayoutInflater
-    private val textColor: Int
+    private val textColor: Int = activeTheme.keyTextColor
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
@@ -31,14 +31,8 @@ class CandidatesAdapter(context: Context?) :
     }
 
     init {
-        textColor = activeTheme.keyTextColor
         inflater = LayoutInflater.from(context)
         updateCandidateTextSize()
-    }
-
-    fun updateData(num: Int) {
-        val startIndex = itemCount - num - 1
-        notifyItemRangeInserted(startIndex, num)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
@@ -47,11 +41,7 @@ class CandidatesAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        if (position < DecodingInfo.candidateSize) {
-            holder.textView.text = DecodingInfo.candidates[position].text
-        } else {
-            holder.textView.text = "          "
-        }
+        holder.textView.text = DecodingInfo.candidates[position].text
         holder.textView.setOnClickListener { view: View? ->
             mOnItemClickListener?.onItemClick(this@CandidatesAdapter, view, position)
         }
@@ -68,9 +58,5 @@ class CandidatesAdapter(context: Context?) :
             textView.setTextColor(textColor)
             textView.textSize = DevicesUtils.px2dip(mCandidateTextSize.toFloat()).toFloat()
         }
-    }
-
-    fun getItem(position: Int): Int {
-        return position
     }
 }
