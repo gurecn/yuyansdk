@@ -29,6 +29,7 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
@@ -245,6 +246,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             activeCandidate = 0
             mRVCandidates.layoutManager?.scrollToPosition(0)
             mRVCandidates.layoutManager?.scrollToPosition(0)
+            mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
@@ -260,7 +262,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         } else {
             mCandidatesAdapter.notifyDataSetChanged()
             showViewVisibility(mCandidatesDataContainer)
-            mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2 else 0)
+            if(DecodingInfo.isAssociate) mRightArrowBtn.drawable.setLevel(2)
         }
     }
 
