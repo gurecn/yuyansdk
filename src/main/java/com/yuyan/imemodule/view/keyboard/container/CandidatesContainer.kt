@@ -95,7 +95,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         val layoutManager = GridLayoutManager(context, 60)
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(pos: Int): Int {
-                if(DecodingInfo.candidateSize <= pos) return  60
+                if(DecodingInfo.candidateSize <= pos) return  12
                 return DecodingInfo.candidates[pos].spanSize ?: 12
             }
         }
