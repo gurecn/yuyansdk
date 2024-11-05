@@ -378,7 +378,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
-    override fun responseHandwritingResultEvent(words: ArrayList<CandidateListItem?>) {
+    override fun responseHandwritingResultEvent(words: ArrayList<CandidateListItem>) {
         DecodingInfo.isAssociate = false
         DecodingInfo.cacheCandidates(words)
         changeToStateInput()
@@ -993,7 +993,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     //展示常用符号
     fun showSymbols(symbols: Array<String>) {
         //设置候选词
-        val list = ArrayList<CandidateListItem?>()
+        val list = ArrayList<CandidateListItem>()
         for (symbol in symbols) {
             list.add(CandidateListItem("", symbol))
         }

@@ -2,6 +2,8 @@ package com.yuyan.imemodule.service
 
 import android.view.KeyEvent
 import androidx.lifecycle.MutableLiveData
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.inputmethod.core.Candidate
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 
@@ -9,8 +11,9 @@ import com.yuyan.inputmethod.core.Kernel
  * 词库解码操作对象
  */
 object DecodingInfo {
+    private var mCurrentColumn = 0 // 缓存当前候选词所占宽度
     // 候选词列表
-    val candidatesLiveData = MutableLiveData<List<CandidateListItem?>>()
+    val candidatesLiveData = MutableLiveData<List<Candidate>>()
 
     // 是否是联想词
     var isAssociate = false
@@ -33,7 +36,7 @@ object DecodingInfo {
         get() = if(isCandidatesListEmpty) 0 else candidatesLiveData.value!!.size
 
 
-    val candidates: List<CandidateListItem?>
+    val candidates: List<Candidate>
         // 候选词列表是否为空
         get() = candidatesLiveData.value?:emptyList()
 
@@ -82,10 +85,10 @@ object DecodingInfo {
 
     val nextPageCandidates: Int   // 获取下一页的候选词
         get() {
-            val candidates = Kernel.nextPageCandidates
-            if (candidates.isNotEmpty()) {
-                candidatesLiveData.postValue(candidatesLiveData.value?.plus(candidates))
-                return candidates.size
+            val cands = Kernel.nextPageCandidates
+            if (cands.isNotEmpty()) {
+                candidatesLiveData.postValue(candidatesLiveData.value?.plus(calculateColumn(cands)))
+                return cands.size
             }
             return 0
         }
@@ -97,10 +100,10 @@ object DecodingInfo {
     fun chooseDecodingCandidate(candId: Int): String {
         return if (Kernel.unHandWriting()) {
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
-            candidatesLiveData.postValue(Kernel.candidates.asList())
+            candidatesLiveData.postValue(calculateColumn(Kernel.candidates.asList()))
             Kernel.commitText
         } else if(candId in 0..<candidateSize){
-            val choice = candidatesLiveData.value!![candId]?.text?:""
+            val choice = candidatesLiveData.value!![candId].text
             reset()
             choice
         } else ""
@@ -109,12 +112,51 @@ object DecodingInfo {
     /**
      * 获得指定的候选词
      */
-    fun getCandidate(candId: Int): CandidateListItem? {
+    fun getCandidate(candId: Int): Candidate? {
         return candidatesLiveData.value?.getOrNull(candId)
     }
 
     // 更新候选词
-    fun cacheCandidates(words: ArrayList<CandidateListItem?>) {
-        candidatesLiveData.postValue(words)
+    fun cacheCandidates(words: ArrayList<CandidateListItem>) {
+        candidatesLiveData.postValue(calculateColumn(words))
+    }
+
+    private fun calculateColumn(list:List<CandidateListItem>):List<Candidate> {
+        val candidatesTemp = list.map { (comment, text) ->
+            Candidate(comment, text, 0)
+        }
+        for (position in candidatesTemp.indices) {
+            val candidate = candidatesTemp[position]
+            val count = getSymbolsCount(candidate.text)
+            if (mCurrentColumn + count <= 60) {
+                mCurrentColumn += count
+            } else {
+                if(position == 0) {
+                    if(candidates.isNotEmpty()) {
+                        candidates.last().spanSize = candidates.last().spanSize?.plus(60)?.minus(mCurrentColumn)
+                    }
+                } else {
+                    candidatesTemp[position - 1].spanSize = candidatesTemp[position - 1].spanSize?.plus(60)?.minus(mCurrentColumn)
+                }
+                mCurrentColumn = count
+            }
+            candidate.spanSize = count
+        }
+        return candidatesTemp
+    }
+
+    /**
+     * 根据词长计算当前候选词需占的列数
+     */
+    private fun getSymbolsCount(data: String?): Int {
+        return if (data?.isNotBlank() == true) {
+            val x = if(InputModeSwitcherManager.isChinese)data.length else data.length/2
+            if(x > 8) 60
+            else if(x >= 6) 30
+            else if(x >= 4) 20
+            else if(x == 3) 15
+            else if(x == 2) 12
+            else  10
+        } else 0
     }
 }
