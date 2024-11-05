@@ -41,7 +41,7 @@ class HandWritingHanwang : HandWritingMonitor {
                         val result = jsonObject1.optString("result")
                         val results =
                             result.split(",0,".toRegex()).dropLastWhile { it.isEmpty() }
-                        val recogResultItems = ArrayList<CandidateListItem?>()
+                        val recogResultItems = ArrayList<CandidateListItem>()
                         for (can in results) {
                             val cans = can.split(",".toRegex()).dropLastWhile { it.isEmpty() }
                             val sb = StringBuilder()

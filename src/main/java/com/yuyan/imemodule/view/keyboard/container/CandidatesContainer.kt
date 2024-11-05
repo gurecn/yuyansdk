@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -31,7 +30,6 @@ import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -85,7 +83,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
-        mCandidatesAdapter = CandidatesAdapter(context, 0)
+        mCandidatesAdapter = CandidatesAdapter(context)
         mCandidatesAdapter.setOnItemClickLitener { parent: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             if (parent is PrefixAdapter) {
                 parent.getSymbolData(position)
@@ -96,8 +94,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         }
         val layoutManager = GridLayoutManager(context, 60)
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(i: Int): Int {
-                return mHashMapSymbols[i] ?: 12
+            override fun getSpanSize(pos: Int): Int {
+                if(DecodingInfo.candidateSize <= pos) return  60
+                return DecodingInfo.candidates[pos].spanSize ?: 12
             }
         }
         mRVSymbolsView.setLayoutManager(layoutManager)
@@ -155,10 +154,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                         val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
                         activeCandidate = lastItem
                         if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
-                            val num = DecodingInfo.nextPageCandidates
-                            if (num > 0) {
-                                calculateColumn(DecodingInfo.candidates)
-                            }
+                            DecodingInfo.nextPageCandidates
                         }
                         isLoadingMore = false
                     }
@@ -179,51 +175,11 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         if(DecodingInfo.candidateSize == 10){
            DecodingInfo.nextPageCandidates
         }
-        if(!DecodingInfo.isCandidatesListEmpty) {
-            calculateColumn(DecodingInfo.candidatesLiveData.value!!)
-        }
         mCandidatesAdapter.notifyDataSetChanged()
         if (InputModeSwitcherManager.isChineseT9) {
             mRVLeftPrefix.visibility = VISIBLE
             updatePrefixsView()
         }
-    }
-
-    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
-    private fun calculateColumn(data: List<CandidateListItem?>) {
-        mHashMapSymbols.clear()
-        var mCurrentColumn = 0
-        for (position in data.indices) {
-            val candidate = data[position]?.text!!
-            var count = getSymbolsCount(candidate)
-            var nextCount = 0
-            if (data.size > position + 1) {
-                val nextCandidate = data[position + 1]?.text!!
-                nextCount = getSymbolsCount(nextCandidate)
-            }
-            if (mCurrentColumn + count + nextCount > 60) {
-                count = 60 - mCurrentColumn
-                mCurrentColumn = 0
-            } else {
-                mCurrentColumn = (mCurrentColumn + count) % 60
-            }
-            mHashMapSymbols[position] = count
-        }
-    }
-
-    /**
-     * 根据词长计算当前候选词需占的列数
-     */
-    private fun getSymbolsCount(data: String): Int {
-        return if (!TextUtils.isEmpty(data)) {
-            val x = if(InputModeSwitcherManager.isChinese)data.length else data.length/2
-            if(x > 8) 60
-            else if(x >= 6) 30
-            else if(x >= 4) 20
-            else if(x == 3) 15
-            else if(x == 2) 12
-            else  10
-        } else 0
     }
 
     //更新左侧拼音显示
