@@ -235,6 +235,7 @@
     <string name="keyboard_name_t9">中文9键</string>
     <string name="keyboard_name_cn26">拼音全键</string>
     <string name="keyboard_name_hand">手写输入</string>
+    <string name="keyboard_name_stroke">笔画键盘</string>
     <string name="double_pinyin_schema_mode">双拼方案</string>
     <string name="double_pinyin_flypy_plus">小鹤双拼</string>
     <string name="double_pinyin_natural">自然码双拼</string>

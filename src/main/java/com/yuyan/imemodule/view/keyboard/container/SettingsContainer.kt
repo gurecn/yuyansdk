@@ -179,6 +179,13 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 SkbMenuMode.PinyinLx17
             )
         )
+        funItems.add(
+            SkbFunItem(
+                mContext.getString(R.string.keyboard_name_stroke),
+                R.drawable.selece_input_mode_stroke,
+                SkbMenuMode.PinyinStroke
+            )
+        )
         val adapter = MenuAdapter(context, funItems)
         adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             onKeyboardMenuClick(funItems[position])
@@ -200,6 +207,10 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             SkbMenuMode.PinyinLx17 -> {
                 keyboardValue = 0x6000
                 CustomConstant.SCHEMA_ZH_DOUBLE_LX17
+            }
+            SkbMenuMode.PinyinStroke -> {
+                keyboardValue = 0x7000
+                CustomConstant.SCHEMA_ZH_STROKE
             }
             SkbMenuMode.Pinyin26Double -> {
                 keyboardValue = 0x1000

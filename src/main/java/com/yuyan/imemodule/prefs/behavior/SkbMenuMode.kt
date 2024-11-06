@@ -25,6 +25,7 @@ enum class SkbMenuMode {
     PinyinLx17,
     PinyinHandWriting,
     Pinyin26Double,
+    PinyinStroke,
     ClipBoard,
     ClearClipBoard,
     Phrases,
