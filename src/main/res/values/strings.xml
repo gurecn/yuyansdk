@@ -257,4 +257,9 @@
 
     <string name="skb_prefix_pinyin_tips">拼音侧边栏</string>
     <string name="skb_prefix_number_tips">数字侧边栏</string>
+
+    <string name="keyboard_symbol_slide_up_mod">上滑输入灵敏度</string>
+    <string name="keyboard_symbol_slide_up_short">易触发</string>
+    <string name="keyboard_symbol_slide_up_medium">标准</string>
+    <string name="keyboard_symbol_slide_up_long">难触发</string>
 </resources>

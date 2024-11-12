@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.ManagedPreferenceCategory
+import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 class ThemePrefs(sharedPreferences: SharedPreferences) :
@@ -75,6 +76,25 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
 
     val keyboardSymbol =
         switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
+
+    val symbolSlideUpMod = list(
+        R.string.keyboard_symbol_slide_up_mod,
+        "keyboard_symbol_slide_up_mod",
+        KeyboardSymbolSlideUpMod.MEDIUM,
+        KeyboardSymbolSlideUpMod,
+        listOf(
+            KeyboardSymbolSlideUpMod.SHORT,
+            KeyboardSymbolSlideUpMod.MEDIUM,
+            KeyboardSymbolSlideUpMod.LONG
+        ),
+        listOf(
+            R.string.keyboard_symbol_slide_up_short,
+            R.string.keyboard_symbol_slide_up_medium,
+            R.string.keyboard_symbol_slide_up_long,
+        )
+    ) {
+        keyboardSymbol.getValue()
+    }
 
     val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
 
