@@ -227,7 +227,7 @@ class KeyboardLoaderUtil private constructor() {
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 36, 47, 44, keyDeleteOrder.first),
                     arrayOf(42, 54, 17, KeyEvent.KEYCODE_CLEAR),
-                    arrayOf(75, 15, 16, keyDeleteOrder.second),)
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, 75, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, keyDeleteOrder.second),)
                 var t9Key = createT9Keys(keys[0])
                 t9Key.first().apply {
                     widthF = 0.18f
@@ -267,7 +267,7 @@ class KeyboardLoaderUtil private constructor() {
         softKeyToggle.setToggleStates(enterToggleStates)
         val keyBeans = mutableListOf<SoftKey>()
         val t9Keys = when(skbValue){
-            0x2000, 0x3000 ->{
+            0x2000, 0x3000, 0x7000  ->{
                 createT9Keys(arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3, InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5,
                     KeyEvent.KEYCODE_SPACE, InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2))
             }

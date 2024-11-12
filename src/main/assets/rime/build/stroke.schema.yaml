@@ -55,11 +55,13 @@ key_binder:
 menu:
   page_size: 9
 punctuator:
-  import_preset: default
+  symbols:
+    "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
 recognizer:
   import_preset: default
   patterns:
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
+    punct: "^/([0-9]|10|[A-Za-z]*?)$"
     reverse_lookup: "`[a-z]*'?$"
     underscore: "^[A-Za-z]+_.*"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
