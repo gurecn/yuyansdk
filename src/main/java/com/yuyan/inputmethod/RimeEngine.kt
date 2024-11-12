@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -103,6 +104,7 @@ object RimeEngine {
     fun destroy() = Rime.destroy()
 
     private fun processDelAction() {
+        LogUtil.d("1111111111", " processDelAction  ")
         when (val lastKey = keyRecordStack.pop()) {
             is InputKey.PinyinKey -> {
                 val pinyinKey = keyRecordStack.restorePinyinToT9Key(lastKey) ?: return
@@ -292,16 +294,12 @@ object RimeEngine {
             if (lastKey is InputKey.Apostrophe && keyRecords.size == 1) {
                 processDelAction()
             }else if (keyCode == KeyEvent.KEYCODE_APOSTROPHE) {
-                if(keyRecords.size == 1){
-                    processDelAction()
-                } else {
-                    // 连续分词没有意义
-                    if (lastKey is InputKey.Apostrophe) return false
-                    // 选择拼音之后分词没有意义，但是需要把分词操作入栈
-                    if (lastKey == InputKey.SelectPinyinAction) {
-                        keyRecords.add(InputKey.Apostrophe(true))
-                        return false
-                    }
+                // 连续分词没有意义
+                if (lastKey is InputKey.Apostrophe) return false
+                // 选择拼音之后分词没有意义，但是需要把分词操作入栈
+                if (lastKey == InputKey.SelectPinyinAction) {
+                    keyRecords.add(InputKey.Apostrophe(true))
+                    return false
                 }
             }
             // 选择拼音只是记录其是不是最后一个操作，如果不是在选择之后立即删除，则不需记录

@@ -53,6 +53,7 @@ engine:
     - punct_segmentor
     - fallback_segmentor
   translators:
+    - punct_translator
     - echo_translator
     - script_translator
     - "lua_translator@*date_translator"
