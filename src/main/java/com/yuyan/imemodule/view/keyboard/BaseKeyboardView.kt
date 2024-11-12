@@ -17,7 +17,9 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
 import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
@@ -231,6 +233,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val relDiffX = abs(currentX - lastEventX)
         val relDiffY = abs(currentY - lastEventY)
         val isVertical = relDiffX * 1.5 < relDiffY  //横向、竖向滑动距离接近时，优先触发左右滑动
+        val symbolSlideUp = EnvironmentSingleton.instance.heightForCandidates / when(ThemeManager.prefs.symbolSlideUpMod.getValue()){
+            KeyboardSymbolSlideUpMod.SHORT -> 3;KeyboardSymbolSlideUpMod.MEDIUM -> 2;else -> 1
+        }
         if (!isVertical && relDiffX > 10)  {  // 左右滑动
             val isSwipeKey = mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE || mCurrentKey?.keyCode == KeyEvent.KEYCODE_0
             if (isSwipeKey && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {  // 左右滑动
@@ -243,7 +248,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mService!!.responseKeyEvent(key)
                 result = true
             }
-        } else if (isVertical && relDiffY > 10  && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
+        } else if (isVertical && relDiffY > symbolSlideUp && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
             lastEventX = currentX
             lastEventY = currentY
             lastEventActionIndex = currentEvent.actionIndex
