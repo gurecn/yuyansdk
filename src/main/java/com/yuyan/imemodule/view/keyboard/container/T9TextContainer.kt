@@ -15,6 +15,7 @@ import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -71,7 +72,7 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance.getSoftKeyboard(InputModeSwitcherManager.MASK_SKB_LAYOUT_T9_PINYIN)
+        val softKeyboard = instance.getSoftKeyboard(AppPrefs.getInstance().internal.inputDefaultMode.getValue() and InputModeSwitcherManager.MASK_SKB_LAYOUT)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()

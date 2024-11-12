@@ -19,9 +19,4 @@ val keyIconRecords: Map<Int, Drawable?> = mapOf(
     Objects.hash(KeyEvent.KEYCODE_ENTER, 0) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_enter_icon),
     Objects.hash(KeyEvent.KEYCODE_DEL, 0) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_delete_icon),
     Objects.hash(InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_7, 0) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_cursor_icon),
-    Objects.hash(KeyEvent.KEYCODE_H, 1) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_stroke_heng_icon),
-    Objects.hash(KeyEvent.KEYCODE_S, 1) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_stroke_shu_icon),
-    Objects.hash(KeyEvent.KEYCODE_P, 1) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_stroke_pie_icon),
-    Objects.hash(KeyEvent.KEYCODE_N, 1) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_stroke_na_icon),
-    Objects.hash(KeyEvent.KEYCODE_Z, 1) to ContextCompat.getDrawable(ImeSdkApplication.context, R.drawable.sdk_skb_key_stroke_zhe_icon),
 )

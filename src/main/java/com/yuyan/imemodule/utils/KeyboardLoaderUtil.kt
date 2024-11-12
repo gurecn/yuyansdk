@@ -24,6 +24,7 @@ import com.yuyan.imemodule.view.keyboard.qwertyKeyNumberPreset
 import com.yuyan.imemodule.view.keyboard.qwertyKeyPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyNumberPreset
 import com.yuyan.imemodule.view.keyboard.qwertyPYKeyPreset
+import com.yuyan.imemodule.view.keyboard.strokeKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9NumberKeyPreset
 import com.yuyan.imemodule.view.keyboard.t9PYKeyPreset
 import java.util.LinkedList
@@ -33,12 +34,14 @@ import java.util.LinkedList
  */
 class KeyboardLoaderUtil private constructor() {
     private var rimeValue: String? = null
+    private var mSkbValue: Int = 0
     private var numberLine: Boolean = false
     fun clearKeyboardMap() {
         mSoftKeyboardMap.clear()
     }
 
     private fun loadBaseSkb(skbValue: Int): SoftKeyboard {
+        mSkbValue = skbValue
         // shift键状态
         val shiftToggleStates = LinkedList<ToggleState>()
         shiftToggleStates.add(ToggleState(0))
@@ -218,6 +221,36 @@ class KeyboardLoaderUtil private constructor() {
                 keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
+            0x7000 -> {  // 7000  笔画键盘
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                val keyDeleteOrder = if(ThemeManager.prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
+                val keys = arrayListOf(
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 36, 47, 44, keyDeleteOrder.first),
+                    arrayOf(42, 54, 17, KeyEvent.KEYCODE_CLEAR),
+                    arrayOf(75, 15, 16, keyDeleteOrder.second),)
+                var t9Key = createT9Keys(keys[0])
+                t9Key.first().apply {
+                    widthF = 0.18f
+                    heightF = 0.75f
+                }
+                t9Key.last().widthF = 0.18f
+                keyBeans.addAll(t9Key)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                t9Key = createT9Keys(keys[1])
+                t9Key.first().mLeftF = 0.185f
+                t9Key.last().widthF = 0.18f
+                keyBeans.addAll(t9Key)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                t9Key = createT9Keys(keys[2])
+                t9Key.first().mLeftF = 0.185f
+                t9Key.last().widthF = 0.18f
+                keyBeans.addAll(t9Key)
+                rows.add(keyBeans)
+                keyBeans = lastRows(skbValue)
+                rows.add(keyBeans)
+            }
         }
         softKeyboard = getSoftKeyboard(skbValue, rows, numberLine)
         mSoftKeyboardMap[skbValue] = softKeyboard
@@ -321,7 +354,7 @@ class KeyboardLoaderUtil private constructor() {
     private fun createT9Keys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
         for(code in codes){
-            val labels = t9PYKeyPreset[code]
+            val labels = if(mSkbValue == 0x7000) strokeKeyPreset[code] else t9PYKeyPreset[code]
             softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1)?: "").apply {
                 widthF = 0.21f
             })

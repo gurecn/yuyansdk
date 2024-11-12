@@ -225,6 +225,20 @@ val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
     InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
 
+val strokeKeyPreset: Map<Int, Array<String>> = hashMapOf(
+    36 to arrayOf("一", "1"),
+    47 to arrayOf("丨", "2"),
+    44 to arrayOf("丿", "3"),
+    42 to arrayOf("丶", "4"),
+    54 to arrayOf("⼄", "5"),
+    17 to arrayOf("*", "6"),
+    28 to arrayOf("重输"),
+    75 to arrayOf("@#", "7"),
+    15 to arrayOf("，", "8"),
+    16 to arrayOf("ABC", "9"),
+    77 to arrayOf("@"),
+)
+
 val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
     7 to arrayOf("0"),
     8 to arrayOf("1"),
