@@ -226,7 +226,7 @@ class KeyboardLoaderUtil private constructor() {
                 val keyDeleteOrder = if(ThemeManager.prefs.deleteLocationTop.getValue())Pair(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_AT) else Pair(KeyEvent.KEYCODE_AT, KeyEvent.KEYCODE_DEL)
                 val keys = arrayListOf(
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 36, 47, 44, keyDeleteOrder.first),
-                    arrayOf(42, 54, 17, KeyEvent.KEYCODE_CLEAR),
+                    arrayOf(42, 54, InputModeSwitcherManager.USER_DEF_KEYCODE_STAR_17, KeyEvent.KEYCODE_CLEAR),
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13, 75, InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14, keyDeleteOrder.second),)
                 var t9Key = createT9Keys(keys[0])
                 t9Key.first().apply {

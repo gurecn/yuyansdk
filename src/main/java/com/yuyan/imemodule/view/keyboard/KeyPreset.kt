@@ -229,12 +229,10 @@ val strokeKeyPreset: Map<Int, Array<String>> = hashMapOf(
     36 to arrayOf("一", "1"),
     47 to arrayOf("丨", "2"),
     44 to arrayOf("丿", "3"),
-
     42 to arrayOf("丶", "4"),
     54 to arrayOf("⼄", "5"),
-    17 to arrayOf("*", "6"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_STAR_17 to arrayOf("*", "6"),
     28 to arrayOf("重输"),
-
     InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13 to arrayOf("，", "7"),
     75 to arrayOf("@#", "8"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14 to arrayOf("。", "9"),

@@ -60,6 +60,10 @@ object InputModeSwitcherManager {
      * User defined key code, used by soft keyboard. 语言键的code,句号（中文：。;英文：.）。
      */
     const val USER_DEF_KEYCODE_LEFT_PERIOD_14 = -14
+    /**
+     * User defined key code, used by soft keyboard. 语言键的code,星号（*）。
+     */
+    const val USER_DEF_KEYCODE_STAR_17 = -17
 
 
     /**
