@@ -17,12 +17,15 @@ object DecodingInfo {
 
     // 是否是联想词
     var isAssociate = false
+    // 是否重置
+    var isReset = false
 
     /**
      * 重置
      */
     fun reset() {
         isAssociate = false
+        isReset = true
         candidatesLiveData.postValue(emptyList())
         Kernel.reset()
     }
@@ -42,6 +45,7 @@ object DecodingInfo {
 
     // 增加拼写字符
     fun inputAction(keycode: Int) {
+        isReset = false
         if (Kernel.unHandWriting()) {
             Kernel.inputKeyCode(keycode)
             isAssociate = false
@@ -75,7 +79,7 @@ object DecodingInfo {
     }
 
     val isFinish: Boolean  //是否输入完毕，等待上屏。
-        get() = if(Kernel.unHandWriting()) Kernel.isFinish else isCandidatesListEmpty
+        get() = if(Kernel.unHandWriting()) Kernel.isFinish else isCandidatesListEmpty || isReset
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = Kernel.wordsShowPinyin
@@ -118,6 +122,7 @@ object DecodingInfo {
 
     // 更新候选词
     fun cacheCandidates(words: ArrayList<CandidateListItem>) {
+        isReset = false
         candidatesLiveData.postValue(calculateColumn(words))
     }
 
