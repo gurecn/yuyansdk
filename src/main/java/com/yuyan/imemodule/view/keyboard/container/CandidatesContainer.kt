@@ -30,6 +30,7 @@ import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -88,7 +89,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             inputView.onChoiceTouched(position)
             mRVSymbolsView.scrollToPosition(0)
         }
-        val layoutManager = GridLayoutManager(context, 60)
+        val layoutManager = CustomGridLayoutManager(context, 60)
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(pos: Int): Int {
                 if(DecodingInfo.candidateSize <= pos) return  12

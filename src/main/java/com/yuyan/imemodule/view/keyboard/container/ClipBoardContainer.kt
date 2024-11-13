@@ -29,6 +29,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
 import splitties.dimensions.dp
 import splitties.views.textResource
 import java.io.File
@@ -82,10 +83,10 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             }
         val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
             ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            ClipboardLayoutMode.GridView -> GridLayoutManager(context, 2)
+            ClipboardLayoutMode.GridView -> CustomGridLayoutManager(context, 2)
             ClipboardLayoutMode.FlexboxView -> {
                 calculateColumn(copyContents)
-                GridLayoutManager(context, 6).apply {
+                CustomGridLayoutManager(context, 6).apply {
                     spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                         override fun getSpanSize(i: Int) = mHashMapSymbols[i] ?: 1
                     }
