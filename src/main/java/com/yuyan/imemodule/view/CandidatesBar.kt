@@ -190,7 +190,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 val skbMenuMode = mCandidatesMenuAdapter.getMenuMode(position)
                 if(skbMenuMode != null) {
                     onClickMenu(skbMenuMode, view)
-                    mCandidatesMenuAdapter.notifyItemChanged(position)
+                    mCandidatesMenuAdapter.notifyDataSetChanged()
                 }
             }
             mRVContainerMenu.setAdapter(mCandidatesMenuAdapter)
