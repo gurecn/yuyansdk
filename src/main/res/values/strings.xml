@@ -54,15 +54,10 @@
     <!--键盘设置条目-->
     <string name="skb_item_settings">设置</string>
     <string name="skb_item_custom">定制工具栏</string>
-    <!--加解密相关-->
     <!--布局部分文件提取文本-->
     <string name="paint_thickness">笔画粗细</string>
     <string name="discern_sensitive">识别灵敏度</string>
     <string name="contact_title">联系人</string>
-    <!--视频录制相关页面-->
-    <!--加解密相关提示-->
-    <!--应用内抽取-->
-    <!--设备root对话框-->
     <string name="direct_input">切换为直输模式</string>
     <string name="spelling_pattern">切换为拼写模式</string>
     <string name="conversation_time_format_year_month_date">%1$s年%2$s月%3$s日</string>
@@ -73,17 +68,14 @@
     <!--设置输入法高度-->
     <string name="setting_ime_keyboard_height_reset">重置</string>
     <string name="setting_ime_keyboard_height_sure">确认</string>
-
     <!--手写模式-->
     <string name="hand_writing_rc_mode">识别模式</string>
     <string name="hand_writing_rc_mode_sentence">行写</string>
     <string name="hand_writing_rc_mode_overlap">叠写</string>
     <string name="hand_writing_rc_mode_sentence_overlap">自由</string>
-
     <string name="keyboard_menu_lock_english">锁定英语键盘(下次弹出保持英语模式)</string>
     <string name="keyboard_key_switch_ime">长按键盘切换时切换输入法</string>
     <string name="keyboard_menu_emoji_input">表情预测</string>
-
     <string name="input_methods">输入法</string>
     <string name="advanced">高级</string>
     <string name="button_haptic_feedback">按键时振动</string>
@@ -258,7 +250,7 @@
     <string name="skb_prefix_pinyin_tips">拼音侧边栏</string>
     <string name="skb_prefix_number_tips">数字侧边栏</string>
 
-    <string name="keyboard_symbol_slide_up_mod">上滑输入灵敏度</string>
+    <string name="keyboard_symbol_slide_up_mod">上划输入灵敏度</string>
     <string name="keyboard_symbol_slide_up_short">易触发</string>
     <string name="keyboard_symbol_slide_up_medium">标准</string>
     <string name="keyboard_symbol_slide_up_long">难触发</string>
