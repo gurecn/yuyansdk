@@ -29,7 +29,6 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer

@@ -16,6 +16,7 @@
         android:text="@string/add_phrases_input_tips"/>
     <com.yuyan.imemodule.view.widget.ImeEditText
         android:id="@+id/et_add_phrases_content"
+        android:theme="@style/Theme.AppTheme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"

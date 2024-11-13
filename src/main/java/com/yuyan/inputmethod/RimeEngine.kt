@@ -4,7 +4,6 @@ import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -104,7 +103,6 @@ object RimeEngine {
     fun destroy() = Rime.destroy()
 
     private fun processDelAction() {
-        LogUtil.d("1111111111", " processDelAction  ")
         when (val lastKey = keyRecordStack.pop()) {
             is InputKey.PinyinKey -> {
                 val pinyinKey = keyRecordStack.restorePinyinToT9Key(lastKey) ?: return

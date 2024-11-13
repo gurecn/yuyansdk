@@ -1,6 +1,5 @@
 package com.yuyan.imemodule.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
