@@ -1,8 +1,8 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1730283367
-    default.custom: 1730283368
+    default: 1732098899
+    default.custom: 1732098899
 ascii_composer:
   good_old_caps_lock: true
   switch_key:
@@ -21,7 +21,8 @@ key_binder:
 menu:
   page_size: 50
 punctuator:
-  {}
+  symbols:
+    "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
 recognizer:
   patterns:
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
@@ -37,7 +38,7 @@ schema_list:
   - schema: double_pinyin_abc
   - schema: double_pinyin_ziguang
   - schema: double_pinyin_ls17
-  - schema: pinyin_stroke
+  - schema: stroke
 switcher:
   abbreviate_options: true
   caption: "「方案选单」"

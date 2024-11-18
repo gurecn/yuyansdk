@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1730283367
-    default.custom: 1730283368
+    default: 1732098899
+    default.custom: 1732098899
     english.custom: 0
-    english.schema: 1730283367
+    english.schema: 1732098899
 algebra_abc:
   - "derive/1([4-7|9])/$1teen/"
   - "derive/11/eleven/"
@@ -591,6 +591,7 @@ engine:
     - fallback_segmentor
   translators:
     - table_translator
+    - punct_translator
     - echo_translator
 key_binder:
   bindings:
@@ -603,6 +604,8 @@ menu:
   page_size: 50
 punctuator:
   import_preset: default
+  symbols:
+    "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
 recognizer:
   import_preset: default
   patterns:
@@ -701,4 +704,4 @@ switches:
     states: ["ASCII-OFF", "ASCII-ON"]
 translator:
   dictionary: english
-  spelling_hints: 9
+  spelling_hints: 100

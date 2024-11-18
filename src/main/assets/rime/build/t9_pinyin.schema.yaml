@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1730283367
-    default.custom: 1730283368
+    default: 1732098899
+    default.custom: 1732098899
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1730283368
+    t9_pinyin.schema: 1732098899
 corrector: "{comment}"
 custom_phrase:
   db_class: stabledb
@@ -15,9 +15,7 @@ custom_phrase:
   user_dict: custom_phrase_t9
 date_translator:
   date: 77
-  datetime: 7775
   time: 75
-  timestamp: 752
   week: 97
 emoji:
   inherit_comment: false
@@ -25,18 +23,10 @@ emoji:
   option_name: emoji
 engine:
   filters:
-#    - "lua_filter@*is_in_user_dict"
-    - "lua_filter@*corrector"
-    - "reverse_lookup_filter@radical_reverse_lookup"
-    - "lua_filter@*autocap_filter"
-    - "lua_filter@*v_filter"
-    - "lua_filter@*long_word_filter"
     - "simplifier@emoji"
     - "simplifier@traditionalize"
-    - "lua_filter@*aux_code"
     - uniquifier
   processors:
-    - "lua_processor@select_character"
     - ascii_composer
     - recognizer
     - key_binder
@@ -49,7 +39,6 @@ engine:
     - ascii_segmentor
     - matcher
     - abc_segmentor
-    - "affix_segmentor@radical_lookup"
     - punct_segmentor
     - fallback_segmentor
   translators:
@@ -59,11 +48,7 @@ engine:
     - "lua_translator@*date_translator"
     - "lua_translator@*lunar"
     - "table_translator@custom_phrase"
-    - "table_translator@radical_lookup"
-    - "lua_translator@*unicode"
-    - "lua_translator@*number_translator"
     - "lua_translator@*force_gc"
-    - "lua_translator@*calculator"
 key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
@@ -72,27 +57,13 @@ key_binder:
   search: "`"
   select_first_character: bracketleft
   select_last_character: bracketright
-long_word_filter:
-  count: 2
-  idx: 4
 lunar: 65
 menu:
   page_size: 50
 punctuator:
+  import_preset: default
   symbols:
     "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
-radical_lookup:
-  comment_format:
-    - "erase/^.*$//"
-  dictionary: radical_pinyin
-  enable_user_dict: false
-  prefix: uU
-  tag: radical_lookup
-  tips: "  〔拆字〕"
-radical_reverse_lookup:
-  dictionary: pinyin
-  tags:
-    - radical_lookup
 recognizer:
   import_preset: default
   patterns:
@@ -122,8 +93,8 @@ speller:
   algebra:
     - "abbrev/^([a-z]).+$/$1/"
     - "abbrev/^([zcs]h).+$/$1/"
-    - "derive/[abc]/2/"
-    - "derive/[bc]a/22/"
+    - "derive/abc/2/"
+    - "derive/[abc]a/22/"
     - "derive/[bc]ai/224/"
     - "derive/[bc]an|[bc]ao/226/"
     - "derive/[bc]ang/2264/"
@@ -161,12 +132,12 @@ speller:
     - "derive/cuan/2826/"
     - "derive/cui/284/"
     - "derive/cu[no]/286/"
-    - "derive/[def]/3/"
+    - "derive/def/3/"
     - "derive/[df]a/32/"
     - "derive/dai/324/"
     - "derive/[df]an|dao/326/"
     - "derive/[df]ang/3264/"
-    - "derive/de/33/"
+    - "derive/[ed]e/33/"
     - "derive/[df]ei/334/"
     - "derive/[df]en/336/"
     - "derive/[df]eng/3364/"
@@ -233,7 +204,7 @@ speller:
     - "derive/jue|lve/583/"
     - "derive/kui/584/"
     - "derive/[jkl]un|[kl]uo/586/"
-    - "derive/[mno]/6/"
+    - "derive/mno/6/"
     - "derive/[mn]a/62/"
     - "derive/[mn]ai/624/"
     - "derive/[mn]an|[mn]ao/626/"
@@ -250,7 +221,7 @@ speller:
     - "derive/[mn]in/646/"
     - "derive/[mn]ing/6464/"
     - "derive/[mn]iu/648/"
-    - "derive/mo/66/"
+    - "derive/[mo]o/66/"
     - "derive/nong/6664/"
     - "derive/[mn]ou/668/"
     - "derive/[mn]u|nv|ou/68/"
@@ -352,8 +323,8 @@ speller:
     - "derive/zui/984/"
     - "derive/[xyz]un|zuo/986/"
   alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321`/"
-  initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
   delimiter: " '"
+  initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
 switches:
   - name: ascii_mode
     states: ["中", "Ａ"]

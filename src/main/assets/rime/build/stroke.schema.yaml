@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1730283367
-    default.custom: 1730283368
+    default: 1732098899
+    default.custom: 1732098899
     stroke.custom: 0
-    stroke.schema: 1730283368
+    stroke.schema: 1732098899
 abc_segmentor:
   extra_tags:
     - reverse_lookup
@@ -56,6 +56,7 @@ key_binder:
 menu:
   page_size: 9
 punctuator:
+  import_preset: default
   symbols:
     "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
 recognizer:
