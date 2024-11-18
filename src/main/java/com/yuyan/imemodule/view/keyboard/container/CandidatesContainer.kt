@@ -45,7 +45,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     private lateinit var mRVSymbolsView: RecyclerView
     private lateinit var mCandidatesAdapter: CandidatesAdapter
     private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
-    private var activeCandidate = 0
     private var isLoadingMore = false // 正在加载更多
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
         layoutParams = LinearLayout.LayoutParams(
@@ -149,7 +148,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                     if (!isLoadingMore) {
                         isLoadingMore = true
                         val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-                        activeCandidate = lastItem
+                        CustomConstant.activeCandidate = lastItem
                         if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
                             DecodingInfo.nextPageCandidates
                         }
@@ -165,8 +164,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     fun showCandidatesView() {
         if (DecodingInfo.isCandidatesListEmpty) {
-            activeCandidate = 0
-            mRVSymbolsView.scrollToPosition(0)
+            mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
             return
         }
         mCandidatesAdapter.notifyDataSetChanged()
@@ -196,8 +194,8 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             val s = prefixs[position]
             if (isPrefixs) {
                 if (isLetter(s)) {
-                    mRVSymbolsView.scrollToPosition(0)
                     inputView.selectPrefix(position)
+                    mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
                 }
             } else {
                 val softKey = SoftKey(s)

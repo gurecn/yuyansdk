@@ -27,4 +27,5 @@ object CustomConstant {
     const val FEEDBACK_TXC_REPO = "https://txc.qq.com/products/668191"
     var PREFIXS_PINYIN = AppPrefs.getInstance().internal.keyboardPrefixsPinyin.getValue().split(" ").toTypedArray()
     var PREFIXS_NUMBER = AppPrefs.getInstance().internal.keyboardPrefixsNumber.getValue().split(" ").toTypedArray()
+    var activeCandidate = 0  //当前显示候选词位置
 }
