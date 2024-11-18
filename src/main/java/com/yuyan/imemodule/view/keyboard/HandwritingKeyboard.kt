@@ -141,7 +141,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
 
     private fun recognitionData() {
         instance!!.recognitionData(mSBPoint, object:IHandWritingCallBack{
-            override fun onSucess(item:ArrayList<CandidateListItem>){
+            override fun onSucess(item:Array<CandidateListItem>){
                 mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
             }
         })
