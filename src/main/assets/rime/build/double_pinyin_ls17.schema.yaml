@@ -97,7 +97,7 @@ long_word_filter:
   idx: 4
 lunar: nl
 menu:
-  page_size: 10
+  page_size: 50
 punctuator:
   symbols:
     "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]

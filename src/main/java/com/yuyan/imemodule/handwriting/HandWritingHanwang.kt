@@ -39,8 +39,7 @@ class HandWritingHanwang : HandWritingMonitor {
                     val code = jsonObject1.optInt("code")
                     if (code == 0) {
                         val result = jsonObject1.optString("result")
-                        val results =
-                            result.split(",0,".toRegex()).dropLastWhile { it.isEmpty() }
+                        val results = result.split(",0,".toRegex()).dropLastWhile { it.isEmpty() }
                         val recogResultItems = ArrayList<CandidateListItem>()
                         for (can in results) {
                             val cans = can.split(",".toRegex()).dropLastWhile { it.isEmpty() }
@@ -50,7 +49,7 @@ class HandWritingHanwang : HandWritingMonitor {
                             }
                             recogResultItems.add(CandidateListItem("", sb.toString()))
                         }
-                        recogResultData?.onSucess(recogResultItems)
+                        recogResultData?.onSucess(recogResultItems.toTypedArray())
                     }
                 } catch (ignored: JSONException) {
                 }

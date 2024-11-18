@@ -53,7 +53,7 @@ object Kernel {
         get() {
             return showCandidates
         }
-    val nextPageCandidates: List<CandidateListItem>
+    val nextPageCandidates: Array<CandidateListItem>
         get() {
             return getNextPageCandidates()
         }

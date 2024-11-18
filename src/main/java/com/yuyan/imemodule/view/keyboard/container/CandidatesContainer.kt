@@ -169,9 +169,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             mRVSymbolsView.scrollToPosition(0)
             return
         }
-        if(DecodingInfo.candidateSize == 10){
-           DecodingInfo.nextPageCandidates
-        }
         mCandidatesAdapter.notifyDataSetChanged()
         if (InputModeSwitcherManager.isChineseT9) {
             mRVLeftPrefix.visibility = VISIBLE

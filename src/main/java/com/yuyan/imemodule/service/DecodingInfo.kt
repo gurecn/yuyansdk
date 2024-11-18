@@ -104,7 +104,7 @@ object DecodingInfo {
     fun chooseDecodingCandidate(candId: Int): String {
         return if (Kernel.unHandWriting()) {
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
-            candidatesLiveData.postValue(calculateColumn(Kernel.candidates.asList()))
+            candidatesLiveData.postValue(calculateColumn(Kernel.candidates))
             Kernel.commitText
         } else if(candId in 0..<candidateSize){
             val choice = candidatesLiveData.value!![candId].text
@@ -121,12 +121,12 @@ object DecodingInfo {
     }
 
     // 更新候选词
-    fun cacheCandidates(words: ArrayList<CandidateListItem>) {
+    fun cacheCandidates(words: Array<CandidateListItem>) {
         isReset = false
         candidatesLiveData.postValue(calculateColumn(words))
     }
 
-    private fun calculateColumn(list:List<CandidateListItem>):List<Candidate> {
+    private fun calculateColumn(list:Array<CandidateListItem>):List<Candidate> {
         val candidatesTemp = list.map { (comment, text) ->
             Candidate(comment, text, 0)
         }

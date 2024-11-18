@@ -71,18 +71,11 @@ object RimeEngine {
         return updateCandidatesOrCommitText()
     }
 
-    fun getNextPageCandidates(): List<CandidateListItem> {
-        val candidates = mutableListOf<CandidateListItem>()
-        for(i in 0..4){
-            if (Rime.hasRight()) {
-                Rime.processKey(getRimeKeycodeByName("Page_Down"), 0)
-                val caned = Rime.getRimeContext()!!.candidates
-                candidates.addAll(caned.asList())
-            } else {
-                break
-            }
-        }
-        return candidates
+    fun getNextPageCandidates(): Array<CandidateListItem> {
+        return if (Rime.hasRight()) {
+            Rime.processKey(getRimeKeycodeByName("Page_Down"), 0)
+            Rime.getRimeContext()!!.candidates
+        } else emptyArray()
     }
 
     fun selectPinyin(index: Int) {

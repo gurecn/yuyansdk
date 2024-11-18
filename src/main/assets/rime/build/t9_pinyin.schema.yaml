@@ -77,7 +77,7 @@ long_word_filter:
   idx: 4
 lunar: 65
 menu:
-  page_size: 10
+  page_size: 50
 punctuator:
   symbols:
     "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]

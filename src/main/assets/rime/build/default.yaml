@@ -19,7 +19,7 @@ key_binder:
   select_first_character: bracketleft
   select_last_character: bracketright
 menu:
-  page_size: 10
+  page_size: 50
 punctuator:
   {}
 recognizer:

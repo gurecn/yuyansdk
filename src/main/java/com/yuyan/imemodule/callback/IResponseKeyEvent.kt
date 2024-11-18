@@ -6,5 +6,5 @@ import com.yuyan.inputmethod.core.CandidateListItem
 interface IResponseKeyEvent {
     fun responseKeyEvent(sKey: SoftKey, isFeedback:Boolean = true)
     fun responseLongKeyEvent(sKey: SoftKey?, showText: String?)
-    fun responseHandwritingResultEvent(words: ArrayList<CandidateListItem>)
+    fun responseHandwritingResultEvent(words: Array<CandidateListItem>)
 }
