@@ -55,7 +55,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private var mMenuHeight: Int = 0
     private var mMenuPadding: Int = 0
     private var mLastMenuHeight: Int = 0
-    private var activeCandidate = 0
 
     fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
@@ -103,7 +102,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                        activeCandidate = lastVisibleItemPosition
+                        CustomConstant.activeCandidate = lastVisibleItemPosition
                         val itemCount = recyclerView.adapter?.itemCount
                         if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && lastVisibleItemPosition >= itemCount - 1) {
                             DecodingInfo.nextPageCandidates
@@ -242,9 +241,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             showViewVisibility(mCandidatesMenuContainer)
             mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
         } else if (DecodingInfo.isCandidatesListEmpty) {
-            activeCandidate = 0
-            mRVCandidates.layoutManager?.scrollToPosition(0)
-            mRVCandidates.layoutManager?.scrollToPosition(0)
+            mRVCandidates.layoutManager?.scrollToPosition(CustomConstant.activeCandidate)
             mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()

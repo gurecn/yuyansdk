@@ -47,7 +47,6 @@ import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
@@ -201,8 +200,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
         updateTheme()
         DecodingInfo.candidatesLiveData.observe(/* owner = */ this){ _ ->
-
-            LogUtil.d("11111111111", "InputView  observe  ${DecodingInfo.candidateSize}")
             updateCandidateBar()
             (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
         }
