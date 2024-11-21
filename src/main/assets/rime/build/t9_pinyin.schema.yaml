@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1732098899
-    default.custom: 1732098899
+    default: 1732162725
+    default.custom: 1732162725
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1732098899
+    t9_pinyin.schema: 1732162725
 corrector: "{comment}"
 custom_phrase:
   db_class: stabledb
@@ -93,8 +93,8 @@ speller:
   algebra:
     - "abbrev/^([a-z]).+$/$1/"
     - "abbrev/^([zcs]h).+$/$1/"
-    - "derive/abc/2/"
-    - "derive/[abc]a/22/"
+    - "derive/[abc]/2/"
+    - "derive/[bc]a/22/"
     - "derive/[bc]ai/224/"
     - "derive/[bc]an|[bc]ao/226/"
     - "derive/[bc]ang/2264/"
@@ -132,12 +132,12 @@ speller:
     - "derive/cuan/2826/"
     - "derive/cui/284/"
     - "derive/cu[no]/286/"
-    - "derive/def/3/"
+    - "derive/[def]/3/"
     - "derive/[df]a/32/"
     - "derive/dai/324/"
     - "derive/[df]an|dao/326/"
     - "derive/[df]ang/3264/"
-    - "derive/[ed]e/33/"
+    - "derive/de/33/"
     - "derive/[df]ei/334/"
     - "derive/[df]en/336/"
     - "derive/[df]eng/3364/"
@@ -204,7 +204,7 @@ speller:
     - "derive/jue|lve/583/"
     - "derive/kui/584/"
     - "derive/[jkl]un|[kl]uo/586/"
-    - "derive/mno/6/"
+    - "derive/[mno]/6/"
     - "derive/[mn]a/62/"
     - "derive/[mn]ai/624/"
     - "derive/[mn]an|[mn]ao/626/"
@@ -221,7 +221,7 @@ speller:
     - "derive/[mn]in/646/"
     - "derive/[mn]ing/6464/"
     - "derive/[mn]iu/648/"
-    - "derive/[mo]o/66/"
+    - "derive/mo/66/"
     - "derive/nong/6664/"
     - "derive/[mn]ou/668/"
     - "derive/[mn]u|nv|ou/68/"
