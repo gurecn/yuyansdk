@@ -31,7 +31,7 @@ import kotlin.math.roundToInt
  * @param ctx [Context]
  * @param theme [Theme]
  * @param bounds bound [Rect] of popup trigger view. Used to calculate free space of both sides and
- * determine column order. See [focusColumn] and [columnOrder].
+ * determine column order. See [focusColumn].
  * @param onDismissSelf callback when popup keyboard wants to close
  * @param radius popup keyboard and key radius
  * @param keyWidth key width in popup keyboard
@@ -144,7 +144,7 @@ class PopupKeyboardUi(
     override val offsetX = ((bounds.width() - keyWidth) / 2) - (keyWidth * focusColumn)
     override val offsetY = (bounds.height() - popupHeight) - (keyHeight * (rowCount - 1))
 
-    private val columnOrder = createColumnOrder(columnCount, focusColumn)
+//    private val columnOrder = createColumnOrder(columnCount, focusColumn)
 
     /**
      * row with smaller index displays at bottom.
@@ -160,7 +160,7 @@ class PopupKeyboardUi(
      * in which `0` indicates default focus
      */
     private val keyOrders = Array(rowCount) { row ->
-        IntArray(columnCount) { col -> row * columnCount + columnOrder[col] }
+        IntArray(columnCount) { col -> row * columnCount + col }
     }
 
     private var focusedIndex = keyOrders[focusRow][focusColumn]
