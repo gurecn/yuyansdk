@@ -77,15 +77,15 @@ val PopupPreset: Map<String, Array<String>> = hashMapOf(
     //
     // T9
     //
-    "分词" to arrayOf("'", "‘","’"),
-    "ABC" to arrayOf("A", "B", "C", "a", "b", "c"),
-    "DEF" to arrayOf("D", "E", "F", "d", "e", "f"),
-    "GHI" to arrayOf("G", "H", "I", "g", "h", "i"),
-    "JKL" to arrayOf("J", "K", "L", "j", "k", "l"),
-    "MNO" to arrayOf("M", "N", "O", "m", "n", "o"),
-    "PQRS" to arrayOf("P", "Q", "R", "S", "p", "q", "r", "s"),
-    "TUV" to arrayOf("T", "U", "V", "t", "u", "v"),
-    "WXYZ" to arrayOf("W", "X", "Y", "Z", "w", "x", "y", "z"),
+    "分词" to arrayOf("'", "‘","’", "¹"),
+    "ABC" to arrayOf("A", "B", "C", "²", "a", "b", "c"),
+    "DEF" to arrayOf("D", "E", "F", "³", "d", "e", "f"),
+    "GHI" to arrayOf("G", "H", "I", "⁴", "g", "h", "i"),
+    "JKL" to arrayOf("J", "K", "L", "⁵", "j", "k", "l"),
+    "MNO" to arrayOf("M", "N", "O", "⁶", "m", "n", "o"),
+    "PQRS" to arrayOf("P", "Q", "R", "S", "⁷", "p", "q", "r", "s"),
+    "TUV" to arrayOf("T", "U", "V", "⁸", "t", "u", "v"),
+    "WXYZ" to arrayOf("W", "X", "Y", "Z", "⁹", "w", "x", "y", "z"),
 
     //
     // LX17
