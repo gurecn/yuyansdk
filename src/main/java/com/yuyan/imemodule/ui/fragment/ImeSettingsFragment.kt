@@ -34,6 +34,11 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.drawable.ic_baseline_language_24,
                     R.id.action_settingsFragment_to_inputSettingsFragment
                 )
+                addDestinationPreference(
+                    R.string.ime_settings_handwriting,
+                    R.drawable.ic_baseline_handwriting_24,
+                    R.id.action_settingsFragment_to_handwritingSettingsFragment
+                )
             }
             addCategory(R.string.keyboard) {
                 isIconSpaceReserved = false
@@ -56,6 +61,12 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.string.clipboard,
                     R.drawable.ic_clipboard,
                     R.id.action_settingsFragment_to_clipboardSettingsFragment
+                )
+
+                addDestinationPreference(
+                    R.string.full_display_keyboard,
+                    R.drawable.baseline_keyboard_full_24,
+                    R.id.action_settingsFragment_to_fullDisplayKeyboardFragment
                 )
             }
             addCategory(R.string.advanced) {

@@ -3,6 +3,7 @@
     <!-- xml 解析 -->
     <color name="skb_key_text_color">#000000</color>
     <color name="skb_shadow_bg_color">#cc091424</color>
+    <color name="color_1488CC">#1488CC</color>
     <color name="skb_shadow_icon_color">#bfbfbf</color>
     <color name="red_400">#EF5350</color>
 </resources>

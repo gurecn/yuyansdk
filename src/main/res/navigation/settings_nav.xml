@@ -34,6 +34,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         <action
             android:id="@+id/action_settingsFragment_to_sidebarSymbolFragment"
             app:destination="@id/sidebarSymbolFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_fullDisplayKeyboardFragment"
+            app:destination="@id/fullDisplayKeyboardFragment" />
     </fragment>
     <fragment
         android:id="@+id/sidebarSymbolFragment"
@@ -87,4 +90,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/keyboardSettingFragment"
         android:name="com.yuyan.imemodule.ui.fragment.KeyboardSettingFragment"
         android:label="@string/setting_ime_keyboard" />
+    <fragment
+        android:id="@+id/fullDisplayKeyboardFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.FullDisplayKeyboardFragment"
+        android:label="@string/full_display_keyboard" />
 </navigation>

@@ -99,6 +99,9 @@
     <string name="build_type_offline">离线版</string>
     <string name="build_type_online">联网版</string>
     <string name="clipboard">剪贴板</string>
+    <string name="full_display_keyboard">全面屏键盘优化</string>
+    <string name="keyboard_full_display_advanced_tip">多功能键盘</string>
+    <string name="keyboard_full_display_normal_tip">普通键盘</string>
     <string name="phrases">常用语</string>
     <string name="add_phrases">增加常用语</string>
     <string name="add_phrases_input_hint">输入常用内容</string>
