@@ -1010,7 +1010,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             isAddPhrases = false
             initView(context)
         } else {
-            service.requestHideSelf(InputMethodManager.HIDE_NOT_ALWAYS)
+            service.requestHideSelf(0)
         }
     }
 
