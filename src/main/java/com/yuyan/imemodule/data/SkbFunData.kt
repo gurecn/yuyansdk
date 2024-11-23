@@ -10,7 +10,6 @@ val commonSkbFuns = arrayOf(
     SkbMenuMode.Settings.name,
     SkbMenuMode.JianFan.name,
     SkbMenuMode.ClipBoard.name,
-    SkbMenuMode.SwitchKeyboard.name,
     SkbMenuMode.EmojiKeyboard.name,
 )
 
