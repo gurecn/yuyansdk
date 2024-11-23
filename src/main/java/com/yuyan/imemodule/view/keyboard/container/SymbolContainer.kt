@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -154,9 +156,11 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         val data = mSymbolsEmoji.keys.toList()
         TabLayoutMediator(tabLayout, mVPSymbolsView) { tab, position ->
             tab.view.background = null
-            tab.icon = ContextCompat.getDrawable(context,data[position].icon).apply {
-                this?.setTint(activeTheme.keyTextColor)
-            }
+            tab.setCustomView(ImageView(context).apply {
+                setImageDrawable(ContextCompat.getDrawable(context,data[position].icon).apply {
+                    this?.setTint(activeTheme.keyTextColor)
+                })
+            })
         }.attach()
         mVPSymbolsView.currentItem = pos
     }
