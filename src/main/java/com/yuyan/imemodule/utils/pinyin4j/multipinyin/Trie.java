@@ -6,10 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Hashtable;
 
-/**
- * Created by 刘一波 on 16/3/4.
- * E-Mail:yibo.liu@tqmall.com
- */
 public class Trie {
 
     private Hashtable<String, Trie> values = new Hashtable<String, Trie>();//本节点包含的值
