@@ -16,7 +16,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -172,7 +171,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
         mLlKeyboardBottomHolder.removeAllViews()
-        if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()){
+        if(EnvironmentSingleton.instance.keyboardModeFloat){
             mBottomPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
                 else getInstance().internal.keyboardBottomPaddingFloat)
             mRightPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscapeFloat
@@ -228,7 +227,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                         EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width
                     } else rightPaddingValue
                     initialTouchX = event.rawX
-                    if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
+                    if(EnvironmentSingleton.instance.keyboardModeFloat) {
                         rightPadding = rightPaddingValue
                     } else {
                         mSkbRoot.rightPadding = rightPaddingValue
@@ -241,7 +240,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                         EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height
                     } else bottomPaddingValue
                     initialTouchY = event.rawY
-                    if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue()) {
+                    if(EnvironmentSingleton.instance.keyboardModeFloat) {
                         bottomPadding = bottomPaddingValue
                     } else {
                         mSkbRoot.bottomPadding = bottomPaddingValue
@@ -880,13 +879,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.FloatKeyboard -> {
-                if(!EnvironmentSingleton.instance.isLandscape) {  // 横屏强制悬浮键盘，暂不支持关闭
-                    val keyboardModeFloat = getInstance().keyboardSetting.keyboardModeFloat.getValue()
-                    getInstance().keyboardSetting.keyboardModeFloat.setValue(!keyboardModeFloat)
-                    EnvironmentSingleton.instance.initData()
-                    KeyboardLoaderUtil.instance.clearKeyboardMap()
-                    KeyboardManager.instance.clearKeyboard()
-                }
+                val keyboardModeFloat = EnvironmentSingleton.instance.keyboardModeFloat
+                EnvironmentSingleton.instance.keyboardModeFloat = !keyboardModeFloat
+                EnvironmentSingleton.instance.initData()
+                KeyboardLoaderUtil.instance.clearKeyboardMap()
+                KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
@@ -1132,7 +1129,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.isLandscape || getInstance().keyboardSetting.keyboardModeFloat.getValue())  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.keyboardModeFloat)  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
     }

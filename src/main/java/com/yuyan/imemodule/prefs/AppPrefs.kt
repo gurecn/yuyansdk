@@ -27,7 +27,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val inputMethodPinyinMode = int("input_method_pinyin_mode", InputModeSwitcherManager.MODE_T9_CHINESE)  // 保存中文输入法类型
         val dataDictVersion = int("rime_dict_data_version", 0)  //缓存rime词库版本号,用于校验是否覆盖词库文件
         val keyboardHeightRatio = float("keyboard_height_ratio", 0.3f)     //键盘高度比例
-        val keyboardHolderWidthRatio = float("keyboard_holder_width_ratio", 0.2f)     //键盘占位宽度比例，单手模式
+        val keyboardHeightRatioLandscape = float("keyboard_height_ratio_landscape", 0.5f)     //键盘高度比例:横屏
+        val keyboardModeFloat = bool("keyboard_mode_float", false)     // 悬浮模式
+        val keyboardModeFloatLandscape = bool("keyboard_mode_float_landscape", false)// 悬浮模式:横屏
         val keyboardBottomPaddingFloat = int("keyboard_padding_bottom", DevicesUtils.dip2px(100))     //竖屏悬浮模式底边距
         val keyboardRightPaddingFloat = int("keyboard_padding_right", DevicesUtils.dip2px(20))     //竖屏悬浮模式右边距
         val keyboardBottomPaddingLandscapeFloat = int("keyboard_padding_bottom_landscape", DevicesUtils.dip2px(50))     //横屏悬浮模式底边距
@@ -195,11 +197,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
         val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
-
-//        val switchIMEKey = switch(R.string.keyboard_key_switch_ime, "keyboard_key_switch_ime_enable", true)
-
-        // 悬浮键盘
-        val keyboardModeFloat = switch(R.string.keyboard_menu_float, "keyboard_mode_float", false)
 
         val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
 
