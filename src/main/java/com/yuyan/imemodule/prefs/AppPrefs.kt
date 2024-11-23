@@ -44,12 +44,11 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardPrefixsPinyin = string("keyboard_prefixs_pinyin", "， 。 ？ ！ …… ： ； .")     //拼音侧栏符号
         val keyboardPrefixsNumber = string("keyboard_prefixs_number", "% / - + * # @")     //数字侧栏符号
 
-
         val keyboardLockSymbol = bool("keyboard_lock_symbol", false)     //锁定符号键盘
-
 
         val clipboardUpdateTime = long("clipboard_update_time", 0)     //剪切板更新时间
         val clipboardUpdateContent = string("clipboard_update_content","")     //剪切板更新内容
+        val fullDisplayKeyboardEnable = bool("full_display_keyboard_enable", true)     //全面屏键盘优化
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
