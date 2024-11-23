@@ -186,10 +186,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, view: View?, position: Int ->
                 val skbMenuMode = mCandidatesMenuAdapter.getMenuMode(position)
-                if(skbMenuMode != null) {
-                    onClickMenu(skbMenuMode, view)
-                    mCandidatesMenuAdapter.notifyDataSetChanged()
-                }
+                if(skbMenuMode != null) onClickMenu(skbMenuMode, view)
             }
             mRVContainerMenu.setAdapter(mCandidatesMenuAdapter)
             mCandidatesMenuContainer.addView(mIvMenuSetting, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
@@ -197,6 +194,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCandidatesMenuContainer.addView(mRVContainerMenu, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, mMenuHeight, 1f))
             this.addView(mCandidatesMenuContainer, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
+        mCandidatesMenuAdapter.notifyDataSetChanged()  // 点击下拉菜单后，需要刷新菜单栏
     }
 
     private fun onClickMenu(skbMenuMode: SkbMenuMode, view: View?) {
@@ -296,6 +294,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mRightArrowBtn.drawable.setTint(textColor)
         mIvMenuSetting.drawable.setTint(textColor)
         mCandidatesAdapter.updateTextColor(textColor)
+        mCandidatesMenuAdapter.notifyDataSetChanged()
         mFlowerType.setTextColor(textColor)
     }
 }
