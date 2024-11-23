@@ -4,6 +4,11 @@ import android.util.Base64
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.callback.IHandWritingCallBack
 import com.yuyan.imemodule.network.NativeMethods
+import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
+import com.yuyan.imemodule.utils.pinyin4j.format.HanyuPinyinCaseType
+import com.yuyan.imemodule.utils.pinyin4j.format.HanyuPinyinOutputFormat
+import com.yuyan.imemodule.utils.pinyin4j.format.HanyuPinyinToneType
+import com.yuyan.imemodule.utils.pinyin4j.format.HanyuPinyinVCharType
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import org.json.JSONException
@@ -11,9 +16,13 @@ import org.json.JSONObject
 import java.util.Collections
 
 class HandWritingHanwang : HandWritingMonitor {
-
+    private lateinit var mHanyuPinyinOutputFormat:HanyuPinyinOutputFormat
     override fun initHdw(): Boolean {
         nativeMethods.nativeHttpInit(ImeSdkApplication.context, 0)
+        mHanyuPinyinOutputFormat = HanyuPinyinOutputFormat()
+        mHanyuPinyinOutputFormat.caseType = HanyuPinyinCaseType.LOWERCASE
+        mHanyuPinyinOutputFormat.toneType = HanyuPinyinToneType.WITH_TONE_MARK
+        mHanyuPinyinOutputFormat.vCharType = HanyuPinyinVCharType.WITH_U_UNICODE
         return true
     }
     override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
@@ -47,7 +56,8 @@ class HandWritingHanwang : HandWritingMonitor {
                             for (ca in cans) {
                                 sb.append(Integer.parseInt(ca).toChar())
                             }
-                            recogResultItems.add(CandidateListItem("", sb.toString()))
+                            val candidate = sb.toString()
+                            recogResultItems.add(CandidateListItem(PinyinHelper.toHanYuPinyin(candidate, mHanyuPinyinOutputFormat, "'"), candidate))
                         }
                         recogResultData?.onSucess(recogResultItems.toTypedArray())
                     }

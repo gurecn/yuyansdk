@@ -87,7 +87,7 @@ object DecodingInfo {
         get() = if(Kernel.unHandWriting()) Kernel.isFinish else isCandidatesListEmpty || isReset
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
-        get() = Kernel.wordsShowPinyin
+        get() = if(Kernel.unHandWriting())Kernel.wordsShowPinyin else if(candidateSize > 0) candidates[0].comment else ""
 
     val composingStrForCommit: String   // 获取输入的拼音字符串
         get() = Kernel.wordsShowPinyin.replace("'", "")
