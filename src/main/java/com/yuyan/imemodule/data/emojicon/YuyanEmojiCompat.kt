@@ -80,10 +80,6 @@ object YuyanEmojiCompat {
                 super.onInitialized()
                 publishedInstanceFlow.value = instance
             }
-
-            override fun onFailed(throwable: Throwable?) {
-                super.onFailed(throwable)
-            }
         }
 
         private val config: EmojiCompat.Config? = DefaultEmojiCompatConfig.create(context)?.apply {

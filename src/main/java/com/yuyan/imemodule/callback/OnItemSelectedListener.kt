@@ -1,5 +1,5 @@
 package com.yuyan.imemodule.callback
 
-interface OnItemSelectedListener {
+fun interface OnItemSelectedListener {
     fun onItemSelected(position: Int)
 }

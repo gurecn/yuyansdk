@@ -140,11 +140,9 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     private fun recognitionData() {
-        instance!!.recognitionData(mSBPoint, object:IHandWritingCallBack{
-            override fun onSucess(item:Array<CandidateListItem>){
-                mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
-            }
-        })
+        instance!!.recognitionData(mSBPoint) {
+            item -> mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
+        }
     }
 
     override fun onPress(key: SoftKey) {  // 手写界面点击按键时先选择第一个候选词，然后在按键释放时响应onRelease按键。

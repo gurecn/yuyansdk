@@ -64,24 +64,21 @@ class FullDisplayKeyboardFragment: Fragment(){
         items = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             addView(Item(context, R.array.FullDisplayKeyMode).apply {
-                title.setText("左侧功能键")
-                onItemSelected = object :OnItemSelectedListener{
-                    override fun onItemSelected(position: Int) {
-                    }
+                title.setText(R.string.keyboard_full_display_key_left)
+                onItemSelected = OnItemSelectedListener{
+
                 }
             }, lParams(width = matchParent, height = wrapContent))
             addView(Item(context, R.array.FullDisplayKeyMode).apply {
-                title.setText("右侧功能键")
-                onItemSelected = object :OnItemSelectedListener{
-                    override fun onItemSelected(position: Int) {
-                    }
+                title.setText(R.string.keyboard_full_display_key_right)
+                onItemSelected = OnItemSelectedListener{
+
                 }
             }, lParams(width = matchParent, height = wrapContent))
             addView(Item(context, R.array.FullDisplayCenterKeyMode).apply {
-                title.setText("中部区域")
-                onItemSelected = object :OnItemSelectedListener{
-                    override fun onItemSelected(position: Int) {
-                    }
+                title.setText(R.string.keyboard_full_display_key_center)
+                onItemSelected = OnItemSelectedListener{
+
                 }
             }, lParams(width = matchParent, height = wrapContent))
         }

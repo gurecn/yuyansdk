@@ -102,6 +102,9 @@
     <string name="full_display_keyboard">全面屏键盘优化</string>
     <string name="keyboard_full_display_advanced_tip">多功能键盘</string>
     <string name="keyboard_full_display_normal_tip">普通键盘</string>
+    <string name="keyboard_full_display_key_left">左侧功能键</string>
+    <string name="keyboard_full_display_key_right">右侧功能键</string>
+    <string name="keyboard_full_display_key_center">中间区域</string>
     <string name="phrases">常用语</string>
     <string name="add_phrases">增加常用语</string>
     <string name="add_phrases_input_hint">输入常用内容</string>
