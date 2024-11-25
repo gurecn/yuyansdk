@@ -30,4 +30,16 @@
         <item>"͟=͟͟起=͟风͟͞͞͞"</item>
         <item>"关闭"</item>
     </string-array>
+
+    <string-array name="FullDisplayKeyMode">
+        <item>"切换输入法"</item>
+        <item>"切换语言"</item>
+        <item>"剪贴板和常用语"</item>
+        <item>"无功能"</item>
+    </string-array>
+    <string-array name="FullDisplayCenterKeyMode">
+        <item>"快速移动光标"</item>
+        <item>"编辑输入字符"</item>
+        <item>"无功能"</item>
+    </string-array>
 </resources>
