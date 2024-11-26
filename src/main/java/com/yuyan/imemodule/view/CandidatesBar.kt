@@ -258,6 +258,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             showViewVisibility(mCandidatesDataContainer)
             if(DecodingInfo.isAssociate) mRightArrowBtn.drawable.setLevel(2)
         }
+        mCandidatesAdapter.notifyDataSetChanged()
+        mCandidatesMenuAdapter.notifyDataSetChanged()
     }
 
     /**

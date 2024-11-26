@@ -23,6 +23,7 @@ import com.yuyan.imemodule.callback.OnItemSelectedListener
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
 import splitties.resources.color
 import splitties.views.dsl.core.add
@@ -65,7 +66,7 @@ class FullDisplayKeyboardFragment: Fragment(){
 
         items = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            val keyModes = arrayOf(FullDisplayKeyMode.SwitchIme, FullDisplayKeyMode.SwitchLanguage, FullDisplayKeyMode.Clipboard, FullDisplayKeyMode.None)
+            val keyModes = arrayOf(FullDisplayKeyMode.SwitchIme, FullDisplayKeyMode.SwitchLanguage, FullDisplayKeyMode.Clipboard, FullDisplayKeyMode.Phrases, FullDisplayKeyMode.None)
             val fullDisplayKeyLeft = AppPrefs.getInstance().internal.fullDisplayKeyModeLeft.getValue()
             addView(Item(context, R.array.FullDisplayKeyMode, FullDisplayKeyMode.decode(fullDisplayKeyLeft).ordinal).apply {
                 title.setText(R.string.keyboard_full_display_key_left)
@@ -166,5 +167,10 @@ class FullDisplayKeyboardFragment: Fragment(){
             add(title, lParams(width = 0,height = wrapContent, weight = 1f))
             add(spinner, lParams(width = wrapContent,height = wrapContent, weight = 0f))
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        KeyboardManager.instance.clearKeyboard();
     }
 }

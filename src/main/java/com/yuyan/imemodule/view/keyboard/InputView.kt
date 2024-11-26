@@ -50,6 +50,7 @@ import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
+import com.yuyan.imemodule.view.FullDisplayKeyboardBar
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
@@ -72,7 +73,6 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import kotlin.math.absoluteValue
-
 
 /**
  * 输入法主界面。
@@ -128,6 +128,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
             mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
+            mLlKeyboardBottomHolder.minimumWidth = EnvironmentSingleton.instance.skbWidth
             mComposingView = ComposingView(context)
             mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
 
@@ -189,6 +190,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mLlKeyboardBottomHolder.addView(mIvKeyboardMove)
             mIvKeyboardMove.setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
         } else {
+            val fullDisplayKeyboardEnable = getInstance().internal.fullDisplayKeyboardEnable.getValue()
+            if(fullDisplayKeyboardEnable){
+                val mFullDisplayKeyboardBar = FullDisplayKeyboardBar(context, this)
+                mLlKeyboardBottomHolder.addView(mFullDisplayKeyboardBar)
+            }
             bottomPadding = 0
             rightPadding = 0
             mBottomPaddingKey =  getInstance().internal.keyboardBottomPadding
