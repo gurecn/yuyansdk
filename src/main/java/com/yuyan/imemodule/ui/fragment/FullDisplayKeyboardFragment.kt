@@ -113,7 +113,6 @@ class FullDisplayKeyboardFragment: Fragment(){
             }
             addView(tip)
             setOnClickListener { view: View? ->
-                icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_anim_reduce_90))
                 updateView(true)
                 mOnClickListener?.onClick(view)
             }
@@ -121,6 +120,7 @@ class FullDisplayKeyboardFragment: Fragment(){
 
         fun updateView(isSelect:Boolean){
             if(isSelect){
+                icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_anim_reduce_90))
                 setBackgroundResource(R.drawable.shape_select_rectangle)
                 tip.setTextColor(ImeSdkApplication.context.color(R.color.color_1488CC))
             } else {
