@@ -15,6 +15,8 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
+import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.utils.DevicesUtils
 
@@ -49,6 +51,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val clipboardUpdateTime = long("clipboard_update_time", 0)     //剪切板更新时间
         val clipboardUpdateContent = string("clipboard_update_content","")     //剪切板更新内容
         val fullDisplayKeyboardEnable = bool("full_display_keyboard_enable", true)     //全面屏键盘优化
+        val fullDisplayKeyModeLeft = string("full_display_key_mode_left", FullDisplayKeyMode.SwitchIme.name)     //全面屏键盘优化:左键盘
+        val fullDisplayKeyModeRight = string("full_display_key_mode_right", FullDisplayKeyMode.Clipboard.name)     //全面屏键盘优化：右键盘
+        val fullDisplayCenterMode = string("full_display_center_mode", FullDisplayCenterMode.MoveCursor.name)     //全面屏键盘优化：中间区域
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {

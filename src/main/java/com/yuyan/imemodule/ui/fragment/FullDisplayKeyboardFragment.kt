@@ -21,6 +21,8 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.callback.OnItemSelectedListener
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
+import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
 import splitties.dimensions.dp
 import splitties.resources.color
 import splitties.views.dsl.core.add
@@ -63,22 +65,28 @@ class FullDisplayKeyboardFragment: Fragment(){
 
         items = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            addView(Item(context, R.array.FullDisplayKeyMode).apply {
+            val keyModes = arrayOf(FullDisplayKeyMode.SwitchIme, FullDisplayKeyMode.SwitchLanguage, FullDisplayKeyMode.Clipboard, FullDisplayKeyMode.None)
+            val fullDisplayKeyLeft = AppPrefs.getInstance().internal.fullDisplayKeyModeLeft.getValue()
+            addView(Item(context, R.array.FullDisplayKeyMode, FullDisplayKeyMode.decode(fullDisplayKeyLeft).ordinal).apply {
                 title.setText(R.string.keyboard_full_display_key_left)
                 onItemSelected = OnItemSelectedListener{
-
+                    AppPrefs.getInstance().internal.fullDisplayKeyModeLeft.setValue(keyModes[it].name)
                 }
             }, lParams(width = matchParent, height = wrapContent))
-            addView(Item(context, R.array.FullDisplayKeyMode).apply {
+            val fullDisplayKeyRight = AppPrefs.getInstance().internal.fullDisplayKeyModeRight.getValue()
+            addView(Item(context, R.array.FullDisplayKeyMode, FullDisplayKeyMode.decode(fullDisplayKeyRight).ordinal).apply {
                 title.setText(R.string.keyboard_full_display_key_right)
                 onItemSelected = OnItemSelectedListener{
-
+                    AppPrefs.getInstance().internal.fullDisplayKeyModeRight.setValue(keyModes[it].name)
                 }
             }, lParams(width = matchParent, height = wrapContent))
-            addView(Item(context, R.array.FullDisplayCenterKeyMode).apply {
+
+            val centerModes = arrayOf(FullDisplayCenterMode.MoveCursor, FullDisplayCenterMode.MovePinyin,  FullDisplayCenterMode.None)
+            val fullDisplayCenter = AppPrefs.getInstance().internal.fullDisplayCenterMode.getValue()
+            addView(Item(context, R.array.FullDisplayCenterKeyMode, FullDisplayCenterMode.decode(fullDisplayCenter).ordinal).apply {
                 title.setText(R.string.keyboard_full_display_key_center)
                 onItemSelected = OnItemSelectedListener{
-
+                    AppPrefs.getInstance().internal.fullDisplayCenterMode.setValue(centerModes[it].name)
                 }
             }, lParams(width = matchParent, height = wrapContent))
         }
@@ -131,7 +139,7 @@ class FullDisplayKeyboardFragment: Fragment(){
     }
 
     @SuppressLint("ViewConstructor")
-    class Item(context: Context?, keyModId:Int):LinearLayout(context) {
+    class Item(context: Context?, keyModId:Int, select:Int):LinearLayout(context) {
         val title: TextView
         var onItemSelected: OnItemSelectedListener? = null
         init {
@@ -154,6 +162,7 @@ class FullDisplayKeyboardFragment: Fragment(){
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+            spinner.setSelection(select)
             add(title, lParams(width = 0,height = wrapContent, weight = 1f))
             add(spinner, lParams(width = wrapContent,height = wrapContent, weight = 0f))
         }
