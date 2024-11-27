@@ -128,7 +128,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
             KeyboardManager.instance.setData(mIvcSkbContainer, this)
             mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
-            mLlKeyboardBottomHolder.minimumWidth = EnvironmentSingleton.instance.skbWidth
             mComposingView = ComposingView(context)
             mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
 
@@ -172,6 +171,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
         }
         mLlKeyboardBottomHolder.removeAllViews()
+        mLlKeyboardBottomHolder.layoutParams.width = EnvironmentSingleton.instance.skbWidth
         if(EnvironmentSingleton.instance.keyboardModeFloat){
             mBottomPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
                 else getInstance().internal.keyboardBottomPaddingFloat)
