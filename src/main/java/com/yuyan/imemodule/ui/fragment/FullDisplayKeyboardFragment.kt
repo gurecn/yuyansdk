@@ -82,7 +82,7 @@ class FullDisplayKeyboardFragment: Fragment(){
                 }
             }, lParams(width = matchParent, height = wrapContent))
 
-            val centerModes = arrayOf(FullDisplayCenterMode.MoveCursor, FullDisplayCenterMode.MovePinyin,  FullDisplayCenterMode.None)
+            val centerModes = arrayOf(FullDisplayCenterMode.MoveCursor, FullDisplayCenterMode.None)
             val fullDisplayCenter = AppPrefs.getInstance().internal.fullDisplayCenterMode.getValue()
             addView(Item(context, R.array.FullDisplayCenterKeyMode, FullDisplayCenterMode.decode(fullDisplayCenter).ordinal).apply {
                 title.setText(R.string.keyboard_full_display_key_center)

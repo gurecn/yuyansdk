@@ -4,7 +4,7 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 
 enum class FullDisplayCenterMode {
     MoveCursor,
-    MovePinyin,
+//    MovePinyin,
     None;
 
     companion object : ManagedPreference.StringLikeCodec<FullDisplayCenterMode> {
