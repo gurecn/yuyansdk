@@ -145,6 +145,7 @@ val PopupSmallPreset: Map<String, Array<String>> = hashMapOf(
     "?" to arrayOf("?"),
     "!" to arrayOf("!"),
     "…" to arrayOf("…"),
+    "*" to arrayOf("*"),
     //
     // 全角
     //
