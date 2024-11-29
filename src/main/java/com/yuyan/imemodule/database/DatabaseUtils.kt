@@ -50,7 +50,7 @@ object DatabaseUtils {
     @Throws(DatabaseException::class)
     fun insert(
         sqLiteOpenHelper: SQLiteOpenHelper,
-        tableName: String?,
+        tableName: String,
         initialValues: ContentValues?
     ): Long {
         val rowId: Long = try {
@@ -105,7 +105,7 @@ object DatabaseUtils {
     @Throws(DatabaseException::class)
     fun delete(
         sqLiteOpenHelper: SQLiteOpenHelper,
-        tableName: String?,
+        tableName: String,
         selection: String?,
         selectionArgs: Array<String?>?
     ): Int {
@@ -122,7 +122,7 @@ object DatabaseUtils {
 	@Throws(DatabaseException::class)
     fun update(
         sqLiteOpenHelper: SQLiteOpenHelper,
-        tableName: String?,
+        tableName: String,
         values: ContentValues?,
         selection: String?,
         selectionArgs: Array<String?>?
@@ -177,7 +177,7 @@ object DatabaseUtils {
     @JvmStatic
 	fun rawQuery(
         sqLiteOpenHelper: SQLiteOpenHelper,
-        sql: String?,
+        sql: String,
         selectionArgs: Array<String?>?
     ): Cursor? {
         var result: Cursor? = null
@@ -198,7 +198,7 @@ object DatabaseUtils {
 	@JvmStatic
 	fun query(
         sqLiteOpenHelper: SQLiteOpenHelper,
-        tableName: String?,
+        tableName: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,
@@ -232,7 +232,7 @@ object DatabaseUtils {
 	@JvmStatic
 	fun query(
         sqLiteOpenHelper: SQLiteOpenHelper,
-        tableName: String?,
+        tableName: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,

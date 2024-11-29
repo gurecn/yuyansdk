@@ -38,7 +38,7 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
      */
     @Throws(DatabaseException::class)
     fun update(
-        tableName: String?,
+        tableName: String,
         values: ContentValues?,
         selection: String?,
         selectionArgs: Array<String?>?
@@ -61,7 +61,7 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
      * 查询 query
      */
     fun query(
-        tableName: String?,
+        tableName: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,
@@ -77,7 +77,7 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
      * 查询 query
      */
     fun query(
-        tableName: String?, projection: Array<String?>?,
+        tableName: String, projection: Array<String?>?,
         selection: String?, selectionArgs: Array<String?>?, groupBy: String?,
         having: String?, sortOrder: String?
     ): Cursor? {
@@ -90,7 +90,7 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
     /**
      * 通过SQL查询 rawQuery
      */
-    fun rawQuery(sql: String?, selectionArgs: Array<String?>?): Cursor? {
+    fun rawQuery(sql: String, selectionArgs: Array<String?>?): Cursor? {
         return rawQuery(this, sql, selectionArgs)
     }
 
@@ -98,7 +98,7 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
      * 查询 query
      */
     fun query(
-        tableName: String?,
+        tableName: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,
@@ -112,7 +112,7 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
      * 查询 query
      */
     fun query(
-        tableName: String?,
+        tableName: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,

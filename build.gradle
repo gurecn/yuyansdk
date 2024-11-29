@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
-// kotlin
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
@@ -10,23 +9,25 @@ static def versionNameDate() {
     return new Date().format("yyyyMMdd.HH", TimeZone.getTimeZone("GMT+8"))
 }
 
-def getSDKGitHead() {
+static def getSDKGitHead() {
     return "git --git-dir=/home/gure/devproject/Private/Yuyan/YuyanIme/yuyansdk/.git rev-parse HEAD".execute().text.trim()
 }
-def getAppGitHead() {
+
+static def getAppGitHead() {
     return "git rev-parse HEAD".execute().text.trim()
 }
-def getAppBuildTime() {
+
+static def getAppBuildTime() {
     return "git log -1 --pretty=%ai".execute().text.trim()
 }
 
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         minSdk 23
-        targetSdk 34
+        targetSdk 35
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {
             abiFilters 'arm64-v8a', 'armeabi-v7a', "x86", "x86_64"
@@ -121,7 +122,7 @@ dependencies {
     implementation 'com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0'
     implementation 'com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0'
-    implementation 'com.mikepenz:aboutlibraries-core:10.10.0'
+    implementation 'com.mikepenz:aboutlibraries-core:11.1.3'
     implementation 'io.arrow-kt:arrow-core:1.2.1'
     implementation 'com.vanniktech:android-image-cropper:4.5.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
@@ -129,11 +130,11 @@ dependencies {
     implementation 'com.yanzhenjie.recyclerview:x:1.3.2'
 }
 
-task makeaar(type: Copy) {
+tasks.register('makeaar', Copy) {
     from('build/outputs/aar/')
     into('build/outputs/aar/')
     include('imeModule-dev-debug.aar')
-    rename ('imeModule-dev-debug.aar', 'imesdk_' + versionNameDate() + '.aar')
+    rename('imeModule-dev-debug.aar', 'imesdk_' + versionNameDate() + '.aar')
 }
 
 makeaar.dependsOn(build)

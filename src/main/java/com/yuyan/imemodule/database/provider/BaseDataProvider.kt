@@ -20,7 +20,7 @@ class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
     private var mDBHelper: BaseDatabaseHelper? = databaseHelper
 
     fun query(
-        table: String?,
+        table: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,
@@ -38,7 +38,7 @@ class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
     }
 
     fun query(
-        table: String?,
+        table: String,
         projection: Array<String?>?,
         selection: String?,
         selectionArgs: Array<String?>?,
@@ -85,7 +85,7 @@ class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
     }
 
     @JvmOverloads
-    fun rawQuery(sql: String?, selectionArgs: Array<String?>? = null): Cursor? {
+    fun rawQuery(sql: String, selectionArgs: Array<String?>? = null): Cursor? {
         synchronized(mLock) { return mDBHelper!!.rawQuery(sql, selectionArgs) }
     }
 
@@ -102,7 +102,7 @@ class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
     /**
      * 更新
      */
-    fun update(tableName: String?, values: ContentValues?, selection: String?): Boolean {
+    fun update(tableName: String, values: ContentValues?, selection: String?): Boolean {
         synchronized(mLock) {
             var isSuccess = false
             try {
@@ -121,7 +121,7 @@ class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
      * 更新
      */
     fun update(
-        tableName: String?,
+        tableName: String,
         values: ContentValues?,
         selection: String?,
         selectionArgs: Array<String?>?
