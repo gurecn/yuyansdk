@@ -54,7 +54,8 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
         }
         mLLCenter = LinearLayout(context)
         mIVKeyRight = ImageView(context).apply {
-            setImageResource(getIcon(FullDisplayKeyMode.decode(fullDisplayKeyRight)))
+            val iconId = getIcon(FullDisplayKeyMode.decode(fullDisplayKeyRight))
+            if(iconId != 0)setImageResource(iconId)
             isClickable = true
             isEnabled = true
             setOnClickListener { _: View? ->
@@ -74,7 +75,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
             FullDisplayKeyMode.SwitchLanguage -> R.drawable.icon_keyboard_switcher
            FullDisplayKeyMode.Clipboard -> R.drawable.ic_clipboard
            FullDisplayKeyMode.Phrases -> R.drawable.ic_phrases
-           else -> R.drawable.ic_baseline_language_24
+           else -> 0
        }
     }
     private fun onClick(keyMode:FullDisplayKeyMode){
