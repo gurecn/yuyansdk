@@ -295,7 +295,7 @@ object RimeEngine {
             }
             // 选择拼音只是记录其是不是最后一个操作，如果不是在选择之后立即删除，则不需记录
             if (lastKey == InputKey.SelectPinyinAction) {
-                keyRecords.removeLast()
+                keyRecords.removeLastOrNull()
             }
             when (keyCode) {
                 KeyEvent.KEYCODE_APOSTROPHE -> {
@@ -361,7 +361,7 @@ object RimeEngine {
 
         fun pushCandidateSelectAction() {
             if (keyRecords.lastOrNull() == InputKey.SelectPinyinAction) {
-                keyRecords.removeLast()
+                keyRecords.removeLastOrNull()
             }
             keyRecords.add(InputKey.DefaultAction)
         }

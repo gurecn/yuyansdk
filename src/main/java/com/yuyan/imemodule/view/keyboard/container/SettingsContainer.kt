@@ -1,12 +1,10 @@
 package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
-import com.google.android.flexbox.JustifyContent
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.MenuAdapter
@@ -21,15 +19,17 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
+import splitties.dimensions.dp
 import java.util.Collections
 import java.util.LinkedList
-
 
 /**
  * 设置键盘容器
  *
- * 设置键盘、切换键盘界面容器。使用RecyclerView + FlexboxLayoutManager实现Grid布局。
+ * 设置键盘、切换键盘界面容器。使用RecyclerView + GridLayoutManager。
  */
 @SuppressLint("ViewConstructor")
 class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
@@ -46,9 +46,9 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         mRVMenuLayout = RecyclerView(context)
         mRVMenuLayout!!.setHasFixedSize(true)
         mRVMenuLayout!!.setItemAnimator(null)
-        val manager = FlexboxLayoutManager(context)
-        manager.justifyContent = JustifyContent.FLEX_START
-        mRVMenuLayout!!.setLayoutManager(manager)
+        val count = EnvironmentSingleton.instance.skbWidth/dp(100)
+        val layoutManager = CustomGridLayoutManager(context, count)
+        mRVMenuLayout!!.setLayoutManager(layoutManager)
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         mRVMenuLayout!!.layoutParams = layoutParams
         this.addView(mRVMenuLayout)

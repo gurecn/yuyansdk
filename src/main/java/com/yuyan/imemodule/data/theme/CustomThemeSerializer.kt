@@ -1,7 +1,6 @@
 
 package com.yuyan.imemodule.data.theme
 
-import arrow.core.compose
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -21,13 +20,7 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         element.jsonObject.addVersion()
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val version = element.jsonObject[VERSION]?.let {
-            val version = it.jsonPrimitive.content
-            if (version !in knownVersions)
-                error("$version is not in known versions: $knownVersions")
-            version
-        } ?: FALLBACK_VERSION
-        return applyStrategy(version, element.jsonObject).removeVersion()
+        return element.jsonObject.removeVersion()
     }
 
     private fun JsonObject.addVersion() =
@@ -37,12 +30,6 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         JsonObject(this - VERSION)
 
     private val EmptyTransform: (JsonObject) -> JsonObject = { it }
-
-    private fun applyStrategy(oldVersion: String, obj: JsonObject) =
-        strategies
-            .takeWhile { it.version != oldVersion }
-            .foldRight(EmptyTransform) { it, acc -> it.transformation compose acc }
-            .invoke(obj)
 
     data class MigrationStrategy(
         val version: String,

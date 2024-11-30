@@ -10,16 +10,12 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import org.mechdancer.dependency.Dependent
-import org.mechdancer.dependency.UniqueComponent
-import org.mechdancer.dependency.manager.ManagedHandler
-import org.mechdancer.dependency.manager.managedHandler
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.frameLayout
 import splitties.views.dsl.core.lParams
 import java.util.LinkedList
 
-class PopupComponent private constructor(): UniqueComponent<PopupComponent>(), Dependent, ManagedHandler by managedHandler() {
+class PopupComponent private constructor(){
     private var showingEntryUi:PopupEntryUi? = null
     private val freeEntryUi = LinkedList<PopupEntryUi>()
 

@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
-import splitties.dimensions.dp
 import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.constant.CustomConstant
@@ -40,7 +39,6 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         inflater = LayoutInflater.from(context)
     }
 
-
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
         var entranceNameTextView: TextView? = null
         var entranceIconImageView: ImageView? = null
@@ -49,12 +47,6 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
             entranceIconImageView = itemView.findViewById(R.id.entrance_image)
             entranceNameTextView = itemView.findViewById(R.id.entrance_name)
             entranceOption = itemView.findViewById(R.id.entrance_option)
-            val skbWidth = EnvironmentSingleton.instance.skbWidth
-            val unit50 = itemView.dp(80)
-            var count = skbWidth/unit50
-            if(count < 4) count = 4
-            val layoutParams = itemView.layoutParams
-            layoutParams.width = (skbWidth.toFloat()/count).toInt()
         }
     }
 
