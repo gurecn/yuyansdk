@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.db.DataBaseKT
+import com.yuyan.imemodule.db.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.ui.utils.AppUtil
@@ -31,6 +32,7 @@ import splitties.views.dsl.core.margin
  */
 @SuppressLint("ViewConstructor")
 class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
+    private val mSideSymbolsPinyin:List<SideSymbol>
     // 键盘界面上符号(T9左侧、手写右侧)
     private var mRVRightSymbols: SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
@@ -49,6 +51,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
             AppUtil.launchSettingsToPrefix(context!!, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
+        mSideSymbolsPinyin = DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()
     }
 
     /**
@@ -81,11 +84,12 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
             mRVRightSymbols.addFooterView(mLlAddSymbol)
         }
         addView(mRVRightSymbols, createLayoutParams())
-        val strs = CustomConstant.PREFIXS_PINYIN
+        val strs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()
         val adapter = PrefixAdapter(context, strs)
         mRVRightSymbols.setAdapter(null)
         mRVRightSymbols.setOnItemClickListener{ _: View?, position: Int ->
-            val softKey = SoftKey(strs[position])
+            val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
+            val softKey = SoftKey(symbol)
             inputView.responseKeyEvent(softKey)
         }
         mRVRightSymbols.setAdapter(adapter)

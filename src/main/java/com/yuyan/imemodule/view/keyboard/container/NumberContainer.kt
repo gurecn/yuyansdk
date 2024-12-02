@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.db.DataBaseKT
+import com.yuyan.imemodule.db.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.ui.utils.AppUtil
@@ -32,6 +33,7 @@ import splitties.views.dsl.core.margin
  */
 @SuppressLint("ViewConstructor")
 class NumberContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
+    private val mSideSymbolsNumber:List<SideSymbol>
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private var mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
@@ -50,6 +52,7 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
             AppUtil.launchSettingsToPrefix(context!!, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
+        mSideSymbolsNumber = DataBaseKT.instance.sideSymbolDao().getAllSideSymbolNumber()
     }
 
     /**
@@ -83,11 +86,12 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
             mRVLeftPrefix.addFooterView(mLlAddSymbol)
         }
         addView(mRVLeftPrefix, createLayoutParams())
-        val strs = CustomConstant.PREFIXS_NUMBER
+        val strs  = mSideSymbolsNumber.map { it.symbolKey }.toTypedArray()
         val adapter = PrefixAdapter(context, strs)
         mRVLeftPrefix.setAdapter(null)
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
-            val softKey = SoftKey(strs[position])
+            val symbol = mSideSymbolsNumber.map { it.symbolValue }[position]
+            val softKey = SoftKey(symbol)
             // 播放按键声音和震动
             DevicesUtils.tryPlayKeyDown(softKey)
             DevicesUtils.tryVibrate(this)

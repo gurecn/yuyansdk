@@ -11,6 +11,7 @@ import com.yuyan.imemodule.database.dao.UsedEmojiDao
 import com.yuyan.imemodule.database.table.ClipboardTable
 import com.yuyan.imemodule.database.table.UsedCharacterTable
 import com.yuyan.imemodule.database.table.UsedEmojiTable
+import com.yuyan.imemodule.db.DataBaseKT
 import com.yuyan.imemodule.manager.LocalRepository
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.init
 
@@ -48,6 +49,7 @@ class LauncherModel private constructor() {
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         init(preferences)
         init(context.resources.configuration)
+        DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()  //操作一次查询，提前创建数据库，避免使用时才创建数据库
     }
 
     companion object {
