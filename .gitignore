@@ -14,3 +14,4 @@ gradle/wrapper/
 /build/kotlin/
 /build/outputs/
 /build/tmp/
+/build/kspCaches/

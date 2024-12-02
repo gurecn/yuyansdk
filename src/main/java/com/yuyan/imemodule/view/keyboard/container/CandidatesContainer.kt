@@ -20,6 +20,8 @@ import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.db.DataBaseKT
+import com.yuyan.imemodule.db.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.service.DecodingInfo
@@ -27,7 +29,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
-import com.yuyan.imemodule.utils.StringUtils.isLetter
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
@@ -42,6 +43,7 @@ import splitties.views.dsl.core.margin
  */
 @SuppressLint("ViewConstructor")
 class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
+    private val mSideSymbolsPinyin:List<SideSymbol>
     private lateinit var mRVSymbolsView: RecyclerView
     private lateinit var mCandidatesAdapter: CandidatesAdapter
     private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
@@ -63,6 +65,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             AppUtil.launchSettingsToPrefix(context, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
+        mSideSymbolsPinyin = DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()
     }
 
     private fun initView(context: Context) {
@@ -179,7 +182,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         var prefixs =DecodingInfo.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
-            prefixs = CustomConstant.PREFIXS_PINYIN
+            prefixs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()
             if (mRVLeftPrefix.footerCount <= 0) {
                 mRVLeftPrefix.addFooterView(mLlAddSymbol)
             }
@@ -191,14 +194,12 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         val adapter = PrefixAdapter(context, prefixs)
         mRVLeftPrefix.setAdapter(null)
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
-            val s = prefixs[position]
             if (isPrefixs) {
-                if (isLetter(s)) {
-                    inputView.selectPrefix(position)
-                    mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
-                }
+                inputView.selectPrefix(position)
+                mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
             } else {
-                val softKey = SoftKey(s)
+                val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
+                val softKey = SoftKey(symbol)
                 // 播放按键声音和震动
                 DevicesUtils.tryPlayKeyDown(softKey)
                 DevicesUtils.tryVibrate(this)
