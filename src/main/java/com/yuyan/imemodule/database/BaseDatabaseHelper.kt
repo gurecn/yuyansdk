@@ -111,27 +111,8 @@ class BaseDatabaseHelper private constructor(context: Context, name: String, ver
     /**
      * 查询 query
      */
-    fun query(
-        tableName: String,
-        projection: Array<String?>?,
-        selection: String?,
-        selectionArgs: Array<String?>?,
-        groupBy: String?,
-        having: String?,
-        sortOrder: String?,
-        limit: String?
-    ): Cursor? {
-        return query(
-            this,
-            tableName,
-            projection,
-            selection,
-            selectionArgs,
-            groupBy,
-            having,
-            sortOrder,
-            limit
-        )
+    fun query(tableName: String, projection: Array<String?>?, selection: String?, selectionArgs: Array<String?>?, groupBy: String?, having: String?, sortOrder: String?, limit: String?): Cursor? {
+        return query(this, tableName, projection, selection, selectionArgs, groupBy, having, sortOrder, limit)
     }
 
     override fun onCreate(db: SQLiteDatabase) {}

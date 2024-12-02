@@ -3,9 +3,7 @@ package com.yuyan.imemodule.handwriting
 import com.yuyan.imemodule.callback.IHandWritingCallBack
 
 /**
- * User:Gaolei  gurecn@gmail.com
- * Date:2018/4/2
- * I'm glad to share my knowledge with you all.
+ * 手写
  */
 class HdManager private constructor() {
     private var handWritingMonitor: HandWritingMonitor = HandWritingHanwang()

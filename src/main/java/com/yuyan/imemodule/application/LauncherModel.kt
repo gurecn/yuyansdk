@@ -8,19 +8,14 @@ import com.yuyan.imemodule.data.theme.ThemeManager.init
 import com.yuyan.imemodule.database.dao.ClipboardDao
 import com.yuyan.imemodule.database.dao.UsedCharacterDao
 import com.yuyan.imemodule.database.dao.UsedEmojiDao
-import com.yuyan.imemodule.database.dao.UsedEmoticonsDao
 import com.yuyan.imemodule.database.table.ClipboardTable
 import com.yuyan.imemodule.database.table.UsedCharacterTable
 import com.yuyan.imemodule.database.table.UsedEmojiTable
-import com.yuyan.imemodule.database.table.UsedEmoticonsTable
 import com.yuyan.imemodule.manager.LocalRepository
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.init
 
 /**
  * 应用启动做一些启动相关的初始化操作
- * User:Gaolei  gurecn@gmail.com
- * Date:2016/10/10
- * I'm glad to share my knowledge with you all.
  */
 class LauncherModel private constructor() {
     /**
@@ -36,11 +31,6 @@ class LauncherModel private constructor() {
         private set
 
     /**
-     * 获取常用颜文字
-     */
-    var usedEmoticonsDao: UsedEmoticonsDao? = null
-        private set
-    /**
      * 获取粘贴板
      */
     var mClipboardDao: ClipboardDao? = null
@@ -49,16 +39,11 @@ class LauncherModel private constructor() {
     var flowerTypeface = FlowerTypefaceMode.Disabled
 
     private fun initData(context: Context) {
-        val unLoginTables = ArrayList<String>()
-        unLoginTables.add(UsedCharacterTable.CREATE_TABLE)
-        unLoginTables.add(UsedEmojiTable.CREATE_TABLE)
-        unLoginTables.add(UsedEmoticonsTable.CREATE_TABLE)
-        unLoginTables.add(ClipboardTable.CREATE_TABLE)
+        val tables = listOf(UsedCharacterTable.CREATE_TABLE, UsedEmojiTable.CREATE_TABLE, ClipboardTable.CREATE_TABLE)
         val mDataProvider = LocalRepository.instance.dataProvider
-        mDataProvider!!.createTable(unLoginTables)
+        mDataProvider.createTable(tables)
         usedCharacterDao = UsedCharacterDao(mDataProvider)
         usedEmojiDao = UsedEmojiDao(mDataProvider)
-        usedEmoticonsDao = UsedEmoticonsDao(mDataProvider)
         mClipboardDao = ClipboardDao(mDataProvider)
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         init(preferences)

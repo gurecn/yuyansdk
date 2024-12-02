@@ -5,14 +5,13 @@ import com.yuyan.imemodule.database.pamas.InsertParams
 import com.yuyan.imemodule.database.pamas.UpdatePamas
 import com.yuyan.imemodule.database.provider.BaseDataProvider
 import com.yuyan.imemodule.database.table.UsedCharacterTable
-import com.yuyan.imemodule.database.table.UsedEmoticonsTable
 
 /**
  * 常用符号实际操作类
  * Created by Shark on 2017/12/27.
  */
-class UsedChararterDBHelper(dataProvider: BaseDataProvider?) {
-    private var mHelper: BaseDataProvider? = null
+class UsedChararterDBHelper(dataProvider: BaseDataProvider) {
+    private var mHelper: BaseDataProvider
 
     init {
         mHelper = dataProvider
@@ -31,22 +30,17 @@ class UsedChararterDBHelper(dataProvider: BaseDataProvider?) {
             val list = ArrayList<InsertParams>()
             val insert = InsertParams(UsedCharacterTable.TABLE_NAME, contentValues)
             list.add(insert)
-            if (!list.isEmpty()) {
-                result = mHelper!!.insert(list)
+            if (list.isNotEmpty()) {
+                result = mHelper.insert(list)
             }
         } else {
             val list = ArrayList<UpdatePamas>()
             val values = ContentValues()
             values.put(UsedCharacterTable.LATEST_TIME, latestTime)
-            val updatePamas = UpdatePamas(
-                UsedCharacterTable.TABLE_NAME,
-                values,
-                UsedCharacterTable.CHARACTER + " = ?",
-                arrayOf(character)
-            )
+            val updatePamas = UpdatePamas(UsedCharacterTable.TABLE_NAME, values, UsedCharacterTable.CHARACTER + " = ?", arrayOf(character))
             list.add(updatePamas)
-            if (!list.isEmpty()) {
-                result = mHelper!!.update(list)
+            if (list.isNotEmpty()) {
+                result = mHelper.update(list)
             }
         }
         return result
@@ -56,7 +50,7 @@ class UsedChararterDBHelper(dataProvider: BaseDataProvider?) {
      * 检查是否存在该内容
      */
     private fun checkExist(character: String): Boolean {
-        val cursor = mHelper!!.query(
+        val cursor = mHelper.query(
             UsedCharacterTable.TABLE_NAME,
             null,
             UsedCharacterTable.CHARACTER + " = ?",
@@ -86,10 +80,10 @@ class UsedChararterDBHelper(dataProvider: BaseDataProvider?) {
             val orderBy = UsedCharacterTable.LATEST_TIME + " DESC"
             val columns = arrayOf<String?>(UsedCharacterTable.CHARACTER)
             val cursor =
-                mHelper!!.query(UsedCharacterTable.TABLE_NAME, columns, null, null, orderBy, "0,10")
+                mHelper.query(UsedCharacterTable.TABLE_NAME, columns, null, null, orderBy, "0,10")
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    val index = cursor.getColumnIndex(UsedEmoticonsTable.CHARACTER)
+                    val index = cursor.getColumnIndex(UsedCharacterTable.CHARACTER)
                     if(index >= 0){
                         emojis.add(cursor.getString(index))
                     }

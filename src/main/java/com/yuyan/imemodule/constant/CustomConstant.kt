@@ -5,7 +5,6 @@ import com.yuyan.imemodule.prefs.AppPrefs
 
 /**
  * 用户自定义常量类
- * Created by Gaolei on 2016/11/25.
  */
 object CustomConstant {
     var RIME_DICT_PATH = ImeSdkApplication.context.getExternalFilesDir("rime").toString()

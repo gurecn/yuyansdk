@@ -9,13 +9,11 @@ import com.yuyan.imemodule.database.provider.BaseDataProvider
  * @author KongXR
  */
 class LocalRepository private constructor() {
-    var dataProvider: BaseDataProvider? = null //无需登录的数据库provider类
+    lateinit var dataProvider: BaseDataProvider //无需登录的数据库provider类
         private set
 
     private fun init() {
-        val mContext = ImeSdkApplication.context
-        val baseDatabaseHelper = BaseDatabaseHelper(mContext)
-        dataProvider = BaseDataProvider(baseDatabaseHelper)
+        dataProvider = BaseDataProvider(BaseDatabaseHelper(ImeSdkApplication.context))
     }
 
     companion object {

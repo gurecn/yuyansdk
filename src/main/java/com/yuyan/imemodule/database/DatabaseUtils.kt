@@ -16,11 +16,7 @@ import com.yuyan.imemodule.database.pamas.UpdatePamas
 object DatabaseUtils {
     @Throws(DatabaseException::class)
     @JvmStatic
-    fun insert(
-        sqLiteOpenHelper: SQLiteOpenHelper,
-        list: List<InsertParams>?,
-        userPhone: String
-    ): Boolean {
+    fun insert(sqLiteOpenHelper: SQLiteOpenHelper, list: List<InsertParams>?, userPhone: String): Boolean {
         var isSucces = false
         if (!list.isNullOrEmpty()) {
             var db: SQLiteDatabase? = null

@@ -7,8 +7,8 @@ import com.yuyan.imemodule.database.provider.BaseDataProvider
  * 常用符号Dao
  * Created by jianghuan
  */
-class UsedCharacterDao(dataProvider: BaseDataProvider?) {
-    private var mCalllogDatabaseHelper: UsedChararterDBHelper? = null
+class UsedCharacterDao(dataProvider: BaseDataProvider) {
+    private var mCalllogDatabaseHelper: UsedChararterDBHelper
 
     init {
         mCalllogDatabaseHelper = UsedChararterDBHelper(dataProvider)
@@ -16,10 +16,10 @@ class UsedCharacterDao(dataProvider: BaseDataProvider?) {
 
     @Synchronized
     fun insertUsedCharacter(character: String?, useTime: Long): Boolean {
-        return mCalllogDatabaseHelper!!.insertUsedCharacter(character!!, useTime)
+        return mCalllogDatabaseHelper.insertUsedCharacter(character!!, useTime)
     }
 
     @get:Synchronized
     val allUsedCharacter: Array<String>
-        get() = mCalllogDatabaseHelper!!.allUsedCharacter
+        get() = mCalllogDatabaseHelper.allUsedCharacter
 }

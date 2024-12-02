@@ -76,7 +76,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             else {
                 val phrases = File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt")
                     .readLines().filter { !it.startsWith("#") }.map { line ->
-                        ClipBoardDataBean("",line.split("\t".toRegex())[0])
+                        ClipBoardDataBean("", line.split("\t".toRegex())[0])
                     }.toMutableList()
                 phrases.reverse()
                 phrases

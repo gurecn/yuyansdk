@@ -5,14 +5,13 @@ import com.yuyan.imemodule.database.pamas.InsertParams
 import com.yuyan.imemodule.database.pamas.UpdatePamas
 import com.yuyan.imemodule.database.provider.BaseDataProvider
 import com.yuyan.imemodule.database.table.UsedEmojiTable
-import com.yuyan.imemodule.database.table.UsedEmoticonsTable
 
 /**
  * 常用表情符号实际操作类
  * Created by Shark on 2017/12/27.
  */
-class UsedEmojiDBHelper(dataProvider: BaseDataProvider?) {
-    private var mHelper: BaseDataProvider? = null
+class UsedEmojiDBHelper(dataProvider: BaseDataProvider) {
+    private var mHelper: BaseDataProvider
 
     init {
         mHelper = dataProvider
@@ -31,22 +30,17 @@ class UsedEmojiDBHelper(dataProvider: BaseDataProvider?) {
             val list = ArrayList<InsertParams>()
             val insert = InsertParams(UsedEmojiTable.TABLE_NAME, contentValues)
             list.add(insert)
-            if (!list.isEmpty()) {
-                result = mHelper!!.insert(list)
+            if (list.isNotEmpty()) {
+                result = mHelper.insert(list)
             }
         } else {
             val list = ArrayList<UpdatePamas>()
             val values = ContentValues()
             values.put(UsedEmojiTable.LATEST_TIME, latestTime)
-            val updatePamas = UpdatePamas(
-                UsedEmojiTable.TABLE_NAME,
-                values,
-                UsedEmojiTable.CHARACTER + " = ?",
-                arrayOf(emoji)
-            )
+            val updatePamas = UpdatePamas(UsedEmojiTable.TABLE_NAME, values, UsedEmojiTable.CHARACTER + " = ?", arrayOf(emoji))
             list.add(updatePamas)
-            if (!list.isEmpty()) {
-                result = mHelper!!.update(list)
+            if (list.isNotEmpty()) {
+                result = mHelper.update(list)
             }
         }
         return result
@@ -56,7 +50,7 @@ class UsedEmojiDBHelper(dataProvider: BaseDataProvider?) {
      * 检查是否存在该内容
      */
     private fun checkExist(emoji: String): Boolean {
-        val cursor = mHelper!!.query(
+        val cursor = mHelper.query(
             UsedEmojiTable.TABLE_NAME,
             null,
             UsedEmojiTable.CHARACTER + " = ?",
@@ -85,10 +79,10 @@ class UsedEmojiDBHelper(dataProvider: BaseDataProvider?) {
             val emojis: MutableList<String> = mutableListOf()
             val orderBy = UsedEmojiTable.LATEST_TIME + " DESC"
             val columns = arrayOf<String?>(UsedEmojiTable.CHARACTER)
-            val cursor = mHelper!!.query(UsedEmojiTable.TABLE_NAME, columns, null, null, orderBy, "0,100")
+            val cursor = mHelper.query(UsedEmojiTable.TABLE_NAME, columns, null, null, orderBy, "0,100")
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    val index = cursor.getColumnIndex(UsedEmoticonsTable.CHARACTER)
+                    val index = cursor.getColumnIndex(UsedEmojiTable.CHARACTER)
                     if(index >= 0){
                         emojis.add(cursor.getString(index))
                     }
