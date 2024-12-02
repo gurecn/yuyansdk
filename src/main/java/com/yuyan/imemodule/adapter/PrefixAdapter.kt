@@ -12,9 +12,6 @@ import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
 
 /**
  * 拼音选择
- * User:Gaolei  gurecn@gmail.com
- * Date:2017/9/19
- * I'm glad to share my knowledge with you all.
  */
 class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     RecyclerView.Adapter<PrefixAdapter.SymbolTypeHolder>() {
@@ -45,9 +42,5 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
             tvSymbolType = view.findViewById(android.R.id.text1)
             tvSymbolType.setTextColor(textColor)
         }
-    }
-
-    fun getSymbolData(position: Int): String {
-        return mDatas[position]
     }
 }

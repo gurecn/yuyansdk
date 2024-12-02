@@ -10,9 +10,6 @@ import com.yuyan.imemodule.prefs.InputFeedbacks.soundEffect
 
 /**
  * 设备相关工具类
- * User:Gaolei
- * Date:2017/12/7
- * Email:gurecn@gmail.com
  */
 object DevicesUtils {
     /**

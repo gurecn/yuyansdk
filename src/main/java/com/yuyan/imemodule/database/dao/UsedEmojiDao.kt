@@ -7,8 +7,8 @@ import com.yuyan.imemodule.database.provider.BaseDataProvider
  * 常用表情符号Dao
  * Created by jianghuan
  */
-class UsedEmojiDao(dataProvider: BaseDataProvider?) {
-    private var mCalllogDatabaseHelper: UsedEmojiDBHelper? = null
+class UsedEmojiDao(dataProvider: BaseDataProvider) {
+    private var mCalllogDatabaseHelper: UsedEmojiDBHelper
 
     init {
         mCalllogDatabaseHelper = UsedEmojiDBHelper(dataProvider)
@@ -16,10 +16,10 @@ class UsedEmojiDao(dataProvider: BaseDataProvider?) {
 
     @Synchronized
     fun insertUsedEmoji(character: String?, useTime: Long): Boolean {
-        return mCalllogDatabaseHelper!!.insertUsedEmoji(character!!, useTime)
+        return mCalllogDatabaseHelper.insertUsedEmoji(character!!, useTime)
     }
 
     @get:Synchronized
     val allUsedEmoji: List<String>
-        get() = mCalllogDatabaseHelper!!.allUsedEmoji
+        get() = mCalllogDatabaseHelper.allUsedEmoji
 }

@@ -6,9 +6,6 @@ import java.util.Locale
 
 /**
  * 时间工具类
- * User:Gaolei  gurecn@gmail.com
- * Date:2017/12/6
- * I'm glad to share my knowledge with you all.
  */
 object TimeUtils {
     @JvmField

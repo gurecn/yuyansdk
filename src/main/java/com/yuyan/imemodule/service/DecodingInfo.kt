@@ -19,7 +19,7 @@ object DecodingInfo {
     // 是否是联想词
     var isAssociate = false
     // 是否重置
-    var isReset = false
+    private var isReset = false
 
     /**
      * 重置

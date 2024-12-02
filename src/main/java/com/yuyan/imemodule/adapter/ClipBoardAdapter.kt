@@ -98,10 +98,6 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
         return mDatas.size
     }
 
-    fun removePosition(position: Int):ClipBoardDataBean? {
-        return if(mDatas.size > position)  mDatas.removeAt(position) else null
-    }
-
     inner class SymbolHolder(view: RelativeLayout) : RecyclerView.ViewHolder(view) {
         var textView: TextView
         var ivTopTips: ImageView

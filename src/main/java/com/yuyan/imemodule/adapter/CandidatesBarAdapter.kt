@@ -42,7 +42,7 @@ class CandidatesBarAdapter(context: Context?) :
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         if(DecodingInfo.isCandidatesListEmpty) return
-        holder.textView.text = DecodingInfo.candidates[position]?.text
+        holder.textView.text = DecodingInfo.candidates[position].text
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->
                 mOnItemClickListener!!.onItemClick(this@CandidatesBarAdapter, view, position)

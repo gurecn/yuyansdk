@@ -8,11 +8,11 @@ import com.yuyan.imemodule.entity.ClipBoardDataBean
  * CilpboardDao
  * @author KongXR
  */
-class ClipboardDao(dataProvider: BaseDataProvider?) {
+class ClipboardDao(dataProvider: BaseDataProvider) {
     private val mClipboardDatabaseHelper: ClipBoardDBHelper
 
     init {
-        mClipboardDatabaseHelper = ClipBoardDBHelper(dataProvider!!)
+        mClipboardDatabaseHelper = ClipBoardDBHelper(dataProvider)
     }
 
     @Synchronized

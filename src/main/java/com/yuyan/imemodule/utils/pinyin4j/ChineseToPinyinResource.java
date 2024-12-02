@@ -3,13 +3,10 @@ package com.yuyan.imemodule.utils.pinyin4j;
 
 import com.yuyan.imemodule.utils.pinyin4j.multipinyin.Trie;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
  * Manage all external resources required in PinyinHelper class.
- *
- * @author Li Min (xmlerlimin@gmail.com)
  */
 class ChineseToPinyinResource {
     /**
@@ -48,10 +45,7 @@ class ChineseToPinyinResource {
             setUnicodeToHanyuPinyinTable(new Trie());
             getUnicodeToHanyuPinyinTable().load(ResourceHelper.getResourceInputStream(resourceName));
             getUnicodeToHanyuPinyinTable().loadMultiPinyin(ResourceHelper.getResourceInputStream(resourceMultiName));
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
@@ -61,9 +55,7 @@ class ChineseToPinyinResource {
             int indexOfRightBracket = pinyinRecord.lastIndexOf(Field.RIGHT_BRACKET);
             String stripedString = pinyinRecord.substring(indexOfLeftBracket + Field.LEFT_BRACKET.length(), indexOfRightBracket);
             return stripedString.split(Field.COMMA);
-
-        } else
-            return null; // no record found or mal-formatted record
+        } else return null;
     }
 
     /**

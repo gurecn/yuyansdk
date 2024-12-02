@@ -4,12 +4,9 @@ import android.app.NotificationManager
 import android.content.ClipboardManager
 import android.content.Context
 import android.media.AudioManager
-import android.os.UserManager
 import android.os.Vibrator
-import android.os.storage.StorageManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
-import androidx.fragment.app.Fragment
 
 val Context.audioManager
     get() = getSystemService<AudioManager>()!!

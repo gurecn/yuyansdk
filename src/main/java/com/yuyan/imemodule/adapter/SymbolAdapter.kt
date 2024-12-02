@@ -11,9 +11,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 
 /**
  * 表情或符号界面适配器
- * User:Gaolei  gurecn@gmail.com
- * Date:2017/7/20
- * I'm glad to share my knowledge with you all.
  */
 class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSymbol: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolHolder>() {

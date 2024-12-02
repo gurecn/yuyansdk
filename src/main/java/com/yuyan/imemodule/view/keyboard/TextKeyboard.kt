@@ -25,10 +25,6 @@ import kotlin.math.min
 
 /**
  * 软件盘视图
- *
- * @version 1.0
- * @author: Gaolei  gurecn@gmail.com
- * @date: 2017/12/12
  */
 open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     /** Notes if the keyboard just changed, so that we could possibly reallocate the mBuffer.  */

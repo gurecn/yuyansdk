@@ -8,13 +8,7 @@ import java.io.OutputStream
 
 object AssetUtils {
     @JvmStatic
-    fun copyFileOrDir(
-        context: Context,
-        parent: String,
-        path: String,
-        destParent: String,
-        overwrite: Boolean
-    ) {
+    fun copyFileOrDir(context: Context, parent: String, path: String, destParent: String, overwrite: Boolean) {
         val assetManager = context.assets
         try {
             val assetPath = File(parent, path).path
@@ -38,29 +32,22 @@ object AssetUtils {
         }
     }
 
-    private fun copyFile(
-        context: Context,
-        parentAssetPath: String,
-        filename: String,
-        destParent: String,
-        overwrite: Boolean
-    ) {
+    private fun copyFile(context: Context, parentAssetPath: String, filename: String, destParent: String, overwrite: Boolean) {
         val assetManager = context.assets
-        val `in`: InputStream?
+        val inputStream: InputStream?
         val out: OutputStream?
         try {
             val assetPath = File(parentAssetPath, filename).path
-            `in` = assetManager.open(assetPath)
+            inputStream = assetManager.open(assetPath)
             val newFile = File(destParent, filename)
             if (newFile.exists() && !overwrite) return
             out = FileOutputStream(newFile)
-            val BLK_SIZE = 1024
-            val buffer = ByteArray(BLK_SIZE)
+            val buffer = ByteArray(1024)
             var read: Int
-            while (`in`.read(buffer).also { read = it } != -1) {
+            while (inputStream.read(buffer).also { read = it } != -1) {
                 out.write(buffer, 0, read)
             }
-            `in`.close()
+            inputStream.close()
             out.flush()
             out.close()
         } catch (e: Exception) {

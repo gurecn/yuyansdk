@@ -23,8 +23,6 @@ import java.io.IOException;
 /**
  * Helper class for file resources
  * 
- * @author Li Min (xmlerlimin@gmail.com)
- * 
  */
 class ResourceHelper {
   /**

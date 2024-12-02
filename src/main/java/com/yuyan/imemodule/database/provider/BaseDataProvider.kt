@@ -10,50 +10,21 @@ import com.yuyan.imemodule.database.pamas.InsertParams
 import com.yuyan.imemodule.database.pamas.UpdatePamas
 
 /**
- * 未登陆情况下可使用的数据表
- * User:Gaolei  gurecn@gmail.com
- * Date:2018/1/16
- * I'm glad to share my knowledge with you all.
+ * 数据表
  */
 class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
     private var mLock: Any = Any()
     private var mDBHelper: BaseDatabaseHelper? = databaseHelper
 
-    fun query(
-        table: String,
-        projection: Array<String?>?,
-        selection: String?,
-        selectionArgs: Array<String?>?,
-        sortOrder: String?
-    ): Cursor? {
+    fun query(table: String, projection: Array<String?>?, selection: String?, selectionArgs: Array<String?>?, sortOrder: String?): Cursor? {
         synchronized(mLock) {
-            return mDBHelper!!.query(
-                table,
-                projection,
-                selection,
-                selectionArgs,
-                sortOrder
-            )
+            return mDBHelper!!.query(table, projection, selection, selectionArgs, sortOrder)
         }
     }
 
-    fun query(
-        table: String,
-        projection: Array<String?>?,
-        selection: String?,
-        selectionArgs: Array<String?>?,
-        sortOrder: String?,
-        limit: String?
-    ): Cursor? {
+    fun query(table: String, projection: Array<String?>?, selection: String?, selectionArgs: Array<String?>?, sortOrder: String?, limit: String?): Cursor? {
         synchronized(mLock) {
-            return mDBHelper!!.query(
-                table,
-                projection,
-                selection,
-                selectionArgs,
-                sortOrder,
-                limit
-            )
+            return mDBHelper!!.query(table, projection, selection, selectionArgs, sortOrder, limit)
         }
     }
 
@@ -82,21 +53,6 @@ class BaseDataProvider(databaseHelper: BaseDatabaseHelper?) {
             }
             return isSuccess
         }
-    }
-
-    @JvmOverloads
-    fun rawQuery(sql: String, selectionArgs: Array<String?>? = null): Cursor? {
-        synchronized(mLock) { return mDBHelper!!.rawQuery(sql, selectionArgs) }
-    }
-
-    fun closeDB() {
-        try {
-            val db = mDBHelper!!.writableDatabase
-            db.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        mDBHelper = null
     }
 
     /**

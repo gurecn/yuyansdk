@@ -2,12 +2,7 @@ package com.yuyan.imemodule.entity
 
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 
-class SkbFunItem(//名称
-    val funName: String, //图片资源
-    @JvmField
-    val funImgRecource: Int,
-    val skbMenuMode: SkbMenuMode
-){
+class SkbFunItem( val funName: String, @JvmField val funImgRecource: Int, val skbMenuMode: SkbMenuMode){
     override fun equals(other: Any?): Boolean {
         return when(other) {
             !is SkbFunItem -> false
