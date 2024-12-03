@@ -14,12 +14,12 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.db.DataBaseKT
+import com.yuyan.imemodule.view.widget.CustomLinearLayout
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.textView
-import splitties.views.dsl.core.verticalLayout
 import splitties.views.dsl.core.wrapContent
 
 class PrefixSettingsFragment(pos:Int) : Fragment(){
@@ -57,8 +57,9 @@ class PrefixSettingsFragment(pos:Int) : Fragment(){
         }
         val adapter = PrefixSettingsAdapter(if(positon == 0)DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin() else DataBaseKT.instance.sideSymbolDao().getAllSideSymbolNumber())
         mRVSymbolsView.setAdapter(adapter)
-        verticalLayout {
-//            fitsSystemWindows = true
+        CustomLinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            fitsSystemWindows = true
             add(header, lParams(width = matchParent, height = wrapContent) {
                 setMargins(0, dp(20), 0, dp(0))
             })
