@@ -8,9 +8,9 @@ import androidx.room.PrimaryKey
 data class SideSymbol(
     @PrimaryKey
     @ColumnInfo(name = "symbolKey")
-    val symbolKey: String,
+    var symbolKey: String,
     @ColumnInfo(name = "symbolValue")
-    val symbolValue: String,
+    var symbolValue: String,
     @ColumnInfo(name = "type")
     val type: String = "pinyin",
 )
