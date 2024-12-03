@@ -55,8 +55,10 @@ class PopupComponent private constructor(){
             lastShowTime = System.currentTimeMillis()
             setText(content)
         }
-        val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat){
+        var bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat){
                 AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
+        val fullDisplayKeyboardEnable = AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()
+        if(fullDisplayKeyboardEnable)bottomPadding += EnvironmentSingleton.instance.heightForCandidates
         root.apply {
             add(popup.root, lParams(bounds.width(), bounds.height()) {
                 bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + bottomPadding - bounds.bottom
@@ -93,9 +95,11 @@ class PopupComponent private constructor(){
     private fun reallyShowKeyboard(keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys)
-        val bottomPadding =
+        var bottomPadding =
         if(!EnvironmentSingleton.instance.keyboardModeFloat){
             AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
+        val fullDisplayKeyboardEnable = AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()
+        if(fullDisplayKeyboardEnable)bottomPadding += EnvironmentSingleton.instance.heightForCandidates
         root.apply {
             add(keyboardUi.root, lParams {
                 bottomMargin = EnvironmentSingleton.instance.inputAreaHeight  + bottomPadding - bounds.bottom

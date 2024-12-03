@@ -201,7 +201,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mRightPaddingKey =  getInstance().internal.keyboardRightPadding
             mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
-            mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForCandidates
         }
         updateTheme()
         DecodingInfo.candidatesLiveData.observe(/* owner = */ this){ _ ->
@@ -1139,7 +1139,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.keyboardModeFloat)  0 else EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            val fullDisplayKeyboardEnable = getInstance().internal.fullDisplayKeyboardEnable.getValue()
+            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.keyboardModeFloat)  0 else if(fullDisplayKeyboardEnable) EnvironmentSingleton.instance.heightForCandidates
+            else  EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
     }
