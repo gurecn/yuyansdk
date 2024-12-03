@@ -2,6 +2,8 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -91,11 +93,17 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             inputView.onChoiceTouched(position)
             mRVSymbolsView.scrollToPosition(0)
         }
-        val layoutManager = CustomGridLayoutManager(context, 60)
+        val bounds = Rect()
+        val data = "标"
+        val paint = Paint()
+        paint.textSize = instance.candidateTextSize*1.3.toFloat()
+        paint.getTextBounds(data, 0, data.length, bounds)
+        val items = (instance.skbWidth * 0.8/bounds.width() /2).toInt()
+        val layoutManager = CustomGridLayoutManager(context, items)
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(pos: Int): Int {
-                if(DecodingInfo.candidateSize <= pos) return  12
-                return DecodingInfo.candidates[pos].spanSize ?: 12
+                if(DecodingInfo.candidateSize <= pos) return  items
+                return DecodingInfo.candidates[pos].spanSize
             }
         }
         mRVSymbolsView.setLayoutManager(layoutManager)
