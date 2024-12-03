@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication.Companion.context
@@ -15,20 +16,23 @@ import splitties.views.dsl.core.add
 import splitties.views.dsl.core.editText
 import splitties.views.dsl.core.lParams
 
-class PrefixSettingsAdapter ( private val mDatas: List<SideSymbol>) : RecyclerView.Adapter<PrefixSettingsAdapter.PrefixSettingsHolder>() {
+class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:String) : RecyclerView.Adapter<PrefixSettingsAdapter.PrefixSettingsHolder>() {
+    private var  mType = "pinyin"
+    init {
+        mType = type
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrefixSettingsHolder {
         val content = LinearLayout(context).apply {
             setPadding(0, dp(5), 0, dp(5))
             add(editText {
                 gravity = Gravity.CENTER
-                background = null
                 id = R.id.et_prefix_setting_key
-            }, lParams(width = 0, weight = 2f))
-
+            }, lParams(width = 0, weight = 1f){
+                setMargins(dp(20), 0, dp(20), 0)
+            })
             add(editText {
                 gravity = Gravity.CENTER
-                background = null
                 id = R.id.et_prefix_setting_value
             }, lParams(width = 0, weight = 2f))
 
@@ -40,12 +44,34 @@ class PrefixSettingsAdapter ( private val mDatas: List<SideSymbol>) : RecyclerVi
     }
 
     override fun onBindViewHolder(holder: PrefixSettingsHolder, position: Int) {
-        holder.etPrefixKey.setText(mDatas[position].symbolKey)
-        holder.etPrefixValue.setText(mDatas[position].symbolValue)
+        if(position < mDatas.size) {
+            holder.etPrefixKey.setText(mDatas[position].symbolKey)
+            holder.etPrefixValue.setText(mDatas[position].symbolValue)
+        }
+        holder.etPrefixKey.doOnTextChanged { s, _, _, _ ->
+            val key = s.toString()
+            val bindPos = holder.bindingAdapterPosition
+            if(bindPos < mDatas.size) mDatas[bindPos].symbolKey = key
+            else {
+                mDatas.add(SideSymbol(symbolKey = key, symbolValue = key, type = mType))
+                holder.etPrefixValue.setText(key)
+                notifyDataSetChanged()
+            }
+        }
+        holder.etPrefixValue.doOnTextChanged { s, _, _, _ ->
+            val value = s.toString()
+            val bindPos = holder.bindingAdapterPosition
+            if(bindPos < mDatas.size)  mDatas[bindPos].symbolValue = value
+            else {
+                mDatas.add(SideSymbol(symbolKey = value, symbolValue = value, type = mType))
+                holder.etPrefixKey.setText(value)
+                notifyDataSetChanged()
+            }
+        }
     }
 
     override fun getItemCount(): Int {
-        return mDatas.size
+        return mDatas.size + 1
     }
 
     inner class PrefixSettingsHolder(view: View) : RecyclerView.ViewHolder(view) {

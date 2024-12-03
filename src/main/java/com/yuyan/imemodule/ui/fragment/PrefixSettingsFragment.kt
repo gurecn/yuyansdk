@@ -9,11 +9,15 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
+import com.yanzhenjie.recyclerview.touch.OnItemMoveListener
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.db.DataBaseKT
+import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.CustomLinearLayout
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
@@ -21,11 +25,14 @@ import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.textView
 import splitties.views.dsl.core.wrapContent
+import java.util.Collections
 
-class PrefixSettingsFragment(pos:Int) : Fragment(){
-    private var  positon = 0
+class PrefixSettingsFragment(type:String) : Fragment(){
+    private var  mType = "pinyin"
+    private var  datas:MutableList<SideSymbol>
     init {
-        positon = pos
+        mType = type
+        datas = if(type == "pinyin")DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin().toMutableList() else DataBaseKT.instance.sideSymbolDao().getAllSideSymbolNumber().toMutableList()
     }
     override fun onResume() {
         super.onResume()
@@ -37,7 +44,9 @@ class PrefixSettingsFragment(pos:Int) : Fragment(){
                 gravity = Gravity.CENTER
                 background = null
                 text = context.getString(R.string.skb_prefix_show_tips)
-            }, lParams(width = 0, weight = 2f))
+            }, lParams(width = 0, weight = 1f){
+                setMargins(dp(20), 0, dp(20), 0)
+            })
 
             add(textView {
                 gravity = Gravity.CENTER
@@ -52,10 +61,26 @@ class PrefixSettingsFragment(pos:Int) : Fragment(){
             }, lParams(width = 0, weight = 1f))
         }
 
+        val adapter = PrefixSettingsAdapter(datas, mType)
+        val mItemMoveListener: OnItemMoveListener = object : OnItemMoveListener {
+            override fun onItemMove(srcHolder: RecyclerView.ViewHolder, targetHolder: RecyclerView.ViewHolder): Boolean {
+                val fromPosition = srcHolder.bindingAdapterPosition
+                val toPosition = targetHolder.bindingAdapterPosition
+                if(fromPosition < 0 || fromPosition >= datas.size) return false
+                if(toPosition < 0 || toPosition >= datas.size) return false
+                Collections.swap(datas, fromPosition, toPosition)
+                adapter.notifyItemMoved(fromPosition, toPosition)
+                return true
+            }
+            override fun onItemDismiss(srcHolder: RecyclerView.ViewHolder?) {
+            }
+        }
+
         val mRVSymbolsView = SwipeRecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
+            setLongPressDragEnabled(true)
+            setOnItemMoveListener(mItemMoveListener)
         }
-        val adapter = PrefixSettingsAdapter(if(positon == 0)DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin() else DataBaseKT.instance.sideSymbolDao().getAllSideSymbolNumber())
         mRVSymbolsView.setAdapter(adapter)
         CustomLinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -65,5 +90,12 @@ class PrefixSettingsFragment(pos:Int) : Fragment(){
             })
             add(mRVSymbolsView, lParams(width = matchParent, height = matchParent))
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        DataBaseKT.instance.sideSymbolDao().deleteAll(mType)
+        DataBaseKT.instance.sideSymbolDao().insertAll(datas)
+        KeyboardManager.instance.clearKeyboard()
     }
 }

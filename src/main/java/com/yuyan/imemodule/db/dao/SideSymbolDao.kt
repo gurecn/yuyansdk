@@ -17,7 +17,10 @@ interface SideSymbolDao : BaseDao<SideSymbol> {
     fun getAllSideSymbolPinyin(): List<SideSymbol>
 
     @Query("delete from side_symbol where symbolKey = :key AND type = :type")
-    fun deleteByNKey(key: String, type: String = "pinyin")
+    fun deleteByKey(key: String, type: String = "pinyin")
+
+    @Query("delete from side_symbol where type = :type")
+    fun deleteAll(type: String = "pinyin")
 
     @Query("update side_symbol set symbolValue =:value where symbolKey =:key AND type = :type")
     fun updateSymbol(key: String, value: String, type: String = "pinyin")

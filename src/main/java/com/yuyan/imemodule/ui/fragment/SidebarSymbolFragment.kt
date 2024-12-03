@@ -68,8 +68,8 @@ class SidebarSymbolFragment : Fragment(){
             adapter = object : FragmentStateAdapter(this@SidebarSymbolFragment) {
                 override fun getItemCount() = 2
                 override fun createFragment(position: Int): Fragment = when (position) {
-                    0 -> PrefixSettingsFragment(position)
-                    else -> PrefixSettingsFragment(position)
+                    0 -> PrefixSettingsFragment("pinyin")
+                    else -> PrefixSettingsFragment("number")
                 }
             }
         }
