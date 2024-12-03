@@ -1,18 +1,20 @@
 package com.yuyan.imemodule.service
 
+import android.graphics.Paint
+import android.graphics.Rect
 import android.view.KeyEvent
 import androidx.lifecycle.MutableLiveData
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.inputmethod.core.Candidate
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
+import kotlin.math.round
 
 /**
  * 词库解码操作对象
  */
 object DecodingInfo {
-    private var mCurrentColumn = 0 // 缓存当前候选词所占宽度
     // 候选词列表
     val candidatesLiveData = MutableLiveData<List<Candidate>>()
 
@@ -20,6 +22,7 @@ object DecodingInfo {
     var isAssociate = false
     // 是否重置
     private var isReset = false
+    private var mPaint = Paint()
 
     /**
      * 重置
@@ -137,21 +140,14 @@ object DecodingInfo {
         val candidatesTemp = list.map { (comment, text) ->
             Candidate(comment, text, 0)
         }
+        val bounds = Rect()
+        val data = "标"
+        mPaint.textSize = EnvironmentSingleton.instance.candidateTextSize*1.3.toFloat()
+        mPaint.getTextBounds(data, 0, data.length, bounds)
+        val itemWidth = bounds.width()
         for (position in candidatesTemp.indices) {
             val candidate = candidatesTemp[position]
-            val count = getSymbolsCount(candidate.text)
-            if (mCurrentColumn + count <= 60) {
-                mCurrentColumn += count
-            } else {
-                if(position == 0) {
-                    if(candidates.isNotEmpty()) {
-                        candidates.last().spanSize = candidates.last().spanSize?.plus(60)?.minus(mCurrentColumn)
-                    }
-                } else {
-                    candidatesTemp[position - 1].spanSize = candidatesTemp[position - 1].spanSize?.plus(60)?.minus(mCurrentColumn)
-                }
-                mCurrentColumn = count
-            }
+            val count = getSymbolsCount(candidate.text, itemWidth)
             candidate.spanSize = count
         }
         return candidatesTemp
@@ -160,15 +156,17 @@ object DecodingInfo {
     /**
      * 根据词长计算当前候选词需占的列数
      */
-    private fun getSymbolsCount(data: String?): Int {
+    private fun getSymbolsCount(data: String?, itemWidth:Int): Int {
         return if (data?.isNotBlank() == true) {
-            val x = if(InputModeSwitcherManager.isChinese)data.length else data.length/2
-            if(x > 8) 60
-            else if(x >= 6) 30
-            else if(x >= 4) 20
-            else if(x == 3) 15
-            else if(x == 2) 12
-            else  10
+            val bounds = Rect()
+            mPaint.getTextBounds(data, 0, data.length, bounds)
+            val x = round(bounds.width().toDouble().div(itemWidth)).toInt()
+            if(x >= 11) 6
+            else if(x >= 9) 5
+            else if(x >= 7) 4
+            else if(x >= 5) 3
+            else if(x >= 3) 2
+            else  1
         } else 0
     }
 }

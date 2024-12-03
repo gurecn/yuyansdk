@@ -17,7 +17,7 @@ data class CandidateListItem(
 data class Candidate (
     var comment: String,
     var text: String,
-    var spanSize: Int? = 12,
+    var spanSize: Int = 0,
 )
 
 /** Rime編碼區  */
