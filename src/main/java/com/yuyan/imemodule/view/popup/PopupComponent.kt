@@ -82,6 +82,7 @@ class PopupComponent private constructor(){
             InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> arrayOf("🌐")
             InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> arrayOf("拼写", "直输")
             KeyEvent.KEYCODE_DEL -> arrayOf("🔙", "🚮", "🔄")
+            KeyEvent.KEYCODE_ENTER -> arrayOf("↩️")
             else -> emptyArray()
         }
         if(keys.isEmpty()) return

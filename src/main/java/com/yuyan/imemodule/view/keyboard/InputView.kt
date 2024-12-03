@@ -371,6 +371,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                     clearORRestoreText(showText)  // 🚮 清空
                     true
                 }
+                KeyEvent.KEYCODE_ENTER -> {  // 长按回车键
+                    commitText("\n")
+                    true
+                }
                 else -> false
             }
             if(!handled && !showText.isNullOrBlank()){
