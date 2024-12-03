@@ -117,7 +117,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mLongPressKey = true
             } else if (softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 ||
                     softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 ||
-                    softKey.keyCode == KeyEvent.KEYCODE_DEL){
+                softKey.keyCode == KeyEvent.KEYCODE_DEL || softKey.keyCode == KeyEvent.KEYCODE_ENTER){
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
                 popupComponent.showKeyboardMenu(softKey, bounds)
                 mLongPressKey = true
