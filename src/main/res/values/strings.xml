@@ -255,6 +255,9 @@
 
     <string name="skb_prefix_pinyin_tips">拼音侧边栏</string>
     <string name="skb_prefix_number_tips">数字侧边栏</string>
+    <string name="skb_prefix_show_tips">显示内容</string>
+    <string name="skb_prefix_commit_tips">上屏内容</string>
+    <string name="skb_prefix_sort_tips">排序</string>
 
     <string name="keyboard_symbol_slide_up_mod">上划输入灵敏度</string>
     <string name="keyboard_symbol_slide_up_short">易触发</string>

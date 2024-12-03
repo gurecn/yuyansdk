@@ -57,12 +57,10 @@ class SidebarSymbolFragment : Fragment(){
             }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(80)))
         }
         val header = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL   }.apply {
             addView(pinyinContainer, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
             addView(numberContainer, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
             setPadding(0,dp(10),0,0)
         }
-
 
         tabLayout = TabLayout(this)
 
@@ -96,7 +94,7 @@ class SidebarSymbolFragment : Fragment(){
                 bottomOfParent()
             })
             backgroundColor = styledColor(android.R.attr.colorPrimary)
-            elevation = dp(4f)
+            elevation = dp(1f)
         }
         constraintLayout {
             add(previewWrapper, lParams(height = wrapContent) {
