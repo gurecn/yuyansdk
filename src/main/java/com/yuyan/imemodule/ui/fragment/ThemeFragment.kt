@@ -19,7 +19,6 @@ import com.yuyan.imemodule.ui.fragment.theme.ThemeSettingsFragment
 import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.launch
 import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
-import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
 import splitties.resources.styledColor
@@ -46,25 +45,24 @@ class ThemeFragment : Fragment() {
 
     private val onThemeChangeListener = ThemeManager.OnThemeChangeListener {
         lifecycleScope.launch {
-            EnvironmentSingleton.instance.initData()
-            KeyboardLoaderUtil.instance.clearKeyboardMap()
-            KeyboardManager.instance.clearKeyboard();
+            KeyboardManager.instance.clearKeyboard()
             previewUi.setTheme(it)
         }
     }
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
-        previewUi = KeyboardPreviewView(this)
+
+    override fun onResume() {
+        super.onResume()
         previewUi.setTheme(activeTheme)
         ThemeManager.addOnChangedListener(onThemeChangeListener)
-        val preview = previewUi.apply {
+    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
+        previewUi = KeyboardPreviewView(this).apply {
             scaleX = 0.5f
             scaleY = 0.5f
             outlineProvider = ViewOutlineProvider.BOUNDS
             elevation = dp(0.5f)
         }
-
         tabLayout = TabLayout(this)
-
         viewPager = ViewPager2(this).apply {
             adapter = object : FragmentStateAdapter(this@ThemeFragment) {
                 override fun getItemCount() = 2
@@ -74,7 +72,6 @@ class ThemeFragment : Fragment() {
                 }
             }
         }
-
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = getString(
                 when (position) {
@@ -83,9 +80,8 @@ class ThemeFragment : Fragment() {
                 }
             )
         }.attach()
-
         val previewWrapper = constraintLayout {
-            add(preview, lParams(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight) {
+            add(previewUi, lParams(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight) {
                 topOfParent(dp(-52))
                 startOfParent()
                 endOfParent()
@@ -97,7 +93,6 @@ class ThemeFragment : Fragment() {
             backgroundColor = styledColor(android.R.attr.colorPrimary)
             elevation = dp(4f)
         }
-
         constraintLayout {
             add(previewWrapper, lParams(height = wrapContent) {
                 topOfParent()

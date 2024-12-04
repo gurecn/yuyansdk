@@ -237,10 +237,7 @@ class CustomThemeActivity : AppCompatActivity() {
             block(backgroundStates, theme.backgroundImage!!)
     }
 
-    private fun BackgroundStates.setKeyVariant(
-        background: Theme.Custom.CustomBackground,
-        darkKeys: Boolean
-    ) {
+    private fun BackgroundStates.setKeyVariant(background: Theme.Custom.CustomBackground, darkKeys: Boolean) {
         theme = if (darkKeys)
             ThemePreset.TransparentLight.deriveCustomBackground(
                 theme.name,
