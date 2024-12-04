@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yanzhenjie.recyclerview.OnItemLongClickListener
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yanzhenjie.recyclerview.touch.OnItemMoveListener
 import com.yuyan.imemodule.R
@@ -17,6 +19,8 @@ import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.db.DataBaseKT
 import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.prefs.restore
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.CustomLinearLayout
 import splitties.dimensions.dp
@@ -79,6 +83,17 @@ class PrefixSettingsFragment(type:String) : Fragment(){
         val mRVSymbolsView = SwipeRecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             setLongPressDragEnabled(true)
+            setOnItemLongClickListener{ _, adapterPosition ->
+                AlertDialog.Builder(context)
+                    .setTitle(R.string.skb_prefix_delete_title)
+                    .setMessage(String.format(getString(R.string.skb_prefix_delete_tips), datas[0].symbolKey))
+                    .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                    .setPositiveButton(R.string.sure) { _, _ ->
+                        datas.removeAt(adapterPosition)
+                        adapter.notifyItemRemoved(adapterPosition)
+                    }
+                    .show()
+            }
             setOnItemMoveListener(mItemMoveListener)
         }
         mRVSymbolsView.setAdapter(adapter)
@@ -95,7 +110,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
     override fun onPause() {
         super.onPause()
         DataBaseKT.instance.sideSymbolDao().deleteAll(mType)
-        DataBaseKT.instance.sideSymbolDao().insertAll(datas)
+        DataBaseKT.instance.sideSymbolDao().insertAll(datas.filter { it.symbolKey.isNotBlank()})
         KeyboardManager.instance.clearKeyboard()
     }
 }

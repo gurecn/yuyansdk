@@ -15,6 +15,7 @@ import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.editText
 import splitties.views.dsl.core.lParams
+import splitties.views.dsl.core.matchParent
 
 class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:String) : RecyclerView.Adapter<PrefixSettingsAdapter.PrefixSettingsHolder>() {
     private var  mType = "pinyin"
@@ -28,7 +29,7 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             add(editText {
                 gravity = Gravity.CENTER
                 id = R.id.et_prefix_setting_key
-            }, lParams(width = 0, weight = 1f){
+            }, lParams(width = 0, weight = 1f, height = matchParent){
                 setMargins(dp(20), 0, dp(20), 0)
             })
             add(editText {
@@ -51,21 +52,35 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
         holder.etPrefixKey.doOnTextChanged { s, _, _, _ ->
             val key = s.toString()
             val bindPos = holder.bindingAdapterPosition
-            if(bindPos < mDatas.size) mDatas[bindPos].symbolKey = key
+            if(bindPos < mDatas.size) {
+                val data = mDatas[bindPos]
+                data.symbolKey = key
+                if(data.symbolKey == "" && data.symbolValue == ""){
+                    mDatas.removeAt(bindPos)
+                    notifyItemRemoved(bindPos)
+                }
+            }
             else {
                 mDatas.add(SideSymbol(symbolKey = key, symbolValue = key, type = mType))
                 holder.etPrefixValue.setText(key)
-                notifyDataSetChanged()
+                notifyItemInserted(bindPos + 1)
             }
         }
         holder.etPrefixValue.doOnTextChanged { s, _, _, _ ->
             val value = s.toString()
             val bindPos = holder.bindingAdapterPosition
-            if(bindPos < mDatas.size)  mDatas[bindPos].symbolValue = value
+            if(bindPos < mDatas.size) {
+                val data = mDatas[bindPos]
+                data.symbolValue = value
+                if(data.symbolKey == "" && data.symbolValue == ""){
+                    mDatas.removeAt(bindPos)
+                    notifyItemRemoved(bindPos)
+                }
+            }
             else {
                 mDatas.add(SideSymbol(symbolKey = value, symbolValue = value, type = mType))
                 holder.etPrefixKey.setText(value)
-                notifyDataSetChanged()
+                notifyItemInserted(bindPos + 1)
             }
         }
     }
