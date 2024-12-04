@@ -119,7 +119,7 @@ object ThemePreset {
         keyboardResources = 0x0,
         barColor = 0xffE5E9F0,
         keyboardColor = 0xffECEFF4,
-        keyBackgroundColor = 0xffECEFF4,
+        keyBackgroundColor = 0xfffbfbfc,
         keyTextColor = 0xff2E3440,
         accentKeyBackgroundColor = 0xff5E81AC,
         accentKeyTextColor = 0xffECEFF4,
