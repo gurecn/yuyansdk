@@ -20,12 +20,12 @@ import kotlin.math.ceil
  */
 class SymbolPagerAdapter(context: Context?, private val mDatas: Map<EmojiconData.Category, List<String>>, val viewType: Int, private val onClickSymbol: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolPagerAdapter.ViewHolder>() {
-    private var mPaint : Paint
+    private var mPaint = Paint()
     private val mContext: Context?
 
     init {
         mContext = context
-        mPaint = Paint()
+        mPaint.textSize = EnvironmentSingleton.instance.candidateTextSize.toFloat()
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -86,7 +86,9 @@ class SymbolPagerAdapter(context: Context?, private val mDatas: Map<EmojiconData
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val key = mDatas.keys.toList()[position]
-        val item = if(key.label == "🕝") { LauncherModel.instance.usedEmojiDao!!.allUsedEmoji} else mDatas[key]
+        val item = if(key.label == "🕝") { LauncherModel.instance.usedEmojiDao!!.allUsedEmoji.takeIf { it.isNotEmpty() }?:mDatas[mDatas.keys.toList()[1]]}
+        else if(key.label == "最近"){ LauncherModel.instance.usedCharacterDao!!.allUsedCharacter.takeIf { it.isNotEmpty() }?:mDatas[mDatas.keys.toList()[1]] }
+        else mDatas[key]
         holder.apply {
             (emojiGroupRv.layoutManager as GridLayoutManager).apply {
                 spanCount = 8

@@ -104,7 +104,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
         init {
             textView = view.findViewById(R.id.clipboard_adapter_content)
             textView.setTextColor(textColor)
-            textView.textSize = px2dip(EnvironmentSingleton.instance.candidateTextSize.toFloat()).toFloat()
+            textView.textSize = px2dip(EnvironmentSingleton.instance.candidateTextSize)
             ivTopTips = view.findViewById(R.id.clipboard_adapter_top_tips)
         }
     }

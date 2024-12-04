@@ -59,7 +59,7 @@ class CandidatesBarAdapter(context: Context?) :
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)
-            textView.textSize = DevicesUtils.px2dip(instance.candidateTextSize.toFloat()).toFloat()
+            textView.textSize = DevicesUtils.px2dip(instance.candidateTextSize)
         }
     }
 }

@@ -30,9 +30,9 @@ object DevicesUtils {
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
      */
 	@JvmStatic
-	fun px2dip(pxValue: Float): Int {
+	fun px2dip(pxValue: Int): Float {
         val scale = ImeSdkApplication.context.resources.displayMetrics.density
-        return (pxValue / scale + 0.5f).toInt()
+        return pxValue / scale + 0.5f
     }
 
     /**

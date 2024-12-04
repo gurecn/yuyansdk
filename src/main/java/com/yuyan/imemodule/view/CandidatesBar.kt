@@ -147,7 +147,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 gravity = Gravity.CENTER_VERTICAL
             }
             mFlowerType = TextView(context).apply {
-                textSize = DevicesUtils.px2dip(instance.candidateTextSize.toFloat()).toFloat()
+                textSize = DevicesUtils.px2dip(instance.candidateTextSize)
                 setTextColor(ThemeManager.activeTheme.keyTextColor)
                 val paddingValue = dp(5)
                 setPadding(paddingValue, paddingValue, paddingValue, paddingValue)

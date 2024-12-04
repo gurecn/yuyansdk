@@ -8,6 +8,8 @@ import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.utils.DevicesUtils
 
 /**
  * 表情或符号界面适配器
@@ -44,6 +46,7 @@ class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSy
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(textColor)
+            textView.textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize) * 0.8f
         }
     }
 }

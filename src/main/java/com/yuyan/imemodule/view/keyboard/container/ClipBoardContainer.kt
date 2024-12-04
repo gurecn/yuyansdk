@@ -57,7 +57,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             textResource = R.string.clipboard_empty_ltip
             gravity = Gravity.CENTER
             setTextColor(ThemeManager.activeTheme.keyTextColor)
-            textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize.toFloat()).toFloat()
+            textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize)
         }
         mRVSymbolsView.setItemAnimator(null)
         val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
