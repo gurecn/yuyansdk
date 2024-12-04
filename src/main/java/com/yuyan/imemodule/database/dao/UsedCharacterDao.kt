@@ -20,6 +20,6 @@ class UsedCharacterDao(dataProvider: BaseDataProvider) {
     }
 
     @get:Synchronized
-    val allUsedCharacter: Array<String>
+    val allUsedCharacter: List<String>
         get() = mCalllogDatabaseHelper.allUsedCharacter
 }

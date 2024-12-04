@@ -71,7 +71,7 @@ class UsedChararterDBHelper(dataProvider: BaseDataProvider) {
         return false
     }
 
-    val allUsedCharacter: Array<String>
+    val allUsedCharacter: List<String>
         /**
          * 查询符号
          */
@@ -90,6 +90,6 @@ class UsedChararterDBHelper(dataProvider: BaseDataProvider) {
                 } while (cursor.moveToNext())
                 cursor.close()
             }
-            return emojis.toTypedArray()
+            return emojis.toList()
         }
 }
