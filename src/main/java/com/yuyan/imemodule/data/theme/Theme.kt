@@ -21,24 +21,23 @@ sealed class Theme : Parcelable {
     abstract val name: String
     abstract val isDark: Boolean
 
+    abstract val barColor: Int     // 候选拼音背景色
+
     abstract val keyboardResources: Int  // 键盘背景资源，首选
     abstract val keyboardColor: Int  // 键盘区域背景色，次选
 
-    abstract val barColor: Int     // 菜单栏、候选此栏背景色
+    abstract val keyTextColor: Int   // 按键字体颜色
+
     abstract val keyBackgroundColor: Int    // 按键背景色
     abstract val keyPressHighlightColor: Int  // 按键按下背景色
-    abstract val keyTextColor: Int   // 按键字体颜色
+
+    abstract val functionKeyBackgroundColor: Int    // 功能键背景色
+    abstract val functionKeyPressHighlightColor: Int  // 功能键按下背景色
 
     abstract val accentKeyBackgroundColor: Int   // 回车键背景色
     abstract val accentKeyTextColor: Int   // 回车键字体色
 
     abstract val popupBackgroundColor: Int    // 长按弹窗背景色
-
-    abstract val spaceBarColor: Int    // 空格键背景色
-    abstract val dividerColor: Int    // 分割线颜色
-
-    abstract val genericActiveBackgroundColor: Int    //通用活动背景色
-    abstract val genericActiveForegroundColor: Int   //通用活动前景色
 
     open fun backgroundDrawable(keyBorder: Boolean = false): Drawable {
         return if(keyboardResources != 0){
@@ -66,10 +65,8 @@ sealed class Theme : Parcelable {
         override val accentKeyTextColor: Int,
         override val keyPressHighlightColor: Int,
         override val popupBackgroundColor: Int,
-        override val spaceBarColor: Int,
-        override val dividerColor: Int,
-        override val genericActiveBackgroundColor: Int,
-        override val genericActiveForegroundColor: Int
+        override val functionKeyBackgroundColor: Int,
+        override val functionKeyPressHighlightColor: Int,
     ) : Theme() {
         @Parcelize
         @Serializable
@@ -108,10 +105,8 @@ sealed class Theme : Parcelable {
         override val accentKeyTextColor: Int,
         override val keyPressHighlightColor: Int,
         override val popupBackgroundColor: Int,
-        override val spaceBarColor: Int,
-        override val dividerColor: Int,
-        override val genericActiveBackgroundColor: Int,
-        override val genericActiveForegroundColor: Int
+        override val functionKeyBackgroundColor: Int,
+        override val functionKeyPressHighlightColor: Int,
     ) : Theme() {
 
         // an alias to use 0xAARRGGBB color literal in code
@@ -128,10 +123,8 @@ sealed class Theme : Parcelable {
             accentKeyTextColor: Number,
             keyPressHighlightColor: Number,
             popupBackgroundColor: Number,
-            spaceBarColor: Number,
-            dividerColor: Number,
-            genericActiveBackgroundColor: Number,
-            genericActiveForegroundColor: Number
+            functionKeyBackgroundColor: Number,
+            functionKeyPressHighlightColor: Number,
         ) : this(
             name,
             isDark,
@@ -144,10 +137,8 @@ sealed class Theme : Parcelable {
             accentKeyTextColor.toInt(),
             keyPressHighlightColor.toInt(),
             popupBackgroundColor.toInt(),
-            spaceBarColor.toInt(),
-            dividerColor.toInt(),
-            genericActiveBackgroundColor.toInt(),
-            genericActiveForegroundColor.toInt()
+            functionKeyBackgroundColor.toInt(),
+            functionKeyPressHighlightColor.toInt(),
         )
 
         fun deriveCustomNoBackground(name: String) = Custom(
@@ -163,10 +154,8 @@ sealed class Theme : Parcelable {
             accentKeyTextColor,
             keyPressHighlightColor,
             popupBackgroundColor,
-            spaceBarColor,
-            dividerColor,
-            genericActiveBackgroundColor,
-            genericActiveForegroundColor
+            functionKeyBackgroundColor,
+            functionKeyPressHighlightColor,
         )
 
         fun deriveCustomBackground(
@@ -193,10 +182,8 @@ sealed class Theme : Parcelable {
             accentKeyTextColor,
             keyPressHighlightColor,
             popupBackgroundColor,
-            spaceBarColor,
-            dividerColor,
-            genericActiveBackgroundColor,
-            genericActiveForegroundColor
+            functionKeyBackgroundColor,
+            functionKeyPressHighlightColor,
         )
     }
 

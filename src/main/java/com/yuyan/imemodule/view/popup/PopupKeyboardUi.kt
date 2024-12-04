@@ -39,7 +39,6 @@ import kotlin.math.roundToInt
  * @param popupHeight popup preview view height. Used to transform gesture coordinate from
  * trigger view to popup keyboard view. See [offsetX] and [offsetY].
  * @param keys character to commit when triggered
- * @param labels symbols to show on keys
  */
 class PopupKeyboardUi(
     override val ctx: Context,
@@ -89,7 +88,7 @@ class PopupKeyboardUi(
 
     private val focusBackground = GradientDrawable().apply {
         cornerRadius = radius
-        setColor(theme.genericActiveBackgroundColor)
+        setColor(theme.accentKeyBackgroundColor)
     }
 
     private val rowCount: Int

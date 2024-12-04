@@ -51,8 +51,9 @@ class PopupComponent private constructor(){
             return
         }
         val popup = (freeEntryUi.poll()
-            ?: PopupEntryUi(ImeSdkApplication.context, ThemeManager.activeTheme, popupRadius)).apply {
+            ?: PopupEntryUi(ImeSdkApplication.context)).apply {
             lastShowTime = System.currentTimeMillis()
+            setBackground(ThemeManager.activeTheme, popupRadius)
             setText(content)
         }
         var bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat){

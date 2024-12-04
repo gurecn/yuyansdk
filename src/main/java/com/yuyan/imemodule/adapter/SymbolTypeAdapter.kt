@@ -35,14 +35,10 @@ class SymbolTypeAdapter(context: Context?, private val mDatas: List<EmojiconData
         if (isKeyBorder) {
             val mActiveTheme = activeTheme
             val keyRadius = ThemeManager.prefs.keyRadius.getValue()
-            pressKeyBackground.setColor(mActiveTheme.genericActiveBackgroundColor)
+            pressKeyBackground.setColor(mActiveTheme.accentKeyBackgroundColor)
             pressKeyBackground.setShape(GradientDrawable.RECTANGLE)
             pressKeyBackground.setCornerRadius(keyRadius.toFloat()) // 设置圆角半径
         }
-    }
-
-    fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
-        mOnItemClickListener = mOnItemClickLitener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolTypeHolder {

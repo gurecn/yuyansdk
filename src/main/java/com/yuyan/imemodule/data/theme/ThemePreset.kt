@@ -17,10 +17,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xffd9dbdd,
-        spaceBarColor = 0xffc9ced1,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0xffc9ced1,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
 
     val MaterialDark = Theme.Builtin(
@@ -35,10 +33,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x33ffffff,
         popupBackgroundColor = 0xff3c474c,
-        spaceBarColor = 0xff3b464c,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xff4db6ac,
-        genericActiveForegroundColor = 0xffffffff
+        functionKeyBackgroundColor = 0xff3b464c,
+        functionKeyPressHighlightColor = 0x1fffffff,
     )
 
     val PixelLight = Theme.Builtin(
@@ -53,10 +49,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xffeeeeee,
-        spaceBarColor = 0xffdbdbdb,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff5e97f6,
-        genericActiveForegroundColor = 0xffffffff
+        functionKeyBackgroundColor = 0xffdbdbdb,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
 
     val PixelDark = Theme.Builtin(
@@ -71,28 +65,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x33ffffff,
         popupBackgroundColor = 0xff373737,
-        spaceBarColor = 0xff4a4a4a,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xff5e97f6,
-        genericActiveForegroundColor = 0xfffafafa
-    )
-
-    val DeepBlue = Theme.Builtin(
-        name = "DeepBlue",
-        isDark = true,
-        keyboardResources = 0x0,
-        barColor = 0xff0d47a1,
-        keyboardColor = 0xff1565c0,
-        keyBackgroundColor = 0xff3f80cb,
-        keyTextColor = 0xffffffff,
-        accentKeyBackgroundColor = 0xff2196f3,
-        accentKeyTextColor = 0xffffffff,
-        keyPressHighlightColor = 0x33ffffff,
-        popupBackgroundColor = 0xff0d47a1,
-        spaceBarColor = 0xff7eaadc,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xff094cea,
-        genericActiveForegroundColor = 0xffffffff
+        functionKeyBackgroundColor = 0xff4a4a4a,
+        functionKeyPressHighlightColor = 0x1fffffff,
     )
 
     val AMOLEDBlack = Theme.Builtin(
@@ -107,10 +81,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x33ffffff,
         popupBackgroundColor = 0xff373737,
-        spaceBarColor = 0xff727272,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xff26a69a,
-        genericActiveForegroundColor = 0xffffffff
+        functionKeyBackgroundColor = 0xff727272,
+        functionKeyPressHighlightColor = 0x1fffffff,
     )
 
     val NordLight = Theme.Builtin(
@@ -125,10 +97,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffECEFF4,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xffE5E9F0,
-        spaceBarColor = 0xffD8DEE9,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff5E81AC,
-        genericActiveForegroundColor = 0xffECEFF4
+        functionKeyBackgroundColor = 0xffD8DEE9,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
 
     val NordDark = Theme.Builtin(
@@ -143,10 +113,8 @@ object ThemePreset {
         accentKeyTextColor = 0xff2E3440,
         keyPressHighlightColor = 0x33ffffff,
         popupBackgroundColor = 0xff434C5E,
-        spaceBarColor = 0xff4C566A,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xff88C0D0,
-        genericActiveForegroundColor = 0xff2E3440
+        functionKeyBackgroundColor = 0xff4C566A,
+        functionKeyPressHighlightColor = 0x1fffffff,
     )
 
     val Monokai = Theme.Builtin(
@@ -161,10 +129,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffd6d6d6,
         keyPressHighlightColor = 0x33ffffff,
         popupBackgroundColor = 0xff1f201b,
-        spaceBarColor = 0xff373830,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xffb05279,
-        genericActiveForegroundColor = 0xffd6d6d6
+        functionKeyBackgroundColor = 0xff373830,
+        functionKeyPressHighlightColor = 0x1fffffff,
     )
 
     /**
@@ -182,10 +148,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xff373737,
-        spaceBarColor = 0x4bffffff,
-        dividerColor = 0x1fffffff,
-        genericActiveBackgroundColor = 0xff5e97f6,
-        genericActiveForegroundColor = 0xfffafafa
+        functionKeyBackgroundColor = 0x4bffffff,
+        functionKeyPressHighlightColor = 0x1fffffff,
     )
 
     /**
@@ -203,10 +167,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xffeeeeee,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff5e97f6,
-        genericActiveForegroundColor = 0xffffffff
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
 
     val CustomRed = Theme.Builtin(
@@ -221,10 +183,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xfffd3422,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
     val CustomPink = Theme.Builtin(
         name = "CustomPink",
@@ -238,10 +198,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xffd7c4d0,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
     val CustomYellow = Theme.Builtin(
         name = "CustomYellow",
@@ -255,10 +213,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xfff16877,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
     val CustomCrimson = Theme.Builtin(
         name = "CustomCrimson",
@@ -272,10 +228,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0XFF480603,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
     val CustomPurple = Theme.Builtin(
         name = "CustomPurple",
@@ -289,10 +243,8 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xff9f00ff,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
 
     val CustomBlue = Theme.Builtin(
@@ -307,9 +259,7 @@ object ThemePreset {
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xff0d47a1,
-        spaceBarColor = 0x5affffff,
-        dividerColor = 0x1f000000,
-        genericActiveBackgroundColor = 0xff80cbc4,
-        genericActiveForegroundColor = 0xff37474f
+        functionKeyBackgroundColor = 0x5affffff,
+        functionKeyPressHighlightColor = 0x1f000000,
     )
 }

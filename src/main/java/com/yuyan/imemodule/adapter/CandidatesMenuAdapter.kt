@@ -64,7 +64,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
     override fun onBindViewHolder(holder: CandidatesMenuAdapter.SymbolHolder, position: Int) {
         val item = items[position]
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
-        val color = if (isSettingsMenuSelect(item)) activeTheme.genericActiveBackgroundColor else activeTheme.keyTextColor
+        val color = if (isSettingsMenuSelect(item)) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor
         val vectorDrawableCompat = holder.entranceIconImageView?.getDrawable() as VectorDrawable
         vectorDrawableCompat.setTint(color)
         if (mOnItemClickListener != null) {

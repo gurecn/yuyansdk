@@ -14,7 +14,6 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.ui.utils.rippleDrawable
 import splitties.dimensions.dp
-import splitties.views.backgroundColor
 import splitties.views.dsl.constraintlayout.bottomOfParent
 import splitties.views.dsl.constraintlayout.centerHorizontally
 import splitties.views.dsl.constraintlayout.centerInParent
@@ -36,17 +35,15 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
 
     enum class State { Normal, Selected, LightMode, DarkMode }
 
-    val bkg = imageView {
+    private val bkg = imageView {
         scaleType = ImageView.ScaleType.CENTER_CROP
     }
 
-    val bar = view(::View)
+    private val spaceBar = view(::View)
 
-    val spaceBar = view(::View)
+    private val returnKey = view(::View)
 
-    val returnKey = view(::View)
-
-    val checkMark = imageView {
+    private val checkMark = imageView {
         scaleType = ImageView.ScaleType.FIT_CENTER
     }
 
@@ -60,7 +57,6 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
         outlineProvider = ViewOutlineProvider.BOUNDS
         elevation = dp(2f)
         add(bkg, lParams(matchParent, matchParent))
-        add(bar, lParams(matchParent, dp(14)))
         add(spaceBar, lParams(height = dp(10)) {
             centerHorizontally()
             bottomOfParent(dp(6))
@@ -84,11 +80,10 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
             foreground = rippleDrawable(theme.keyboardColor)
         }
         bkg.imageDrawable = theme.backgroundDrawable()
-        bar.backgroundColor = theme.barColor
         spaceBar.background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = ctx.dp(2f)
-            setColor(theme.spaceBarColor)
+            setColor(theme.functionKeyBackgroundColor)
         }
         returnKey.background = ShapeDrawable(OvalShape()).apply {
             paint.color = theme.accentKeyBackgroundColor

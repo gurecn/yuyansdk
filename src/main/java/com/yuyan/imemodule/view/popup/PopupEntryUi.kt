@@ -15,21 +15,16 @@ import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.view
 import splitties.views.gravityCenter
 
-class PopupEntryUi(override val ctx: Context, theme: Theme, radius: Float) : Ui {
+class PopupEntryUi(override val ctx: Context) : Ui {
 
     var lastShowTime = -1L
 
     val textView = view(::AutoScaleTextView) {
         setTextSize(TypedValue.COMPLEX_UNIT_PX, EnvironmentSingleton.instance.keyTextSize * 1.2f)
         scaleMode = AutoScaleTextView.Mode.Proportional
-        setTextColor(theme.genericActiveForegroundColor)
     }
 
     override val root = frameLayout {
-        background = GradientDrawable().apply {
-            cornerRadius = radius
-            setColor(theme.genericActiveBackgroundColor)
-        }
         outlineProvider = ViewOutlineProvider.BACKGROUND
         elevation = dp(2f)
         add(textView, lParams {
@@ -39,5 +34,12 @@ class PopupEntryUi(override val ctx: Context, theme: Theme, radius: Float) : Ui 
 
     fun setText(text: String) {
         textView.text = text
+    }
+    fun setBackground( theme: Theme, radius: Float) {
+        root.background = GradientDrawable().apply {
+            cornerRadius = radius
+            setColor(theme.popupBackgroundColor)
+        }
+        textView.setTextColor(theme.keyTextColor)
     }
 }
