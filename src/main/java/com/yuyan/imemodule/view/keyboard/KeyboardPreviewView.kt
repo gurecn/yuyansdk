@@ -21,7 +21,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     private var qwerTextContainer: TextKeyboard? = null
     private fun initView() {
         removeAllViews()
-        val mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false)
+        val mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_preview, this, false)
         val previewUi = mSkbRoot.findViewById<RelativeLayout>(R.id.skb_input_keyboard_view)
         qwerTextContainer = TextKeyboard(context)
         val softKeyboard = KeyboardLoaderUtil.instance.getSoftKeyboard(AppPrefs.getInstance().internal.inputDefaultMode.getValue()  and InputModeSwitcherManager.MASK_SKB_LAYOUT)
@@ -39,11 +39,10 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     }
 
     fun setTheme(theme: Theme) {
-        initView()
         qwerTextContainer?.setTheme(theme)
         background = theme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
         layoutParams?.width = instance.skbWidth
-        layoutParams?.height = instance.inputAreaHeight
+        layoutParams?.height = instance.skbHeight + instance.heightForCandidates
     }
 
     override fun onAttachedToWindow() {
