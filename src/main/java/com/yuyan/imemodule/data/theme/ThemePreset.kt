@@ -42,14 +42,14 @@ object ThemePreset {
         isDark = false,
         keyboardResources = 0x0,
         barColor = 0xffeeeeee,
-        keyboardColor = 0xfffafafa,
-        keyBackgroundColor = 0xffffffff,
+        keyboardColor = 0xffE3E4EA,
+        keyBackgroundColor = 0xffFCFCFC,
         keyTextColor = 0xff212121,
         accentKeyBackgroundColor = 0xff4285f4,
         accentKeyTextColor = 0xffffffff,
         keyPressHighlightColor = 0x1f000000,
         popupBackgroundColor = 0xffeeeeee,
-        functionKeyBackgroundColor = 0xffdbdbdb,
+        functionKeyBackgroundColor = 0xffB7BDC4,
         functionKeyPressHighlightColor = 0x1f000000,
     )
 
