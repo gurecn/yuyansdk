@@ -203,7 +203,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                     mActiveTheme.accentKeyBackgroundColor
                 }
                 KeyEvent.KEYCODE_SPACE -> {
-                    mActiveTheme.spaceBarColor
+                    mActiveTheme.functionKeyBackgroundColor
                 }
                 else -> {
                     mActiveTheme.keyBackgroundColor
