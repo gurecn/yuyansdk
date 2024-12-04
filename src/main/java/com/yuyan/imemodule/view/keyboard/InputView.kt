@@ -105,6 +105,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private lateinit var mLlKeyboardBottomHolder: LinearLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
+    private var mFullDisplayKeyboardBar:FullDisplayKeyboardBar? = null
 
     init {
         this.service = service
@@ -192,7 +193,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             val fullDisplayKeyboardEnable = getInstance().internal.fullDisplayKeyboardEnable.getValue()
             if(fullDisplayKeyboardEnable){
-                val mFullDisplayKeyboardBar = FullDisplayKeyboardBar(context, this)
+                mFullDisplayKeyboardBar = FullDisplayKeyboardBar(context, this)
                 mLlKeyboardBottomHolder.addView(mFullDisplayKeyboardBar)
             }
             bottomPadding = 0
@@ -268,6 +269,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         mSkbRoot.background = activeTheme.backgroundDrawable(prefs.keyBorder.getValue())
         mComposingView.updateTheme(activeTheme)
         mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
+        mFullDisplayKeyboardBar?.updateTheme(activeTheme.keyTextColor)
         mAddPhrasesLayout.setBackgroundColor(activeTheme.barColor)
         val bg = GradientDrawable()
         bg.setColor(activeTheme.keyBackgroundColor)

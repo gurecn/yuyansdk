@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.db.DataBaseKT
 import com.yuyan.imemodule.db.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -44,6 +45,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
     init {
         val ivAddSymbol = ImageView(context).apply {
             setImageResource(R.drawable.baseline_add_circle_24)
+            drawable.setTint(ThemeManager.activeTheme.keyTextColor)
         }
         ivAddSymbol.setOnClickListener { _:View ->
             val arguments = Bundle()
