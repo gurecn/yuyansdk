@@ -53,6 +53,8 @@ class EnvironmentSingleton private constructor() {
         // 按键 + 后续高度，值是相对于竖屏宽度，横屏高度。
         keyboardHeightRatio =  if(isLandscape && !keyboardModeFloat) AppPrefs.getInstance().internal.keyboardHeightRatioLandscape.getValue()
             else AppPrefs.getInstance().internal.keyboardHeightRatio.getValue()
+        val candidatesHeightRatio =  if(isLandscape && !keyboardModeFloat) AppPrefs.getInstance().internal.candidatesHeightRatioLandscape.getValue()
+        else AppPrefs.getInstance().internal.candidatesHeightRatio.getValue()
         if(keyboardModeFloat){
             screenWidthVertical = (min(dm.widthPixels, dm.heightPixels)*3f/4).toInt()
             screenHeightVertical = (max(dm.widthPixels, dm.heightPixels)*3f/4).toInt()
@@ -61,7 +63,7 @@ class EnvironmentSingleton private constructor() {
         // 键盘占位宽度（用于单手模式），值是相对于竖屏宽度，横屏高度。
         holderWidth = if (oneHandedMod) (screenWidthVertical * 0.2f).toInt() else 0
         skbWidth = screenWidthVertical - holderWidth
-        heightForCandidates = (skbHeight /4.5).toInt()
+        heightForCandidates = (screenHeightVertical * candidatesHeightRatio).toInt()
         heightForComposingView = (heightForCandidates*0.5f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()

@@ -30,6 +30,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val dataDictVersion = int("rime_dict_data_version", 0)  //缓存rime词库版本号,用于校验是否覆盖词库文件
         val keyboardHeightRatio = float("keyboard_height_ratio", 0.3f)     //键盘高度比例
         val keyboardHeightRatioLandscape = float("keyboard_height_ratio_landscape", 0.5f)     //键盘高度比例:横屏
+        val candidatesHeightRatio = float("candidates_height_ratio", 0.07f)     //候选词栏高度比例
+        val candidatesHeightRatioLandscape = float("candidates_height_ratio_landscape", 0.12f)     //候选词栏高度比例:横屏
         val keyboardModeFloat = bool("keyboard_mode_float", false)     // 悬浮模式
         val keyboardModeFloatLandscape = bool("keyboard_mode_float_landscape", false)// 悬浮模式:横屏
         val keyboardBottomPaddingFloat = int("keyboard_padding_bottom", DevicesUtils.dip2px(100))     //竖屏悬浮模式底边距
