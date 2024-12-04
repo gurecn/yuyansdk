@@ -15,23 +15,23 @@ object ThemeManager {
     }
 
     val BuiltinThemes = listOf(
-        ThemePreset.CustomRed,
-        ThemePreset.MaterialDark,
-        ThemePreset.CustomBlue,
-        ThemePreset.PixelDark,
         ThemePreset.MaterialLight,
-        ThemePreset.NordDark,
+        ThemePreset.MaterialDark,
         ThemePreset.PixelLight,
-        ThemePreset.Monokai,
+        ThemePreset.PixelDark,
         ThemePreset.NordLight,
+        ThemePreset.NordDark,
+        ThemePreset.CustomRed,
         ThemePreset.AMOLEDBlack,
+        ThemePreset.CustomBlue,
+        ThemePreset.Monokai,
         ThemePreset.CustomPink,
         ThemePreset.CustomCrimson,
         ThemePreset.CustomYellow,
         ThemePreset.CustomPurple,
     )
 
-    val DefaultTheme = ThemePreset.CustomRed
+    val DefaultTheme = ThemePreset.MaterialLight
 
     private val customThemes: MutableList<Theme.Custom> = ThemeFilesManager.listThemes()
 
