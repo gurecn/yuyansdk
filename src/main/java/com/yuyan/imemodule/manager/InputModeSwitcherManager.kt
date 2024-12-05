@@ -357,7 +357,6 @@ object InputModeSwitcherManager {
      */
     fun saveInputMode(newInputMode: Int) {
         mInputMode = newInputMode // 设置新的输入法模式为当前的输入法模式
-        getInstance().internal.inputDefaultMode.setValue(mInputMode)
         // 语言键：显示中文或者英文、中符、英符的键
         if (isEnglish) {
             val charCase = mInputMode and MASK_CASE
@@ -368,6 +367,7 @@ object InputModeSwitcherManager {
         }
         if (isChinese || isEnglish) {
             mRecentLauageInputMode = mInputMode
+            getInstance().internal.inputDefaultMode.setValue(mInputMode)
         }
     }
 
