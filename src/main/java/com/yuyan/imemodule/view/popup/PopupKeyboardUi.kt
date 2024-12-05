@@ -132,7 +132,7 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
      */
     override val offsetY = 0 - bounds.height() * (rowCount - 1)
 
-//    private val columnOrder = createColumnOrder(columnCount, focusColumn)
+    private val columnOrder = createColumnOrder(columnCount, focusColumn)
 
     /**
      * row with smaller index displays at bottom.
@@ -148,7 +148,7 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
      * in which `0` indicates default focus
      */
     private val keyOrders = Array(rowCount) { row ->
-        IntArray(columnCount) { col -> row * columnCount + col }
+        IntArray(columnCount) { col -> row * columnCount + columnOrder[col] }
     }
 
     private var focusedIndex = keyOrders[focusRow][focusColumn]
