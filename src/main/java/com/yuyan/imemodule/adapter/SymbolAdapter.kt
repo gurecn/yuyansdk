@@ -16,13 +16,10 @@ import com.yuyan.imemodule.utils.DevicesUtils
  */
 class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSymbol: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolAdapter.SymbolHolder>() {
-    private val textColor: Int
     private val inflater: LayoutInflater
     var mDatas: List<String>? = null
 
     init {
-        val theme = activeTheme
-        textColor = theme.keyTextColor
         inflater = LayoutInflater.from(context)
     }
 
@@ -45,7 +42,7 @@ class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSy
         var textView: EmojiTextView
         init {
             textView = view.findViewById(R.id.gv_item)
-            textView.setTextColor(textColor)
+            textView.setTextColor(activeTheme.keyTextColor)
             textView.textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize) * 0.8f
         }
     }

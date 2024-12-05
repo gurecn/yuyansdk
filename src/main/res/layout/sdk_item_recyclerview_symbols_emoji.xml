@@ -2,11 +2,9 @@
 <androidx.emoji2.widget.EmojiTextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/gv_item"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textSize="20sp"
     android:singleLine="true"
     android:ellipsize="none"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp"
+    android:layout_margin="10dp"
     android:gravity="center"/>

@@ -2,8 +2,6 @@ package com.yuyan.imemodule.view.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
@@ -12,9 +10,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.JustifyContent
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
@@ -33,7 +33,7 @@ import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
+import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -93,22 +93,29 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             inputView.onChoiceTouched(position)
             mRVSymbolsView.scrollToPosition(0)
         }
-        val bounds = Rect()
-        val data = "标"
-        val paint = Paint()
-        paint.textSize = instance.candidateTextSize*1.3.toFloat()
-        paint.getTextBounds(data, 0, data.length, bounds)
-        val items = (instance.skbWidth * 0.8/bounds.width() /2).toInt()
-        val layoutManager = CustomGridLayoutManager(context, items)
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(pos: Int): Int {
-                if(DecodingInfo.candidateSize <= pos) return  items
-                return DecodingInfo.candidates[pos].spanSize
-            }
-        }
-        mRVSymbolsView.setLayoutManager(layoutManager)
+        val manager = CustomFlexboxLayoutManager(context)
+        manager.flexDirection = FlexDirection.ROW //主轴为水平方向，起点在左端。
+        manager.flexWrap = FlexWrap.WRAP //按正常方向换行
+        manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
+        mRVSymbolsView.setLayoutManager(manager)
         mRVSymbolsView.setAdapter(mCandidatesAdapter)
-        mRVSymbolsView.addOnScrollListener(RecyclerViewScrollListener())
+        mRVSymbolsView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    ThreadPoolUtils.executeSingleton {
+                        if (!isLoadingMore) {
+                            isLoadingMore = true
+                            val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
+                            CustomConstant.activeCandidate = lastItem
+                            if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
+                                DecodingInfo.nextPageCandidates
+                            }
+                            isLoadingMore = false
+                        }
+                    }
+                }
+            }
+        })
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -149,25 +156,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         layoutParams3.addRule(ALIGN_PARENT_BOTTOM, TRUE)
         ivDelete.layoutParams = layoutParams3
         return ivDelete
-    }
-
-    private inner class RecyclerViewScrollListener : RecyclerView.OnScrollListener() {
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                ThreadPoolUtils.executeSingleton {
-                    if (!isLoadingMore) {
-                        isLoadingMore = true
-                        val lastItem = (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-                        CustomConstant.activeCandidate = lastItem
-                        if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
-                            DecodingInfo.nextPageCandidates
-                        }
-                        isLoadingMore = false
-                    }
-                }
-            }
-        }
     }
 
     /**
