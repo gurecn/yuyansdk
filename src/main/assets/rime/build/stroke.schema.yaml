@@ -1,13 +1,17 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1732162725
-    default.custom: 1732162725
+    default: 1733397193
+    default.custom: 1733397193
     stroke.custom: 0
-    stroke.schema: 1732162725
+    stroke.schema: 1733397193
 abc_segmentor:
   extra_tags:
     - reverse_lookup
+emoji:
+  inherit_comment: false
+  opencc_config: emoji.json
+  option_name: emoji
 engine:
   processors:
     - ascii_composer
@@ -33,23 +37,6 @@ key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
     - {accept: equal, send: Page_Down, when: has_menu}
-    - {accept: d, send: n, when: always}
-    - {accept: t, send: h, when: always}
-    - {accept: j, send: h, when: always}
-    - {accept: k, send: s, when: always}
-    - {accept: l, send: p, when: always}
-    - {accept: u, send: n, when: always}
-    - {accept: i, send: z, when: always}
-    - {accept: KP_1, send: h, when: always}
-    - {accept: KP_2, send: s, when: always}
-    - {accept: KP_3, send: p, when: always}
-    - {accept: KP_4, send: n, when: always}
-    - {accept: KP_5, send: z, when: always}
-    - {accept: KP_6, send: Select, when: has_menu}
-    - {accept: KP_7, send: Select, when: has_menu}
-    - {accept: KP_8, send: Select, when: has_menu}
-    - {accept: KP_9, send: Select, when: has_menu}
-    - {accept: KP_0, send: Select, when: has_menu}
   import_preset: default
   select_first_character: bracketleft
   select_last_character: bracketright
@@ -64,7 +51,6 @@ recognizer:
   patterns:
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
     punct: "^/([0-9]|10|[A-Za-z]*?)$"
-    reverse_lookup: "`[a-z]*'?$"
     underscore: "^[A-Za-z]+_.*"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 reverse_lookup:
@@ -79,12 +65,6 @@ reverse_lookup:
   suffix: "'"
   tips: "〔拼音〕"
 schema:
-  author:
-    - "四季的風"
-    - "雪齋"
-    - "Kunki Chou"
-  dependencies:
-    - radical_pinyin
   description: |
     五笔画：雨燕输入法
     https://github.com/rime/rime-stroke
@@ -92,18 +72,23 @@ schema:
 
   name: "笔画输入"
   schema_id: stroke
-  version: 0.5
+  version: 1
 speller:
   alphabet: abcdefghijklmnopqrstuvwxyz
   delimiter: " '"
 switches:
-  - name: ascii_mode
-    reset: 0
-    states: ["中文", "西文"]
-  - name: full_shape
-    states: ["半角", "全角"]
-  - name: ascii_punct
-    states: ["。，", "．，"]
+  - name: traditionalization
+    states: ["简", "繁"]
+  - name: emoji
+    reset: 1
+    states: ["💀", "😄"]
+traditionalize:
+  opencc_config: s2t.json
+  option_name: traditionalization
+  tags:
+    - abc
+    - number
+  tips: none
 translator:
   comment_format:
     - "xform/~//"

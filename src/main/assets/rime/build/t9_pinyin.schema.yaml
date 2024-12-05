@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1732162725
-    default.custom: 1732162725
+    default: 1733397193
+    default.custom: 1733397193
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1732162725
+    t9_pinyin.schema: 1733397193
 corrector: "{comment}"
 custom_phrase:
   db_class: stabledb
@@ -13,10 +13,6 @@ custom_phrase:
   enable_sentence: false
   initial_quality: 99
   user_dict: custom_phrase_t9
-date_translator:
-  date: 77
-  time: 75
-  week: 97
 emoji:
   inherit_comment: false
   opencc_config: emoji.json
@@ -45,10 +41,7 @@ engine:
     - punct_translator
     - echo_translator
     - script_translator
-    - "lua_translator@*date_translator"
-    - "lua_translator@*lunar"
     - "table_translator@custom_phrase"
-    - "lua_translator@*force_gc"
 key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
@@ -57,7 +50,6 @@ key_binder:
   search: "`"
   select_first_character: bracketleft
   select_last_character: bracketright
-lunar: 65
 menu:
   page_size: 50
 punctuator:
@@ -67,21 +59,11 @@ punctuator:
 recognizer:
   import_preset: default
   patterns:
-    calculator: "^V.*$"
     email: "^[A-Za-z][-_.0-9A-Za-z]*@.*$"
-    gregorian_to_lunar: "^N[0-9]{1,8}"
-    number: "^R[0-9]+[.]?[0-9]*"
     punct: "^/([0-9]|10|[A-Za-z]*?)$"
-    radical_lookup: "^uU[a-z]+$"
     underscore: "^[A-Za-z]+_.*"
-    unicode: "^U[a-f0-9]+"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 schema:
-  author:
-    - Dvel
-    - gaboolic
-  dependencies:
-    - radical_pinyin
   description: |
     白霜拼音：雨燕输入法-九键拼音
     https://github.com/gaboolic/rime-frost
@@ -326,27 +308,17 @@ speller:
   delimiter: " '"
   initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
 switches:
-  - name: ascii_mode
-    states: ["中", "Ａ"]
-  - name: ascii_punct
-    states: ["¥", "$"]
   - name: traditionalization
     states: ["简", "繁"]
   - name: emoji
     reset: 1
     states: ["💀", "😄"]
-  - name: full_shape
-    states: ["半角", "全角"]
-  - abbrev: ["词", "单"]
-    name: search_single_char
-    states: ["正常", "单字"]
 traditionalize:
   opencc_config: s2t.json
   option_name: traditionalization
   tags:
     - abc
     - number
-    - gregorian_to_lunar
   tips: none
 translator:
   always_show_comments: true

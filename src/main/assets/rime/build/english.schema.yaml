@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1732162725
-    default.custom: 1732162725
+    default: 1733397193
+    default.custom: 1733397193
     english.custom: 0
-    english.schema: 1732162725
+    english.schema: 1733397193
 algebra_abc:
   - "derive/1([4-7|9])/$1teen/"
   - "derive/11/eleven/"
@@ -613,9 +613,6 @@ recognizer:
     underscore: "^[A-Za-z]+_.*"
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 schema:
-  author:
-    - "Patrick <ipatrickmac@gmail.com>"
-    - "tumuyan <tumuyan@21cn.com>"
   description: |
     白霜拼音：雨燕输入法-英语输入
 

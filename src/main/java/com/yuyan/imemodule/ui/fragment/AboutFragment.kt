@@ -27,7 +27,7 @@ class AboutFragment : PreferenceFragmentCompat() {
             addPreference(R.string.source_code, R.string.github_repo) {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.YUYAN_IME_REPO)))
             }
-            addPreference(R.string.license, CustomConstant.LICENSE_SPDX_ID) {
+            addPreference(R.string.license, "LGPL-2.1-or-later") {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.LICENSE_URL)))
             }
             addCategory(R.string.app_version) {
