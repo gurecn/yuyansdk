@@ -1,28 +1,23 @@
 package com.yuyan.imemodule.service
 
 import android.graphics.Paint
-import android.graphics.Rect
 import android.view.KeyEvent
 import androidx.lifecycle.MutableLiveData
 import com.yuyan.imemodule.constant.CustomConstant
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.inputmethod.core.Candidate
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
-import kotlin.math.round
 
 /**
  * 词库解码操作对象
  */
 object DecodingInfo {
     // 候选词列表
-    val candidatesLiveData = MutableLiveData<List<Candidate>>()
+    val candidatesLiveData = MutableLiveData<List<CandidateListItem>>()
 
     // 是否是联想词
     var isAssociate = false
     // 是否重置
     private var isReset = false
-    private var mPaint = Paint()
 
     /**
      * 重置
@@ -44,7 +39,7 @@ object DecodingInfo {
         get() = if(isCandidatesListEmpty) 0 else candidatesLiveData.value!!.size
 
 
-    val candidates: List<Candidate>
+    val candidates: List<CandidateListItem>
         // 候选词列表是否为空
         get() = candidatesLiveData.value?:emptyList()
 
@@ -99,7 +94,7 @@ object DecodingInfo {
         get() {
             val cands = Kernel.nextPageCandidates
             if (cands.isNotEmpty()) {
-                candidatesLiveData.postValue(candidatesLiveData.value?.plus(calculateColumn(cands)))
+                candidatesLiveData.postValue(candidatesLiveData.value?.plus(cands))
                 return cands.size
             }
             return 0
@@ -113,7 +108,7 @@ object DecodingInfo {
         CustomConstant.activeCandidate = 0
         return if (Kernel.unHandWriting()) {
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
-            candidatesLiveData.postValue(calculateColumn(Kernel.candidates))
+            candidatesLiveData.postValue(Kernel.candidates.asList())
             Kernel.commitText
         } else if(candId in 0..<candidateSize){
             val choice = candidatesLiveData.value!![candId].text
@@ -125,7 +120,7 @@ object DecodingInfo {
     /**
      * 获得指定的候选词
      */
-    fun getCandidate(candId: Int): Candidate? {
+    fun getCandidate(candId: Int): CandidateListItem? {
         return candidatesLiveData.value?.getOrNull(candId)
     }
 
@@ -133,40 +128,6 @@ object DecodingInfo {
     fun cacheCandidates(words: Array<CandidateListItem>) {
         CustomConstant.activeCandidate = 0
         isReset = false
-        candidatesLiveData.postValue(calculateColumn(words))
-    }
-
-    private fun calculateColumn(list:Array<CandidateListItem>):List<Candidate> {
-        val candidatesTemp = list.map { (comment, text) ->
-            Candidate(comment, text, 0)
-        }
-        val bounds = Rect()
-        val data = "标"
-        mPaint.textSize = EnvironmentSingleton.instance.candidateTextSize*1.3.toFloat()
-        mPaint.getTextBounds(data, 0, data.length, bounds)
-        val itemWidth = bounds.width()
-        for (position in candidatesTemp.indices) {
-            val candidate = candidatesTemp[position]
-            val count = getSymbolsCount(candidate.text, itemWidth)
-            candidate.spanSize = count
-        }
-        return candidatesTemp
-    }
-
-    /**
-     * 根据词长计算当前候选词需占的列数
-     */
-    private fun getSymbolsCount(data: String?, itemWidth:Int): Int {
-        return if (data?.isNotBlank() == true) {
-            val bounds = Rect()
-            mPaint.getTextBounds(data, 0, data.length, bounds)
-            val x = round(bounds.width().toDouble().div(itemWidth)).toInt()
-            if(x >= 11) 6
-            else if(x >= 9) 5
-            else if(x >= 7) 4
-            else if(x >= 5) 3
-            else if(x >= 3) 2
-            else  1
-        } else 0
+        candidatesLiveData.postValue(words.asList())
     }
 }

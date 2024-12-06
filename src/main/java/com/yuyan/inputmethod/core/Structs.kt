@@ -13,13 +13,6 @@ data class CandidateListItem(
     var text: String,
 )
 
-@Keep
-data class Candidate (
-    var comment: String,
-    var text: String,
-    var spanSize: Int = 0,
-)
-
 /** Rime編碼區  */
 @Keep
 data class RimeComposition(
