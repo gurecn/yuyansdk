@@ -20,16 +20,16 @@ object InputFeedbacks {
 
     fun hapticFeedback(view: View) {
         val duration = when (vibrationAmplitude) {
-            1 -> {
+            0 -> {
                 @Suppress("DEPRECATION")
                 val flags = HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING or HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, flags)
                 0L
             }
+            1 -> 0L
             2 -> 5L
             3 -> 30L
-            4 -> 50L
-            else -> 0L
+            else -> 50L
         }
         if (duration != 0L) {
             if (hasAmplitudeControl) {

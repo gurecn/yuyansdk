@@ -90,7 +90,7 @@ class KeyboardFeedbacksFragment : Fragment(){
                 setMargins(dp(20), dp(20), dp(20), dp(10))
             })
             add(soundSeekBar, lParams(width = matchParent, height = wrapContent) {
-                setMargins(dp(20), 0, dp(20), dp(10))
+                setMargins(dp(30), 0, dp(30), dp(10))
             })
             addView(textView {
                 setText(R.string.button_vibration_amplitude)
