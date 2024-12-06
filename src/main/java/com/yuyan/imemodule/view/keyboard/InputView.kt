@@ -46,6 +46,7 @@ import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
@@ -174,6 +175,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         mLlKeyboardBottomHolder.removeAllViews()
         mLlKeyboardBottomHolder.layoutParams.width = EnvironmentSingleton.instance.skbWidth
         if(EnvironmentSingleton.instance.keyboardModeFloat){
+            LogUtil.d("11111111111111", "  initView  1 ")
             mBottomPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
                 else getInstance().internal.keyboardBottomPaddingFloat)
             mRightPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscapeFloat
@@ -195,6 +197,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if(fullDisplayKeyboardEnable){
                 mFullDisplayKeyboardBar = FullDisplayKeyboardBar(context, this)
                 mLlKeyboardBottomHolder.addView(mFullDisplayKeyboardBar)
+                mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForCandidates
+            } else {
+                mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
             }
             bottomPadding = 0
             rightPadding = 0
@@ -202,7 +207,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mRightPaddingKey =  getInstance().internal.keyboardRightPadding
             mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
-            mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForCandidates
         }
         updateTheme()
         DecodingInfo.candidatesLiveData.observe(/* owner = */ this){ _ ->
@@ -1139,7 +1143,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             val fullDisplayKeyboardEnable = getInstance().internal.fullDisplayKeyboardEnable.getValue()
-            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.keyboardModeFloat)  0 else if(fullDisplayKeyboardEnable) EnvironmentSingleton.instance.heightForCandidates
+            mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.keyboardModeFloat)  0
+            else if(fullDisplayKeyboardEnable) EnvironmentSingleton.instance.heightForCandidates
             else  EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
