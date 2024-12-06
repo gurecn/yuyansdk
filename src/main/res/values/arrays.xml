@@ -21,6 +21,22 @@
         <item>"关闭"</item>
     </string-array>
 
+    <string-array name="vibrate_labels">
+        <item>无</item>
+        <item>系统</item>
+        <item>较弱</item>
+        <item>适中</item>
+        <item>较强</item>
+    </string-array>
+
+    <string-array name="sound_labels">
+        <item>系统</item>
+        <item>无</item>
+        <item>较小</item>
+        <item>适中</item>
+        <item>较大</item>
+    </string-array>
+
     <string-array name="FullDisplayKeyMode">
         <item>"切换输入法"</item>
         <item>"切换语言"</item>

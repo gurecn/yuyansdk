@@ -12,7 +12,6 @@ import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.allSkbFuns
 import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.prefs.InputFeedbacks.InputFeedbackMode
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
@@ -40,13 +39,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardRightPaddingLandscapeFloat = int("keyboard_padding_right_landscape", DevicesUtils.dip2px(20))     //横屏悬浮模式右边距
         val keyboardBottomPadding = int("keyboard_padding_bottom_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮底边距
         val keyboardRightPadding = int("keyboard_padding_right_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮右边距
-//        val keyboardBottomPaddingLandscape = int("keyboard_padding_bottom_landscape_normal", DevicesUtils.dip2px(0))     //横屏非悬浮底边距
-//        val keyboardRightPaddingLandscape = int("keyboard_padding_right_landscape_normal", DevicesUtils.dip2px(0))     //横屏竖屏非悬浮右边距
 
         val keyboardBarMenuCommon = string("keyboard_bar_menu_common", commonSkbFuns.joinToString())     //缓存候选词菜单栏
         val keyboardSettingMenuAll = string("keyboard_bar_menu_all", allSkbFuns.joinToString())     //缓存候键盘设置菜单
-        val keyboardPrefixsPinyin = string("keyboard_prefixs_pinyin", "， 。 ？ ！ …… ： ； .")     //拼音侧栏符号
-        val keyboardPrefixsNumber = string("keyboard_prefixs_number", "% / - + * # @")     //数字侧栏符号
 
         val keyboardLockSymbol = bool("keyboard_lock_symbol", false)     //锁定符号键盘
 
@@ -56,6 +51,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val fullDisplayKeyModeLeft = string("full_display_key_mode_left", FullDisplayKeyMode.SwitchIme.name)     //全面屏键盘优化:左键盘
         val fullDisplayKeyModeRight = string("full_display_key_mode_right", FullDisplayKeyMode.Clipboard.name)     //全面屏键盘优化：右键盘
         val fullDisplayCenterMode = string("full_display_center_mode", FullDisplayCenterMode.MoveCursor.name)     //全面屏键盘优化：中间区域
+
+        val soundOnKeyPress = int("button_vibration_amplitude",0)     //按键音量
+        val vibrationAmplitude = int("button_keypress_sound_volume", 1)     //触感强度
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
@@ -107,66 +105,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val emojiInput = switch(
             R.string.emoji_input, "emoji_input_enable", false
         )
-    }
-
-    inner class KeyboardFeedback : ManagedPreferenceCategory(R.string.keyboard_feedback, sharedPreferences) {
-
-        val hapticOnKeyPress =
-            list(
-                R.string.button_haptic_feedback,
-                "haptic_on_keypress",
-                InputFeedbackMode.Enabled,
-                InputFeedbackMode,
-                listOf(
-                    InputFeedbackMode.Enabled,
-                    InputFeedbackMode.Disabled
-                ),
-                listOf(
-                    R.string.enabled,
-                    R.string.disabled
-                )
-            )
-
-        val buttonPressVibrationAmplitude = int(
-            R.string.button_vibration_amplitude,
-            "button_vibration_press_amplitude",
-            10,
-            0,
-            100,
-            "%",
-            defaultLabel = R.string.system_default
-        ) {
-            hapticOnKeyPress.getValue() != InputFeedbackMode.Disabled
-        }
-
-
-
-        val soundOnKeyPress = list(
-            R.string.button_sound,
-            "sound_on_keypress",
-            InputFeedbackMode.Enabled,
-            InputFeedbackMode,
-            listOf(
-                InputFeedbackMode.Enabled,
-                InputFeedbackMode.Disabled
-            ),
-            listOf(
-                R.string.enabled,
-                R.string.disabled
-            )
-        )
-        val soundOnKeyPressVolume = int(
-            R.string.button_sound_volume,
-            "button_sound_volume",
-            0,
-            0,
-            100,
-            "%",
-            defaultLabel = R.string.system_default
-        ) {
-            soundOnKeyPress.getValue() != InputFeedbackMode.Disabled
-        }
-
     }
 
     inner class KeyboardSetting : ManagedPreferenceCategory(R.string.setting_ime_keyboard, sharedPreferences) {
@@ -317,7 +255,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     val voice = Voice().register()
     val handwriting = Handwriting().register()
     val input = Input().register()
-    val keyboardFeedback = KeyboardFeedback().register()
     val clipboard = Clipboard().register()
     val keyboardSetting = KeyboardSetting().register()
 
@@ -345,9 +282,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 it.value.putValueTo(this@edit)
             }
             handwriting.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
-            }
-            keyboardFeedback.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
             }
             clipboard.managedPreferences.forEach {

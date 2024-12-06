@@ -79,7 +79,7 @@
     <string name="input_methods">输入法</string>
     <string name="advanced">高级</string>
     <string name="button_haptic_feedback">按键时振动</string>
-    <string name="button_vibration_amplitude">按键振动</string>
+    <string name="button_vibration_amplitude">触感强度</string>
     <string name="clipboard_listening">记录剪贴板历史</string>
     <string name="clipboard_limit">剪贴板历史记录上限</string>
     <string name="clipboard_layout_compact_mode">剪贴板布局</string>
@@ -149,7 +149,7 @@
     <string name="enabled">启用</string>
     <string name="following_system_settings">跟随系统设置</string>
     <string name="button_sound">按键音</string>
-    <string name="button_sound_volume">按键音音量</string>
+    <string name="button_sound_volume">按键音量</string>
     <string name="clipboard_return_after_paste">粘贴后返回</string>
     <string name="lang_switch_key_behavior">语言切换键行为</string>
     <string name="lang_switch_behavior_next_ime_app">切换至下一个输入法</string>

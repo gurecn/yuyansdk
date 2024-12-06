@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.utils
 
+import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
 import com.yuyan.imemodule.application.ImeSdkApplication
@@ -33,6 +34,11 @@ object DevicesUtils {
 	fun px2dip(pxValue: Int): Float {
         val scale = ImeSdkApplication.context.resources.displayMetrics.density
         return pxValue / scale + 0.5f
+    }
+
+    @JvmStatic
+    fun sp2px(sp: Int): Int {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), ImeSdkApplication.context.resources.displayMetrics).toInt()
     }
 
     /**
