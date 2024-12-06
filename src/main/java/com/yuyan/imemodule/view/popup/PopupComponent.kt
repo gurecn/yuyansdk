@@ -56,13 +56,16 @@ class PopupComponent private constructor(){
             setBackground(ThemeManager.activeTheme, popupRadius)
             setText(content)
         }
-        var bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat){
-                AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
-        val fullDisplayKeyboardEnable = AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()
-        if(fullDisplayKeyboardEnable)bottomPadding += EnvironmentSingleton.instance.heightForCandidates
+        val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat) {
+            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){
+                EnvironmentSingleton.instance.heightForCandidates
+            } else {
+                EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            }
+        } else 0  // todo 需要添加移动条高度
         root.apply {
             add(popup.root, lParams(bounds.width(), bounds.height()) {
-                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + bottomPadding - bounds.bottom
+                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForComposingView + bottomPadding - bounds.bottom
                 leftMargin = bounds.left
             })
         }
@@ -96,14 +99,16 @@ class PopupComponent private constructor(){
     private fun reallyShowKeyboard(keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys)
-        var bottomPadding =
-        if(!EnvironmentSingleton.instance.keyboardModeFloat){
-            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom} else { 0 }
-        val fullDisplayKeyboardEnable = AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()
-        if(fullDisplayKeyboardEnable)bottomPadding += EnvironmentSingleton.instance.heightForCandidates
+        val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat) {
+            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){
+                EnvironmentSingleton.instance.heightForCandidates
+            } else {
+                EnvironmentSingleton.instance.systemNavbarWindowsBottom
+            }
+        } else 0   // todo 需要添加移动条高度
         root.apply {
             add(keyboardUi.root, lParams {
-                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight  + bottomPadding - bounds.bottom
+                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForComposingView  + bottomPadding - bounds.bottom
                 leftMargin = bounds.left + keyboardUi.offsetX
             })
         }

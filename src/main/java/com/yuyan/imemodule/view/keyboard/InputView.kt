@@ -46,7 +46,6 @@ import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
@@ -175,7 +174,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         mLlKeyboardBottomHolder.removeAllViews()
         mLlKeyboardBottomHolder.layoutParams.width = EnvironmentSingleton.instance.skbWidth
         if(EnvironmentSingleton.instance.keyboardModeFloat){
-            LogUtil.d("11111111111111", "  initView  1 ")
             mBottomPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardBottomPaddingLandscapeFloat
                 else getInstance().internal.keyboardBottomPaddingFloat)
             mRightPaddingKey = (if(EnvironmentSingleton.instance.isLandscape) getInstance().internal.keyboardRightPaddingLandscapeFloat
