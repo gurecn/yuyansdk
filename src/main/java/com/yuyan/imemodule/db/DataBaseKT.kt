@@ -5,13 +5,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yuyan.imemodule.application.ImeSdkApplication
+import com.yuyan.imemodule.db.dao.ClipboardDao
 import com.yuyan.imemodule.db.dao.SideSymbolDao
+import com.yuyan.imemodule.db.dao.UsedSymbolDao
+import com.yuyan.imemodule.db.entry.Clipboard
 import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.db.entry.UsedSymbol
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 
-@Database(entities = [SideSymbol::class], version = 1, exportSchema = false)
+@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class], version = 1, exportSchema = false)
 abstract class DataBaseKT : RoomDatabase() {
     abstract fun sideSymbolDao(): SideSymbolDao
+    abstract fun clipboardDao(): ClipboardDao
+    abstract fun usedSymbolDao(): UsedSymbolDao
     companion object {
         val instance = Room.databaseBuilder(ImeSdkApplication.context, DataBaseKT::class.java, "ime_db")
             .allowMainThreadQueries()
