@@ -84,15 +84,22 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             layoutManager = LinearLayoutManager(context)
             setLongPressDragEnabled(true)
             setOnItemLongClickListener{ _, adapterPosition ->
-                AlertDialog.Builder(context)
-                    .setTitle(R.string.skb_prefix_delete_title)
-                    .setMessage(String.format(getString(R.string.skb_prefix_delete_tips), datas[0].symbolKey))
-                    .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                    .setPositiveButton(R.string.sure) { _, _ ->
-                        datas.removeAt(adapterPosition)
-                        adapter.notifyItemRemoved(adapterPosition)
-                    }
-                    .show()
+                if(datas.size > adapterPosition) {
+                    AlertDialog.Builder(context)
+                        .setTitle(R.string.skb_prefix_delete_title)
+                        .setMessage(
+                            String.format(
+                                getString(R.string.skb_prefix_delete_tips),
+                                datas[adapterPosition].symbolKey
+                            )
+                        )
+                        .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                        .setPositiveButton(R.string.sure) { _, _ ->
+                            datas.removeAt(adapterPosition)
+                            adapter.notifyItemRemoved(adapterPosition)
+                        }
+                        .show()
+                }
             }
             setOnItemMoveListener(mItemMoveListener)
         }
