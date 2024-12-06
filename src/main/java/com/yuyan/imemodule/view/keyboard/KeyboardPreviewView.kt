@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.view.keyboard
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
@@ -14,10 +13,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 
 class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
-    var intrinsicWidth = 0
-        private set
-    var intrinsicHeight = 0
-        private set
     private var qwerTextContainer: TextKeyboard? = null
     private fun initView() {
         removeAllViews()
@@ -28,8 +23,6 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         qwerTextContainer!!.setSoftKeyboard(softKeyboard)
         previewUi.addView(qwerTextContainer, LayoutParams(instance.skbWidth, instance.skbHeight))
         addView(mSkbRoot)
-        intrinsicWidth = instance.skbWidth
-        intrinsicHeight = instance.skbHeight
         previewUi.requestLayout()
     }
 
@@ -44,18 +37,6 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         layoutParams?.width = instance.skbWidth
         layoutParams?.height = instance.skbHeight + instance.heightForCandidates
     }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (onSizeMeasured != null) onSizeMeasured!!.invoke(intrinsicWidth, intrinsicHeight)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (onSizeMeasured != null) onSizeMeasured!!.invoke(intrinsicWidth, intrinsicHeight)
-    }
-
-    var onSizeMeasured: Function2<Int, Int, Unit>? = null
 
     init {
         initView()

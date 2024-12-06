@@ -70,7 +70,7 @@ class EnvironmentSingleton private constructor() {
         keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
         keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
         candidateTextSize = (heightForCandidates * (0.3f + AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue()/100f)).toInt()
-        inputAreaHeight = skbHeight + heightForCandidates + heightForComposingView
+        inputAreaHeight = skbHeight + heightForCandidates
     }
 
     var keyBoardHeightRatio: Float

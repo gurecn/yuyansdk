@@ -125,17 +125,14 @@ class CustomThemeActivity : AppCompatActivity() {
             background = styledDrawable(android.R.attr.selectableItemBackground)
         }
     }
-
     private val variantLabel by lazy {
         createTextView(R.string.dark_keys, ripple = true)
     }
     private val variantSwitch by lazy {
         switch {
-            // Use dark keys by default
             isChecked = false
         }
     }
-
     private val brightnessLabel by lazy {
         createTextView(R.string.brightness)
     }
@@ -277,7 +274,6 @@ class CustomThemeActivity : AppCompatActivity() {
                 croppedImageFile = c
                 srcImageFile = s
             }
-            // Use dark keys by default
             theme = ThemePreset.TransparentDark.deriveCustomBackground(n, c.path, s.path)
         }
 
@@ -307,9 +303,7 @@ class CustomThemeActivity : AppCompatActivity() {
             scrollView.bottomPadding = navBars.bottom
             windowInsets
         }
-        // show Activity label on toolbar
         setSupportActionBar(toolbar)
-        // show back button
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setContentView(ui)
         whenHasBackground { background ->
@@ -323,32 +317,27 @@ class CustomThemeActivity : AppCompatActivity() {
                         return@registerForActivityResult
                 } else {
                     if (newCreated) {
-                        srcImageExtension = MimeTypeMap.getSingleton()
-                            .getExtensionFromMimeType(contentResolver.getType(it.originalUri!!))
-                        srcImageBuffer =
-                            contentResolver.openInputStream(it.originalUri!!)!!
-                                .use { x -> x.readBytes() }
+                        srcImageExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(it.originalUri!!))
+                        srcImageBuffer = contentResolver.openInputStream(it.originalUri!!)!!.use { x -> x.readBytes() }
                     }
                     cropRect = it.cropRect!!
 
                     croppedBitmap = Bitmap.createScaledBitmap(
                         it.getBitmap(this@CustomThemeActivity)!!,
-                        previewUi.intrinsicWidth,
-                        previewUi.intrinsicHeight,
+                        EnvironmentSingleton.instance.skbWidth,
+                        EnvironmentSingleton.instance.inputAreaHeight,
                         true
                     )
                     filteredDrawable = BitmapDrawable(resources, croppedBitmap)
                     updateState()
                 }
             }
-
             cropLabel.setOnClickListener {
-                launchCrop(previewUi.intrinsicWidth, previewUi.intrinsicHeight)
+                launchCrop(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
             }
             variantLabel.setOnClickListener {
                 variantSwitch.isChecked = !variantSwitch.isChecked
             }
-            // attach OnCheckedChangeListener after calling setChecked (isChecked in kotlin)
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
                 setKeyVariant(background, darkKeys = isChecked)
             }
@@ -362,13 +351,10 @@ class CustomThemeActivity : AppCompatActivity() {
                 }
             })
         }
-
         if (newCreated) {
             cropLabel.visibility = View.GONE
             whenHasBackground {
-                previewUi.onSizeMeasured = { w, h ->
-                    launchCrop(w, h)
-                }
+                launchCrop(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
             }
         } else {
             whenHasBackground {
@@ -382,7 +368,6 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     private fun BackgroundStates.launchCrop(w: Int, h: Int) {
-
         if (tempImageFile == null || tempImageFile?.exists() != true) {
             tempImageFile = File.createTempFile("cropped", ".png", cacheDir)
         }
@@ -482,8 +467,7 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     private fun delete() {
-        setResult(
-            Activity.RESULT_OK,
+        setResult(Activity.RESULT_OK,
             Intent().apply {
                 putExtra(RESULT, BackgroundResult.Deleted(theme.name))
             }
@@ -506,7 +490,7 @@ class CustomThemeActivity : AppCompatActivity() {
         if (!newCreated) {
             menu.add(R.string.delete).apply {
                 icon = drawable(R.drawable.ic_baseline_delete_24)!!.apply {
-                    setTint(color(R.color.red_400))
+                    setTint(styledColor(android.R.attr.colorControlNormal))
                 }
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                 setOnMenuItemClickListener {
