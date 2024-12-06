@@ -19,7 +19,7 @@ object T9PinYinUtils {
         'm' to "6",
         'n' to "6",
         'o' to "6",
-        'p' to "6",
+        'p' to "7",
         'q' to "7",
         'r' to "7",
         's' to "7",
