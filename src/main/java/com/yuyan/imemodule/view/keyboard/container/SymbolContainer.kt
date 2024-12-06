@@ -69,9 +69,9 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         }
         mVPSymbolsView = ViewPager2(context)
         mLLSymbolType.visibility = VISIBLE
-        val ivReturn = mLLSymbolType.findViewById<ImageView>(R.id.iv_symbols_emoji_type_return)
+        val ivReturn:ImageView = mLLSymbolType.findViewById(R.id.iv_symbols_emoji_type_return)
         ivReturn.drawable.setTint(activeTheme.keyTextColor)
-        val ivDelete = mLLSymbolType.findViewById<ImageView>(R.id.iv_symbols_emoji_type_delete)
+        val ivDelete:ImageView = mLLSymbolType.findViewById(R.id.iv_symbols_emoji_type_delete)
         ivDelete.drawable.setTint(activeTheme.keyTextColor)
         val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         if (isKeyBorder) {
