@@ -1,7 +1,5 @@
 package com.yuyan.inputmethod.core
 
-import androidx.annotation.Keep
-
 
 sealed class RimeNotification {
     abstract val messageType: MessageType

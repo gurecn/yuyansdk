@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.yuyan.imemodule.callback.IHandWritingCallBack
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
@@ -14,7 +13,6 @@ import com.yuyan.imemodule.handwriting.HdManager.Companion.instance
 import com.yuyan.imemodule.handwriting.view.DrawingStrokes
 import com.yuyan.imemodule.handwriting.view.Strokes
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import com.yuyan.inputmethod.core.CandidateListItem
 import java.util.LinkedList
 import kotlin.math.sqrt
 
