@@ -32,7 +32,10 @@ class AboutFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.app_version) {
                 isIconSpaceReserved = false
-                addPreference(R.string.version, BuildConfig.versionName)
+                addPreference(R.string.version, BuildConfig.versionName){
+                    val uri = Uri.parse("${CustomConstant.YUYAN_IME_REPO}/releases/latest")
+                    startActivity(Intent(Intent.ACTION_VIEW, uri))
+                }
                 addPreference(R.string.build_git_hash, BuildConfig.AppCommitHead) {
                     val commit = BuildConfig.AppCommitHead.substringBefore('-')
                     val uri = Uri.parse("${CustomConstant.YUYAN_IME_REPO}/commit/${commit}")
