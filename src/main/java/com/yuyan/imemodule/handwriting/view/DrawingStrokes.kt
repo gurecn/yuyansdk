@@ -11,10 +11,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.view.View
-import androidx.core.content.ContextCompat
-import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.ImeSdkApplication.Companion.context
-import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import java.util.Vector

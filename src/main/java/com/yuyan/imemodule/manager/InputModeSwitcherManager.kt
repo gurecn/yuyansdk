@@ -3,8 +3,8 @@ package com.yuyan.imemodule.manager
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.inputmethod.core.Kernel
 
 /**
  * 输入法模式转换器。设置输入法的软键盘。

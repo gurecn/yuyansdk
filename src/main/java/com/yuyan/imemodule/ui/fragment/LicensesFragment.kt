@@ -7,10 +7,10 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
-import com.yuyan.imemodule.R
-import com.yuyan.imemodule.ui.utils.addPreference
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.License
+import com.yuyan.imemodule.R
+import com.yuyan.imemodule.ui.utils.addPreference
 import kotlinx.coroutines.launch
 
 class LicensesFragment : PreferenceFragmentCompat() {

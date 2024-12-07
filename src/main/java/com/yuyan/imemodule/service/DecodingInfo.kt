@@ -1,6 +1,5 @@
 package com.yuyan.imemodule.service
 
-import android.graphics.Paint
 import android.view.KeyEvent
 import androidx.lifecycle.MutableLiveData
 import com.yuyan.imemodule.constant.CustomConstant

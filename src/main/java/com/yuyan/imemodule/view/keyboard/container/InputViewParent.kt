@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import com.yuyan.imemodule.view.keyboard.TextKeyboard
 
 /**
  * 根布局集装箱，

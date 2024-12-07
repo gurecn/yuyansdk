@@ -1,6 +1,7 @@
 
 package com.yuyan.imemodule.data.theme
 
+import com.yuyan.imemodule.ui.utils.NostalgicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -8,7 +9,6 @@ import kotlinx.serialization.json.JsonTransformingSerializer
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import com.yuyan.imemodule.ui.utils.NostalgicSerializer
 
 object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Custom.serializer()) {
 

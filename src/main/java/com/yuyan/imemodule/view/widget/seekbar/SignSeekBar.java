@@ -22,12 +22,12 @@ import android.text.TextPaint;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import androidx.annotation.IntDef;
+import com.yuyan.imemodule.utils.DevicesUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import androidx.annotation.IntDef;
-import com.yuyan.imemodule.utils.DevicesUtils;
 
 public class SignSeekBar extends View {
     static final int NONE = -1;

@@ -15,11 +15,11 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
 import com.yuyan.imemodule.ui.fragment.theme.ThemeSettingsFragment
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.launch
-import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
 import splitties.resources.styledColor
 import splitties.views.backgroundColor

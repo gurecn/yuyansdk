@@ -7,9 +7,9 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
-import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 import com.yuyan.imemodule.view.preference.DialogSeekBarPreference
 import com.yuyan.imemodule.view.preference.EditTextIntPreference
+import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.preference.TwinSeekBarPreference
 

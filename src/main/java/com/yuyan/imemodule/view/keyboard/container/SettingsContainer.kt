@@ -15,12 +15,12 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
 import splitties.dimensions.dp
 import java.util.Collections

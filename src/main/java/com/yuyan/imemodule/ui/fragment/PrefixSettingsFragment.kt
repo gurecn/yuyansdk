@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.yanzhenjie.recyclerview.OnItemLongClickListener
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yanzhenjie.recyclerview.touch.OnItemMoveListener
 import com.yuyan.imemodule.R
@@ -19,8 +18,6 @@ import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.db.DataBaseKT
 import com.yuyan.imemodule.db.entry.SideSymbol
-import com.yuyan.imemodule.prefs.restore
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.CustomLinearLayout
 import splitties.dimensions.dp

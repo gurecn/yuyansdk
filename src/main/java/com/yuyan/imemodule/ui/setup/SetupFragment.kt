@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.yuyan.imemodule.databinding.FragmentSetupBinding
 import com.yuyan.imemodule.ui.setup.SetupPage.Companion.isLastPage
-import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.serializable
 
 class SetupFragment : Fragment() {

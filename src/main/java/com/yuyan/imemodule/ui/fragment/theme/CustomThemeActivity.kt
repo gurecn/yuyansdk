@@ -48,7 +48,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import splitties.dimensions.dp
-import splitties.resources.color
 import splitties.resources.drawable
 import splitties.resources.resolveThemeAttribute
 import splitties.resources.styledColor
