@@ -27,11 +27,13 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     }
 
     fun setTheme(theme: Theme, background: Drawable) {
+        initView()
         qwerTextContainer?.setTheme(theme)
         setBackground(background)
     }
 
     fun setTheme(theme: Theme) {
+        initView()
         qwerTextContainer?.setTheme(theme)
         background = theme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
         layoutParams?.width = instance.skbWidth

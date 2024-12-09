@@ -17,6 +17,8 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
 import com.yuyan.imemodule.ui.fragment.theme.ThemeSettingsFragment
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.launch
@@ -45,6 +47,8 @@ class ThemeFragment : Fragment() {
 
     private val onThemeChangeListener = ThemeManager.OnThemeChangeListener {
         lifecycleScope.launch {
+            EnvironmentSingleton.instance.initData()
+            KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
             previewUi.setTheme(it)
         }
