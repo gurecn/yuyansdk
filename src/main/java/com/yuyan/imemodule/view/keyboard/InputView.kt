@@ -321,7 +321,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }else if(sKey.keyLabel.isNotBlank()){
                 commitText(sKey.keyLabel)
             }
-            resetToIdleState()
         }
     }
 
@@ -381,9 +380,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     fun processKey(event: KeyEvent): Boolean {
         // 功能键处理
-        if (processFunctionKeys(event)) {
-            return true
-        }
+        if (processFunctionKeys(event)) return true
         val englishCellDisable = InputModeSwitcherManager.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
         val result = if(englishCellDisable){
             processEnglishKey(event)
@@ -401,7 +398,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun processEnglishKey(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         var keyChar = event.unicodeChar
-        if (keyCode == KeyEvent.KEYCODE_DEL || keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
+        if (keyCode == KeyEvent.KEYCODE_DEL) {
             sendKeyEvent(keyCode)
             return true
         } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
@@ -411,11 +408,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 sendKeyChar(keyChar.toChar())
                 return true
             }
-        } else if (keyCode != 0) {
-            sendKeyEvent(keyCode)
-            return true
         } else if (keyChar != 0) {
             sendKeyChar(keyChar.toChar())
+            return true
         }
         return false
     }
@@ -433,12 +428,25 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if (keyCode == KeyEvent.KEYCODE_CLEAR) {
             resetToIdleState()
             return true
-        } else  if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
-            if (keyCode == KeyEvent.KEYCODE_DEL) {
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
+            // 选择高亮的候选词
+            if (!DecodingInfo.isFinish && !DecodingInfo.isAssociate) {
+                chooseAndUpdate(0)
+            } else {
                 sendKeyEvent(keyCode)
-                return true
+                resetToIdleState()
             }
-            if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
+            return true
+        }  else if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            if (DecodingInfo.isFinish) {
+                sendKeyEvent(keyCode)
+            } else {
+                commitDecInfoText(DecodingInfo.composingStrForCommit)
+            }
+            resetToIdleState()
+            return true
+        }else if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
+            if (keyCode == KeyEvent.KEYCODE_DEL) {
                 sendKeyEvent(keyCode)
                 return true
             }
@@ -454,9 +462,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             mImeState = ImeState.STATE_INPUT
-            //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
             DecodingInfo.inputAction(keyCode)
             updateCandidate()
+            return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (DecodingInfo.isFinish) {
                 sendKeyEvent(keyCode)
@@ -464,24 +472,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 DecodingInfo.deleteAction()
                 updateCandidate()
             }
-        } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
-            commitDecInfoText(displayStr)
-            resetToIdleState()
             return true
-        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            // 选择高亮的候选词
-            if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
-            }
-            return true
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (service.isInputViewShown) {
-                requestHideSelf()
-                return true
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_AT) {
-            // 选择高亮的候选词
+        } else if(keyChar != 0){
             if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
@@ -784,7 +776,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     /**
      * 输入法状态
-     * 空闲，输入，编辑，联想
+     * 空闲，输入，联想
      */
     enum class ImeState {
         STATE_IDLE, STATE_INPUT, STATE_PREDICT
@@ -811,11 +803,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     //常用符号、剪切板
     fun showSymbols(symbols: Array<String>) {
         mImeState = ImeState.STATE_PREDICT
-        val list = ArrayList<CandidateListItem>()
-        for (symbol in symbols) {
-            list.add(CandidateListItem("", symbol))
-        }
-        DecodingInfo.cacheCandidates(list.toTypedArray())
+        val list = symbols.map { symbol-> CandidateListItem("", symbol) }.toTypedArray()
+        DecodingInfo.cacheCandidates(list)
         DecodingInfo.isAssociate = true
         isSkipEngineMode = true
         updateCandidateBar()
@@ -861,7 +850,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                     }
                 }
             }
-
         } else {
             if (keyCode != KeyEvent.KEYCODE_ENTER) {
                 service.sendDownUpKeyEvents(keyCode)
