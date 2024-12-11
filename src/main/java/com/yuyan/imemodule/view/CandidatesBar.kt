@@ -81,7 +81,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mRightArrowBtn.setOnClickListener { view: View ->
                 when (val level = (view as ImageView).drawable.level) {
-                    3 -> mCvListener.onClickClearCandidate()
+                    2 -> mCvListener.onClickClearCandidate()
                     else -> {
                         mCvListener.onClickMore(level)
                         view.drawable.setLevel(1 - level)

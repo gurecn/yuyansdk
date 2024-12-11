@@ -392,6 +392,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         DecodingInfo.isAssociate = false
         DecodingInfo.cacheCandidates(words)
         changeToStateInput()
+        updateCandidateBar()
     }
 
     /**
@@ -654,7 +655,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     private fun changeToStateInput() {
         mImeState = ImeState.STATE_INPUT
-        updateCandidateBar()
     }
 
     /**
@@ -1008,7 +1008,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         DecodingInfo.cacheCandidates(list.toTypedArray())
         DecodingInfo.isAssociate = true
         isSkipEngineMode = true
-        mSkbCandidatesBarView.showCandidates()
+        updateCandidateBar()
         mImeState = ImeState.STATE_PREDICT
     }
 
@@ -1155,18 +1155,20 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
-    fun onUpdateSelection() {
-        val inputConnection = service.getCurrentInputConnection()
-        val textBeforeCursor = inputConnection.getTextBeforeCursor(5, 0)
-        val text = textBeforeCursor.toString()
-        if (text.isNotBlank() && InputModeSwitcherManager.isChinese) {
-            DecodingInfo.isAssociate = true
-            mImeState = ImeState.STATE_IDLE
-            DecodingInfo.getAssociateWord(text)
-            // 对输入的拼音进行查询
-            chooseAndUpdate(-1)
-            mImeState = ImeState.STATE_PREDICT
-            updateCandidateBar()
+    fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
+        if(newSelStart == newSelEnd) {
+            val inputConnection = service.getCurrentInputConnection()
+            val textBeforeCursor = inputConnection.getTextBeforeCursor(5, 0)
+            val text = textBeforeCursor.toString()
+            if (!isSkipEngineMode && text.isNotBlank() && InputModeSwitcherManager.isChinese) {
+                DecodingInfo.isAssociate = true
+                mImeState = ImeState.STATE_IDLE
+                DecodingInfo.getAssociateWord(text)
+                // 对输入的拼音进行查询
+                chooseAndUpdate(-1)
+                mImeState = ImeState.STATE_PREDICT
+                updateCandidateBar()
+            }
         }
     }
 }
