@@ -17,8 +17,8 @@ import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.application.LauncherModel
-import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.db.DataBaseKT
 import com.yuyan.imemodule.entity.ClipBoardDataBean
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
@@ -32,7 +32,6 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.manager.CustomGridLayoutManager
 import splitties.dimensions.dp
 import splitties.views.textResource
-import java.io.File
 import kotlin.math.ceil
 
 /**
@@ -74,12 +73,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         val copyContents : MutableList<ClipBoardDataBean> =
             if(itemMode == SkbMenuMode.ClipBoard) LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
             else {
-                val phrases = File(CustomConstant.RIME_DICT_PATH + "/custom_phrase_t9.txt")
-                    .readLines().filter { !it.startsWith("#") }.map { line ->
-                        ClipBoardDataBean("", line.split("\t".toRegex())[0])
-                    }.toMutableList()
-                phrases.reverse()
-                phrases
+                DataBaseKT.instance.phraseDao().getAll().map { line -> ClipBoardDataBean("", line.content) }.toMutableList()
             }
         val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
             ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -150,16 +144,8 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
 
     private fun removePhrasesHandle(content:String) {
         if(content.isNotBlank()) {
-            deleteLinesStartingWith("/custom_phrase.txt", content+"\t")
-            deleteLinesStartingWith("/custom_phrase_t9.txt", content+"\t")
-            deleteLinesStartingWith("/custom_phrase_double.txt", content+"\t")
+            DataBaseKT.instance.phraseDao().deleteByContent(content)
         }
-    }
-
-    private fun deleteLinesStartingWith(fileName: String, content: String) {
-        val file = File(CustomConstant.RIME_DICT_PATH + fileName)
-        val lines = file.readLines().filter { !it.startsWith(content) }
-        file.writeText(lines.joinToString(separator = "\n"))
     }
 
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表

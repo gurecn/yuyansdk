@@ -14,7 +14,7 @@ data class Phrase(
     @ColumnInfo(name = "t9")
     var t9: String,
     @ColumnInfo(name = "qwerty")
-    var pinyin: String,
+    var qwerty: String,
     @ColumnInfo(name = "lx17")
     var lx17: String,
     @ColumnInfo(name = "time")

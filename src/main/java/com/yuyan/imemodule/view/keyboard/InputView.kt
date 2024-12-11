@@ -33,6 +33,8 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
+import com.yuyan.imemodule.db.DataBaseKT
+import com.yuyan.imemodule.db.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
@@ -67,10 +69,6 @@ import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
 import kotlin.math.absoluteValue
 
 /**
@@ -774,35 +772,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     private fun addPhrasesHandle() {
         val content = mEtAddPhrasesContent?.text.toString()
-        removePhrasesHandle(oldAddPhrases+"\t")
+        DataBaseKT.instance.phraseDao().deleteByContent(oldAddPhrases)
         if(content.isNotBlank()) {
             val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
             val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
-            writerPhrases("/custom_phrase.txt", content + "\t" + pinYinHeadChar)
-            writerPhrases("/custom_phrase_t9.txt", content + "\t" + pinYinHeadT9)
-            writerPhrases("/custom_phrase_double.txt", content + "\t" + pinYinHeadChar)
+            val phrase =  Phrase(content = content, t9 = pinYinHeadT9, qwerty = pinYinHeadChar, lx17 = "")
+            DataBaseKT.instance.phraseDao().insert(phrase)
             KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        }
-    }
-
-    private fun removePhrasesHandle(content:String) {
-        if(content.isNotBlank()) {
-            listOf("/custom_phrase.txt", "/custom_phrase_t9.txt", "/custom_phrase_double.txt").forEach{path->
-                val file = File(CustomConstant.RIME_DICT_PATH + path)
-                val lines = file.readLines().filter { !it.startsWith(content) }
-                file.writeText(lines.joinToString(separator = "\n"))
-            }
-        }
-    }
-
-    private fun writerPhrases(fileName: String, content: String) {
-        val writer = BufferedWriter(FileWriter(File(CustomConstant.RIME_DICT_PATH + fileName), true))
-        try {
-            writer.newLine()
-            writer.write(content)
-            writer.flush()
-        } catch (e: IOException) {
-            e.printStackTrace()
         }
     }
 
