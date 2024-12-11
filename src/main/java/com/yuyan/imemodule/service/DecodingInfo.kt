@@ -129,4 +129,11 @@ object DecodingInfo {
         isReset = false
         candidatesLiveData.postValue(words.asList())
     }
+
+    /**
+     * 根据输入的字符查询候选词
+     */
+    fun getAssociateWord(words: String) {
+        Kernel.getAssociateWord(words)
+    }
 }

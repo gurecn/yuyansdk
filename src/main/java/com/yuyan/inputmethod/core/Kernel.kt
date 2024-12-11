@@ -2,20 +2,8 @@ package com.yuyan.inputmethod.core
 
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.service.DecodingInfo.isAssociate
 import com.yuyan.inputmethod.RimeEngine
-import com.yuyan.inputmethod.RimeEngine.destroy
-import com.yuyan.inputmethod.RimeEngine.getNextPageCandidates
-import com.yuyan.inputmethod.RimeEngine.getPrefixs
-import com.yuyan.inputmethod.RimeEngine.isFinish
-import com.yuyan.inputmethod.RimeEngine.onDeleteKey
-import com.yuyan.inputmethod.RimeEngine.onNormalKey
-import com.yuyan.inputmethod.RimeEngine.preCommitText
-import com.yuyan.inputmethod.RimeEngine.selectCandidate
-import com.yuyan.inputmethod.RimeEngine.selectPinyin
-import com.yuyan.inputmethod.RimeEngine.selectSchema
-import com.yuyan.inputmethod.RimeEngine.setImeOption
-import com.yuyan.inputmethod.RimeEngine.showCandidates
-import com.yuyan.inputmethod.RimeEngine.showComposition
 
 object Kernel {
     private var isHandWriting = false
@@ -26,7 +14,7 @@ object Kernel {
     @Synchronized
     fun initImeSchema(schema: String) {
         isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
-        selectSchema(schema)
+        RimeEngine.selectSchema(schema)
         nativeUpdateImeOption()
     }
 
@@ -41,62 +29,66 @@ object Kernel {
      * 传入一个键码
      */
     fun inputKeyCode(keyCode: Int) {
-        onNormalKey(keyCode)
+        RimeEngine.onNormalKey(keyCode)
     }
 
     val isFinish: Boolean
         /**
          * 是否输入完毕，等待上屏。
          */
-        get() = isFinish()
+        get() = RimeEngine.isFinish()
     val candidates: Array<CandidateListItem>
         get() {
-            return showCandidates
+            return RimeEngine.showCandidates
         }
     val nextPageCandidates: Array<CandidateListItem>
         get() {
-            return getNextPageCandidates()
+            return RimeEngine.getNextPageCandidates()
         }
     val prefixs: Array<String>
         /**
          * 拿到候选词拼音
          */
         get() {
-            return getPrefixs()
+            return RimeEngine.getPrefixs()
         }
 
     /**
      * 选择某个候选拼音
      */
     fun selectPrefix(index: Int) {
-        selectPinyin(index)
+        RimeEngine.selectPinyin(index)
     }
 
     /**
      * 执行选择动作，选择了index指向的词语
      */
     fun getWordSelectedWord(index: Int) {
-        selectCandidate(index)
+        if (isAssociate) {
+            RimeEngine.selectAssociation(index)
+        } else {
+            RimeEngine.selectCandidate(index)
+        }
     }
 
     val wordsShowPinyin: String
         /**
          * 最上端拼音行
          */
-        get() = showComposition
+        get() = RimeEngine.showComposition
     val commitText: String
         /**
          * 得到即将上屏的候选词
          */
         get() {
-            return preCommitText
+            return RimeEngine.preCommitText
         }
 
     /**
      * 删除操作
      */
     fun deleteAction() {
-        onDeleteKey()
+        RimeEngine.onDeleteKey()
     }
 
     /**
@@ -111,8 +103,15 @@ object Kernel {
      * 简体和繁体切换需要释放内存
      */
     fun resetIme() {
-        destroy()
+        RimeEngine.destroy()
         initImeSchema(getInstance().internal.pinyinModeRime.getValue())
+    }
+
+    /**
+     * 根据输入的字符查询候选词
+     */
+    fun getAssociateWord(words: String) {
+        RimeEngine.predictAssociationWords(words)
     }
 
     /**
@@ -120,8 +119,8 @@ object Kernel {
      */
     fun nativeUpdateImeOption() {
         val chineseFanTi = getInstance().input.chineseFanTi.getValue()
-        setImeOption("traditionalization", chineseFanTi)
+        RimeEngine.setImeOption("traditionalization", chineseFanTi)
         val emojiInput = getInstance().input.emojiInput.getValue()
-        setImeOption("emoji", emojiInput)
+        RimeEngine.setImeOption("emoji", emojiInput)
     }
 }

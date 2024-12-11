@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1733397193
-    default.custom: 1733397193
+    default: 1733884780
+    default.custom: 1733884780
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1733397193
+    t9_pinyin.schema: 1733884780
 corrector: "{comment}"
 custom_phrase:
   db_class: stabledb

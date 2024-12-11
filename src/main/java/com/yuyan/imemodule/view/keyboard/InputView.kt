@@ -684,7 +684,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             resetToIdleState()
         } else {
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
-            if (DecodingInfo.isFinish) {  // 选择的候选词上屏
+            if (candId >= 0 && (DecodingInfo.isFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
                 resetToIdleState()
             } else {  // 不上屏，继续选择
@@ -1152,6 +1152,21 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if(isAddPhrases){
             isAddPhrases = false
             initView(context)
+        }
+    }
+
+    fun onUpdateSelection() {
+        val inputConnection = service.getCurrentInputConnection()
+        val textBeforeCursor = inputConnection.getTextBeforeCursor(5, 0)
+        val text = textBeforeCursor.toString()
+        if (text.isNotBlank() && InputModeSwitcherManager.isChinese) {
+            DecodingInfo.isAssociate = true
+            mImeState = ImeState.STATE_IDLE
+            DecodingInfo.getAssociateWord(text)
+            // 对输入的拼音进行查询
+            chooseAndUpdate(-1)
+            mImeState = ImeState.STATE_PREDICT
+            updateCandidateBar()
         }
     }
 }

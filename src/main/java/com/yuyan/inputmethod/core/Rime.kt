@@ -135,7 +135,7 @@ class Rime(fullCheck: Boolean) {
 
         // KeyProcess 调用JNI方法发送keycode和mask
         @JvmStatic
-        fun processKey(keycode: Int, mask: Int, ): Boolean {
+        fun processKey(keycode: Int, mask: Int): Boolean {
             if (isVoidKeycode(keycode)) return false
             return processRimeKey(keycode, mask).also {
                 updateContext()
@@ -143,7 +143,7 @@ class Rime(fullCheck: Boolean) {
         }
 
         @JvmStatic
-        fun replaceKey(caretPos: Int, length: Int, key: String, ): Boolean {
+        fun replaceKey(caretPos: Int, length: Int, key: String): Boolean {
             return replaceRimeKey(caretPos, length, key).also {
                 updateContext()
             }
@@ -246,6 +246,15 @@ class Rime(fullCheck: Boolean) {
             setRimeCaretPos(caretPos)
             updateContext()
         }
+
+        fun getAssociateList(key: String?): Array<String?> {
+            return getRimeAssociateList(key)
+        }
+
+        fun chooseAssociate(index: Int): Boolean {
+            return chooseRimeAssociate(index)
+        }
+
 
         // init
         @JvmStatic
@@ -387,6 +396,12 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun selectRimeSchemas(schemaIds: Array<String>): Boolean
+
+        @JvmStatic
+        external fun getRimeAssociateList(key: String?): Array<String?>
+
+        @JvmStatic
+        external fun chooseRimeAssociate(index: Int): Boolean
 
         @JvmStatic
         external fun getRimeStateLabel(

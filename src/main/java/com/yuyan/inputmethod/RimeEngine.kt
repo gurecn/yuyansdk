@@ -84,6 +84,22 @@ object RimeEngine {
         updateCandidatesOrCommitText()
     }
 
+    fun predictAssociationWords(text: String) {
+        pinyinCandidates = emptyArray()
+        if (text.isNotEmpty()) {
+            val words = Rime.getAssociateList(text)
+            showCandidates = words.filterNotNull().map {
+                CandidateListItem("", it)
+            }.toTypedArray()
+            showComposition = ""
+        }
+    }
+
+    fun selectAssociation(index: Int) {
+        Rime.chooseAssociate(index)
+        preCommitText = showCandidates.getOrNull(index)?.text?:""
+    }
+
     fun reset() {
         showCandidates = emptyArray()
         pinyinCandidates = emptyArray()
