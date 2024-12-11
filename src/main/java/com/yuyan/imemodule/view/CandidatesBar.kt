@@ -253,7 +253,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mCandidatesMenuAdapter.items = mFunItems
         } else {
-            mRVCandidates.layoutManager?.scrollToPosition(CustomConstant.activeCandidate)
+            if(DecodingInfo.candidateSize > CustomConstant.activeCandidate)mRVCandidates.layoutManager?.scrollToPosition(CustomConstant.activeCandidate)
             showViewVisibility(mCandidatesDataContainer)
             mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2 else 0)
         }

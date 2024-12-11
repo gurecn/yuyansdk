@@ -163,7 +163,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     fun showCandidatesView() {
         if (DecodingInfo.isCandidatesListEmpty) {
-            mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
+            if(DecodingInfo.candidateSize > CustomConstant.activeCandidate)mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
             return
         }
         mCandidatesAdapter.notifyDataSetChanged()
@@ -192,7 +192,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             if (isPrefixs) {
                 inputView.selectPrefix(position)
-                mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
+                if(DecodingInfo.candidateSize > CustomConstant.activeCandidate) mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
             } else {
                 val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
                 val softKey = SoftKey(symbol)
