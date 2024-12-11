@@ -1156,7 +1156,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
-        if(newSelStart == newSelEnd) {
+        if(newSelStart == newSelEnd ) {
             val inputConnection = service.getCurrentInputConnection()
             val textBeforeCursor = inputConnection.getTextBeforeCursor(5, 0)
             val text = textBeforeCursor.toString()

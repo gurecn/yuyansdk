@@ -254,9 +254,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mCandidatesMenuAdapter.items = mFunItems
         } else {
-            mCandidatesAdapter.notifyDataSetChanged()
             showViewVisibility(mCandidatesDataContainer)
-            if(DecodingInfo.isAssociate) mRightArrowBtn.drawable.setLevel(2)
+            mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2 else 0)
         }
         mCandidatesAdapter.notifyDataSetChanged()
         mCandidatesMenuAdapter.notifyDataSetChanged()
