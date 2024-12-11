@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputType
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -76,11 +75,8 @@ import kotlin.math.absoluteValue
 
 /**
  * 输入法主界面。
- *
  * 包含拼音显示、候选词栏、键盘界面等。
- *
  * 在 该类中处理界面绘制、、输入逻辑等为输入法核心处理类。
- *
  * 注: 所有键盘自定义 View禁用构造方法警告，且不创建含AttributeSet的构造方法。为了实现代码混淆效果。
  */
 
@@ -306,14 +302,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
-        } else if (sKey.isUserDefKey) { // 是用户定义的keycode
+        } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
                 if(InputModeSwitcherManager.isChinese) {
                     chooseAndUpdate(0)
                 } else if(InputModeSwitcherManager.isEnglish){
                     val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
                     commitDecInfoText(displayStr)
-                    resetToIdleState()
                 }
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
@@ -325,21 +320,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 InputModeSwitcherManager.switchModeForUserKey(keyCode)
-                resetToIdleState()
             }else if(sKey.keyLabel.isNotBlank()){
                 commitText(sKey.keyLabel)
             }
-        } else if (sKey.isUniStrKey) {  // 字符按键
-            if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-                if(InputModeSwitcherManager.isChinese) {
-                    chooseAndUpdate(0)
-                } else if(InputModeSwitcherManager.isEnglish){
-                    val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
-                    commitDecInfoText(displayStr)
-                    resetToIdleState()
-                }
-            }
-            commitText(sKey.keyLabel)
+            resetToIdleState()
         }
     }
 
@@ -348,15 +332,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseLongKeyEvent(sKey: SoftKey?, showText: String?) {
+        resetToIdleState()
         if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
             if(InputModeSwitcherManager.isChinese) {
                 chooseAndUpdate(0)
             } else if(InputModeSwitcherManager.isEnglish){
                 val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
                 commitDecInfoText(displayStr)
-                resetToIdleState()
             }
-            DecodingInfo.reset()
         }
         if(sKey != null){
             val handled = when(sKey.keyCode){
@@ -391,7 +374,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
         DecodingInfo.isAssociate = false
         DecodingInfo.cacheCandidates(words)
-        changeToStateInput()
+        mImeState = ImeState.STATE_INPUT
         updateCandidateBar()
     }
 
@@ -403,16 +386,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if (processFunctionKeys(event)) {
             return true
         }
-        val abcSearchEnglishCell = InputModeSwitcherManager.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
-        val result = if(abcSearchEnglishCell){
+        val englishCellDisable = InputModeSwitcherManager.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
+        val result = if(englishCellDisable){
             processEnglishKey(event)
         } else if (!InputModeSwitcherManager.mInputTypePassword &&(InputModeSwitcherManager.isEnglish || InputModeSwitcherManager.isChinese)) { // 中文、英语输入模式
-            when (mImeState) {
-                ImeState.STATE_IDLE -> processStateIdle(event)
-                ImeState.STATE_INPUT -> processStateInput(event)
-                ImeState.STATE_PREDICT -> processStatePredict(event)
-                ImeState.STATE_COMPOSING -> processStateEditComposing(event)
-            }
+            processInput(event)
         } else { // 数字、符号处理
             processEnglishKey(event)
         }
@@ -441,7 +419,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if (keyChar != 0) {
             sendKeyChar(keyChar.toChar())
         }
-
         return false
     }
 
@@ -455,13 +432,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 requestHideSelf()
                 return true
             }
-        }
-        if (keyCode == KeyEvent.KEYCODE_CLEAR) {
+        } else if (keyCode == KeyEvent.KEYCODE_CLEAR) {
             resetToIdleState()
             return true
-        }
-        // 中文，智能英文输入单独处理（涉及引擎操作），不在这边处理。
-        if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
+        } else  if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
             if (keyCode == KeyEvent.KEYCODE_DEL) {
                 sendKeyEvent(keyCode)
                 return true
@@ -475,47 +449,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     /**
-     * 当 mImeState == ImeState.STATE_IDLE 或者 mImeState ==
-     * ImeState.STATE_APP_COMPLETION 时的按键处理函数
+     * 按键处理函数
      */
-    private fun processStateIdle(event: KeyEvent): Boolean {
-        val keyCode = event.keyCode
-        val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON ){
-            DecodingInfo.inputAction(keyCode)
-            // 对输入的拼音进行查询
-            updateCandidate()
-            return true
-        } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (DecodingInfo.isFinish) {
-                sendKeyEvent(keyCode)
-            } else {
-                DecodingInfo.deleteAction()
-                updateCandidate()
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
-            } else {
-                sendKeyEvent(keyCode)
-            }
-            return true
-        } else if (keyCode != 0) {
-            sendKeyEvent(keyCode)
-            return true
-        } else if (keyChar != 0) {
-            sendKeyChar(keyChar.toChar())
-        }
-        return false
-    }
-
-    /**
-     * 当 mImeState == ImeState.STATE_INPUT 时的按键处理函数
-     */
-    private fun processStateInput(event: KeyEvent): Boolean {
+    private fun processInput(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
+            mImeState = ImeState.STATE_INPUT
             //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
             DecodingInfo.inputAction(keyCode)
             updateCandidate()
@@ -554,120 +494,27 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     /**
-     * 当 mImeState == ImeState.STATE_PREDICT 时的按键处理函数
-     */
-    private fun processStatePredict(event: KeyEvent): Boolean {
-        val keyCode = event.keyCode
-        val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
-            changeToStateInput()
-            // 加一个字符进输入的拼音字符串中
-            DecodingInfo.inputAction(keyCode)
-            // 对输入的拼音进行查询。
-            updateCandidate()
-            return true
-        } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (DecodingInfo.isFinish) {  //联想状态且无联想词时，点击删除执行删除操作
-                sendKeyEvent(keyCode)
-            }
-            resetToIdleState()
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (service.isInputViewShown) {
-                requestHideSelf()
-                return true
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            val retStr = DecodingInfo.composingStrForCommit
-            if (!TextUtils.isEmpty(retStr)) {
-                // 发送文本给EditText
-                commitDecInfoText(retStr)
-            } else {
-                // 发生ENTER键给EditText
-                sendKeyEvent(keyCode)
-            }
-            resetToIdleState()
-        }  else if (keyCode == KeyEvent.KEYCODE_AT || keyCode == KeyEvent.KEYCODE_SPACE) {
-            // 选择候选词
-            if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
-            }
-            sendKeyChar(keyChar.toChar())
-            return true
-        }
-        return false
-    }
-
-    /**
-     * 当 mImeState == ImeState.STATE_COMPOSING 时的按键处理函数
-     */
-    private fun processStateEditComposing(event: KeyEvent): Boolean {
-        val keyCode = event.keyCode
-        val keyChar = event.unicodeChar
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
-            //判断如果是拼写模式下  点击英文键盘上的数字键和数字键盘 已添加字符的形式添加
-            DecodingInfo.inputAction(keyCode)
-            updateCandidate()
-        } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (DecodingInfo.isFinish) {
-                sendKeyEvent(keyCode)
-            } else {
-                DecodingInfo.deleteAction()
-                updateCandidate()
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            // 获取原始的输入拼音的字符
-            val composingStr = DecodingInfo.composingStrForDisplay
-            if (composingStr.isEmpty()) { // 发送 ENTER 键给 EditText
-                sendKeyEvent(keyCode)
-            } else { // 发送文本给EditText
-                commitDecInfoText(composingStr.replace("'", ""))
-                resetToIdleState()
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (service.isInputViewShown) {
-                requestHideSelf()
-                return true
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_AT) {
-            // 选择高亮的候选词
-            if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
-            }
-            sendKeyChar(keyChar.toChar())
-            return true
-        }
-        return false
-    }
-
-    /**
-     * 设置输入法状态为 mImeState = ImeState.STATE_COMPOSING;
-     */
-    private fun changeToStateComposing() {
-        mImeState = ImeState.STATE_COMPOSING
-    }
-
-    /**
-     * 设置输入法状态为 mImeState = ImeState.STATE_INPUT;
-     */
-    private fun changeToStateInput() {
-        mImeState = ImeState.STATE_INPUT
-    }
-
-    /**
      * 重置到空闲状态
      */
     fun resetToIdleState() {
         resetCandidateWindow()
         // 从候选词、符号界面切换到输入键盘
         KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        val container = KeyboardManager.instance.currentContainer
-        (container as? T9TextContainer)?.updateSymbolListView()
+        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         mComposingView.setDecodingInfo()
         mImeState = ImeState.STATE_IDLE
+    }
+
+    /**
+     * 切换到联想状态
+     */
+    private fun resetToPredictState() {
+        resetCandidateWindow()
+        // 从候选词、符号界面切换到输入键盘
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+        mComposingView.setDecodingInfo()
+        mImeState = ImeState.STATE_PREDICT
     }
 
     /**
@@ -677,26 +524,22 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun chooseAndUpdate(candId: Int) {
         // 剪贴板或候选词栏常用符号模式时，不调用引擎查询
         if (isSkipEngineMode) {
-            val choice = DecodingInfo.getCandidate(candId)
-            if (choice != null && choice.text.isNotEmpty()) {
-                commitDecInfoText(choice.text)
+            val choice = DecodingInfo.getCandidate(candId)?.text
+            if (choice?.isNotBlank() == true) {
+                commitDecInfoText(choice)
             }
-            resetToIdleState()
+            resetToPredictState()
         } else {
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
             if (candId >= 0 && (DecodingInfo.isFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
-                resetToIdleState()
+                resetToPredictState()
             } else {  // 不上屏，继续选择
-                val composing = DecodingInfo.composingStrForDisplay
-                if (ImeState.STATE_IDLE == mImeState || composing.isNotEmpty()) {
-                    if (InputModeSwitcherManager.isEnglish) {
-                        setComposingText(composing)
-                    }
-                    changeToStateComposing()
+                if (!DecodingInfo.isFinish) {
+                    val composing = DecodingInfo.composingStrForDisplay
+                    if (InputModeSwitcherManager.isEnglish) setComposingText(composing)
                     updateCandidateBar()
-                    val container = KeyboardManager.instance.currentContainer
-                    (container as? T9TextContainer)?.updateSymbolListView()
+                    (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 } else {
                     resetToIdleState()
                 }
@@ -709,15 +552,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     private fun updateCandidate() {
         DecodingInfo.chooseDecodingCandidate(-1)
-        val composing = DecodingInfo.composingStrForDisplay
-        if (ImeState.STATE_IDLE == mImeState || composing.isNotEmpty()) {
+        if (!DecodingInfo.isFinish) {
+            val composing = DecodingInfo.composingStrForDisplay
             if (InputModeSwitcherManager.isEnglish) {
                 setComposingText(composing)
             }
-            changeToStateComposing()
             updateCandidateBar()
-            val container = KeyboardManager.instance.currentContainer
-            (container as? T9TextContainer)?.updateSymbolListView()
+            (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         } else {
             resetToIdleState()
         }
@@ -744,15 +585,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 选择候选词后的处理函数。
      */
     fun onChoiceTouched(activeCandNo: Int) {
-        if (mImeState == ImeState.STATE_COMPOSING || mImeState == ImeState.STATE_INPUT || mImeState == ImeState.STATE_PREDICT) {
-            // 播放按键声音和震动
-            DevicesUtils.tryPlayKeyDown()
-            DevicesUtils.tryVibrate(this)
-            // 选择候选词
-            chooseAndUpdate(activeCandNo)
-        } else {
-            resetToIdleState()
-        }
+        // 播放按键声音和震动
+        DevicesUtils.tryPlayKeyDown()
+        DevicesUtils.tryVibrate(this)
+        // 选择候选词
+        chooseAndUpdate(activeCandNo)
     }
 
     /**
@@ -765,9 +602,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
 
         override fun onClickMore(level: Int) {
-            if (ImeState.STATE_COMPOSING == mImeState) {
-                changeToStateInput()
-            }
             if (level == 0) {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
                 (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
@@ -977,7 +811,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 空闲，输入，编辑，联想
      */
     enum class ImeState {
-        STATE_IDLE, STATE_INPUT, STATE_COMPOSING, STATE_PREDICT
+        STATE_IDLE, STATE_INPUT, STATE_PREDICT
     }
 
     /**
@@ -998,9 +832,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         updateCandidate()
     }
 
-    //展示常用符号
+    //常用符号、剪切板
     fun showSymbols(symbols: Array<String>) {
-        //设置候选词
+        mImeState = ImeState.STATE_PREDICT
         val list = ArrayList<CandidateListItem>()
         for (symbol in symbols) {
             list.add(CandidateListItem("", symbol))
@@ -1009,11 +843,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         DecodingInfo.isAssociate = true
         isSkipEngineMode = true
         updateCandidateBar()
-        mImeState = ImeState.STATE_PREDICT
     }
 
     private fun requestHideSelf() {
-        resetToIdleState()
         if(isAddPhrases){
             isAddPhrases = false
             initView(context)
@@ -1072,8 +904,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
         }
     }
-
-
 
     /**
      * 向输入框提交预选词
@@ -1155,18 +985,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
-    fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
-        if(newSelStart == newSelEnd ) {
+    fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
+        if(newSelStart == newSelEnd && mImeState == ImeState.STATE_PREDICT) {
             val inputConnection = service.getCurrentInputConnection()
-            val textBeforeCursor = inputConnection.getTextBeforeCursor(5, 0)
-            val text = textBeforeCursor.toString()
+            val text = inputConnection.getTextBeforeCursor(5, 0).toString()
             if (!isSkipEngineMode && text.isNotBlank() && InputModeSwitcherManager.isChinese) {
                 DecodingInfo.isAssociate = true
-                mImeState = ImeState.STATE_IDLE
                 DecodingInfo.getAssociateWord(text)
-                // 对输入的拼音进行查询
                 chooseAndUpdate(-1)
-                mImeState = ImeState.STATE_PREDICT
                 updateCandidateBar()
             }
         }
