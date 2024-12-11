@@ -89,7 +89,6 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                     DevicesUtils.tryVibrate(this)
                 }
                 MotionEvent.ACTION_UP -> {
-                    inputView.resetToIdleState()
                     KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 }
             }
@@ -122,7 +121,6 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         if (mShowType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
             LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
             if(!AppPrefs.getInstance().internal.keyboardLockSymbol.getValue()) {
-                inputView.resetToIdleState()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         } else {  //表情、颜文字
