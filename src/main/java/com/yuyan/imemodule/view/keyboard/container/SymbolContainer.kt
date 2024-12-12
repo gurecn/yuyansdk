@@ -14,11 +14,12 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.SymbolPagerAdapter
-import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.UsedSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -119,12 +120,12 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private fun onItemClickOperate(value: String) {
         val result = value.replace("[ \\r]".toRegex(), "")
         if (mShowType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
-            LauncherModel.instance.usedCharacterDao!!.insertUsedCharacter(result, System.currentTimeMillis())
+            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
             if(!AppPrefs.getInstance().internal.keyboardLockSymbol.getValue()) {
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         } else {  //表情、颜文字
-            LauncherModel.instance.usedEmojiDao!!.insertUsedEmoji(result, System.currentTimeMillis())
+            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = "emoji"))
         }
         val softKey = SoftKey(result)
         DevicesUtils.tryPlayKeyDown(softKey)
