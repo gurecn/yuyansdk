@@ -520,18 +520,24 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             resetToPredictState()
         } else {
-            val choice = DecodingInfo.chooseDecodingCandidate(candId)
-            if (candId >= 0 && (DecodingInfo.isFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
-                commitDecInfoText(choice)
+            val candidate = DecodingInfo.getCandidate(candId)
+            if(candidate?.comment == "📋"){  // 处理常用语
+                commitDecInfoText(candidate.text)
                 resetToPredictState()
-            } else {  // 不上屏，继续选择
-                if (!DecodingInfo.isFinish) {
-                    val composing = DecodingInfo.composingStrForDisplay
-                    if (InputModeSwitcherManager.isEnglish) setComposingText(composing)
-                    updateCandidateBar()
-                    (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-                } else {
-                    resetToIdleState()
+            } else {
+                val choice = DecodingInfo.chooseDecodingCandidate(candId)
+                if (candId >= 0 && (DecodingInfo.isFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
+                    commitDecInfoText(choice)
+                    resetToPredictState()
+                } else {  // 不上屏，继续选择
+                    if (!DecodingInfo.isFinish) {
+                        val composing = DecodingInfo.composingStrForDisplay
+                        if (InputModeSwitcherManager.isEnglish) setComposingText(composing)
+                        updateCandidateBar()
+                        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+                    } else {
+                        resetToIdleState()
+                    }
                 }
             }
         }

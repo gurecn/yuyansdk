@@ -2,6 +2,7 @@ package com.yuyan.inputmethod
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.db.DataBaseKT
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
@@ -18,7 +19,7 @@ object RimeEngine {
     private const val PINYIN_T9_9 = 16
 
     private val keyRecordStack = KeyRecordStack()
-    private var pinyinCandidates: Array<String> = emptyArray() // 候选词界面的候选拼音列表
+    private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: Array<CandidateListItem> = emptyArray() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
@@ -79,13 +80,13 @@ object RimeEngine {
     }
 
     fun selectPinyin(index: Int) {
-        val pinyinKey = keyRecordStack.pushPinyinSelectAction(pinyinCandidates[index]) ?: return
+        val pinyinKey = keyRecordStack.pushPinyinSelectAction(pinyins[index]) ?: return
         Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.inputKeys())
         updateCandidatesOrCommitText()
     }
 
     fun predictAssociationWords(text: String) {
-        pinyinCandidates = emptyArray()
+        pinyins = emptyArray()
         if (text.isNotEmpty()) {
             val words = Rime.getAssociateList(text)
             showCandidates = words.filterNotNull().map {
@@ -102,7 +103,7 @@ object RimeEngine {
 
     fun reset() {
         showCandidates = emptyArray()
-        pinyinCandidates = emptyArray()
+        pinyins = emptyArray()
         showComposition = ""
         preCommitText = ""
         keyRecordStack.clear()
@@ -171,7 +172,7 @@ object RimeEngine {
             composition = composition.uppercase()
         }
         var count = Rime.compositionText.count { it in '1'..'9' }
-        val pyCandidates =
+        pinyins =
             if (count > 0) {
                 val remainT9Keys = ArrayList<InputKey>(count)
                 keyRecordStack.forEachReversed { inputKey ->
@@ -187,8 +188,14 @@ object RimeEngine {
             } else {
                 emptyArray()
             }
-        pinyinCandidates = pyCandidates
-        showCandidates = candidates
+        showCandidates = when {
+            Rime.compositionText.isNotBlank() -> {
+                val phrase = DataBaseKT.instance.phraseDao().query(Rime.compositionText.replace("\\s".toRegex(), ""))
+                phrase.map { cand -> CandidateListItem("📋", cand.content)
+                }.toMutableList().plus(candidates).toTypedArray()
+            }
+            else -> candidates
+        }
         showComposition = composition
         preCommitText = ""
         return null
