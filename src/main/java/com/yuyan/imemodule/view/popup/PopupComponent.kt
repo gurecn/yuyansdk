@@ -57,12 +57,9 @@ class PopupComponent private constructor(){
             setText(content)
         }
         val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat) {
-            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){
-                EnvironmentSingleton.instance.heightForCandidates
-            } else {
-                EnvironmentSingleton.instance.systemNavbarWindowsBottom
-            }
-        } else 0  // todo 需要添加移动条高度
+            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom +
+                    if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){ EnvironmentSingleton.instance.heightForFullDisplayBar } else 0
+        } else EnvironmentSingleton.instance.heightForKeyboardMove
         root.apply {
             add(popup.root, lParams(bounds.width(), bounds.height()) {
                 bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForComposingView + bottomPadding - bounds.bottom
@@ -100,12 +97,9 @@ class PopupComponent private constructor(){
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
         val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys)
         val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat) {
-            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){
-                EnvironmentSingleton.instance.heightForCandidates
-            } else {
-                EnvironmentSingleton.instance.systemNavbarWindowsBottom
-            }
-        } else 0   // todo 需要添加移动条高度
+            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom +
+                    if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){ EnvironmentSingleton.instance.heightForFullDisplayBar } else 0
+        } else EnvironmentSingleton.instance.heightForKeyboardMove
         root.apply {
             add(keyboardUi.root, lParams {
                 bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForComposingView  + bottomPadding - bounds.bottom

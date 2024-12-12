@@ -156,10 +156,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 else -> mHoderLayoutLeft
             }
             mOnehandHoderLayout.visibility = VISIBLE
-            val mIbOneHandNone = mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_none)
-            mIbOneHandNone.setOnClickListener { view: View -> onClick(view) }
-            val mIbOneHand = mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_left)
-            mIbOneHand.setOnClickListener { view: View -> onClick(view) }
+            mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_none).setOnClickListener { view: View -> onClick(view) }
+            mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_left).setOnClickListener { view: View -> onClick(view) }
             val layoutParamsHoder = mOnehandHoderLayout.layoutParams
             val margin = EnvironmentSingleton.instance.heightForCandidates
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
@@ -176,7 +174,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             rightPadding = mRightPaddingKey.getValue()
             mSkbRoot.bottomPadding = 0
             mSkbRoot.rightPadding = 0
-            mLlKeyboardBottomHolder.minimumHeight = 0
+            mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForKeyboardMove
             val mIvKeyboardMove = ImageView(context).apply {
                 setImageResource(R.drawable.sdk_vector_keyboard_horizontal_line)
                 isClickable = true
@@ -189,7 +187,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if(fullDisplayKeyboardEnable){
                 mFullDisplayKeyboardBar = FullDisplayKeyboardBar(context, this)
                 mLlKeyboardBottomHolder.addView(mFullDisplayKeyboardBar)
-                mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForCandidates
+                mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForFullDisplayBar + EnvironmentSingleton.instance.systemNavbarWindowsBottom
             } else {
                 mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.systemNavbarWindowsBottom
             }
@@ -201,7 +199,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
         }
         updateTheme()
-        DecodingInfo.candidatesLiveData.observe(/* owner = */ this){ _ ->
+        DecodingInfo.candidatesLiveData.observe( this){ _ ->
             updateCandidateBar()
             (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
         }
@@ -942,7 +940,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             val fullDisplayKeyboardEnable = getInstance().internal.fullDisplayKeyboardEnable.getValue()
             mLlKeyboardBottomHolder.minimumHeight = if(EnvironmentSingleton.instance.keyboardModeFloat)  0
-            else if(fullDisplayKeyboardEnable) EnvironmentSingleton.instance.heightForCandidates
+            else if(fullDisplayKeyboardEnable) EnvironmentSingleton.instance.heightForFullDisplayBar + EnvironmentSingleton.instance.systemNavbarWindowsBottom
             else  EnvironmentSingleton.instance.systemNavbarWindowsBottom
             insets
         }
@@ -951,6 +949,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun onWindowHidden() {
         if(isAddPhrases){
             isAddPhrases = false
+            addPhrasesHandle()
             initView(context)
         }
     }

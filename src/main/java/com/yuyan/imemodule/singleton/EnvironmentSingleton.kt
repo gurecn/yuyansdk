@@ -28,6 +28,8 @@ class EnvironmentSingleton private constructor() {
         private set
     var heightForCandidates = 0 // 候选词区域的高度
     var heightForComposingView = 0 // 拼音显示区域高度
+    var heightForFullDisplayBar = 0 // 智能导航栏高度
+    var heightForKeyboardMove = 0 // 悬浮键盘移动条高度
     var keyTextSize = 0 // 正常按键中文本的大小
     var keyTextSmallSize = 0 // 正常按键中文本的大小,小值
     var candidateTextSize = 0 // 候选词字体大小
@@ -65,6 +67,8 @@ class EnvironmentSingleton private constructor() {
         skbWidth = screenWidthVertical - holderWidth
         heightForCandidates = (screenHeightVertical * candidatesHeightRatio).toInt()
         heightForComposingView = (heightForCandidates*0.5f).toInt()
+        heightForFullDisplayBar = (heightForCandidates*0.7f).toInt()
+        heightForKeyboardMove = (heightForCandidates*0.2f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
         keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
