@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.db
+package com.yuyan.imemodule.database
 
 import androidx.room.Database
 import androidx.room.Room
@@ -6,14 +6,14 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.db.dao.ClipboardDao
-import com.yuyan.imemodule.db.dao.PhraseDao
-import com.yuyan.imemodule.db.dao.SideSymbolDao
-import com.yuyan.imemodule.db.dao.UsedSymbolDao
-import com.yuyan.imemodule.db.entry.Clipboard
-import com.yuyan.imemodule.db.entry.Phrase
-import com.yuyan.imemodule.db.entry.SideSymbol
-import com.yuyan.imemodule.db.entry.UsedSymbol
+import com.yuyan.imemodule.database.dao.ClipboardDao
+import com.yuyan.imemodule.database.dao.PhraseDao
+import com.yuyan.imemodule.database.dao.SideSymbolDao
+import com.yuyan.imemodule.database.dao.UsedSymbolDao
+import com.yuyan.imemodule.database.entry.Clipboard
+import com.yuyan.imemodule.database.entry.Phrase
+import com.yuyan.imemodule.database.entry.SideSymbol
+import com.yuyan.imemodule.database.entry.UsedSymbol
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 
 //@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class], version = 1, exportSchema = false)

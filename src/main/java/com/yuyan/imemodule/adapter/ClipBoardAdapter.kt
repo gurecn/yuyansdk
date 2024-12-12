@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.entity.ClipBoardDataBean
+import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -27,9 +27,9 @@ import splitties.views.dsl.core.margin
 /**
  * 剪切板界面适配器
  */
-class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) :
+class ClipBoardAdapter(context: Context, datas: MutableList<Clipboard>) :
     RecyclerView.Adapter<ClipBoardAdapter.SymbolHolder>() {
-    private var mDatas : MutableList<ClipBoardDataBean>
+    private var mDatas : MutableList<Clipboard>
     private val mContext: Context
     private var textColor: Int
     private var clipboardLayoutCompact: ClipboardLayoutMode
@@ -90,8 +90,8 @@ class ClipBoardAdapter(context: Context, datas: MutableList<ClipBoardDataBean>) 
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val data = mDatas[position]
-        holder.textView.text = data.copyContent?.replace("\n", "\\n")
-        holder.ivTopTips.visibility = if(data.isKeep)View.VISIBLE else View.GONE
+        holder.textView.text = data.content.replace("\n", "\\n")
+        holder.ivTopTips.visibility = if(data.isKeep == 1)View.VISIBLE else View.GONE
     }
 
     override fun getItemCount(): Int {

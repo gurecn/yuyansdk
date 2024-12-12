@@ -2,7 +2,8 @@ package com.yuyan.imemodule.service
 
 import android.content.ClipboardManager.OnPrimaryClipChangedListener
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.application.LauncherModel
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.clipboardManager
 
@@ -23,8 +24,8 @@ object ClipboardHelper : OnPrimaryClipChangedListener {
             if(item != null) {
                 item.takeIf { it.text?.isNotBlank() == true }
                     ?.let { b ->
-                        val data = if (b.text.length > 5000) b.text.substring(0, 4999) else b.text.toString()
-                        LauncherModel.instance.mClipboardDao?.insertClopboard(data)
+                        val data = b.text.toString()
+                        DataBaseKT.instance.clipboardDao().insert(Clipboard(content = data))
                         if (AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()) {
                             AppPrefs.getInstance().internal.clipboardUpdateTime.setValue(System.currentTimeMillis())
                             AppPrefs.getInstance().internal.clipboardUpdateContent.setValue(data)

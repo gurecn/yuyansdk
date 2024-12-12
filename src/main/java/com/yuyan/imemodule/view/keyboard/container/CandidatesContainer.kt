@@ -22,8 +22,8 @@ import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.db.DataBaseKT
-import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.service.DecodingInfo

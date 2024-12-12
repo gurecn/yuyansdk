@@ -1,43 +1,19 @@
 package com.yuyan.imemodule.database.dao
 
-import com.yuyan.imemodule.database.helper.ClipBoardDBHelper
-import com.yuyan.imemodule.database.provider.BaseDataProvider
-import com.yuyan.imemodule.entity.ClipBoardDataBean
+import androidx.room.Dao
+import androidx.room.Query
+import com.yuyan.imemodule.database.BaseDao
+import com.yuyan.imemodule.database.entry.Clipboard
 
-/**
- * CilpboardDao
- * @author KongXR
- */
-class ClipboardDao(dataProvider: BaseDataProvider) {
-    private val mClipboardDatabaseHelper: ClipBoardDBHelper
+@Dao
+interface ClipboardDao : BaseDao<Clipboard> {
 
-    init {
-        mClipboardDatabaseHelper = ClipBoardDBHelper(dataProvider)
-    }
+    @Query("select * from clipboard ORDER BY isKeep DESC, time DESC")
+    fun getAll(): List<Clipboard>
 
-    @Synchronized
-    fun insertClopboard(copyCotent: String?): Boolean {
-        return mClipboardDatabaseHelper.insertClipboard(copyCotent)
-    }
+    @Query("delete from clipboard where content = :content")
+    fun deleteByContent(content: String)
 
-    @Synchronized
-    fun updateClopboard(copy: ClipBoardDataBean): Boolean {
-        return mClipboardDatabaseHelper.updateClipboard(copy)
-    }
-
-
-    @Synchronized
-    fun deleteClipboard(copyCotentBean: ClipBoardDataBean?): Boolean {
-        return if(copyCotentBean != null)  mClipboardDatabaseHelper.deleteClipboard(copyCotentBean) else false
-    }
-
-    @Synchronized
-    fun getAllClipboardContent(): MutableList<ClipBoardDataBean> {
-        return mClipboardDatabaseHelper.getAllClipboardContent()
-    }
-
-    @Synchronized
-    fun clearAllClipBoardContent() {
-        mClipboardDatabaseHelper.clearAllClipBoardContent()
-    }
+    @Query("delete from clipboard")
+    fun deleteAll()
 }

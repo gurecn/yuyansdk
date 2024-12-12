@@ -33,8 +33,8 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
-import com.yuyan.imemodule.db.DataBaseKT
-import com.yuyan.imemodule.db.entry.Phrase
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
@@ -625,7 +625,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
 
         override fun onClickClearClipBoard() {
-            LauncherModel.instance.mClipboardDao?.clearAllClipBoardContent()
+            DataBaseKT.instance.clipboardDao().deleteAll()
             (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
     }
@@ -817,6 +817,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun requestHideSelf() {
         if(isAddPhrases){
             isAddPhrases = false
+            addPhrasesHandle()
             initView(context)
         } else {
             service.requestHideSelf(0)

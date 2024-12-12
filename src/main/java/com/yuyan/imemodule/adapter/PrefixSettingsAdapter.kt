@@ -10,7 +10,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication.Companion.context
-import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.database.entry.SideSymbol
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.editText

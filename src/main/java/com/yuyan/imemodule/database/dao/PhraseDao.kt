@@ -1,9 +1,9 @@
-package com.yuyan.imemodule.db.dao
+package com.yuyan.imemodule.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.yuyan.imemodule.db.BaseDao
-import com.yuyan.imemodule.db.entry.Phrase
+import com.yuyan.imemodule.database.BaseDao
+import com.yuyan.imemodule.database.entry.Phrase
 
 @Dao
 interface PhraseDao : BaseDao<Phrase> {

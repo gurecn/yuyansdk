@@ -16,10 +16,9 @@ import com.yanzhenjie.recyclerview.SwipeMenuItem
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
-import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.db.DataBaseKT
-import com.yuyan.imemodule.entity.ClipBoardDataBean
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -70,10 +69,11 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     fun showClipBoardView(item: SkbMenuMode) {
         itemMode = item
         mRVSymbolsView.setHasFixedSize(true)
-        val copyContents : MutableList<ClipBoardDataBean> =
-            if(itemMode == SkbMenuMode.ClipBoard) LauncherModel.instance.mClipboardDao?.getAllClipboardContent() ?: return
-            else {
-                DataBaseKT.instance.phraseDao().getAll().map { line -> ClipBoardDataBean("", line.content) }.toMutableList()
+        val copyContents : MutableList<Clipboard> =
+            if(itemMode == SkbMenuMode.ClipBoard) {
+                DataBaseKT.instance.clipboardDao().getAll().toMutableList()
+            } else {
+                DataBaseKT.instance.phraseDao().getAll().map { line -> Clipboard(line.content) }.toMutableList()
             }
         val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
             ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -98,13 +98,13 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         val adapter = ClipBoardAdapter(context, copyContents)
         mRVSymbolsView.setAdapter(null)
         mRVSymbolsView.setOnItemClickListener{ _: View?, position: Int ->
-                inputView.responseLongKeyEvent(SoftKey(), copyContents[position].copyContent)
+                inputView.responseLongKeyEvent(SoftKey(), copyContents[position].content)
         }
         mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, position: Int ->
             val topItem = SwipeMenuItem(mContext).apply {
                 setImage(if(itemMode == SkbMenuMode.ClipBoard) {
-                    val data: ClipBoardDataBean = copyContents[position]
-                    if(data.isKeep)R.drawable.ic_baseline_untop_circle_32
+                    val data: Clipboard = copyContents[position]
+                    if(data.isKeep == 1)R.drawable.ic_baseline_untop_circle_32
                     else R.drawable.ic_baseline_top_circle_32
                 }
                 else R.drawable.ic_baseline_edit_circle_32)
@@ -119,21 +119,21 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             menuBridge.closeMenu()
             if(itemMode == SkbMenuMode.ClipBoard){
                 if(menuBridge.position == 0) {
-                    val data: ClipBoardDataBean = copyContents[position]
-                    data.isKeep = !data.isKeep
-                    LauncherModel.instance.mClipboardDao?.updateClopboard(data)
+                    val data: Clipboard = copyContents[position]
+                    data.isKeep = 1 - data.isKeep
+                    DataBaseKT.instance.clipboardDao().update(data)
                     showClipBoardView(SkbMenuMode.ClipBoard)
                 } else if(menuBridge.position == 1){
-                    val data: ClipBoardDataBean = copyContents.removeAt(position)
-                    LauncherModel.instance.mClipboardDao?.deleteClipboard(data)
+                    val data: Clipboard = copyContents.removeAt(position)
+                    DataBaseKT.instance.clipboardDao().deleteByContent(data.content)
                     mRVSymbolsView.adapter?.notifyItemRemoved(position)
                 }
             } else {
-                val content = copyContents[position].copyContent!!
+                val content = copyContents[position].content
                 if(menuBridge.position == 0) {
                     inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, content)
                 } else if(menuBridge.position == 1){
-                    removePhrasesHandle(content)
+                    DataBaseKT.instance.phraseDao().deleteByContent(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
@@ -142,23 +142,17 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         mRVSymbolsView.setAdapter(adapter)
     }
 
-    private fun removePhrasesHandle(content:String) {
-        if(content.isNotBlank()) {
-            DataBaseKT.instance.phraseDao().deleteByContent(content)
-        }
-    }
-
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
-    private fun calculateColumn(data : MutableList<ClipBoardDataBean>) {
+    private fun calculateColumn(data : MutableList<Clipboard>) {
         mHashMapSymbols.clear()
         val itemWidth = EnvironmentSingleton.instance.skbWidth/6 - dp(10)
         var mCurrentColumn = 0
-        val contents = data.map { it.copyContent }
+        val contents = data.map { it.content }
         contents.forEachIndexed { position, candidate ->
-            var count = getSymbolsCount(candidate!!, itemWidth)
+            var count = getSymbolsCount(candidate, itemWidth)
             var nextCount = 0
             if (contents.size > position + 1) {
-                val nextCandidate = contents[position + 1]!!
+                val nextCandidate = contents[position + 1]
                 nextCount = getSymbolsCount(nextCandidate, itemWidth)
             }
             mCurrentColumn = if (mCurrentColumn + count + nextCount > 6) {

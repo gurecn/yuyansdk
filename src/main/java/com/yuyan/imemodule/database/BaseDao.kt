@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.db
+package com.yuyan.imemodule.database
 
 import androidx.room.Dao
 import androidx.room.Delete

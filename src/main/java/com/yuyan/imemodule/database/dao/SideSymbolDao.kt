@@ -1,9 +1,9 @@
-package com.yuyan.imemodule.db.dao
+package com.yuyan.imemodule.database.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.yuyan.imemodule.db.BaseDao
-import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.database.BaseDao
+import com.yuyan.imemodule.database.entry.SideSymbol
 
 @Dao
 interface SideSymbolDao : BaseDao<SideSymbol> {

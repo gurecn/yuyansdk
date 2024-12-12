@@ -16,8 +16,8 @@ import com.yanzhenjie.recyclerview.touch.OnItemMoveListener
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.db.DataBaseKT
-import com.yuyan.imemodule.db.entry.SideSymbol
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.CustomLinearLayout
 import splitties.dimensions.dp

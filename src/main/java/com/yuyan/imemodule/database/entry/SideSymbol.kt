@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.db.entry
+package com.yuyan.imemodule.database.entry
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
