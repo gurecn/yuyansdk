@@ -10,6 +10,9 @@ import com.yuyan.inputmethod.core.Kernel
  * 词库解码操作对象
  */
 object DecodingInfo {
+
+    var activeCandidate = 0  //当前显示候选词位置
+    var activeCandidateBar = 0  //当前显示候选词位置
     // 候选词列表
     val candidatesLiveData = MutableLiveData<List<CandidateListItem>>()
 
@@ -24,7 +27,8 @@ object DecodingInfo {
     fun reset() {
         isAssociate = false
         isReset = true
-        CustomConstant.activeCandidate = 0
+        activeCandidate = 0
+        activeCandidateBar = 0
         candidatesLiveData.postValue(emptyList())
         Kernel.reset()
     }
@@ -45,7 +49,8 @@ object DecodingInfo {
     // 增加拼写字符
     fun inputAction(keycode: Int) {
         isReset = false
-        CustomConstant.activeCandidate = 0
+        activeCandidate = 0
+        activeCandidateBar = 0
         if (Kernel.unHandWriting()) {
             Kernel.inputKeyCode(keycode)
             isAssociate = false
@@ -59,7 +64,8 @@ object DecodingInfo {
      * @param position 选择的position
      */
     fun selectPrefix(position: Int) {
-        CustomConstant.activeCandidate = 0
+        activeCandidate = 0
+        activeCandidateBar = 0
         if (Kernel.unHandWriting()) {
             Kernel.selectPrefix(position)
         }
@@ -72,7 +78,8 @@ object DecodingInfo {
      * 删除
      */
     fun deleteAction() {
-        CustomConstant.activeCandidate = 0
+        activeCandidate = 0
+        activeCandidateBar = 0
         if (Kernel.unHandWriting()) {
             Kernel.deleteAction()
         } else {
@@ -104,7 +111,8 @@ object DecodingInfo {
      * getComposingStrActivePart()取出来。如果candId小于0 ，就对输入的拼音进行查询。
      */
     fun chooseDecodingCandidate(candId: Int): String {
-        CustomConstant.activeCandidate = 0
+        activeCandidate = 0
+        activeCandidateBar = 0
         return if (Kernel.unHandWriting()) {
             if (candId >= 0) Kernel.getWordSelectedWord(candId)
             candidatesLiveData.postValue(Kernel.candidates.asList())
@@ -125,7 +133,8 @@ object DecodingInfo {
 
     // 更新候选词
     fun cacheCandidates(words: Array<CandidateListItem>) {
-        CustomConstant.activeCandidate = 0
+        activeCandidate = 0
+        activeCandidateBar = 0
         isReset = false
         candidatesLiveData.postValue(words.asList())
     }

@@ -102,7 +102,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                         val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                        CustomConstant.activeCandidate = lastVisibleItemPosition
+                        DecodingInfo.activeCandidateBar = lastVisibleItemPosition
                         val itemCount = recyclerView.adapter?.itemCount
                         if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && lastVisibleItemPosition >= itemCount - 1) {
                             DecodingInfo.nextPageCandidates
@@ -253,7 +253,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mCandidatesMenuAdapter.items = mFunItems
         } else {
-            if(DecodingInfo.candidateSize > CustomConstant.activeCandidate)mRVCandidates.layoutManager?.scrollToPosition(CustomConstant.activeCandidate)
+            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar)mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
             showViewVisibility(mCandidatesDataContainer)
             mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2 else 0)
         }
