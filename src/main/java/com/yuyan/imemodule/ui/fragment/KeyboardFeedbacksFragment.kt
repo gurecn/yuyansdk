@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -13,12 +14,22 @@ import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
 import splitties.dimensions.dp
 import splitties.resources.color
+import splitties.views.dsl.appcompat.switch
+import splitties.views.dsl.constraintlayout.above
+import splitties.views.dsl.constraintlayout.before
+import splitties.views.dsl.constraintlayout.below
+import splitties.views.dsl.constraintlayout.constraintLayout
+import splitties.views.dsl.constraintlayout.endOfParent
+import splitties.views.dsl.constraintlayout.lParams
+import splitties.views.dsl.constraintlayout.matchConstraints
+import splitties.views.dsl.constraintlayout.startOfParent
+import splitties.views.dsl.constraintlayout.topOfParent
+import splitties.views.dsl.constraintlayout.topToTopOf
 import splitties.views.dsl.core.add
-import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.textView
-import splitties.views.dsl.core.verticalLayout
 import splitties.views.dsl.core.wrapContent
+import splitties.views.gravityVerticalCenter
 
 
 class KeyboardFeedbacksFragment : Fragment(){
@@ -43,6 +54,22 @@ class KeyboardFeedbacksFragment : Fragment(){
             .trackColor(getColor(R.color.color_gray))
             .trackSize(dp(2))
             .build()
+
+        val soundSwitch= switch {
+            isChecked = soundOnKeyPress < 5 || soundOnKeyPress > 10
+            soundSeekBar.isEnabled = soundOnKeyPress < 5 || soundOnKeyPress > 10
+            setOnCheckedChangeListener { _, isChecked ->
+                if(isChecked){
+                    soundSeekBar.setProgress(0f)
+                    AppPrefs.getInstance().internal.soundOnKeyPress.setValue(0)
+                    soundSeekBar.isEnabled = true
+                } else {
+                    soundSeekBar.setProgress(10f)
+                    AppPrefs.getInstance().internal.soundOnKeyPress.setValue(10)
+                    soundSeekBar.isEnabled = false
+                }
+            }
+        }
 
         soundSeekBar.setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
             override fun onProgressChanged(signSeekBar: SignSeekBar, progress: Int, progressFloat: Float, fromUser: Boolean) {}
@@ -71,6 +98,22 @@ class KeyboardFeedbacksFragment : Fragment(){
             .trackSize(dp(4))
             .build()
 
+        val vibrationSwitch = switch {
+            isChecked = vibrationAmplitude != 1
+            vibrateSeekBar.isEnabled = vibrationAmplitude != 1
+            setOnCheckedChangeListener { _, isChecked ->
+                if(isChecked){
+                    vibrateSeekBar.setProgress(0f)
+                    AppPrefs.getInstance().internal.vibrationAmplitude.setValue(0)
+                    vibrateSeekBar.isEnabled = true
+                } else {
+                    vibrateSeekBar.setProgress(1f)
+                    AppPrefs.getInstance().internal.vibrationAmplitude.setValue(1)
+                    vibrateSeekBar.isEnabled = false
+                }
+            }
+        }
+
         vibrateSeekBar.setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
             override fun onProgressChanged(signSeekBar: SignSeekBar, progress: Int, progressFloat: Float, fromUser: Boolean) { }
             override fun getProgressOnActionUp(signSeekBar: SignSeekBar, progress: Int, progressFloat: Float) {}
@@ -81,30 +124,64 @@ class KeyboardFeedbacksFragment : Fragment(){
             }
         })
 
-        verticalLayout {
-            addView(textView {
-                setText(R.string.button_sound_volume)
-                textSize = 16f
-                setTextColor(context.color(R.color.skb_key_text_color))
-            }, lParams(width = matchParent, height = wrapContent) {
-                setMargins(dp(20), dp(20), dp(20), dp(10))
+        val soundTitle = textView {
+            setText(R.string.button_sound_volume)
+            textSize = 16f
+            gravity = gravityVerticalCenter
+            setTextColor(context.color(R.color.skb_key_text_color))
+        }
+
+        val vibrationTitle = textView {
+            setText(R.string.button_vibration_amplitude)
+            textSize = 16f
+            gravity = gravityVerticalCenter
+            setTextColor(context.color(R.color.skb_key_text_color))
+        }
+
+
+
+        constraintLayout {
+            val lineHeight = dp(48)
+            val itemMargin = dp(30)
+            add(soundTitle, lParams(matchConstraints, lineHeight) {
+                topOfParent()
+                startOfParent(itemMargin)
+                before(soundSwitch)
+                above(soundSeekBar)
+            })
+            add(soundSwitch, lParams(matchConstraints, lineHeight) {
+                topToTopOf(soundTitle)
+                endOfParent(itemMargin)
             })
             add(soundSeekBar, lParams(width = matchParent, height = wrapContent) {
-                setMargins(dp(30), 0, dp(30), dp(10))
+                below(soundTitle)
+                startOfParent(itemMargin)
+                endOfParent(itemMargin)
+                above(vibrationTitle)
             })
-            addView(textView {
-                setText(R.string.button_vibration_amplitude)
-                textSize = 16f
-                setTextColor(context.color(R.color.skb_key_text_color))
-            }, lParams(width = matchParent, height = wrapContent) {
-                setMargins(dp(20), dp(20), dp(20), dp(10))
+
+            add(vibrationTitle, lParams(matchConstraints, lineHeight) {
+                below(soundSeekBar)
+                startOfParent(itemMargin)
+                topToTopOf(soundSeekBar, itemMargin)
+                above(vibrateSeekBar)
+            })
+            add(vibrationSwitch, lParams(matchConstraints, lineHeight) {
+                topToTopOf(vibrationTitle)
+                endOfParent(itemMargin)
             })
             add(vibrateSeekBar, lParams(width = matchParent, height = wrapContent) {
-                setMargins(dp(20), 0, dp(20), dp(10))
+                below(vibrationTitle)
+                startOfParent(itemMargin)
+                endOfParent(itemMargin)
             })
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.keyboard_feedback)
+    }
 
     override fun onStop() {
         super.onStop()
