@@ -958,7 +958,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
         if(newSelStart == newSelEnd && mImeState == ImeState.STATE_PREDICT) {
             val inputConnection = service.getCurrentInputConnection()
-            val text = inputConnection.getTextBeforeCursor(5, 0).toString()
+            val text = inputConnection.getTextBeforeCursor(10, 0).toString()
             if (!isSkipEngineMode && text.isNotBlank() && InputModeSwitcherManager.isChinese) {
                 DecodingInfo.isAssociate = true
                 DecodingInfo.getAssociateWord(text)
