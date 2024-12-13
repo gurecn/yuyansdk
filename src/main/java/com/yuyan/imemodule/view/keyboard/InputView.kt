@@ -38,6 +38,7 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -969,7 +970,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
-        if(newSelStart == newSelEnd && mImeState == ImeState.STATE_PREDICT) {
+        if(newSelStart == newSelEnd && mImeState == ImeState.STATE_PREDICT && getInstance().input.chinesePrediction.getValue()) {
             val inputConnection = service.getCurrentInputConnection()
             val text = inputConnection.getTextBeforeCursor(10, 0).toString()
             if (!isSkipEngineMode && text.isNotBlank() && InputModeSwitcherManager.isChinese) {

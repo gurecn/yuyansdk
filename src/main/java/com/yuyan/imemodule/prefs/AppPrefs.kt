@@ -88,6 +88,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 )
             )
 
+        val chinesePrediction = switch(
+            R.string.chinese_association, "chinese_association_enable", true
+        )
+
         val titleEnglish = category(R.string.EnglishInput)
 
         //输出英文单词:英文补全
