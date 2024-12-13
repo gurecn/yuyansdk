@@ -60,4 +60,35 @@ object EmojiconData{
             }
         }
     }
+
+    val SymbolPreset: Map<String, String> = hashMapOf(
+        "(" to ")",
+        "[" to "]",
+        "{" to "}",
+        "（" to "）",
+        "［" to "］",
+        "｛" to "｝",
+        "❨" to "❩",
+        "❲" to "❳",
+        "❴" to "❵",
+        "‘" to "’",
+        "“" to "”",
+        "❛" to "❜",
+        "❝" to "❞",
+        "<" to ">",
+        "〈" to "〉",
+        "《" to "》",
+        "〔" to "〕",
+        "【" to "】",
+        "〘" to "〙",
+        "「" to "」",
+        "『" to "』",
+        "︵" to "︶",
+        "︷" to "︸",
+        "︹" to "︺",
+        "︻" to "︼",
+        "︽" to "︾",
+        "︿" to "﹀",
+        "﹁" to "﹂",
+    )
 }

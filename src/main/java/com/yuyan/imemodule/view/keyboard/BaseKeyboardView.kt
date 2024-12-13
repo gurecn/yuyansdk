@@ -256,7 +256,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             val keyLableSmall = mCurrentKey?.getmKeyLabelSmall()
             if(keyLableSmall?.isNotBlank() == true) {
                 mHandler!!.removeMessages(MSG_LONGPRESS)
-                mService?.responseLongKeyEvent(null, mCurrentKey?.getmKeyLabelSmall())
+                mService?.responseLongKeyEvent(SoftKey(), mCurrentKey?.getmKeyLabelSmall())
                 result = true
             }
         } else {

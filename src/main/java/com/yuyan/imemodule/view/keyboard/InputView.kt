@@ -28,6 +28,7 @@ import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -317,7 +318,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 InputModeSwitcherManager.switchModeForUserKey(keyCode)
             }else if(sKey.keyLabel.isNotBlank()){
-                commitText(sKey.keyLabel)
+                if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
+                else commitText(sKey.keyLabel)
             }
         }
     }
@@ -326,7 +328,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 响应软键盘长按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
-    override fun responseLongKeyEvent(sKey: SoftKey?, showText: String?) {
+    override fun responseLongKeyEvent(sKey: SoftKey?, text: String?) {
         resetToIdleState()
         if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
             if(InputModeSwitcherManager.isChinese) {
@@ -336,33 +338,28 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 commitDecInfoText(displayStr)
             }
         }
-        if(sKey != null){
-            val handled = when(sKey.keyCode){
-                InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> {
-                    InputMethodUtil.showPicker()
-                    true
-                }
-                InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
-                    getInstance().input.abcSearchEnglishCell.setValue("拼写" == showText)
-                    true
-                }
-                KeyEvent.KEYCODE_DEL -> {
-                    clearORRestoreText(showText)  // 🚮 清空
-                    true
-                }
-                KeyEvent.KEYCODE_ENTER -> {  // 长按回车键
-                    commitText("\n")
-                    true
-                }
-                else -> false
+        val handled = when(sKey?.keyCode){
+            InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> {
+                InputMethodUtil.showPicker()
+                true
             }
-            if(!handled && !showText.isNullOrBlank()){
-                commitText(showText)
+            InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
+                getInstance().input.abcSearchEnglishCell.setValue("拼写" == text)
+                true
             }
-        } else {
-            if(!showText.isNullOrBlank()){
-                commitText(showText)
+            KeyEvent.KEYCODE_DEL -> {
+                clearORRestoreText(text)  // 🚮 清空
+                true
             }
+            KeyEvent.KEYCODE_ENTER -> {  // 长按回车键
+                commitText("\n")
+                true
+            }
+            else -> false
+        }
+        if(!handled && text?.isNotEmpty() == true){
+            if(SymbolPreset.containsKey(text))commitPairSymbol(text)
+            else commitText(text)
         }
     }
 
@@ -396,18 +393,20 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun processEnglishKey(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         var keyChar = event.unicodeChar
+        val lable = keyChar.toChar().toString()
         if (keyCode == KeyEvent.KEYCODE_DEL) {
             sendKeyEvent(keyCode)
             return true
         } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
-            val upperCase = !InputModeSwitcherManager.isEnglishLower
-            if (keyChar != 0) {
-                if (upperCase) keyChar = keyChar - 'a'.code + 'A'.code
-                sendKeyChar(keyChar.toChar())
-                return true
-            }
-        } else if (keyChar != 0) {
-            sendKeyChar(keyChar.toChar())
+            if (!InputModeSwitcherManager.isEnglishLower) keyChar = keyChar - 'a'.code + 'A'.code
+            commitText(keyChar.toChar().toString())
+            return true
+        } else if (keyCode != 0) {
+            sendKeyEvent(keyCode)
+            return true
+        } else if (lable.isNotEmpty()) {
+            if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
+            else commitText(lable)
             return true
         }
         return false
@@ -458,6 +457,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun processInput(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
+        val lable = keyChar.toChar().toString()
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
             mImeState = ImeState.STATE_INPUT
             DecodingInfo.inputAction(keyCode)
@@ -471,11 +471,15 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 updateCandidate()
             }
             return true
-        } else if(keyChar != 0){
+        } else if (keyCode != 0) {
+            sendKeyEvent(keyCode)
+            return true
+        } else if(lable.isNotEmpty()) {
             if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
                 chooseAndUpdate(0)
             }
-            sendKeyChar(keyChar.toChar())
+            if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
+            else commitText(lable)
             return true
         }
         return false
@@ -884,9 +888,23 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     /**
      * 发送字符串给编辑框
      */
-    private fun commitText(resultText: String) {
-        if(isAddPhrases) mEtAddPhrasesContent?.commitText(resultText)
-        else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
+    private fun commitText(text: String) {
+        if(isAddPhrases) mEtAddPhrasesContent?.commitText(text)
+        else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(text), 1)
+    }
+
+    /**
+     * 发送成对符号给编辑框
+     */
+    private fun commitPairSymbol(text: String) {
+        if(isAddPhrases) {
+            mEtAddPhrasesContent?.commitText(text)
+        } else {
+            val ic = service.getCurrentInputConnection()
+            ic?.commitText(text, 1)
+            ic?.commitText(SymbolPreset[text]!!, 1)
+            ic.commitText("", -1)
+        }
     }
 
     /**
@@ -903,11 +921,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 inputConnection.commitText(" ", 1)
             }
         }
-    }
-
-    private fun sendKeyChar(char: Char) {
-        if(isAddPhrases) mEtAddPhrasesContent?.commitText(char.toString())
-        else service.sendKeyChar(char)
     }
 
     private var textBeforeCursor:String = ""
