@@ -436,7 +436,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             return true
         }  else if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            if (DecodingInfo.isFinish) {
+            if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
                 sendKeyEvent(keyCode)
             } else {
                 commitDecInfoText(DecodingInfo.composingStrForCommit)
