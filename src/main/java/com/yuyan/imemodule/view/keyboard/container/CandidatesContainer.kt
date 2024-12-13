@@ -106,7 +106,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                         if (!isLoadingMore) {
                             isLoadingMore = true
                             val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
-                            CustomConstant.activeCandidate = lastItem
+                            DecodingInfo.activeCandidate = lastItem
                             if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
                                 DecodingInfo.nextPageCandidates
                             }
@@ -163,7 +163,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      */
     fun showCandidatesView() {
         if (DecodingInfo.isCandidatesListEmpty) {
-            if(DecodingInfo.candidateSize > CustomConstant.activeCandidate)mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
+            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate)mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
             return
         }
         mCandidatesAdapter.notifyDataSetChanged()
@@ -192,7 +192,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             if (isPrefixs) {
                 inputView.selectPrefix(position)
-                if(DecodingInfo.candidateSize > CustomConstant.activeCandidate) mRVSymbolsView.scrollToPosition(CustomConstant.activeCandidate)
+                if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
             } else {
                 val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
                 val softKey = SoftKey(symbol)
