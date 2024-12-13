@@ -4,12 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.StringUtils
 
 /**
  * 表情或符号界面适配器
@@ -28,7 +30,9 @@ class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSy
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        holder.textView.text = mDatas!![position]
+        val data = mDatas!![position]
+        holder.textView.text = data
+        holder.tVSdb.visibility = if(viewType == 0 && StringUtils.isDBCSymbol(data))View.VISIBLE else View.GONE
         holder.textView.setOnClickListener { _: View? ->
             onClickSymbol(mDatas!![position], position)
         }
@@ -40,10 +44,13 @@ class SymbolAdapter(context: Context?,  val viewType: Int, private val onClickSy
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
         var textView: EmojiTextView
+        var tVSdb: TextView
         init {
             textView = view.findViewById(R.id.gv_item)
             textView.setTextColor(activeTheme.keyTextColor)
             textView.textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize) * 0.8f
+            tVSdb = view.findViewById(R.id.tv_Sdb)
+            tVSdb.setTextColor(activeTheme.keyTextColor)
         }
     }
 }
