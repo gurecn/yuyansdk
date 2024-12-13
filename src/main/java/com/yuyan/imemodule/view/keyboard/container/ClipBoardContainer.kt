@@ -132,11 +132,11 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 val content = copyContents[position].content
                 if(menuBridge.position == 0) {
                     inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, content)
+                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 } else if(menuBridge.position == 1){
                     DataBaseKT.instance.phraseDao().deleteByContent(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         }
         mRVSymbolsView.setAdapter(adapter)
