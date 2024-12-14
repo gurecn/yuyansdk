@@ -8,7 +8,8 @@ enum class PopupMenuMode {
     SwitchIME,
     EnglishCell,
     Revertl,
-    Enter;
+    Enter,
+    None;
 
     companion object : ManagedPreference.StringLikeCodec<PopupMenuMode> {
         override fun decode(raw: String) = PopupMenuMode.valueOf(raw)

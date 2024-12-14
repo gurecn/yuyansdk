@@ -138,7 +138,6 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
     }
 
     override fun onTrigger(): Pair<PopupMenuMode, String> {
-        return popupMenuPair
+        return if(isSelect)popupMenuPair else Pair(PopupMenuMode.None, "")
     }
-
 }

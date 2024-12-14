@@ -371,6 +371,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             PopupMenuMode.Enter -> {  // 长按回车键
                 commitText("\n")
             }
+            else -> {}
         }
         resetToIdleState()
     }
