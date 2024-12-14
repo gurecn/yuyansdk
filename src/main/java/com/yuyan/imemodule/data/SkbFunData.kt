@@ -6,7 +6,6 @@ import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 
 val commonSkbFuns = arrayOf(
-    SkbMenuMode.CloseSKB.name,
     SkbMenuMode.ClipBoard.name,
     SkbMenuMode.EmojiKeyboard.name,
 )

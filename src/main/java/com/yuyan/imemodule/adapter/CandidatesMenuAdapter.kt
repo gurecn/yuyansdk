@@ -42,7 +42,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
 
     init {
         inflater = LayoutInflater.from(context)
-        itemHeight = (EnvironmentSingleton.instance.heightForCandidates * 0.7f).toInt()
+        itemHeight = (EnvironmentSingleton.instance.heightForCandidates * 0.8f).toInt()
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {

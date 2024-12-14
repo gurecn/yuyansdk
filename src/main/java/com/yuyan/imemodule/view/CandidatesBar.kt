@@ -43,6 +43,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     private lateinit var mCvListener: CandidateViewListener // 候选词视图监听器
     private lateinit var mRightArrowBtn: ImageView // 右边箭头按钮
+    private lateinit var mMenuRightArrowBtn: ImageView
     private lateinit var mCandidatesDataContainer: LinearLayout //候选词视图
     private lateinit var mCandidatesMenuContainer: LinearLayout //控制菜单视图
     private lateinit var mRVCandidates: RecyclerView    //候选词列表
@@ -58,7 +59,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
-        mMenuHeight = (instance.heightForCandidates * 0.7f).toInt()
+        mMenuHeight = (instance.heightForCandidates * 0.8f).toInt()
         mMenuPadding = (instance.heightForCandidates * 0.3f).toInt()
         initMenuView()
         initCandidateView()
@@ -189,9 +190,20 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 if(skbMenuMode != null) onClickMenu(skbMenuMode, view)
             }
             mRVContainerMenu.setAdapter(mCandidatesMenuAdapter)
+            mMenuRightArrowBtn = ImageView(context).apply {
+                isClickable = true
+                isEnabled = true
+                setPadding(mMenuPadding,0, mMenuPadding,0)
+                setImageResource(R.drawable.ic_baseline_arrow_down)
+                layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
+            }
+            mMenuRightArrowBtn.setOnClickListener { _: View ->
+                mCvListener.onClickMenu(SkbMenuMode.CloseSKB)
+            }
             mCandidatesMenuContainer.addView(mIvMenuSetting, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
             mCandidatesMenuContainer.addView(mLlContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, instance.heightForCandidates,0f))
             mCandidatesMenuContainer.addView(mRVContainerMenu, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, mMenuHeight, 1f))
+            mCandidatesMenuContainer.addView(mMenuRightArrowBtn, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
             this.addView(mCandidatesMenuContainer, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
         mCandidatesMenuAdapter.notifyDataSetChanged()  // 点击下拉菜单后，需要刷新菜单栏
@@ -245,9 +257,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
             for (item in keyboardBarMenuCommon) {
                 if(item.isNotBlank()) {
-                    val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item)]
-                    if (skbMenuMode != null) {
-                        mFunItems.add(skbMenuMode)
+                    val skbMenuMode = SkbMenuMode.decode(item)
+                    if(skbMenuMode != SkbMenuMode.CloseSKB) {
+                        val skbFunItem = menuSkbFunsPreset[skbMenuMode]
+                        if (skbFunItem != null) {
+                            mFunItems.add(skbFunItem)
+                        }
                     }
                 }
             }
@@ -293,6 +308,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     // 刷新主题
     fun updateTheme(textColor: Int) {
         mRightArrowBtn.drawable.setTint(textColor)
+        mMenuRightArrowBtn.drawable.setTint(textColor)
         mIvMenuSetting.drawable.setTint(textColor)
         mCandidatesAdapter.updateTextColor(textColor)
         mCandidatesMenuAdapter.notifyDataSetChanged()
