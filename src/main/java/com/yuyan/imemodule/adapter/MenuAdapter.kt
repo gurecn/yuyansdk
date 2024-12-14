@@ -2,7 +2,6 @@ package com.yuyan.imemodule.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -66,8 +65,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
         val color = if (isSettingsMenuSelect(item)) mTheme!!.accentKeyBackgroundColor else mTheme!!.keyTextColor
         holder.entranceNameTextView?.setTextColor(color)
-        val vectorDrawableCompat = holder.entranceIconImageView?.getDrawable() as VectorDrawable
-        vectorDrawableCompat.setTint(color)
+        holder.entranceIconImageView?.getDrawable()?.setTint(color)
         if (dragOverListener != null) {
             holder.entranceOption?.visibility = View.VISIBLE
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue()
@@ -82,6 +80,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
                 }
                 return@setOnTouchListener false
             }
+            holder.entranceOption?.getDrawable()?.setTint(color)
             holder.entranceOption?.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     dragOverListener?.onOptionClick(this, item, position)

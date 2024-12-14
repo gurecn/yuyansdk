@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.adapter
 
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,8 +64,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
         val item = items[position]
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
         val color = if (isSettingsMenuSelect(item)) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor
-        val vectorDrawableCompat = holder.entranceIconImageView?.getDrawable() as VectorDrawable
-        vectorDrawableCompat.setTint(color)
+        holder.entranceIconImageView?.getDrawable()?.setTint(color)
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener { v: View? ->
                 mOnItemClickListener!!.onItemClick(this, v, position)
