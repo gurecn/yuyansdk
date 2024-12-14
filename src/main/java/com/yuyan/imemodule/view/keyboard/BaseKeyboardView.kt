@@ -18,6 +18,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
+import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -78,12 +79,16 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if (mGestureDetector == null) {
             mGestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
                 override fun onScroll(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                    if(mLongPressKey){
+                    if(mLongPressKey && mCurrentKey?.getkeyLabel()?.isNotBlank() == true){
                         popupComponent.changeFocus(currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
                     } else {
-                        dispatchGestureEvent(downEvent, currentEvent, distanceX)
+                        dispatchGestureEvent(downEvent, currentEvent, distanceX, distanceY)
                     }
                     return true
+                }
+                override fun onDown(e: MotionEvent): Boolean {
+                    currentDistanceY = 0f
+                    return super.onDown(e)
                 }
             })
             mGestureDetector!!.setIsLongpressEnabled(false)
@@ -109,7 +114,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if(mCurrentKey != null) {
             val softKey = mCurrentKey!!
             val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-            if (keyboardSymbol && !TextUtils.isEmpty(softKey.getkeyLabel())) {
+            if (keyboardSymbol && softKey.getkeyLabel().isNotBlank()) {
                 val keyLabel = if (InputModeSwitcherManager.isEnglishLower || (InputModeSwitcherManager.isEnglishUpperCase && !DecodingInfo.isCandidatesListEmpty))
                     softKey.keyLabel.lowercase()  else softKey.keyLabel
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
@@ -119,7 +124,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 ||
                 softKey.keyCode == KeyEvent.KEYCODE_DEL || softKey.keyCode == KeyEvent.KEYCODE_ENTER){
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
-                popupComponent.showKeyboardMenu(softKey, bounds)
+                popupComponent.showKeyboardMenu(softKey, bounds, currentDistanceY)
                 mLongPressKey = true
             } else {
                 mLongPressKey = true
@@ -217,12 +222,15 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     private var lastEventX:Float = -1f
     private var lastEventY:Float = -1f
+    private var currentDistanceY:Float = 0f
     private var lastEventActionIndex:Int = 0
     // 处理手势滑动
-    private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float) : Boolean {
+    private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float) : Boolean {
         var result = false
         val currentX = currentEvent.x
         val currentY = currentEvent.y
+        currentDistanceY = distanceY
+        val keyLableSmall = mCurrentKey?.getmKeyLabelSmall()
         if(currentEvent.pointerCount > 1) return false    // 避免多指触控导致上屏
         if(lastEventX < 0 || lastEventActionIndex != currentEvent.actionIndex) {   // 避免多指触控导致符号上屏
             lastEventX = currentX
@@ -236,7 +244,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val symbolSlideUp = EnvironmentSingleton.instance.heightForCandidates / when(ThemeManager.prefs.symbolSlideUpMod.getValue()){
             KeyboardSymbolSlideUpMod.SHORT -> 3;KeyboardSymbolSlideUpMod.MEDIUM -> 2;else -> 1
         }
-        if (!isVertical && relDiffX > 10)  {  // 左右滑动
+        if (!isVertical && relDiffX > 10) {  // 左右滑动
             val isSwipeKey = mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE || mCurrentKey?.keyCode == KeyEvent.KEYCODE_0
             if (isSwipeKey && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {  // 左右滑动
                 mHandler!!.removeMessages(MSG_LONGPRESS)
@@ -248,19 +256,26 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mService!!.responseKeyEvent(key)
                 result = true
             }
-        } else if (isVertical && relDiffY > symbolSlideUp && ThemeManager.prefs.keyboardSymbol.getValue()){   // 上下滑动
-            lastEventX = currentX
-            lastEventY = currentY
-            lastEventActionIndex = currentEvent.actionIndex
-            mLongPressKey = true
-            val keyLableSmall = mCurrentKey?.getmKeyLabelSmall()
-            if(keyLableSmall?.isNotBlank() == true) {
+        } else if(keyLableSmall?.isNotBlank() == true){
+            if (isVertical && distanceY > 0 && relDiffY > symbolSlideUp && ThemeManager.prefs.keyboardSymbol.getValue()){   // 向上滑动
+                lastEventX = currentX
+                lastEventY = currentY
+                lastEventActionIndex = currentEvent.actionIndex
+                mLongPressKey = true
                 mHandler!!.removeMessages(MSG_LONGPRESS)
-                mService?.responseLongKeyEvent(SoftKey(), mCurrentKey?.getmKeyLabelSmall())
+                mService?.responseLongKeyEvent(Pair(PopupMenuMode.Text, keyLableSmall))
                 result = true
             }
-        } else {
-            popupComponent.changeFocus( currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
+        } else {  // 菜单
+            if (isVertical && relDiffY > symbolSlideUp * 2) {   // 向上滑动
+                lastEventX = currentX
+                lastEventY = currentY
+                lastEventActionIndex = currentEvent.actionIndex
+                mLongPressKey = true
+                popupComponent.onGestureEvent(distanceY)
+            } else {
+                popupComponent.changeFocus(currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
+            }
         }
         return result
     }
@@ -304,7 +319,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
      */
     private fun dismissPreview() {
         if (mLongPressKey) {
-            mService?.responseLongKeyEvent(mCurrentKeyPressed, popupComponent.triggerFocused())
+            mService?.responseLongKeyEvent(popupComponent.triggerFocused())
             mLongPressKey = false
         }
         if (mCurrentKeyPressed != null) {
