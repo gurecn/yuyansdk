@@ -43,10 +43,15 @@ class KeyboardLoaderUtil private constructor() {
     private fun loadBaseSkb(skbValue: Int): SoftKeyboard {
         mSkbValue = skbValue
         // shift键状态
+        // 直输状态
         val shiftToggleStates = LinkedList<ToggleState>()
         shiftToggleStates.add(ToggleState(0))
         shiftToggleStates.add(ToggleState(1))
         shiftToggleStates.add(ToggleState(2))
+        // 拼写模式
+        shiftToggleStates.add(ToggleState(3))
+        shiftToggleStates.add(ToggleState(4))
+        shiftToggleStates.add(ToggleState(5))
 
         val softKeyboard: SoftKeyboard?
         numberLine = AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
