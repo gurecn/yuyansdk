@@ -63,7 +63,7 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             else {
                 mDatas.add(SideSymbol(symbolKey = key, symbolValue = key, type = mType))
                 holder.etPrefixValue.setText(key)
-                notifyItemInserted(bindPos + 1)
+                notifyDataSetChanged()
             }
         }
         holder.etPrefixValue.doOnTextChanged { s, _, _, _ ->
@@ -80,7 +80,7 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             else {
                 mDatas.add(SideSymbol(symbolKey = value, symbolValue = value, type = mType))
                 holder.etPrefixKey.setText(value)
-                notifyItemInserted(bindPos + 1)
+                notifyDataSetChanged()
             }
         }
     }

@@ -170,7 +170,7 @@
 
     <string name="skb_prefix_show_tips">显示内容</string>
     <string name="skb_prefix_commit_tips">上屏内容</string>
-    <string name="skb_prefix_sort_tips">排序</string>
+    <string name="skb_prefix_sort_tips">长按排序\n(左滑删除)</string>
     <string name="skb_prefix_delete_title">删除？</string>
     <string name="skb_prefix_delete_tips">是否删除符号[%s]？</string>
     <string name="sure">确定</string>

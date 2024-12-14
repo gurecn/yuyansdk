@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yanzhenjie.recyclerview.SwipeMenu
+import com.yanzhenjie.recyclerview.SwipeMenuBridge
+import com.yanzhenjie.recyclerview.SwipeMenuItem
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yanzhenjie.recyclerview.touch.OnItemMoveListener
 import com.yuyan.imemodule.R
@@ -18,6 +20,7 @@ import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.CustomLinearLayout
 import splitties.dimensions.dp
@@ -41,6 +44,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
         val header = LinearLayout(ImeSdkApplication.context).apply {
+            gravity = Gravity.CENTER_VERTICAL
             add(textView {
                 gravity = Gravity.CENTER
                 background = null
@@ -80,25 +84,23 @@ class PrefixSettingsFragment(type:String) : Fragment(){
         val mRVSymbolsView = SwipeRecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             setLongPressDragEnabled(true)
-            setOnItemLongClickListener{ _, adapterPosition ->
-                if(datas.size > adapterPosition) {
-                    AlertDialog.Builder(context)
-                        .setTitle(R.string.skb_prefix_delete_title)
-                        .setMessage(
-                            String.format(
-                                getString(R.string.skb_prefix_delete_tips),
-                                datas[adapterPosition].symbolKey
-                            )
-                        )
-                        .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                        .setPositiveButton(R.string.sure) { _, _ ->
-                            datas.removeAt(adapterPosition)
-                            adapter.notifyItemRemoved(adapterPosition)
-                        }
-                        .show()
-                }
+            setOnItemLongClickListener{ _, _ ->
+              DevicesUtils.tryVibrate(this)
             }
             setOnItemMoveListener(mItemMoveListener)
+        }
+        mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, _: Int ->
+            val deleteItem = SwipeMenuItem(context).apply {
+                setImage(R.drawable.ic_baseline_delete_circle_32)
+            }
+            rightMenu.addMenuItem(deleteItem)
+        }
+        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: SwipeMenuBridge, position: Int ->
+            menuBridge.closeMenu()
+            if(menuBridge.position == 0) {
+                datas.removeAt(position)
+                adapter.notifyItemRemoved(position)
+            }
         }
         mRVSymbolsView.setAdapter(adapter)
         CustomLinearLayout(context).apply {
