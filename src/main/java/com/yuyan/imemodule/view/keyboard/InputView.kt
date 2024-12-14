@@ -38,9 +38,9 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
+import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
@@ -325,12 +325,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
+
+    private var textBeforeCursor:String = ""
+
     /**
      * 响应软键盘长按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
-    override fun responseLongKeyEvent(sKey: SoftKey?, text: String?) {
-        resetToIdleState()
+    override fun responseLongKeyEvent(result:Pair<PopupMenuMode, String>) {
         if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
             if(InputModeSwitcherManager.isChinese) {
                 chooseAndUpdate(0)
@@ -339,29 +341,38 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 commitDecInfoText(displayStr)
             }
         }
-        val handled = when(sKey?.keyCode){
-            InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> {
+        when(result.first){
+            PopupMenuMode.Text -> {
+                if(SymbolPreset.containsKey(result.second))commitPairSymbol(result.second)
+                else commitText(result.second)
+            }
+            PopupMenuMode.SwitchIME -> {
                 InputMethodUtil.showPicker()
-                true
             }
-            InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
-                getInstance().input.abcSearchEnglishCell.setValue("拼写" == text)
-                true
+            PopupMenuMode.EnglishCell -> {
+                val abcSearchEnglishCell = getInstance().input.abcSearchEnglishCell.getValue()
+                getInstance().input.abcSearchEnglishCell.setValue(!abcSearchEnglishCell)
             }
-            KeyEvent.KEYCODE_DEL -> {
-                clearORRestoreText(text)  // 🚮 清空
-                true
+            PopupMenuMode.Clear -> {
+                if(isAddPhrases) mEtAddPhrasesContent?.setText("")
+                else {
+                    val inputConnection = service.getCurrentInputConnection()
+                    val clearText = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
+                    if(clearText.isNotEmpty()){
+                        textBeforeCursor = clearText
+                        inputConnection.deleteSurroundingText(1000, 0)
+                    }
+                }
             }
-            KeyEvent.KEYCODE_ENTER -> {  // 长按回车键
+            PopupMenuMode.Revertl -> {
+                commitText(textBeforeCursor)
+                textBeforeCursor = ""
+            }
+            PopupMenuMode.Enter -> {  // 长按回车键
                 commitText("\n")
-                true
             }
-            else -> false
         }
-        if(!handled && text?.isNotEmpty() == true){
-            if(SymbolPreset.containsKey(text))commitPairSymbol(text)
-            else commitText(text)
-        }
+        resetToIdleState()
     }
 
     override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
@@ -921,25 +932,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if (InputModeSwitcherManager.isEnglish && DecodingInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
                 inputConnection.commitText(" ", 1)
             }
-        }
-    }
-
-    private var textBeforeCursor:String = ""
-
-    /**
-     * 发送候选词字符串给编辑框
-     */
-    private fun clearORRestoreText(showText:String?) {
-        if("\uD83D\uDEAE" == showText) {  // 清空
-            if(isAddPhrases) mEtAddPhrasesContent?.setText("")
-            else {
-                val inputConnection = service.getCurrentInputConnection()
-                textBeforeCursor = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
-                inputConnection.deleteSurroundingText(1000, 0)
-            }
-        } else if("\uD83D\uDD04" == showText) {  // 还原
-            commitText(textBeforeCursor)
-            textBeforeCursor = ""
         }
     }
 

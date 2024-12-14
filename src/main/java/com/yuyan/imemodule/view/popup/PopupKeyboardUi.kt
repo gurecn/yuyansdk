@@ -6,7 +6,10 @@ import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.ViewOutlineProvider
+import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.StringUtils
 import splitties.dimensions.dp
@@ -28,29 +31,16 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
- * @param ctx [Context]
  * @param theme [Theme]
  * @param bounds bound [Rect] of popup trigger view. Used to calculate free space of both sides and
  * determine column order. See [focusColumn].
  * @param onDismissSelf callback when popup keyboard wants to close
  * @param radius popup keyboard and key radius
  * @param keyWidth key width in popup keyboard
- * @param keyHeight key height in popup keyboard
- * @param popupHeight popup preview view height. Used to transform gesture coordinate from
  * trigger view to popup keyboard view. See [offsetX] and [offsetY].
  * @param keys character to commit when triggered
  */
-class PopupKeyboardUi(
-    override val ctx: Context,
-    theme: Theme,
-    bounds: Rect,
-    onDismissSelf: PopupContainerUi.() -> Unit = {},
-    private val radius: Float,
-    private val keyWidth: Int,
-    private val keyHeight: Int,
-    private val popupHeight: Int,
-    private val keys: Array<String>
-) : PopupContainerUi(ctx, theme, bounds, onDismissSelf) {
+class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit = {}, private val radius: Float, private val keyWidth: Int, private val keys: Array<String>) : PopupContainerUi(ImeSdkApplication.context, bounds, onDismissSelf) {
 
     class PopupKeyUi(override val ctx: Context, val theme: Theme, val text: String) : Ui {
 
@@ -83,12 +73,12 @@ class PopupKeyboardUi(
 
     private val inactiveBackground = GradientDrawable().apply {
         cornerRadius = radius
-        setColor(theme.popupBackgroundColor)
+        setColor(ThemeManager.activeTheme.popupBackgroundColor)
     }
 
     private val focusBackground = GradientDrawable().apply {
         cornerRadius = radius
-        setColor(theme.accentKeyBackgroundColor)
+        setColor(ThemeManager.activeTheme.accentKeyBackgroundColor)
     }
 
     private val rowCount: Int
@@ -140,8 +130,7 @@ class PopupKeyboardUi(
      * Applying only `1.` parts of both X and Y offset, the origin should transform from `o` to `p`.
      * `2.` parts of both offset transform it from `p` to `c`.
      */
-    override val offsetX = ((bounds.width() - keyWidth) / 2) - (keyWidth * focusColumn)
-    override val offsetY = (bounds.height() - popupHeight) - (keyHeight * (rowCount - 1))
+    override val offsetY = 0 - bounds.height() * (rowCount - 1)
 
     private val columnOrder = createColumnOrder(columnCount, focusColumn)
 
@@ -165,7 +154,7 @@ class PopupKeyboardUi(
     private var focusedIndex = keyOrders[focusRow][focusColumn]
 
     private val keyUis = keys.map {
-        PopupKeyUi(ctx, theme, it)
+        PopupKeyUi(ctx, ThemeManager.activeTheme, it)
     }
 
     init {
@@ -188,7 +177,7 @@ class PopupKeyboardUi(
                         // | 3 | 2 | 1 | 0 |(no free space)
                         gravity = if (j == 0) gravityEnd else gravityStart
                     } else {
-                        add(keyUi.root, lParams(keyWidth, keyHeight))
+                        add(keyUi.root, lParams(keyWidth, bounds.height()))
                     }
                 }
             }, lParams(width = matchParent))
@@ -211,6 +200,7 @@ class PopupKeyboardUi(
         }
     }
 
+    override fun onGestureEvent(distanceX: Float) {}
 
     override fun onChangeFocus(x: Float, y: Float): Boolean {
         if(lastX == 0f){
@@ -219,7 +209,7 @@ class PopupKeyboardUi(
             return false
         }
         // move to next row when gesture moves above 30% from bottom of current row
-        var newRow = focusRow - ((y-lastY) / keyHeight - 0.2).roundToInt()
+        var newRow = focusRow - ((y-lastY) / bounds.height() - 0.2).roundToInt()
         // move to next column when gesture moves out of current column
         var newColumn = focusColumn + floor((x-lastX) / keyWidth).toInt()
         // retain focus when gesture moves between ±2 rows/columns of range
@@ -238,8 +228,8 @@ class PopupKeyboardUi(
         return false
     }
 
-    override fun onTrigger(): String? {
-        return keys.getOrNull(focusedIndex)
+    override fun onTrigger(): Pair<PopupMenuMode, String> {
+        return Pair(PopupMenuMode.Text, keys[focusedIndex])
     }
 
 }

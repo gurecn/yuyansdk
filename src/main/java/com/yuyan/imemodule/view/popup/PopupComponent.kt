@@ -9,6 +9,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.frameLayout
@@ -79,23 +80,45 @@ class PopupComponent private constructor(){
         }
     }
 
-    fun showKeyboardMenu(mCurrentKey: SoftKey?, bounds: Rect) {
-        if(mCurrentKey == null) return
-        val keys = when(mCurrentKey.keyCode) {
-            InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 -> arrayOf("🌐")
-            InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> arrayOf("拼写", "直输")
-            KeyEvent.KEYCODE_DEL -> arrayOf("🔙", "🚮", "🔄")
-            KeyEvent.KEYCODE_ENTER -> arrayOf("↩️")
-            else -> emptyArray()
+    fun showKeyboardMenu(mCurrentKey: SoftKey, bounds: Rect, distanceY: Float) {
+        val key = when(mCurrentKey.keyCode) {
+            InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 ->  Pair(PopupMenuMode.SwitchIME, "🌐")
+            InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
+                Pair(PopupMenuMode.EnglishCell, if(AppPrefs.getInstance().input.abcSearchEnglishCell.getValue()) "直输模式" else "拼写模式")
+            }
+            KeyEvent.KEYCODE_DEL -> {
+                if(distanceY < 0)  Pair(PopupMenuMode.Revertl,  "🔄 下滑还原") else Pair(PopupMenuMode.Clear,  "🔙 上滑清空")
+            }
+            else ->  Pair(PopupMenuMode.Enter,  "↩️ 换行")
         }
-        if(keys.isEmpty()) return
         showingEntryUi?.setText("") ?: showPopup("", bounds)
-        reallyShowKeyboard(keys, bounds)
+        reallyMenuKeyboard(key, bounds, mCurrentKey.keyCode != KeyEvent.KEYCODE_DEL)
+    }
+
+    fun onGestureEvent(distanceX: Float) {
+        showingContainerUi?.onGestureEvent(distanceX)
+    }
+
+    private fun reallyMenuKeyboard(key: Pair<PopupMenuMode, String>, bounds: Rect, isSelect: Boolean,) {
+        val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10) * key.second.length / 2
+        val keyboardUi = PopupKeyboardMenuUi(bounds, { dismissPopup() }, popupRadius, popupWidth, isSelect, key)
+        val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat) {
+            AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom +
+                    if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){ EnvironmentSingleton.instance.heightForFullDisplayBar } else 0
+        } else EnvironmentSingleton.instance.heightForKeyboardMove
+        root.apply {
+            add(keyboardUi.root, lParams {
+                bottomMargin = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForComposingView  + bottomPadding - bounds.bottom
+                leftMargin = bounds.left + keyboardUi.offsetX
+            })
+        }
+        dismissPopup()
+        showingContainerUi= keyboardUi
     }
 
     private fun reallyShowKeyboard(keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
-        val keyboardUi = PopupKeyboardUi(ImeSdkApplication.context, ThemeManager.activeTheme, bounds, { dismissPopup() }, popupRadius, popupWidth, bounds.height(), bounds.height(), keys)
+        val keyboardUi = PopupKeyboardUi(bounds, { dismissPopup() }, popupRadius, popupWidth, keys)
         val bottomPadding = if(!EnvironmentSingleton.instance.keyboardModeFloat) {
             AppPrefs.getInstance().internal.keyboardBottomPadding.getValue() + EnvironmentSingleton.instance.systemNavbarWindowsBottom +
                     if(AppPrefs.getInstance().internal.fullDisplayKeyboardEnable.getValue()){ EnvironmentSingleton.instance.heightForFullDisplayBar } else 0
@@ -114,8 +137,8 @@ class PopupComponent private constructor(){
         return showingContainerUi?.changeFocus(x, y) ?: false
     }
 
-    fun triggerFocused(): String? {
-        return showingContainerUi?.onTrigger()
+    fun triggerFocused(): Pair<PopupMenuMode, String> {
+        return showingContainerUi!!.onTrigger()
     }
 
     fun dismissPopup() {
