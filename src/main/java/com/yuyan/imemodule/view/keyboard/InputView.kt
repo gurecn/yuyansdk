@@ -304,6 +304,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             if(!showText.isNullOrBlank()){
                 commitText(showText)
             }
+            else -> {}
         }
     }
 
