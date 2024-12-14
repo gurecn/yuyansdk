@@ -138,7 +138,7 @@ class PopupComponent private constructor(){
     }
 
     fun triggerFocused(): Pair<PopupMenuMode, String> {
-        return showingContainerUi!!.onTrigger()
+        return showingContainerUi?.onTrigger()?:Pair(PopupMenuMode.None, "")
     }
 
     fun dismissPopup() {
