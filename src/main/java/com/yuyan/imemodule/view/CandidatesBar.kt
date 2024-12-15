@@ -270,7 +270,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         } else {
             if(DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar)mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
             showViewVisibility(mCandidatesDataContainer)
-            if(DecodingInfo.isAssociate)mRightArrowBtn.drawable.setLevel(2)
+            mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2
+                else if(KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
+            )
         }
         mCandidatesAdapter.notifyDataSetChanged()
         mCandidatesMenuAdapter.notifyDataSetChanged()
