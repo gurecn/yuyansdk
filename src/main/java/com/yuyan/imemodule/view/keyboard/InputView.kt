@@ -552,7 +552,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 刷新候选词，重新从词库进行获取。
      */
     private fun updateCandidate() {
-        DecodingInfo.chooseDecodingCandidate(-1)
+        DecodingInfo.updateDecodingCandidate()
         if (!DecodingInfo.isFinish) {
             val composing = DecodingInfo.composingStrForDisplay
             if (InputModeSwitcherManager.isEnglish) {
@@ -952,7 +952,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if (text.isNotBlank() && InputModeSwitcherManager.isChinese) {
                 DecodingInfo.isAssociate = true
                 DecodingInfo.getAssociateWord(text)
-                chooseAndUpdate(-1)
+                updateCandidate()
                 updateCandidateBar()
             }
         }

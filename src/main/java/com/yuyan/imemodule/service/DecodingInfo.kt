@@ -102,8 +102,7 @@ object DecodingInfo {
         }
 
     /**
-     * 如果candId〉0，就选择一个候选词，并且重新获取一个候选词列表，选择的候选词存放在mComposingStr中，通过mDecInfo.
-     * getComposingStrActivePart()取出来。如果candId小于0 ，就对输入的拼音进行查询。
+     * 选择一个候选词，且重新获取候选词列表
      */
     fun chooseDecodingCandidate(candId: Int): String {
         activeCandidate = 0
@@ -117,6 +116,15 @@ object DecodingInfo {
             reset()
             choice
         } else ""
+    }
+
+    /**
+     * 对输入的拼音进行查询。
+     */
+    fun updateDecodingCandidate() {
+        activeCandidate = 0
+        activeCandidateBar = 0
+        candidatesLiveData.postValue(Kernel.candidates.asList())
     }
 
     /**
