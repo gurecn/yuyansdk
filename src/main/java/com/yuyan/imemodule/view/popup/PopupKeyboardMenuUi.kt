@@ -6,8 +6,8 @@ import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.ViewOutlineProvider
+import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -53,6 +53,11 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
         setColor(ThemeManager.activeTheme.accentKeyBackgroundColor)
     }
 
+    private val focusBackgroundClear = GradientDrawable().apply {
+        cornerRadius = radius
+        setColor(ctx.getColor(R.color.red_400))
+    }
+
     private val rowCount: Int
     private val columnCount: Int
 
@@ -61,7 +66,9 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
 
     private val focusRow: Int
     private val focusColumn: Int
-    private val keys:Array<String> = arrayOf(popupMenuPair.second)
+    private var popupMenuMode: PopupMenuMode = PopupMenuMode.None
+
+    private var keys:Array<String> = arrayOf(popupMenuPair.second)
 
     init {
         val keyCount: Float = keys.size.toFloat()
@@ -83,7 +90,7 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
 
     private var focusedIndex = keyOrders[focusRow][focusColumn]
 
-    private val keyUis = keys.map {
+    private var keyUis = keys.map {
         PopupKeyUi(ctx, it)
     }
 
@@ -95,7 +102,6 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
         background = inactiveBackground
         outlineProvider = ViewOutlineProvider.BACKGROUND
         elevation = dp(2f)
-        // add rows in reverse order, because newly added view shows at bottom
         for (i in rowCount - 1 downTo 0) {
             val order = keyOrders[i]
             add(horizontalLayout row@{
@@ -113,13 +119,13 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
 
     private fun markFocus(index: Int) {
         keyUis.getOrNull(index)?.apply {
-            root.background = focusBackground
+            root.background =  if(popupMenuPair.first == PopupMenuMode.Clear)focusBackgroundClear else focusBackground
             textView.setTextColor(ThemeManager.activeTheme.keyTextColor)
         }
     }
 
-    private fun markInactive(index: Int) {
-        keyUis.getOrNull(index)?.apply {
+    private fun markInactive() {
+        keyUis.getOrNull(0)?.apply {
             root.background = null
             textView.setTextColor(ThemeManager.activeTheme.keyTextColor)
         }
@@ -128,10 +134,23 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
     override fun onGestureEvent(distanceX: Float) {
         if(popupMenuPair.first == PopupMenuMode.Clear){
             isSelect = distanceX > 0
+            if(popupMenuMode == PopupMenuMode.None){
+                if(isSelect){
+                    popupMenuMode = PopupMenuMode.Clear
+                } else {
+                    popupMenuMode = PopupMenuMode.Revertl
+                    popupMenuPair = Pair(PopupMenuMode.Revertl,  "🔄 下滑还原")
+                    keys = arrayOf(popupMenuPair.second)
+                    keyUis.getOrNull(0)?.apply {
+                        textView.text = popupMenuPair.second
+                    }
+                    isSelect = true
+                }
+            }
         }else if(popupMenuPair.first == PopupMenuMode.Revertl){
             isSelect = distanceX < 0
         }
-        if(isSelect)markFocus(0) else markInactive(0)
+        if(isSelect)markFocus(0) else markInactive()
     }
     override fun onChangeFocus(x: Float, y: Float): Boolean {
         return false
