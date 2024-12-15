@@ -1,8 +1,6 @@
 package com.yuyan.imemodule.service
 
-import android.view.KeyEvent
 import androidx.lifecycle.MutableLiveData
-import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
 
@@ -51,12 +49,8 @@ object DecodingInfo {
         isReset = false
         activeCandidate = 0
         activeCandidateBar = 0
-        if (Kernel.unHandWriting()) {
-            Kernel.inputKeyCode(keycode)
-            isAssociate = false
-        } else if(keycode == KeyEvent.KEYCODE_DEL) {  // 手写删除符号
-            candidatesLiveData.postValue(emptyList())
-        }
+        Kernel.inputKeyCode(keycode)
+        isAssociate = false
     }
 
     /**
@@ -66,9 +60,7 @@ object DecodingInfo {
     fun selectPrefix(position: Int) {
         activeCandidate = 0
         activeCandidateBar = 0
-        if (Kernel.unHandWriting()) {
-            Kernel.selectPrefix(position)
-        }
+        Kernel.selectPrefix(position)
     }
 
     val prefixs: Array<String>  //获取拼音组合
@@ -80,18 +72,21 @@ object DecodingInfo {
     fun deleteAction() {
         activeCandidate = 0
         activeCandidateBar = 0
-        if (Kernel.unHandWriting()) {
+        if (!isEngineFinish) {
             Kernel.deleteAction()
         } else {
             reset()
         }
     }
 
-    val isFinish: Boolean  //是否输入完毕，等待上屏。
-        get() = if(Kernel.unHandWriting()) Kernel.isFinish else isCandidatesListEmpty || isReset
+    val isFinish: Boolean
+        get() = isEngineFinish && isCandidatesListEmpty
+
+    val isEngineFinish: Boolean
+        get() = Kernel.isFinish
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
-        get() = if(Kernel.unHandWriting())Kernel.wordsShowPinyin else if(candidateSize > 0) candidates[0].comment else ""
+        get() = if(Kernel.wordsShowPinyin.isNotBlank())Kernel.wordsShowPinyin else if(candidateSize > 0) candidates[0].comment else ""
 
     val composingStrForCommit: String   // 获取输入的拼音字符串
         get() = Kernel.wordsShowPinyin.replace("'", "")
@@ -113,8 +108,8 @@ object DecodingInfo {
     fun chooseDecodingCandidate(candId: Int): String {
         activeCandidate = 0
         activeCandidateBar = 0
-        return if (Kernel.unHandWriting()) {
-            if (candId >= 0) Kernel.getWordSelectedWord(candId)
+        if (candId >= 0) Kernel.getWordSelectedWord(candId)
+        return if(Kernel.candidates.isNotEmpty()){
             candidatesLiveData.postValue(Kernel.candidates.asList())
             Kernel.commitText
         } else if(candId in 0..<candidateSize){

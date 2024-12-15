@@ -30,10 +30,7 @@ import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
-import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -88,7 +85,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
     private var currentInputEditorInfo:EditorInfo? = null
-    private var isSkipEngineMode = false //选择候选词栏时，为true则不进行引擎操作。当为切板模式或常用符号模式时为true。
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
     private var mChoiceNotifier = ChoiceNotifier()
     private lateinit var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
@@ -262,19 +258,19 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     // 刷新主题
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
-        mSkbRoot.background = activeTheme.backgroundDrawable(prefs.keyBorder.getValue())
-        mComposingView.updateTheme(activeTheme)
-        mSkbCandidatesBarView.updateTheme(activeTheme.keyTextColor)
-        mFullDisplayKeyboardBar?.updateTheme(activeTheme.keyTextColor)
-        mAddPhrasesLayout.setBackgroundColor(activeTheme.barColor)
+        mSkbRoot.background = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
+        mComposingView.updateTheme(ThemeManager.activeTheme)
+        mSkbCandidatesBarView.updateTheme(ThemeManager.activeTheme.keyTextColor)
+        mFullDisplayKeyboardBar?.updateTheme(ThemeManager.activeTheme.keyTextColor)
+        mAddPhrasesLayout.setBackgroundColor(ThemeManager.activeTheme.barColor)
         val bg = GradientDrawable()
-        bg.setColor(activeTheme.keyBackgroundColor)
+        bg.setColor(ThemeManager.activeTheme.keyBackgroundColor)
         bg.shape = GradientDrawable.RECTANGLE
-        bg.cornerRadius = prefs.keyRadius.getValue().toFloat() // 设置圆角半径
+        bg.cornerRadius = ThemeManager.prefs.keyRadius.getValue().toFloat() // 设置圆角半径
         mEtAddPhrasesContent?.background = bg
-        mEtAddPhrasesContent?.setTextColor(activeTheme.keyTextColor)
-        mEtAddPhrasesContent?.setHintTextColor(activeTheme.keyTextColor)
-        tvAddPhrasesTips?.setTextColor(activeTheme.keyTextColor)
+        mEtAddPhrasesContent?.setTextColor(ThemeManager.activeTheme.keyTextColor)
+        mEtAddPhrasesContent?.setHintTextColor(ThemeManager.activeTheme.keyTextColor)
+        tvAddPhrasesTips?.setTextColor(ThemeManager.activeTheme.keyTextColor)
     }
 
     private fun onClick(view: View) {
@@ -295,7 +291,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseKeyEvent(sKey: SoftKey, isFeedback:Boolean) {
-        isSkipEngineMode = false
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
@@ -322,6 +317,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
             }
+            resetToIdleState()
         }
     }
 
@@ -435,21 +431,21 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 requestHideSelf()
                 return true
             }
-        } else if (keyCode == KeyEvent.KEYCODE_CLEAR) {
-            resetToIdleState()
-            return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            // 选择高亮的候选词
-            if (!DecodingInfo.isFinish && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
-            } else {
+            if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
                 sendKeyEvent(keyCode)
                 resetToIdleState()
+            } else {
+                chooseAndUpdate(0)
             }
+            return true
+        } else if (keyCode == KeyEvent.KEYCODE_CLEAR) {
+            resetToIdleState()
             return true
         }  else if (keyCode == KeyEvent.KEYCODE_ENTER) {
             if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
                 sendKeyEvent(keyCode)
+                resetToIdleState()
             } else {
                 commitDecInfoText(DecodingInfo.composingStrForCommit)
             }
@@ -458,6 +454,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }else if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
             if (keyCode == KeyEvent.KEYCODE_DEL) {
                 sendKeyEvent(keyCode)
+                resetToIdleState()
                 return true
             }
         }
@@ -477,15 +474,20 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (DecodingInfo.isFinish) {
+            if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
                 sendKeyEvent(keyCode)
+                resetToIdleState()
             } else {
                 DecodingInfo.deleteAction()
                 updateCandidate()
             }
             return true
         } else if (keyCode != 0) {
+            if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
+                chooseAndUpdate(0)
+            }
             sendKeyEvent(keyCode)
+            resetToIdleState()
             return true
         } else if(lable.isNotEmpty()) {
             if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
@@ -493,6 +495,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
             else commitText(lable)
+            resetToIdleState()
             return true
         }
         return false
@@ -527,32 +530,23 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * @param candId 选择索引
      */
     private fun chooseAndUpdate(candId: Int) {
-        // 剪贴板或候选词栏常用符号模式时，不调用引擎查询
-        if (isSkipEngineMode) {
-            val choice = DecodingInfo.getCandidate(candId)?.text
-            if (choice?.isNotBlank() == true) {
-                commitDecInfoText(choice)
-            }
+        val candidate = DecodingInfo.getCandidate(candId)
+        if(candidate?.comment == "📋"){  // 处理剪贴板或常用语
+            commitDecInfoText(candidate.text)
             resetToPredictState()
         } else {
-            val candidate = DecodingInfo.getCandidate(candId)
-            if(candidate?.comment == "📋"){  // 处理常用语
-                commitDecInfoText(candidate.text)
+            val choice = DecodingInfo.chooseDecodingCandidate(candId)
+            if (candId >= 0 && (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
+                commitDecInfoText(choice)
                 resetToPredictState()
-            } else {
-                val choice = DecodingInfo.chooseDecodingCandidate(candId)
-                if (candId >= 0 && (DecodingInfo.isFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
-                    commitDecInfoText(choice)
-                    resetToPredictState()
-                } else {  // 不上屏，继续选择
-                    if (!DecodingInfo.isFinish) {
-                        val composing = DecodingInfo.composingStrForDisplay
-                        if (InputModeSwitcherManager.isEnglish) setComposingText(composing)
-                        updateCandidateBar()
-                        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-                    } else {
-                        resetToIdleState()
-                    }
+            } else {  // 不上屏，继续选择
+                if (!DecodingInfo.isFinish) {
+                    val composing = DecodingInfo.composingStrForDisplay
+                    if (InputModeSwitcherManager.isEnglish) setComposingText(composing)
+                    updateCandidateBar()
+                    (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+                } else {
+                    resetToIdleState()
                 }
             }
         }
@@ -587,7 +581,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 重置候选词区域
      */
     private fun resetCandidateWindow() {
-        isSkipEngineMode = false
         DecodingInfo.reset()
         updateCandidateBar()
     }
@@ -669,12 +662,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.currentContainer!!.setKeyboardHeight()
             }
             SkbMenuMode.DarkTheme -> {
-                val isDark = activeTheme.isDark
-                val theme: Theme = if (isDark) {
-                    prefs.lightModeTheme.getValue()
-                } else {
-                    prefs.darkModeTheme.getValue()
-                }
+                val theme = (if (ThemeManager.activeTheme.isDark) ThemeManager.prefs.lightModeTheme else ThemeManager.prefs.darkModeTheme).getValue()
                 ThemeManager.setNormalModeTheme(theme)
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
@@ -702,14 +690,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.SymbolShow -> {
-                val keyboardSymbol = prefs.keyboardSymbol.getValue()
-                prefs.keyboardSymbol.setValue(!keyboardSymbol)
+                val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
+                ThemeManager.prefs.keyboardSymbol.setValue(!keyboardSymbol)
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.Mnemonic -> {
-                val keyboardMnemonic = prefs.keyboardMnemonic.getValue()
-                prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
+                val keyboardMnemonic = ThemeManager.prefs.keyboardMnemonic.getValue()
+                ThemeManager.prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
@@ -824,10 +812,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     //常用符号、剪切板
     fun showSymbols(symbols: Array<String>) {
         mImeState = ImeState.STATE_PREDICT
-        val list = symbols.map { symbol-> CandidateListItem("", symbol) }.toTypedArray()
+        val list = symbols.map { symbol-> CandidateListItem("📋", symbol) }.toTypedArray()
         DecodingInfo.cacheCandidates(list)
         DecodingInfo.isAssociate = true
-        isSkipEngineMode = true
         updateCandidateBar()
     }
 
@@ -966,7 +953,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if(newSelStart == newSelEnd && mImeState == ImeState.STATE_PREDICT && getInstance().input.chinesePrediction.getValue()) {
             val inputConnection = service.getCurrentInputConnection()
             val text = inputConnection.getTextBeforeCursor(10, 0).toString()
-            if (!isSkipEngineMode && text.isNotBlank() && InputModeSwitcherManager.isChinese) {
+            if (text.isNotBlank() && InputModeSwitcherManager.isChinese) {
                 DecodingInfo.isAssociate = true
                 DecodingInfo.getAssociateWord(text)
                 chooseAndUpdate(-1)

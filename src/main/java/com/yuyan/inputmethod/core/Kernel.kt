@@ -1,28 +1,18 @@
 package com.yuyan.inputmethod.core
 
-import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.service.DecodingInfo.isAssociate
 import com.yuyan.inputmethod.RimeEngine
 
 object Kernel {
-    private var isHandWriting = false
 
     /**
      * 初始化输入法
      */
     @Synchronized
     fun initImeSchema(schema: String) {
-        isHandWriting = schema == CustomConstant.SCHEMA_ZH_HANDWRITING
         RimeEngine.selectSchema(schema)
         nativeUpdateImeOption()
-    }
-
-    /**
-     * 判断是否是手写模式
-     */
-    fun unHandWriting(): Boolean {
-        return !isHandWriting
     }
 
     /**
