@@ -18,6 +18,7 @@ object CustomConstant {
     const val SCHEMA_ZH_STROKE = "stroke" // 五笔画
     const val CURRENT_RIME_DICT_DATA_VERSIOM = 20241212
     const val YUYAN_IME_REPO = "https://github.com/gurecn/YuyanIme"
+    const val YUYAN_IME_REPO_GITEE = "https://gitee.com/gurecn/YuyanIme"
     const val YUYAN_SDK_REPO = "https://github.com/gurecn/yuyansdk"
     const val LICENSE_URL = "https://www.gnu.org/licenses/old-licenses/lgpl-2.1"
     const val FEEDBACK_TXC_REPO = "https://txc.qq.com/products/668191"

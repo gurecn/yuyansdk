@@ -1,9 +1,12 @@
 package com.yuyan.imemodule.ui.activity
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -13,12 +16,14 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.constant.CustomConstant
 import com.yuyan.imemodule.databinding.ActivitySettingsBinding
 import com.yuyan.imemodule.ui.setup.SetupActivity
+import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.ui.utils.startActivity
+import com.yuyan.imemodule.utils.TimeUtils
 import splitties.dimensions.dp
 import splitties.views.topPadding
-
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -78,6 +83,25 @@ class SettingsActivity : AppCompatActivity() {
         super.onStart()
         if (SetupActivity.shouldShowUp()) {
             startActivity<SetupActivity>()
+        } else {
+            val buildDiffDays = TimeUtils.getBuildDiffDays()
+            if(buildDiffDays >= 30){
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_tips_title)
+                    .setMessage(getString(if(buildDiffDays >= 60) R.string.app_build_timeout_60 else R.string.app_build_timeout_30))
+                    .setCancelable(buildDiffDays < 60)
+                    .setNeutralButton(R.string.go_download_appstore) { _, _ ->
+                        AppUtil.launchMarketforYuyan(this)
+                    }
+                    .setNegativeButton(R.string.go_download_gitee) { _, _ ->
+                        val uri = Uri.parse("${CustomConstant.YUYAN_IME_REPO_GITEE}/releases/latest")
+                        startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    }
+                    .setPositiveButton(R.string.go_download_github) { _, _ ->
+                        val uri = Uri.parse("${CustomConstant.YUYAN_IME_REPO}/releases/latest")
+                        startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    }.show()
+            }
         }
     }
 }
