@@ -14,7 +14,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.SymbolPagerAdapter
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme

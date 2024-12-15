@@ -1,7 +1,7 @@
 package com.yuyan.imemodule.manager
 
 import android.view.inputmethod.EditorInfo
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.inputmethod.core.Kernel

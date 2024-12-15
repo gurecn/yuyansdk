@@ -1,7 +1,7 @@
 package com.yuyan.imemodule.utils
 
 import android.view.KeyEvent
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle

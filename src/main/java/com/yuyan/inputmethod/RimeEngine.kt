@@ -1,7 +1,7 @@
 package com.yuyan.inputmethod
 
 import android.view.KeyEvent
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs

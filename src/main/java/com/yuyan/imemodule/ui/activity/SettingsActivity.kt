@@ -16,7 +16,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.databinding.ActivitySettingsBinding
 import com.yuyan.imemodule.ui.setup.SetupActivity
 import com.yuyan.imemodule.ui.utils.AppUtil

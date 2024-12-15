@@ -24,10 +24,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -300,8 +299,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(InputModeSwitcherManager.isChinese) {
                     chooseAndUpdate(0)
                 } else if(InputModeSwitcherManager.isEnglish){
-                    val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
-                    commitDecInfoText(displayStr)
+                    commitDecInfoText(DecodingInfo.composingStrForCommit)  // 把输入的拼音字符串发送给EditText
                 }
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
@@ -317,7 +315,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
             }
-            resetToIdleState()
+            mImeState = ImeState.STATE_IDLE
+            resetCandidateWindow()
         }
     }
 
@@ -445,18 +444,15 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }  else if (keyCode == KeyEvent.KEYCODE_ENTER) {
             if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
                 sendKeyEvent(keyCode)
-                resetToIdleState()
             } else {
                 commitDecInfoText(DecodingInfo.composingStrForCommit)
             }
             resetToIdleState()
             return true
-        }else if (InputModeSwitcherManager.mInputTypePassword || (!InputModeSwitcherManager.isChinese && !InputModeSwitcherManager.isEnglish)) {
-            if (keyCode == KeyEvent.KEYCODE_DEL) {
-                sendKeyEvent(keyCode)
-                resetToIdleState()
-                return true
-            }
+        }else if (keyCode == KeyEvent.KEYCODE_DEL && (InputModeSwitcherManager.mInputTypePassword || InputModeSwitcherManager.isNumberSkb)) {
+            sendKeyEvent(keyCode)
+            resetToIdleState()
+            return true
         }
         return false
     }
@@ -718,7 +714,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.FlowerTypeface -> {
-                LauncherModel.instance.flowerTypeface = if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) FlowerTypefaceMode.Mars else FlowerTypefaceMode.Disabled
+                CustomConstant.flowerTypeface = if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) FlowerTypefaceMode.Mars else FlowerTypefaceMode.Disabled
                 showFlowerTypeface()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }

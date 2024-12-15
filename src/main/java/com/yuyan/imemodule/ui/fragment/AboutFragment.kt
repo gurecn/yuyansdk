@@ -7,7 +7,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.ui.utils.addCategory
 import com.yuyan.imemodule.ui.utils.addPreference
 

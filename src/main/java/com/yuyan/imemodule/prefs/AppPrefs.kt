@@ -8,7 +8,7 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.allSkbFuns
 import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.manager.InputModeSwitcherManager

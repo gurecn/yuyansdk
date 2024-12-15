@@ -4,10 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import com.yuyan.imemodule.constant.CustomConstant
+import androidx.preference.PreferenceManager
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
+import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.ClipboardHelper
 import com.yuyan.imemodule.ui.utils.isDarkMode
@@ -33,7 +35,9 @@ open class ImeSdkApplication : Application() {
     }
 
     private fun currentInit() {
-        LauncherModel.initSingleton(context) //初始化启动相关设置
+        AppPrefs.init(PreferenceManager.getDefaultSharedPreferences(context))
+        ThemeManager.init(context.resources.configuration)
+        DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()  //操作一次查询，提前创建数据库，避免使用时才创建数据库
         ClipboardHelper.init()
     }
 

@@ -16,9 +16,8 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesBarAdapter
 import com.yuyan.imemodule.adapter.CandidatesMenuAdapter
-import com.yuyan.imemodule.application.LauncherModel
 import com.yuyan.imemodule.callback.CandidateViewListener
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -156,10 +155,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             val flowerTypefaces = arrayOf(FlowerTypefaceMode.Mars, FlowerTypefaceMode.FlowerVine, FlowerTypefaceMode.Messy, FlowerTypefaceMode.Germinate,
                 FlowerTypefaceMode.Fog,FlowerTypefaceMode.ProhibitAccess, FlowerTypefaceMode.Grass, FlowerTypefaceMode.Wind, FlowerTypefaceMode.Disabled)
             val flowerTypefacesName = resources.getStringArray(R.array.FlowerTypeface)
-            if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) {
+            if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) {
                 mLlContainer.visibility = GONE
             } else {
-                mFlowerType.text = flowerTypefacesName[flowerTypefaces.indexOf(LauncherModel.instance.flowerTypeface)]
+                mFlowerType.text = flowerTypefacesName[flowerTypefaces.indexOf(CustomConstant.flowerTypeface)]
             }
             mFlowerType.setOnClickListener{ _: View ->
                 val popupMenu = PopupMenu(context, mLlContainer).apply {
@@ -170,7 +169,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         val position =  ids.indexOf(menuItem.itemId)
                         val select =  flowerTypefaces[position]
                         mFlowerType.text = flowerTypefacesName[position]
-                        LauncherModel.instance.flowerTypeface = select
+                        CustomConstant.flowerTypeface = select
                         if(select == FlowerTypefaceMode.Disabled){
                             mLlContainer.visibility = GONE
                         }
@@ -282,10 +281,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      * 选择花漾字
      */
     fun showFlowerTypeface() {
-        if(LauncherModel.instance.flowerTypeface == FlowerTypefaceMode.Disabled) {
+        if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) {
             mLlContainer.visibility = GONE
         } else {
-            LauncherModel.instance.flowerTypeface = FlowerTypefaceMode.Mars
+            CustomConstant.flowerTypeface = FlowerTypefaceMode.Mars
             mFlowerType.text = "焱暒妏"
             mLlContainer.visibility = VISIBLE
         }

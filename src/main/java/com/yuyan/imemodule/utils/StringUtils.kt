@@ -1,6 +1,6 @@
 package com.yuyan.imemodule.utils
 
-import com.yuyan.imemodule.application.LauncherModel
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.flower.simplified2HotPreset
 import java.util.regex.Pattern
@@ -81,7 +81,10 @@ object StringUtils {
      * 字符串转花漾字
      */
     fun converted2FlowerTypeface(src: String): String {
-         return  when(LauncherModel.instance.flowerTypeface) {
+         return  when(CustomConstant.flowerTypeface) {
+             FlowerTypefaceMode.Disabled -> {
+                 src
+             }
             FlowerTypefaceMode.Mars -> {  //焱暒妏
                  src.map { simplified2HotPreset[it]?:it }.joinToString("")
             }
@@ -103,12 +106,8 @@ object StringUtils {
             FlowerTypefaceMode.Grass -> {  // 长҉҉҈草҉҉҈字҉҉҈
                 "҈҈҈" + src.map { it }.joinToString( "҈҈҈").plus("҈҈҈")
             }
-
             FlowerTypefaceMode.Wind -> {  // =͟͟起=͟风͟͞͞=͟了͟͞͞͞͞
              "=͟͟͞͞" + src.map { it }.joinToString( "=͟͟͞͞")
-            }
-            else -> {
-                src
             }
         }
     }

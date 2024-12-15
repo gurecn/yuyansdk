@@ -17,7 +17,7 @@
  */
 package com.yuyan.inputmethod.core
 import androidx.annotation.Keep
-import com.yuyan.imemodule.constant.CustomConstant
+import com.yuyan.imemodule.application.CustomConstant
 import kotlin.system.measureTimeMillis
 
 /**
