@@ -470,7 +470,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
+            if (DecodingInfo.isFinish) {
                 sendKeyEvent(keyCode)
                 resetToIdleState()
             } else {
@@ -807,7 +807,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     //常用符号、剪切板
     fun showSymbols(symbols: Array<String>) {
-        mImeState = ImeState.STATE_PREDICT
+        mImeState = ImeState.STATE_INPUT
         val list = symbols.map { symbol-> CandidateListItem("📋", symbol) }.toTypedArray()
         DecodingInfo.cacheCandidates(list)
         DecodingInfo.isAssociate = true

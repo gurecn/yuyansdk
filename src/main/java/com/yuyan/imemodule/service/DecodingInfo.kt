@@ -72,10 +72,10 @@ object DecodingInfo {
     fun deleteAction() {
         activeCandidate = 0
         activeCandidateBar = 0
-        if (!isEngineFinish) {
-            Kernel.deleteAction()
-        } else {
+        if (isEngineFinish || isAssociate) {
             reset()
+        } else {
+            Kernel.deleteAction()
         }
     }
 
