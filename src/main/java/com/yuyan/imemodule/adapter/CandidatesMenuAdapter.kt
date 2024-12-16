@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.adapter
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
 
     init {
         inflater = LayoutInflater.from(context)
-        itemHeight = (EnvironmentSingleton.instance.heightForCandidates * 0.8f).toInt()
+        itemHeight = (EnvironmentSingleton.instance.heightForCandidates * 0.6f).toInt()
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -64,6 +65,12 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
         val color = if (isSettingsMenuSelect(item)) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor
         holder.entranceIconImageView?.getDrawable()?.setTint(color)
+        if(ThemeManager.prefs.keyBorder.getValue()) {
+            val bg = GradientDrawable()
+            bg.setColor(activeTheme.keyBackgroundColor)
+            bg.shape = GradientDrawable.OVAL
+            holder.entranceIconImageView?.background = bg
+        }
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener { v: View? ->
                 mOnItemClickListener!!.onItemClick(this, v, position)

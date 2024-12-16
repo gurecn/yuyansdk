@@ -54,7 +54,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                 )
                 addDestinationPreference(
                     R.string.setting_ime_keyboard,
-                    R.drawable.ic_baseline_keyboard_24,
+                    R.drawable.sdk_vector_menu_skb_keyboard,
                     R.id.action_settingsFragment_to_keyboardSettingFragment
                 )
                 addDestinationPreference(
