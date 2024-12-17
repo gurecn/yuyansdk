@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:src="@drawable/sdk_vector_menu_skb_one_hand"
+        android:src="@drawable/ic_menu_one_hand"
         tools:ignore="ContentDescription" />
 </LinearLayout>

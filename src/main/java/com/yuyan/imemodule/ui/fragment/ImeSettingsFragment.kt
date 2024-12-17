@@ -31,12 +31,12 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                 isIconSpaceReserved = false
                 addDestinationPreference(
                     R.string.setting_ime_input,
-                    R.drawable.ic_baseline_language_24,
+                    R.drawable.ic_menu_language,
                     R.id.action_settingsFragment_to_inputSettingsFragment
                 )
                 addDestinationPreference(
                     R.string.ime_settings_handwriting,
-                    R.drawable.ic_baseline_handwriting_24,
+                    R.drawable.ic_menu_handwriting,
                     R.id.action_settingsFragment_to_handwritingSettingsFragment
                 )
             }
@@ -44,22 +44,22 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                 isIconSpaceReserved = false
                 addDestinationPreference(
                     R.string.theme,
-                    R.drawable.baseline_theme_lens_24,
+                    R.drawable.ic_menu_theme,
                     R.id.action_settingsFragment_to_themeSettingsFragment
                 )
                 addDestinationPreference(
                     R.string.keyboard_feedback,
-                    R.drawable.sdk_vector_menu_skb_touch,
+                    R.drawable.ic_menu_touch,
                     R.id.action_settingsFragment_to_keyboardFeedbackFragment
                 )
                 addDestinationPreference(
                     R.string.setting_ime_keyboard,
-                    R.drawable.sdk_vector_menu_skb_keyboard,
+                    R.drawable.ic_menu_keyboard,
                     R.id.action_settingsFragment_to_keyboardSettingFragment
                 )
                 addDestinationPreference(
                     R.string.clipboard,
-                    R.drawable.ic_clipboard,
+                    R.drawable.ic_menu_clipboard,
                     R.id.action_settingsFragment_to_clipboardSettingsFragment
                 )
 
@@ -73,12 +73,12 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                 isIconSpaceReserved = false
 
                 addPreference(R.string.feedback,"",
-                    R.drawable.baseline_feedback_24,) {
+                    R.drawable.ic_menu_feedback,) {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.FEEDBACK_TXC_REPO)))
                 }
                 addDestinationPreference(
                     R.string.about,
-                    R.drawable.ic_baseline_more_horiz_24,
+                    R.drawable.ic_menu_more_horiz,
                     R.id.action_settingsFragment_to_aboutFragment
                 )
             }

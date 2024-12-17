@@ -71,10 +71,10 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
 
     private fun getIcon(keyMode:FullDisplayKeyMode):Int{
        return when(keyMode){
-            FullDisplayKeyMode.SwitchIme -> R.drawable.ic_baseline_language_24
+            FullDisplayKeyMode.SwitchIme -> R.drawable.ic_menu_language
             FullDisplayKeyMode.SwitchLanguage -> R.drawable.icon_keyboard_switcher
-           FullDisplayKeyMode.Clipboard -> R.drawable.ic_clipboard
-           FullDisplayKeyMode.Phrases -> R.drawable.ic_phrases
+           FullDisplayKeyMode.Clipboard -> R.drawable.ic_menu_clipboard
+           FullDisplayKeyMode.Phrases -> R.drawable.ic_menu_phrases
            else -> 0
        }
     }
