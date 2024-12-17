@@ -20,7 +20,7 @@ object RimeEngine {
 
     private val keyRecordStack = KeyRecordStack()
     private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
-    var showCandidates: Array<CandidateListItem> = emptyArray() // 所有待展示的候选词
+    var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
     fun init() {
@@ -91,7 +91,7 @@ object RimeEngine {
             val words = Rime.getAssociateList(text)
             showCandidates = words.filterNotNull().map {
                 CandidateListItem("", it)
-            }.toTypedArray()
+            }
             showComposition = ""
         }
     }
@@ -102,7 +102,7 @@ object RimeEngine {
     }
 
     fun reset() {
-        showCandidates = emptyArray()
+        showCandidates = emptyList()
         pinyins = emptyArray()
         showComposition = ""
         preCommitText = ""
@@ -155,10 +155,10 @@ object RimeEngine {
                 preCommitText = preCommitText.uppercase()
             }
             showComposition = ""
-            showCandidates = emptyArray()
+            showCandidates = emptyList()
             return preCommitText
         }
-        val candidates = Rime.getRimeContext()?.candidates ?: emptyArray()
+        val candidates = Rime.getRimeContext()?.candidates?.asList() ?: emptyList()
         var composition = getCurrentComposition(candidates)
         if (InputModeSwitcherManager.isEnglishUpperCase) {
             for (item in candidates) {
@@ -192,7 +192,7 @@ object RimeEngine {
             Rime.compositionText.isNotBlank() -> {
                 val phrase = DataBaseKT.instance.phraseDao().query(Rime.compositionText.replace("\\s".toRegex(), ""))
                 phrase.map { cand -> CandidateListItem("📋", cand.content)
-                }.toMutableList().plus(candidates).toTypedArray()
+                }.toMutableList().plus(candidates)
             }
             else -> candidates
         }
@@ -225,7 +225,7 @@ object RimeEngine {
         return pyCandidates
     }
 
-    private fun getCurrentComposition(candidates: Array<CandidateListItem>): String {
+    private fun getCurrentComposition(candidates: List<CandidateListItem>): String {
         val compositionText = Rime.compositionText
         return when {
             compositionText.isEmpty() -> ""

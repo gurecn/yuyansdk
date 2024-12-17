@@ -297,7 +297,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
                 if(InputModeSwitcherManager.isChinese) {
-                    chooseAndUpdate(0)
+                    chooseAndUpdate()
                 } else if(InputModeSwitcherManager.isEnglish){
                     commitDecInfoText(DecodingInfo.composingStrForCommit)  // 把输入的拼音字符串发送给EditText
                 }
@@ -330,7 +330,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     override fun responseLongKeyEvent(result:Pair<PopupMenuMode, String>) {
         if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
             if(InputModeSwitcherManager.isChinese) {
-                chooseAndUpdate(0)
+                chooseAndUpdate()
             } else if(InputModeSwitcherManager.isEnglish){
                 val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
                 commitDecInfoText(displayStr)
@@ -435,7 +435,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 sendKeyEvent(keyCode)
                 resetToIdleState()
             } else {
-                chooseAndUpdate(0)
+                chooseAndUpdate()
             }
             return true
         } else if (keyCode == KeyEvent.KEYCODE_CLEAR) {
@@ -480,14 +480,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             return true
         } else if (keyCode != 0) {
             if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
+                chooseAndUpdate()
             }
             sendKeyEvent(keyCode)
             resetToIdleState()
             return true
         } else if(lable.isNotEmpty()) {
             if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
-                chooseAndUpdate(0)
+                chooseAndUpdate()
             }
             if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
             else commitText(lable)
@@ -525,14 +525,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 选择候选词，并根据条件是否进行下一步的预报。
      * @param candId 选择索引
      */
-    private fun chooseAndUpdate(candId: Int) {
+    private fun chooseAndUpdate(candId: Int = 0) {
         val candidate = DecodingInfo.getCandidate(candId)
         if(candidate?.comment == "📋"){  // 处理剪贴板或常用语
             commitDecInfoText(candidate.text)
             resetToPredictState()
         } else {
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
-            if (candId >= 0 && (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate)) {  // 选择的候选词上屏
+            if (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
                 resetToPredictState()
             } else {  // 不上屏，继续选择

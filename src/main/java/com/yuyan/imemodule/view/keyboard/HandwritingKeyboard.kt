@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.view.KeyEvent
 import android.view.MotionEvent
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
@@ -141,13 +140,5 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         instance!!.recognitionData(mSBPoint) {
             item -> mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
         }
-    }
-
-    override fun onPress(key: SoftKey) {  // 手写界面点击按键时先选择第一个候选词，然后在按键释放时响应onRelease按键。
-        if (key.keyCode != KeyEvent.KEYCODE_DEL && mSBPoint.isNotEmpty()) {
-            mService!!.responseKeyEvent(SoftKey())
-        }
-        mSBPoint.clear()
-        mDrawing.clear()
     }
 }
