@@ -86,10 +86,10 @@ object DecodingInfo {
         get() = Kernel.isFinish
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
-        get() = if(Kernel.wordsShowPinyin.isNotBlank())Kernel.wordsShowPinyin else if(candidateSize > 0) candidates[0].comment else ""
+        get() = Kernel.wordsShowPinyin.ifEmpty { if(candidateSize > 0) candidates[0].comment else "" }
 
     val composingStrForCommit: String   // 获取输入的拼音字符串
-        get() = Kernel.wordsShowPinyin.replace("'", "")
+        get() = Kernel.wordsShowPinyin.replace("'", "").ifEmpty {candidatesLiveData.value!![0].comment}
 
     val nextPageCandidates: Int   // 获取下一页的候选词
         get() {
@@ -108,13 +108,12 @@ object DecodingInfo {
         activeCandidate = 0
         activeCandidateBar = 0
         if (candId >= 0) Kernel.getWordSelectedWord(candId)
-        return if(Kernel.candidates.isNotEmpty()){
-            candidatesLiveData.postValue(Kernel.candidates.asList())
+        val newCandidates = Kernel.candidates
+        return if(newCandidates.isNotEmpty()){
+            candidatesLiveData.postValue(newCandidates.asList())
             Kernel.commitText
         } else if(candId in 0..<candidateSize){
-            val choice = candidatesLiveData.value!![candId].text
-            reset()
-            choice
+            Kernel.commitText.ifEmpty { candidatesLiveData.value!![candId].text }
         } else ""
     }
 
