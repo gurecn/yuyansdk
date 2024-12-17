@@ -57,7 +57,7 @@ class HandWritingHanwang : HandWritingMonitor {
                                 sb.append(Integer.parseInt(ca).toChar())
                             }
                             val candidate = sb.toString()
-                            recogResultItems.add(CandidateListItem(PinyinHelper.toHanYuPinyin(candidate, mHanyuPinyinOutputFormat, "'"), candidate))
+                            recogResultItems.add(CandidateListItem(PinyinHelper.toHanYuPinyin(candidate, mHanyuPinyinOutputFormat, "'").ifEmpty { candidate }, candidate))
                         }
                         recogResultData?.onSucess(recogResultItems.toTypedArray())
                     }
