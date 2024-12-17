@@ -27,7 +27,7 @@ object Kernel {
          * 是否输入完毕，等待上屏。
          */
         get() = RimeEngine.isFinish()
-    val candidates: Array<CandidateListItem>
+    val candidates: List<CandidateListItem>
         get() {
             return RimeEngine.showCandidates
         }

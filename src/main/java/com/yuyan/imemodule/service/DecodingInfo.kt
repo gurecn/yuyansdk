@@ -110,7 +110,7 @@ object DecodingInfo {
         if (candId >= 0) Kernel.getWordSelectedWord(candId)
         val newCandidates = Kernel.candidates
         return if(newCandidates.isNotEmpty()){
-            candidatesLiveData.postValue(newCandidates.asList())
+            candidatesLiveData.postValue(newCandidates)
             Kernel.commitText
         } else if(candId in 0..<candidateSize){
             Kernel.commitText.ifEmpty { candidatesLiveData.value!![candId].text }
@@ -123,7 +123,7 @@ object DecodingInfo {
     fun updateDecodingCandidate() {
         activeCandidate = 0
         activeCandidateBar = 0
-        candidatesLiveData.postValue(Kernel.candidates.asList())
+        candidatesLiveData.postValue(Kernel.candidates)
     }
 
     /**
