@@ -1,7 +1,7 @@
 package com.yuyan.inputmethod.core
 
-import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import com.yuyan.imemodule.service.DecodingInfo.isAssociate
+import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.inputmethod.RimeEngine
 
 object Kernel {
@@ -54,7 +54,7 @@ object Kernel {
      * 执行选择动作，选择了index指向的词语
      */
     fun getWordSelectedWord(index: Int) {
-        if (isAssociate) {
+        if (DecodingInfo.isAssociate) {
             RimeEngine.selectAssociation(index)
         } else {
             RimeEngine.selectCandidate(index)
@@ -94,7 +94,7 @@ object Kernel {
      */
     fun resetIme() {
         RimeEngine.destroy()
-        initImeSchema(getInstance().internal.pinyinModeRime.getValue())
+        initImeSchema(AppPrefs.getInstance().internal.pinyinModeRime.getValue())
     }
 
     /**
@@ -108,9 +108,9 @@ object Kernel {
      * 刷新引擎配置
      */
     fun nativeUpdateImeOption() {
-        val chineseFanTi = getInstance().input.chineseFanTi.getValue()
+        val chineseFanTi = AppPrefs.getInstance().input.chineseFanTi.getValue()
         RimeEngine.setImeOption("traditionalization", chineseFanTi)
-        val emojiInput = getInstance().input.emojiInput.getValue()
+        val emojiInput = AppPrefs.getInstance().input.emojiInput.getValue()
         RimeEngine.setImeOption("emoji", emojiInput)
     }
 }

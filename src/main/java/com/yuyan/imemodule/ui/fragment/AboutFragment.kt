@@ -18,12 +18,6 @@ class AboutFragment : PreferenceFragmentCompat() {
             addPreference(R.string.privacy_policy) {
                 findNavController().navigate(R.id.action_aboutFragment_to_privacyPolicyFragment)
             }
-            addPreference(
-                R.string.open_source_licenses,
-                R.string.licenses_of_third_party_libraries
-            ) {
-                findNavController().navigate(R.id.action_aboutFragment_to_licensesFragment)
-            }
             addPreference(R.string.source_code, R.string.github_repo) {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.YUYAN_IME_REPO)))
             }

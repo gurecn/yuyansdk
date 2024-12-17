@@ -14,7 +14,7 @@
     <string name="ime_settings_handwriting">手写设置</string>
     <string name="keypopup_input_settings">按键气泡提示</string>
     <string name="long_press_timeout">按键长按灵敏度</string>
-    <string name="keyboard_mnemonic_show">双拼辅助显示</string>
+    <string name="keyboard_mnemonic_show">双拼提示</string>
     <string name="keyboard_double_input_key">双拼显示完整拼音</string>
     <string name="keyboard_flower_typeface">花漾字</string>
     <string name="keyboard_symbol_show">上划选择符号</string>
@@ -81,7 +81,7 @@
     <string name="clipboard_suggestion_timeout">剪贴板提示超时</string>
     <string name="source_code">源代码</string>
     <string name="privacy_policy">隐私政策</string>
-    <string name="license">许可</string>
+    <string name="license">开放许可</string>
     <string name="open_source_licenses">开源软件许可</string>
     <string name="licenses_of_third_party_libraries">第三方库许可证</string>
     <string name="github_repo">GitHub 仓库</string>
