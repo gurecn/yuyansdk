@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
@@ -153,12 +154,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 else -> mHoderLayoutLeft
             }
             mOnehandHoderLayout.visibility = VISIBLE
-            mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_none).setOnClickListener { view: View -> onClick(view) }
-            mOnehandHoderLayout.findViewById<ImageButton>(R.id.ib_holder_one_hand_left).setOnClickListener { view: View -> onClick(view) }
+            mOnehandHoderLayout[0].setOnClickListener { view: View -> onClick(view) }
+            mOnehandHoderLayout[1].setOnClickListener { view: View -> onClick(view) }
+            (mOnehandHoderLayout[1] as ImageButton).setImageResource(if (oneHandedMod == KeyboardOneHandedMod.LEFT) R.drawable.ic_menu_one_hand_right else R.drawable.ic_menu_one_hand)
             val layoutParamsHoder = mOnehandHoderLayout.layoutParams
-            val margin = EnvironmentSingleton.instance.heightForCandidates
             layoutParamsHoder.width = EnvironmentSingleton.instance.holderWidth
-            layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight + margin
+            layoutParamsHoder.height = EnvironmentSingleton.instance.skbHeight
         }
         mLlKeyboardBottomHolder.removeAllViews()
         mLlKeyboardBottomHolder.layoutParams.width = EnvironmentSingleton.instance.skbWidth
@@ -260,13 +261,17 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         mSkbRoot.background = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
         mComposingView.updateTheme(ThemeManager.activeTheme)
         mSkbCandidatesBarView.updateTheme(ThemeManager.activeTheme.keyTextColor)
+        if(::mOnehandHoderLayout.isInitialized) {
+            (mOnehandHoderLayout[0] as ImageButton).drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
+            (mOnehandHoderLayout[1] as ImageButton).drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
+        }
         mFullDisplayKeyboardBar?.updateTheme(ThemeManager.activeTheme.keyTextColor)
         mAddPhrasesLayout.setBackgroundColor(ThemeManager.activeTheme.barColor)
-        val bg = GradientDrawable()
-        bg.setColor(ThemeManager.activeTheme.keyBackgroundColor)
-        bg.shape = GradientDrawable.RECTANGLE
-        bg.cornerRadius = ThemeManager.prefs.keyRadius.getValue().toFloat() // 设置圆角半径
-        mEtAddPhrasesContent?.background = bg
+        mEtAddPhrasesContent?.background = GradientDrawable().apply {
+            setColor(ThemeManager.activeTheme.keyBackgroundColor)
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = ThemeManager.prefs.keyRadius.getValue().toFloat()
+        }
         mEtAddPhrasesContent?.setTextColor(ThemeManager.activeTheme.keyTextColor)
         mEtAddPhrasesContent?.setHintTextColor(ThemeManager.activeTheme.keyTextColor)
         tvAddPhrasesTips?.setTextColor(ThemeManager.activeTheme.keyTextColor)

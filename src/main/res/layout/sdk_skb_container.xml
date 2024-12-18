@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/ll_input_keyboard_container"
         android:visibility="gone"/>
     <RelativeLayout
         android:id="@+id/ll_input_keyboard_container"
@@ -37,6 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/ll_input_keyboard_container"
+        android:layout_alignBottom="@+id/ll_input_keyboard_container"
         android:visibility="gone"/>
     <LinearLayout
         android:id="@+id/iv_keyboard_holder"
