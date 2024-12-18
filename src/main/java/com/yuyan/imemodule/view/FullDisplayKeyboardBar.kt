@@ -121,7 +121,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
 
     // 刷新主题
     fun updateTheme(textColor: Int) {
-        mIVKeyLeft.drawable.setTint(textColor)
-        mIVKeyRight.drawable.setTint(textColor)
+        mIVKeyLeft.drawable?.setTint(textColor)
+        mIVKeyRight.drawable?.setTint(textColor)
     }
 }
