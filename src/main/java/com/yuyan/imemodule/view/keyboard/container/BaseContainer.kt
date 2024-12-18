@@ -11,6 +11,7 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
@@ -58,6 +59,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
             EnvironmentSingleton.instance.keyBoardHeightRatio = 0.3f
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
+            KeyboardManager.instance.clearKeyboard()
             updateSkbLayout()
         }
         rootView.findViewById<View>(R.id.ll_keyboard_height_sure).setOnClickListener { removeView(rootView) }
@@ -91,6 +93,7 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
                     EnvironmentSingleton.instance.keyBoardHeightRatio = rat
                     EnvironmentSingleton.instance.initData()
                     KeyboardLoaderUtil.instance.clearKeyboardMap()
+                    KeyboardManager.instance.clearKeyboard()
                     updateSkbLayout()
                     val l = LayoutParams(
                         LayoutParams.MATCH_PARENT,
