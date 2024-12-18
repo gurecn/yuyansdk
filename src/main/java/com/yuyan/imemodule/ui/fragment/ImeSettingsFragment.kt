@@ -65,7 +65,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
 
                 addDestinationPreference(
                     R.string.full_display_keyboard,
-                    R.drawable.baseline_keyboard_full_24,
+                    R.drawable.ic_menu_keyboard_full,
                     R.id.action_settingsFragment_to_fullDisplayKeyboardFragment
                 )
             }

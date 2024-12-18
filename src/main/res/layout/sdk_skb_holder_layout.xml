@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@android:color/transparent"
-        android:src="@drawable/sdk_vector_skb_enlarge"
+        android:src="@drawable/ic_menu_move"
         tools:ignore="ContentDescription" />
     <ImageButton
         android:id="@+id/ib_holder_one_hand_left"

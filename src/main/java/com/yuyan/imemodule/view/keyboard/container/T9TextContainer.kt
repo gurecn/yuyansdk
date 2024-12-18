@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yanzhenjie.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
@@ -51,7 +52,8 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
 
     init {
         val ivAddSymbol = ImageView(context).apply {
-            setImageResource(R.drawable.baseline_add_circle_24)
+            setPadding(dp(5))
+            setImageResource(R.drawable.ic_menu_setting)
             drawable.setTint(ThemeManager.activeTheme.keyTextColor)
         }
         ivAddSymbol.setOnClickListener { _:View ->

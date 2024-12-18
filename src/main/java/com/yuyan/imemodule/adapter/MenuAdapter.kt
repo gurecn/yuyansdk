@@ -2,6 +2,7 @@ package com.yuyan.imemodule.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -24,7 +25,8 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
     private val inflater: LayoutInflater
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private val textColor: Int
-    private var mTheme: Theme? = null
+    private var mTheme: Theme
+    private var background: GradientDrawable
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
@@ -35,6 +37,10 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         textColor = theme.keyTextColor
         mTheme = ThemeManager.activeTheme
         inflater = LayoutInflater.from(context)
+        background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(ThemeManager.activeTheme.keyBackgroundColor)
+        }
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -45,6 +51,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
             entranceIconImageView = itemView.findViewById(R.id.entrance_image)
             entranceNameTextView = itemView.findViewById(R.id.entrance_name)
             entranceOption = itemView.findViewById(R.id.entrance_option)
+            entranceOption?.background = background
         }
     }
 
@@ -62,7 +69,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         val item = data[position]
         holder.entranceNameTextView?.text = item.funName
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
-        val color = if (isSettingsMenuSelect(item)) mTheme!!.accentKeyBackgroundColor else mTheme!!.keyTextColor
+        val color = if (isSettingsMenuSelect(item)) mTheme.accentKeyBackgroundColor else mTheme.keyTextColor
         holder.entranceNameTextView?.setTextColor(color)
         holder.entranceIconImageView?.getDrawable()?.setTint(color)
         if (dragOverListener != null) {

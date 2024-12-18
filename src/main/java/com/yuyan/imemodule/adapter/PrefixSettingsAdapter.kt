@@ -38,7 +38,7 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             }, lParams(width = 0, weight = 2f))
 
             add(ImageView(context).apply {
-                setImageResource(R.drawable.sdk_vector_vertical_scale)
+                setImageResource(R.drawable.ic_menu_menu)
             }, lParams(width = 0, weight = 1f, gravity = Gravity.CENTER))
         }
         return PrefixSettingsHolder(content)

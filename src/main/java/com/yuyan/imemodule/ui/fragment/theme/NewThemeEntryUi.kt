@@ -30,7 +30,7 @@ class NewThemeEntryUi(override val ctx: Context) : Ui {
     }
 
     val icon = imageView {
-        imageDrawable = ctx.drawable(R.drawable.ic_baseline_plus_24)!!.apply {
+        imageDrawable = ctx.drawable(R.drawable.baseline_add_circle_24)!!.apply {
             setTint(Color.WHITE)
         }
     }

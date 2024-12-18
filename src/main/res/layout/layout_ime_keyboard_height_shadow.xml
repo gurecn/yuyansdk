@@ -11,7 +11,9 @@
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/sdk_vector_vertical_scale"/>
+        android:src="@drawable/ic_menu_menu"
+        android:tint="@color/skb_shadow_icon_color"
+        tools:ignore="UseAppTint"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,7 +32,9 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:padding="5dp"
-                android:src="@drawable/sdk_vector_keyboard_height_shadow_reset"/>
+                android:src="@drawable/ic_menu_reset"
+                android:tint="@color/skb_shadow_icon_color"
+                tools:ignore="UseAppTint" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,7 +53,9 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:padding="5dp"
-                android:src="@drawable/sdk_vector_keyboard_height_shadow_sure"/>
+                android:src="@drawable/ic_baseline_done_24"
+                android:tint="@color/skb_shadow_icon_color"
+                tools:ignore="UseAppTint"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,6 +69,7 @@
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/sdk_vector_vertical_move"
-        tools:ignore="ContentDescription" />
+        android:src="@drawable/ic_menu_move"
+        android:tint="@color/skb_shadow_icon_color"
+        tools:ignore="ContentDescription, UseAppTint" />
 </RelativeLayout>
