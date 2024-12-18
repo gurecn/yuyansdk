@@ -142,7 +142,7 @@ class InputView(context: Context, service: ImeService) : RelativeLayout(context)
             mSkbRoot.rightPadding = 0
             mLlKeyboardBottomHolder.minimumHeight = 0
             val mIvKeyboardMove = ImageView(context).apply {
-                setImageResource(R.drawable.sdk_vector_keyboard_horizontal_line)
+                setImageResource(R.drawable.ic_horizontal_line)
                 isClickable = true
                 isEnabled = true
             }

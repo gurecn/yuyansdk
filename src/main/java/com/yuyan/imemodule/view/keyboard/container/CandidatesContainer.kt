@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexDirection
@@ -58,7 +59,8 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     init {
         initView(context)
         val ivAddSymbol = ImageView(context).apply {
-            setImageResource(R.drawable.baseline_add_circle_24)
+            setPadding(dp(5))
+            setImageResource(R.drawable.ic_menu_setting)
         }
         ivAddSymbol.setOnClickListener { _:View ->
             val arguments = Bundle()

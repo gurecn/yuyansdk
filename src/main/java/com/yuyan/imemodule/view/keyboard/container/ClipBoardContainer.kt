@@ -111,7 +111,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             }
             rightMenu.addMenuItem(topItem)
             val deleteItem = SwipeMenuItem(mContext).apply {
-                setImage(R.drawable.ic_baseline_delete_circle_32)
+                setImage(R.drawable.ic_baseline_delete_24)
             }
             rightMenu.addMenuItem(deleteItem)
         }
