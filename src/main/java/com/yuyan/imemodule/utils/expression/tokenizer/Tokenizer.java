@@ -1,6 +1,5 @@
 package com.yuyan.imemodule.utils.expression.tokenizer;
 
-import com.yuyan.imemodule.utils.LogUtil;
 import com.yuyan.imemodule.utils.expression.function.Function;
 import com.yuyan.imemodule.utils.expression.function.Functions;
 import com.yuyan.imemodule.utils.expression.operator.Operator;
@@ -179,7 +178,6 @@ public class Tokenizer {
     }
 
     private Token parseOperatorToken(char firstChar) {
-        LogUtil.d("11111111111111", " firstChar: " + firstChar);
         final int offset = this.pos;
         int len = 1;
         final StringBuilder symbol = new StringBuilder();
