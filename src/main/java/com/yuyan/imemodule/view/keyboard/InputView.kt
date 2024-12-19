@@ -47,7 +47,6 @@ import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
-import com.yuyan.imemodule.utils.expression.ExpressionBuilder
 import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -960,22 +959,18 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if(chinesePrediction && newSelStart == newSelEnd) {
             if (mImeState == ImeState.STATE_PREDICT || InputModeSwitcherManager.isNumberSkb) {
                 val inputConnection = service.getCurrentInputConnection()
-                val text = inputConnection.getTextBeforeCursor(10, 0).toString()
+                val text = inputConnection.getTextBeforeCursor(100, 0).toString()
                 if (text.isNotBlank()) {
                     val expressionEnd = StringUtils.getExpressionEnd(text)
-                    if(!expressionEnd.isNullOrEmpty()){
-                        if(expressionEnd.length > 1){
-                            try {
-                                val evaluate = ExpressionBuilder(expressionEnd).build().evaluate()
-                                val  resultFloat = evaluate.toFloat()
-                                showSymbols(if(text.endsWith("="))arrayOf(resultFloat.toString()) else  arrayOf(resultFloat.toString(), "=".plus(resultFloat)) )
-                            } catch (_:Exception){ }
-                        }
+                    if(!expressionEnd.isNullOrBlank() && expressionEnd.length != 100) {
+                        showSymbols(StringUtils.calculator(text, expressionEnd))
                     } else if (StringUtils.isChineseEnd(text)) {
                         DecodingInfo.isAssociate = true
                         DecodingInfo.getAssociateWord(text)
                         updateCandidate()
                         updateCandidateBar()
+                    } else {
+                        showSymbols(emptyArray())
                     }
                 }
             }

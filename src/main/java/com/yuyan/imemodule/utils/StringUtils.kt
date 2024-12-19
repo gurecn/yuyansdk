@@ -3,6 +3,7 @@ package com.yuyan.imemodule.utils
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.flower.simplified2HotPreset
+import com.yuyan.imemodule.utils.expression.ExpressionBuilder
 import java.util.regex.Pattern
 
 object StringUtils {
@@ -16,6 +17,13 @@ object StringUtils {
     fun isLetter(str: String?): Boolean {
         val pattern = Pattern.compile("[a-zA-Z]*")
         return pattern.matcher(str.toString()).matches()
+    }
+
+    @JvmStatic
+    fun isNumber(str: String?): Boolean {
+        if(str.isNullOrBlank())return false
+        val pattern = Pattern.compile("^[+-]?\\d*(\\.\\d*)?\$")
+        return pattern.matcher(str).matches()
     }
 
     fun isChineseEnd(input: String): Boolean {
@@ -120,5 +128,29 @@ object StringUtils {
              "=͟͟͞͞" + src.map { it }.joinToString( "=͟͟͞͞")
             }
         }
+    }
+
+    fun calculator(input: String, expression: String):Array<String>{
+        val results = mutableListOf<String>()
+        if(!isNumber(expression)){
+            try {
+                val evaluate = ExpressionBuilder(expression).build().evaluate()
+                val  resultFloat = evaluate.toFloat()
+                val  resultInt = evaluate.toInt()
+                if(evaluate.compareTo(resultInt) == 0){
+                    val resultIntStr = resultInt.toString()
+                    results.add(resultIntStr)
+                    if(!input.endsWith("=")) results.add("=".plus(resultIntStr))
+                } else {
+                    val resultFloatStr = resultFloat.toString()
+                    results.add(resultFloatStr)
+                    if(!input.endsWith("=")) results.add("=".plus(resultFloatStr))
+                    if(resultFloat < 1 && resultFloat > 0){
+                        results.add((evaluate * 100).toInt().toString() + "%")
+                    }
+                }
+            } catch (_:Exception){ }
+        }
+        return results.toTypedArray()
     }
 }
