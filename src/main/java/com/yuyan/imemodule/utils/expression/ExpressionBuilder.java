@@ -1,25 +1,9 @@
-/*
- * Copyright 2014 Frank Asseg
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.yuyan.imemodule.utils.expression;
 
-package com.yuyan.imemodule.utils.exp4j;
-
-import com.yuyan.imemodule.utils.exp4j.function.Function;
-import com.yuyan.imemodule.utils.exp4j.function.Functions;
-import com.yuyan.imemodule.utils.exp4j.operator.Operator;
-import com.yuyan.imemodule.utils.exp4j.shuntingyard.ShuntingYard;
+import com.yuyan.imemodule.utils.expression.function.Function;
+import com.yuyan.imemodule.utils.expression.function.Functions;
+import com.yuyan.imemodule.utils.expression.operator.Operator;
+import com.yuyan.imemodule.utils.expression.shuntingyard.ShuntingYard;
 
 import java.util.*;
 
@@ -55,9 +39,9 @@ public class ExpressionBuilder {
     }
 
     /**
-     * Add a {@link com.yuyan.imemodule.utils.exp4j.function.Function} implementation available for use in the expression
+     * Add a {@link com.yuyan.imemodule.utils.expression.function.Function} implementation available for use in the expression
      *
-     * @param function the custom {@link com.yuyan.imemodule.utils.exp4j.function.Function} implementation that should be available for use in the expression.
+     * @param function the custom {@link com.yuyan.imemodule.utils.expression.function.Function} implementation that should be available for use in the expression.
      * @return the ExpressionBuilder instance
      */
     public ExpressionBuilder function(Function function) {
@@ -66,9 +50,9 @@ public class ExpressionBuilder {
     }
 
     /**
-     * Add multiple {@link com.yuyan.imemodule.utils.exp4j.function.Function} implementations available for use in the expression
+     * Add multiple {@link com.yuyan.imemodule.utils.expression.function.Function} implementations available for use in the expression
      *
-     * @param functions the custom {@link com.yuyan.imemodule.utils.exp4j.function.Function} implementations
+     * @param functions the custom {@link com.yuyan.imemodule.utils.expression.function.Function} implementations
      * @return the ExpressionBuilder instance
      */
     public ExpressionBuilder functions(Function... functions) {
@@ -79,9 +63,9 @@ public class ExpressionBuilder {
     }
 
     /**
-     * Add multiple {@link com.yuyan.imemodule.utils.exp4j.function.Function} implementations available for use in the expression
+     * Add multiple {@link com.yuyan.imemodule.utils.expression.function.Function} implementations available for use in the expression
      *
-     * @param functions A {@link List} of custom {@link com.yuyan.imemodule.utils.exp4j.function.Function} implementations
+     * @param functions A {@link List} of custom {@link com.yuyan.imemodule.utils.expression.function.Function} implementations
      * @return the ExpressionBuilder instance
      */
     public ExpressionBuilder functions(List<Function> functions) {
@@ -130,9 +114,9 @@ public class ExpressionBuilder {
     }
 
     /**
-     * Add an {@link com.yuyan.imemodule.utils.exp4j.operator.Operator} which should be available for use in the expression
+     * Add an {@link com.yuyan.imemodule.utils.expression.operator.Operator} which should be available for use in the expression
      *
-     * @param operator the custom {@link com.yuyan.imemodule.utils.exp4j.operator.Operator} to add
+     * @param operator the custom {@link com.yuyan.imemodule.utils.expression.operator.Operator} to add
      * @return the ExpressionBuilder instance
      */
     public ExpressionBuilder operator(Operator operator) {
@@ -151,9 +135,9 @@ public class ExpressionBuilder {
     }
 
     /**
-     * Add multiple {@link com.yuyan.imemodule.utils.exp4j.operator.Operator} implementations which should be available for use in the expression
+     * Add multiple {@link com.yuyan.imemodule.utils.expression.operator.Operator} implementations which should be available for use in the expression
      *
-     * @param operators the set of custom {@link com.yuyan.imemodule.utils.exp4j.operator.Operator} implementations to add
+     * @param operators the set of custom {@link com.yuyan.imemodule.utils.expression.operator.Operator} implementations to add
      * @return the ExpressionBuilder instance
      */
     public ExpressionBuilder operator(Operator... operators) {
@@ -164,9 +148,9 @@ public class ExpressionBuilder {
     }
 
     /**
-     * Add multiple {@link com.yuyan.imemodule.utils.exp4j.operator.Operator} implementations which should be available for use in the expression
+     * Add multiple {@link com.yuyan.imemodule.utils.expression.operator.Operator} implementations which should be available for use in the expression
      *
-     * @param operators the {@link List} of custom {@link com.yuyan.imemodule.utils.exp4j.operator.Operator} implementations to add
+     * @param operators the {@link List} of custom {@link com.yuyan.imemodule.utils.expression.operator.Operator} implementations to add
      * @return the ExpressionBuilder instance
      */
     public ExpressionBuilder operator(List<Operator> operators) {
