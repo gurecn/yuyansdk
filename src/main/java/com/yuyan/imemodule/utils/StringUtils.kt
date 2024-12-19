@@ -18,6 +18,16 @@ object StringUtils {
         return pattern.matcher(str.toString()).matches()
     }
 
+    fun isChineseEnd(input: String): Boolean {
+        val chineseEndPattern = "[\\u4e00-\\u9fff]\$".toRegex()
+        return chineseEndPattern.find(input) != null
+    }
+
+    fun getExpressionEnd(input: String): String? {
+        val expressionEndPattern = "([%+\\-*/.\\d]+)$".toRegex()
+        return expressionEndPattern.find(input.removeSuffix("="))?.value
+    }
+
     // 标点全角半角关系
     // 1)半角字符(除空格外)是从33(0x21)开始到126(0x7E)结束;
     // 2)与半角字符对应的全角字符是从65281(unicode编码的0xFF01)开始到65374(unicode编码的0xFF3E)结束；

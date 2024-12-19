@@ -25,9 +25,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
-import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -47,6 +47,7 @@ import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
+import com.yuyan.imemodule.utils.exp4j.ExpressionBuilder
 import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -80,6 +81,7 @@ import kotlin.math.absoluteValue
 @SuppressLint("ViewConstructor")
 class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout(context), IResponseKeyEvent {
     var isAddPhrases = false
+    private var chinesePrediction = true
     private var oldAddPhrases = ""
     private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
@@ -942,6 +944,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
+    fun onWindowShown() {
+        chinesePrediction = getInstance().input.chinesePrediction.getValue()
+    }
+
     fun onWindowHidden() {
         if(isAddPhrases){
             isAddPhrases = false
@@ -951,14 +957,27 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
-        if(newSelStart == newSelEnd && mImeState == ImeState.STATE_PREDICT && getInstance().input.chinesePrediction.getValue()) {
-            val inputConnection = service.getCurrentInputConnection()
-            val text = inputConnection.getTextBeforeCursor(10, 0).toString()
-            if (text.isNotBlank() && InputModeSwitcherManager.isChinese) {
-                DecodingInfo.isAssociate = true
-                DecodingInfo.getAssociateWord(text)
-                updateCandidate()
-                updateCandidateBar()
+        if(chinesePrediction && newSelStart == newSelEnd) {
+            if (mImeState == ImeState.STATE_PREDICT || InputModeSwitcherManager.isNumberSkb) {
+                val inputConnection = service.getCurrentInputConnection()
+                val text = inputConnection.getTextBeforeCursor(10, 0).toString()
+                if (text.isNotBlank()) {
+                    val expressionEnd = StringUtils.getExpressionEnd(text)
+                    if(!expressionEnd.isNullOrEmpty()){
+                        if(expressionEnd.length > 1){
+                            try {
+                                val evaluate = ExpressionBuilder(expressionEnd).build().evaluate()
+                                val  resultFloat = evaluate.toFloat()
+                                showSymbols(if(text.endsWith("="))arrayOf(resultFloat.toString()) else  arrayOf(resultFloat.toString(), "=".plus(resultFloat)) )
+                            } catch (_:Exception){ }
+                        }
+                    } else if (StringUtils.isChineseEnd(text)) {
+                        DecodingInfo.isAssociate = true
+                        DecodingInfo.getAssociateWord(text)
+                        updateCandidate()
+                        updateCandidateBar()
+                    }
+                }
             }
         }
     }

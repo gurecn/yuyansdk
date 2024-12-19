@@ -142,6 +142,11 @@ class ImeService : InputMethodService() {
         if (::mInputView.isInitialized) mInputView.onUpdateSelection(newSelStart, newSelEnd)
     }
 
+    override fun onWindowShown() {
+        if (::mInputView.isInitialized) mInputView.onWindowShown()
+        super.onWindowShown()
+    }
+
     override fun onWindowHidden() {
         if (::mInputView.isInitialized) mInputView.onWindowHidden()
         super.onWindowHidden()
