@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.utils.exp4j.tokenizer;
+package com.yuyan.imemodule.utils.expression.tokenizer;
 
 /**
  * This exception is being thrown whenever {@link Tokenizer} finds unknown function or variable.

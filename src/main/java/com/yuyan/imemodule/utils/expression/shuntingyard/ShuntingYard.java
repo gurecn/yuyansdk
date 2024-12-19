@@ -1,26 +1,10 @@
-/*
- * Copyright 2014 Frank Asseg
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.yuyan.imemodule.utils.exp4j.shuntingyard;
+package com.yuyan.imemodule.utils.expression.shuntingyard;
 
-import com.yuyan.imemodule.utils.exp4j.function.Function;
-import com.yuyan.imemodule.utils.exp4j.operator.Operator;
-import com.yuyan.imemodule.utils.exp4j.tokenizer.OperatorToken;
-import com.yuyan.imemodule.utils.exp4j.tokenizer.Token;
-import com.yuyan.imemodule.utils.exp4j.tokenizer.Tokenizer;
-
+import com.yuyan.imemodule.utils.expression.function.Function;
+import com.yuyan.imemodule.utils.expression.operator.Operator;
+import com.yuyan.imemodule.utils.expression.tokenizer.OperatorToken;
+import com.yuyan.imemodule.utils.expression.tokenizer.Token;
+import com.yuyan.imemodule.utils.expression.tokenizer.Tokenizer;
 import java.util.*;
 
 /**
@@ -36,7 +20,7 @@ public class ShuntingYard {
      * @param userOperators          the custom operators used
      * @param variableNames          the variable names used in the expression
      * @param implicitMultiplication set to false to turn off implicit multiplication
-     * @return a {@link com.yuyan.imemodule.utils.exp4j.tokenizer.Token} array containing the result
+     * @return a {@link com.yuyan.imemodule.utils.expression.tokenizer.Token} array containing the result
      */
     public static Token[] convertToRPN(final String expression, final Map<String, Function> userFunctions,
                                        final Map<String, Operator> userOperators, final Set<String> variableNames, final boolean implicitMultiplication) {
