@@ -5,10 +5,6 @@ import com.yuyan.imemodule.utils.expression.function.Functions
 import com.yuyan.imemodule.utils.expression.operator.Operator
 import com.yuyan.imemodule.utils.expression.shuntingyard.ShuntingYard
 
-/**
- * Factory class for [Expression] instances. This class is the main API entrypoint. Users should create new
- * [Expression] instances using this factory class.
- */
 class ExpressionBuilder(expression: String?) {
     private val expression: String
     private val userFunctions: Map<String, Function>
@@ -24,26 +20,15 @@ class ExpressionBuilder(expression: String?) {
         variableNames = HashSet(4)
     }
 
-    /**
-     * Build the [Expression] instance using the custom operators and functions set.
-     *
-     * @return an [Expression] instance which can be used to evaluate the result of the expression
-     */
     fun build(): Expression {
         require(expression.isNotEmpty()) { "The expression can not be empty" }
-        /* set the constants' varibale names */variableNames.add("pi")
+        variableNames.add("pi")
         variableNames.add("π")
         variableNames.add("e")
         variableNames.add("φ")
-
-        /* Check if there are duplicate vars/functions */for (`var` in variableNames) {
-            require(!(Functions.getBuiltinFunction(`var`) != null || userFunctions.containsKey(`var`))) { "A variable can not have the same name as a function [$`var`]" }
+        for (name in variableNames) {
+            require(!(Functions.getBuiltinFunction(name) != null || userFunctions.containsKey(name))) { "A variable can not have the same name as a function [$name]" }
         }
-        return Expression(
-            ShuntingYard.convertToRPN(
-                expression, userFunctions, userOperators,
-                variableNames, implicitMultiplication
-            ), userFunctions.keys
-        )
+        return Expression(ShuntingYard.convertToRPN(expression, userFunctions, userOperators, variableNames, implicitMultiplication))
     }
 }

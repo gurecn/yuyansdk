@@ -1,10 +1,5 @@
 package com.yuyan.imemodule.utils.expression.tokenizer
 
-/**
- * This exception is being thrown whenever [Tokenizer] finds unknown function or variable.
- *
- * @author Bartosz Firyn (sarxos)
- */
 internal class UnknownFunctionOrVariableException( val expression: String, val position: Int, length: Int) : IllegalArgumentException() {
     override val message: String
     val token: String

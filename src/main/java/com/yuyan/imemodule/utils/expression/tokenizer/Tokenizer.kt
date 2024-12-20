@@ -6,13 +6,7 @@ import com.yuyan.imemodule.utils.expression.operator.Operator
 import com.yuyan.imemodule.utils.expression.operator.Operator.Companion.isAllowedOperatorChar
 import com.yuyan.imemodule.utils.expression.operator.Operators
 
-class Tokenizer(
-    expression: String,
-    private val userFunctions: Map<String, Function>?,
-    private val userOperators: Map<String, Operator>?,
-    private val variableNames: Set<String>?,
-    private val implicitMultiplication: Boolean
-) {
+class Tokenizer(expression: String, private val userFunctions: Map<String, Function>?, private val userOperators: Map<String, Operator>?, private val variableNames: Set<String>?, private val implicitMultiplication: Boolean) {
     private val expression: CharArray
     private val expressionLength: Int
     private var pos = 0
@@ -34,10 +28,8 @@ class Tokenizer(
         }
         if (Character.isDigit(ch) || ch == '.') {
             if (lastToken != null) {
-                // insert an implicit multiplication token
                 require(lastToken!!.type != Token.TOKEN_NUMBER) { "Unable to parse char '" + ch + "' (Code:" + ch.code + ") at [" + pos + "]" }
                 if (implicitMultiplication && lastToken!!.type != Token.TOKEN_OPERATOR && lastToken!!.type != Token.TOKEN_PARENTHESES_OPEN && lastToken!!.type != Token.TOKEN_FUNCTION && lastToken!!.type != Token.TOKEN_SEPARATOR) {
-                    // insert an implicit multiplication token
                     lastToken = OperatorToken(Operators.getBuiltinOperator('*', 2))
                     return lastToken!!
                 }
@@ -47,7 +39,6 @@ class Tokenizer(
             return parseArgumentSeparatorToken()
         } else if (isOpenParentheses(ch)) {
             if (lastToken != null && implicitMultiplication && lastToken!!.type != Token.TOKEN_OPERATOR && lastToken!!.type != Token.TOKEN_PARENTHESES_OPEN && lastToken!!.type != Token.TOKEN_FUNCTION && lastToken!!.type != Token.TOKEN_SEPARATOR) {
-                // insert an implicit multiplication token
                 lastToken = OperatorToken(Operators.getBuiltinOperator('*', 2))
                 return lastToken!!
             }
@@ -57,9 +48,7 @@ class Tokenizer(
         } else if (isAllowedOperatorChar(ch)) {
             return parseOperatorToken(ch)
         } else if (isAlphabetic(ch.code) || ch == '_') {
-            // parse the name which can be a setVariable or a function
             if (lastToken != null && implicitMultiplication && lastToken!!.type != Token.TOKEN_OPERATOR && lastToken!!.type != Token.TOKEN_PARENTHESES_OPEN && lastToken!!.type != Token.TOKEN_FUNCTION && lastToken!!.type != Token.TOKEN_SEPARATOR) {
-                // insert an implicit multiplication token
                 lastToken = OperatorToken(Operators.getBuiltinOperator('*', 2))
                 return lastToken!!
             }
@@ -106,11 +95,7 @@ class Tokenizer(
             pos++
         }
         testPos = offset + len - 1
-        while (!isEndOfExpression(testPos) &&
-            isVariableOrFunctionCharacter(
-                expression[testPos].code
-            )
-        ) {
+        while (!isEndOfExpression(testPos) && isVariableOrFunctionCharacter(expression[testPos].code)) {
             val name = String(expression, offset, len)
             if (variableNames != null && variableNames.contains(name)) {
                 lastValidLen = len
@@ -150,13 +135,10 @@ class Tokenizer(
         val symbol = StringBuilder()
         var lastValid: Operator? = null
         symbol.append(firstChar)
-        while (!isEndOfExpression(offset + len) && isAllowedOperatorChar(
-                expression[offset + len]
-            )
-        ) {
+        while (!isEndOfExpression(offset + len) && isAllowedOperatorChar(expression[offset + len])) {
             symbol.append(expression[offset + len++])
         }
-        while (symbol.length > 0) {
+        while (symbol.isNotEmpty()) {
             val op = getOperator(symbol.toString())
             if (op == null) {
                 symbol.setLength(symbol.length - 1)
@@ -212,9 +194,7 @@ class Tokenizer(
             len++
             pos++
         }
-        // check if the e is at the end
         if (expression[offset + len - 1] == 'e' || expression[offset + len - 1] == 'E') {
-            // since the e is at the end it's not part of the number and a rollback is necessary
             len--
             pos--
         }
@@ -236,8 +216,7 @@ class Tokenizer(
         }
 
         fun isVariableOrFunctionCharacter(codePoint: Int): Boolean {
-            return isAlphabetic(codePoint) ||
-                    Character.isDigit(codePoint) || codePoint == '_'.code || codePoint == '.'.code
+            return isAlphabetic(codePoint) || Character.isDigit(codePoint) || codePoint == '_'.code || codePoint == '.'.code
         }
     }
 }

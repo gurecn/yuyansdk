@@ -2,11 +2,6 @@ package com.yuyan.imemodule.utils.expression
 
 import java.util.EmptyStackException
 
-/**
- * Simple double stack using a double array as data storage
- *
- * @author Federico Vera (dktcoding [at] gmail)
- */
 internal class ArrayStack @JvmOverloads constructor(initialCapacity: Int = 5) {
     private var data: DoubleArray
     private var idx: Int

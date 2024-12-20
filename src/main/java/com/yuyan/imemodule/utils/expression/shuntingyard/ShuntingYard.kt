@@ -7,20 +7,8 @@ import com.yuyan.imemodule.utils.expression.tokenizer.Token
 import com.yuyan.imemodule.utils.expression.tokenizer.Tokenizer
 import java.util.Stack
 
-/**
- * Shunting yard implementation to convert infix to reverse polish notation
- */
 object ShuntingYard {
-    /**
-     * Convert a Set of tokens from infix to reverse polish notation
-     *
-     * @param expression             the expression to convert
-     * @param userFunctions          the custom functions used
-     * @param userOperators          the custom operators used
-     * @param variableNames          the variable names used in the expression
-     * @param implicitMultiplication set to false to turn off implicit multiplication
-     * @return a [com.yuyan.imemodule.utils.expression.tokenizer.Token] array containing the result
-     */
+
     fun convertToRPN(expression: String, userFunctions: Map<String, Function>, userOperators: Map<String, Operator>, variableNames: Set<String>, implicitMultiplication: Boolean): Array<Token> {
         val stack = Stack<Token>()
         val output: MutableList<Token> = ArrayList()
@@ -68,7 +56,6 @@ object ShuntingYard {
                         output.add(stack.pop())
                     }
                 }
-
                 else -> throw IllegalArgumentException("Unknown Token type encountered. This should not happen")
             }
         }
