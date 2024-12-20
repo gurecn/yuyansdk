@@ -37,16 +37,6 @@ public class Tokenizer {
         this.implicitMultiplication = implicitMultiplication;
     }
 
-    public Tokenizer(String expression, final Map<String, Function> userFunctions,
-                     final Map<String, Operator> userOperators, final Set<String> variableNames) {
-        this.expression = expression.trim().toCharArray();
-        this.expressionLength = this.expression.length;
-        this.userFunctions = userFunctions;
-        this.userOperators = userOperators;
-        this.variableNames = variableNames;
-        this.implicitMultiplication = true;
-    }
-
     public boolean hasNext() {
         return this.expression.length > pos;
     }

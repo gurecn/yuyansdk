@@ -37,22 +37,11 @@ class ArrayStack {
         data[++idx] = value;
     }
 
-    double peek() {
-        if (idx == -1) {
-            throw new EmptyStackException();
-        }
-        return data[idx];
-    }
-
     double pop() {
         if (idx == -1) {
             throw new EmptyStackException();
         }
         return data[idx--];
-    }
-
-    boolean isEmpty() {
-        return idx == -1;
     }
 
     int size() {
