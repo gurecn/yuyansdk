@@ -95,7 +95,7 @@ object DecodingInfo {
         get() {
             val cands = Kernel.nextPageCandidates
             if (cands.isNotEmpty()) {
-                candidatesLiveData.value = candidatesLiveData.value?.plus(cands)
+                candidatesLiveData.postValue(candidatesLiveData.value?.plus(cands))
                 return cands.size
             }
             return 0
