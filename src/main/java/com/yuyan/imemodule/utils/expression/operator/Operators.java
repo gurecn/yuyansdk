@@ -65,43 +65,35 @@ public abstract class Operators {
                 return Math.pow(args[0], args[1]);
             }
         };
-        BUILT_IN_OPERATORS[INDEX_MODULO] = new Operator("%", 2, true, Operator.PRECEDENCE_MODULO) {
+        BUILT_IN_OPERATORS[INDEX_MODULO] = new Operator("%", 1, true, Operator.PRECEDENCE_MODULO) {
             @Override
             public double apply(final double... args) {
-                if (args[1] == 0d) {
-                    throw new ArithmeticException("Division by zero!");
-                }
-                return args[0] % args[1];
+                return args[0] / 100d;
             }
         };
     }
 
     public static Operator getBuiltinOperator(final char symbol, final int numArguments) {
-        switch (symbol) {
-            case '+':
+        return switch (symbol) {
+            case '+' -> {
                 if (numArguments != 1) {
-                    return BUILT_IN_OPERATORS[INDEX_ADDITION];
+                    yield BUILT_IN_OPERATORS[INDEX_ADDITION];
                 }
-                return BUILT_IN_OPERATORS[INDEX_UNARY_PLUS];
-            case '-':
+                yield BUILT_IN_OPERATORS[INDEX_UNARY_PLUS];
+            }
+            case '-' -> {
                 if (numArguments != 1) {
-                    return BUILT_IN_OPERATORS[INDEX_SUBTRACTION];
+                    yield BUILT_IN_OPERATORS[INDEX_SUBTRACTION];
                 }
-                return BUILT_IN_OPERATORS[INDEX_UNARY_MINUS];
-            case '*':
-                return BUILT_IN_OPERATORS[INDEX_MULTIPLICATION];
-            case '÷':
-            case '/':
-                return BUILT_IN_OPERATORS[INDEX_DIVISION];
-            case '^':
-                return BUILT_IN_OPERATORS[INDEX_POWER];
-            case '%':
-                return BUILT_IN_OPERATORS[INDEX_MODULO];
-            case '=':
-                return BUILT_IN_OPERATORS[INDEX_EQUAL];
-            default:
-                return null;
-        }
+                yield BUILT_IN_OPERATORS[INDEX_UNARY_MINUS];
+            }
+            case '*' -> BUILT_IN_OPERATORS[INDEX_MULTIPLICATION];
+            case '÷', '/' -> BUILT_IN_OPERATORS[INDEX_DIVISION];
+            case '^' -> BUILT_IN_OPERATORS[INDEX_POWER];
+            case '%' -> BUILT_IN_OPERATORS[INDEX_MODULO];
+            case '=' -> BUILT_IN_OPERATORS[INDEX_EQUAL];
+            default -> null;
+        };
     }
 
 }
