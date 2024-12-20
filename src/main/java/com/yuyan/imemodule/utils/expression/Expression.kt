@@ -6,13 +6,8 @@ import com.yuyan.imemodule.utils.expression.tokenizer.OperatorToken
 import com.yuyan.imemodule.utils.expression.tokenizer.Token
 import com.yuyan.imemodule.utils.expression.tokenizer.VariableToken
 
-class Expression internal constructor(private val tokens: Array<Token>, userFunctionNames: Set<String?>?) {
-    private val variables: Map<String, Double>
-
-    init {
-        variables = createDefaultVariables()
-    }
-
+class Expression internal constructor(private val tokens: Array<Token>) {
+    private val variables: Map<String, Double> = createDefaultVariables()
     fun evaluate(): Double {
         val output = ArrayStack()
         for (t in tokens) {
@@ -26,12 +21,10 @@ class Expression internal constructor(private val tokens: Array<Token>, userFunc
                 val op = t as OperatorToken
                 require(output.size() >= op.operator.numOperands) { "Invalid number of operands available for '" + op.operator.symbol + "' operator" }
                 if (op.operator.numOperands == 2) {
-                    /* pop the operands and push the result of the operation */
                     val rightArg = output.pop()
                     val leftArg = output.pop()
                     output.push(op.operator.apply(leftArg, rightArg))
                 } else if (op.operator.numOperands == 1) {
-                    /* pop the operand and push the result of the operation */
                     val arg = output.pop()
                     output.push(op.operator.apply(arg))
                 }
@@ -41,7 +34,6 @@ class Expression internal constructor(private val tokens: Array<Token>, userFunc
                 if (output.size() < numArguments) {
                     throw IllegalArgumentException("Invalid number of arguments available for '" + func.function.name + "' function")
                 }
-                /* collect the arguments from the stack */
                 val args = DoubleArray(numArguments)
                 for (j in numArguments - 1 downTo 0) {
                     args[j] = output.pop()

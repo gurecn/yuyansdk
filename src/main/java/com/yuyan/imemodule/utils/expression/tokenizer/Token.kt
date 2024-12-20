@@ -4,7 +4,6 @@ package com.yuyan.imemodule.utils.expression.tokenizer
  * Abstract class for tokens used by exp4j to tokenize expressions
  */
 abstract class Token internal constructor(@JvmField val type: Short) {
-
     companion object {
         const val TOKEN_NUMBER: Short = 1
         const val TOKEN_OPERATOR: Short = 2
