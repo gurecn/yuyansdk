@@ -961,7 +961,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if (text.isNotBlank()) {
                     val expressionEnd = StringUtils.getExpressionEnd(text)
                     if(!expressionEnd.isNullOrBlank() && expressionEnd.length != 100) {
-                        showSymbols(StringUtils.calculator(text, expressionEnd))
+                        val result = StringUtils.calculator(text, expressionEnd)
+                        if(result.isNotEmpty())showSymbols(result)
                     } else if (StringUtils.isChineseEnd(text)) {
                         DecodingInfo.isAssociate = true
                         DecodingInfo.getAssociateWord(text)

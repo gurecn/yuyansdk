@@ -32,8 +32,7 @@ object StringUtils {
     }
 
     fun getExpressionEnd(input: String): String? {
-        if(input.last() in 'a'..'z' || input.last() in 'A'..'Z')return ""
-        val expressionEndPattern = "([a-zA-Z()^%+\\-*/.eE\\d]+)$".toRegex()
+        val expressionEndPattern = "((sin|cos|tan|cot|asin|acos|atan|sinh|cosh|tanh|abs|log|log1p|ceil|floor|sqrt|cbrt|pow|exp|expm|signum|csc|sec|csch|sech|coth|toradian|todegree|\\(|\\)|^|%|\\+|-|\\*|/|\\.|e|E|\\d)+)$".toRegex()
         return expressionEndPattern.find(input.removeSuffix("="))?.value
     }
 
@@ -133,7 +132,7 @@ object StringUtils {
 
     fun calculator(input: String, expression: String):Array<String>{
         val results = mutableListOf<String>()
-        if(!isNumber(expression)){
+        if(!isNumber(expression) && !isLetter(expression)){
             try {
                 val evaluate = ExpressionBuilder(expression).build().evaluate()
                 val  resultFloat = evaluate.toFloat()
@@ -151,8 +150,8 @@ object StringUtils {
                     }
                 }
             } catch (_:Exception){ }
+            results.addAll(arrayOf("=", "+", "-", "*", "/", "%", ".", ",", "'", "(", ")"))
         }
-        results.addAll(arrayOf("=", "+", "-", "*", "/", "%", ".", ",", "'", "(", ")"))
         return results.toTypedArray()
     }
 
