@@ -1,20 +1,13 @@
 package com.yuyan.imemodule.utils.expression;
 
-import com.yuyan.imemodule.utils.expression.function.Function;
-import com.yuyan.imemodule.utils.expression.function.Functions;
-import com.yuyan.imemodule.utils.expression.operator.Operator;
 import com.yuyan.imemodule.utils.expression.tokenizer.*;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 public class Expression {
 
     private final Token[] tokens;
 
     private final Map<String, Double> variables;
-
-    private final Set<String> userFunctionNames;
 
     private static Map<String, Double> createDefaultVariables() {
         final Map<String, Double> vars = new HashMap<>(4);
@@ -25,128 +18,9 @@ public class Expression {
         return vars;
     }
 
-    /**
-     * Creates a new expression that is a copy of the existing one.
-     *
-     * @param existing the expression to copy
-     */
-    public Expression(final Expression existing) {
-        this.tokens = Arrays.copyOf(existing.tokens, existing.tokens.length);
-        this.variables = new HashMap<>();
-        this.variables.putAll(existing.variables);
-        this.userFunctionNames = new HashSet<>(existing.userFunctionNames);
-    }
-
-    Expression(final Token[] tokens) {
-        this.tokens = tokens;
-        this.variables = createDefaultVariables();
-        this.userFunctionNames = Collections.emptySet();
-    }
-
     Expression(final Token[] tokens, Set<String> userFunctionNames) {
         this.tokens = tokens;
         this.variables = createDefaultVariables();
-        this.userFunctionNames = userFunctionNames;
-    }
-
-    public Expression setVariable(final String name, final double value) {
-        this.checkVariableName(name);
-        this.variables.put(name, value);
-        return this;
-    }
-
-    private void checkVariableName(String name) {
-        if (this.userFunctionNames.contains(name) || Functions.getBuiltinFunction(name) != null) {
-            throw new IllegalArgumentException("The variable name '" + name + "' is invalid. Since there exists a function with the same name");
-        }
-    }
-
-    public Expression setVariables(Map<String, Double> variables) {
-        for (Map.Entry<String, Double> v : variables.entrySet()) {
-            this.setVariable(v.getKey(), v.getValue());
-        }
-        return this;
-    }
-
-    public Expression clearVariables() {
-        this.variables.clear();
-        return this;
-    }
-
-    public Set<String> getVariableNames() {
-        final Set<String> variables = new HashSet<>();
-        for (final Token t : tokens) {
-            if (t.getType() == Token.TOKEN_VARIABLE)
-                variables.add(((VariableToken) t).getName());
-        }
-        return variables;
-    }
-
-    public ValidationResult validate(boolean checkVariablesSet) {
-        final List<String> errors = new ArrayList<>(0);
-        if (checkVariablesSet) {
-            /* check that all vars have a value set */
-            for (final Token t : this.tokens) {
-                if (t.getType() == Token.TOKEN_VARIABLE) {
-                    final String var = ((VariableToken) t).getName();
-                    if (!variables.containsKey(var)) {
-                        errors.add("The setVariable '" + var + "' has not been set");
-                    }
-                }
-            }
-        }
-
-        /* Check if the number of operands, functions and operators match.
-           The idea is to increment a counter for operands and decrease it for operators.
-           When a function occurs the number of available arguments has to be greater
-           than or equals to the function's expected number of arguments.
-           The count has to be larger than 1 at all times and exactly 1 after all tokens
-           have been processed */
-        int count = 0;
-        for (Token tok : this.tokens) {
-            switch (tok.getType()) {
-                case Token.TOKEN_NUMBER:
-                case Token.TOKEN_VARIABLE:
-                    count++;
-                    break;
-                case Token.TOKEN_FUNCTION:
-                    final Function func = ((FunctionToken) tok).getFunction();
-                    final int argsNum = func.getNumArguments();
-                    if (argsNum > count) {
-                        errors.add("Not enough arguments for '" + func.getName() + "'");
-                    }
-                    if (argsNum > 1) {
-                        count -= argsNum - 1;
-                    } else if (argsNum == 0) {
-                        // see https://github.com/fasseg/exp4j/issues/59
-                        count++;
-                    }
-                    break;
-                case Token.TOKEN_OPERATOR:
-                    Operator op = ((OperatorToken) tok).getOperator();
-                    if (op.getNumOperands() == 2) {
-                        count--;
-                    }
-                    break;
-            }
-            if (count < 1) {
-                errors.add("Too many operators");
-                return new ValidationResult(false, errors);
-            }
-        }
-        if (count > 1) {
-            errors.add("Too many operands");
-        }
-        return errors.size() == 0 ? ValidationResult.SUCCESS : new ValidationResult(false, errors);
-
-    }
-
-    public ValidationResult validate() {
-        return validate(true);
-    }
-
-    public Future<Double> evaluateAsync(ExecutorService executor) {
-        return executor.submit(this::evaluate);
     }
 
     public double evaluate() {

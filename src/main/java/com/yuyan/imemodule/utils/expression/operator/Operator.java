@@ -9,10 +9,6 @@ public abstract class Operator {
      */
     public static final int PRECEDENCE_ADDITION = 500;
     /**
-     * The precedence value for the subtraction operation
-     */
-    public static final int PRECEDENCE_SUBTRACTION = PRECEDENCE_ADDITION;
-    /**
      * The precedence value for the multiplication operation
      */
     public static final int PRECEDENCE_MULTIPLICATION = 1000;

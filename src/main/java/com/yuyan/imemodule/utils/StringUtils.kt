@@ -32,7 +32,7 @@ object StringUtils {
     }
 
     fun getExpressionEnd(input: String): String? {
-        val expressionEndPattern = "([%+\\-*/.\\d]+)$".toRegex()
+        val expressionEndPattern = "([a-zA-Z()^%+\\-*/.eE\\d]+)$".toRegex()
         return expressionEndPattern.find(input.removeSuffix("="))?.value
     }
 
