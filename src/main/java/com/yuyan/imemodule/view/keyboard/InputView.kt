@@ -79,8 +79,8 @@ import kotlin.math.absoluteValue
 
 @SuppressLint("ViewConstructor")
 class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout(context), IResponseKeyEvent {
-    var isAddPhrases = false
     private var chinesePrediction = true
+    var isAddPhrases = false
     private var oldAddPhrases = ""
     private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
@@ -296,6 +296,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseKeyEvent(sKey: SoftKey, isFeedback:Boolean) {
+        mImeState = ImeState.STATE_INPUT
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
@@ -374,7 +375,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             else -> {}
         }
-        resetToIdleState()
+        if(result.first == PopupMenuMode.Text)resetToPredictState() else if(result.first != PopupMenuMode.None)resetToIdleState()
     }
 
     override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
@@ -410,6 +411,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val lable = keyChar.toChar().toString()
         if (keyCode == KeyEvent.KEYCODE_DEL) {
             sendKeyEvent(keyCode)
+            resetToIdleState()
             return true
         } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
             if (!InputModeSwitcherManager.isEnglishLower) keyChar = keyChar - 'a'.code + 'A'.code
@@ -417,6 +419,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             return true
         } else if (keyCode != 0) {
             sendKeyEvent(keyCode)
+            resetToIdleState()
             return true
         } else if (lable.isNotEmpty()) {
             if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
@@ -471,7 +474,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyChar = event.unicodeChar
         val lable = keyChar.toChar().toString()
         if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
-            mImeState = ImeState.STATE_INPUT
             DecodingInfo.inputAction(keyCode)
             updateCandidate()
             return true
@@ -497,7 +499,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
             else commitText(lable)
-            resetToIdleState()
             return true
         }
         return false
@@ -560,15 +561,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun updateCandidate() {
         DecodingInfo.updateDecodingCandidate()
         if (!DecodingInfo.isFinish) {
-            val composing = DecodingInfo.composingStrForDisplay
-            if (InputModeSwitcherManager.isEnglish) {
-                setComposingText(composing)
-            }
             updateCandidateBar()
             (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         } else {
             resetToIdleState()
         }
+        if (InputModeSwitcherManager.isEnglish)setComposingText(DecodingInfo.composingStrForDisplay)
     }
 
     /**
@@ -957,7 +955,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
         if(chinesePrediction && newSelStart == newSelEnd) {
-            if (mImeState == ImeState.STATE_PREDICT || InputModeSwitcherManager.isNumberSkb) {
+            if (mImeState != ImeState.STATE_IDLE || InputModeSwitcherManager.isNumberSkb) {
                 val inputConnection = service.getCurrentInputConnection()
                 val text = inputConnection.getTextBeforeCursor(100, 0).toString()
                 if (text.isNotBlank()) {
@@ -969,8 +967,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                         DecodingInfo.getAssociateWord(text)
                         updateCandidate()
                         updateCandidateBar()
-                    } else {
-                        showSymbols(emptyArray())
                     }
                 }
             }

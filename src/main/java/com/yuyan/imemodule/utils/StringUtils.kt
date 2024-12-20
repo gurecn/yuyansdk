@@ -32,6 +32,7 @@ object StringUtils {
     }
 
     fun getExpressionEnd(input: String): String? {
+        if(input.last() in 'a'..'z' || input.last() in 'A'..'Z')return ""
         val expressionEndPattern = "([a-zA-Z()^%+\\-*/.eE\\d]+)$".toRegex()
         return expressionEndPattern.find(input.removeSuffix("="))?.value
     }
@@ -151,6 +152,24 @@ object StringUtils {
                 }
             } catch (_:Exception){ }
         }
+        results.addAll(arrayOf("=", "+", "-", "*", "/", "%", ".", ",", "'", "(", ")"))
         return results.toTypedArray()
+    }
+
+    fun predictAssociationWordsChinese(text: String):MutableList<String> {
+        val associations = mutableListOf<String>()
+        val suffixesComma = setOf("的", "了", "吧",)
+        val suffixesExclamation = setOf("啊", "呀", "呐", "啦", "噢", "哇", "吧", "呗", "了")
+        val suffixesQuestion = setOf("吗", "么", "呢", "吧")
+        if(suffixesComma.any{
+            text.endsWith(it)
+        }){ associations.add("，");associations.add("。")  }
+        if(suffixesExclamation.any{
+            text.endsWith(it)
+        }){ associations.add("！") }
+        if(suffixesQuestion.any{
+            text.endsWith(it)
+        }){ associations.add("？") }
+        return associations
     }
 }

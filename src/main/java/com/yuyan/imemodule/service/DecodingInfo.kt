@@ -27,7 +27,7 @@ object DecodingInfo {
         isReset = true
         activeCandidate = 0
         activeCandidateBar = 0
-        candidatesLiveData.postValue(emptyList())
+        candidatesLiveData.value = emptyList()
         Kernel.reset()
     }
 
@@ -95,7 +95,7 @@ object DecodingInfo {
         get() {
             val cands = Kernel.nextPageCandidates
             if (cands.isNotEmpty()) {
-                candidatesLiveData.postValue(candidatesLiveData.value?.plus(cands))
+                candidatesLiveData.value = candidatesLiveData.value?.plus(cands)
                 return cands.size
             }
             return 0
@@ -110,7 +110,7 @@ object DecodingInfo {
         if (candId >= 0) Kernel.getWordSelectedWord(candId)
         val newCandidates = Kernel.candidates
         return if(newCandidates.isNotEmpty()){
-            candidatesLiveData.postValue(newCandidates)
+            candidatesLiveData.value = newCandidates
             Kernel.commitText
         } else if(candId in 0..<candidateSize){
             Kernel.commitText.ifEmpty { candidatesLiveData.value!![candId].text }
@@ -123,7 +123,7 @@ object DecodingInfo {
     fun updateDecodingCandidate() {
         activeCandidate = 0
         activeCandidateBar = 0
-        candidatesLiveData.postValue(Kernel.candidates)
+        candidatesLiveData.value = Kernel.candidates
     }
 
     /**
@@ -138,7 +138,7 @@ object DecodingInfo {
         activeCandidate = 0
         activeCandidateBar = 0
         isReset = false
-        candidatesLiveData.postValue(words.asList())
+        candidatesLiveData.value = words.asList()
     }
 
     /**

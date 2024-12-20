@@ -5,6 +5,7 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -88,7 +89,7 @@ object RimeEngine {
     fun predictAssociationWords(text: String) {
         pinyins = emptyArray()
         if (text.isNotEmpty()) {
-            val words = Rime.getAssociateList(text)
+            val words = StringUtils.predictAssociationWordsChinese(text).plus(Rime.getAssociateList(text))
             showCandidates = words.filterNotNull().map {
                 CandidateListItem("", it)
             }
