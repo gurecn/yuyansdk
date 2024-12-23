@@ -1,11 +1,18 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1733884780
-    default.custom: 1733884780
+    default: 1734928958
+    default.custom: 1734928958
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1733884780
+    t9_pinyin.schema: 1734928958
 corrector: "{comment}"
+custom_phrase:
+  db_class: stabledb
+  dictionary: ""
+  enable_completion: false
+  enable_sentence: false
+  initial_quality: 99
+  user_dict: custom_phrase_t9
 emoji:
   inherit_comment: false
   opencc_config: emoji.json
@@ -34,6 +41,7 @@ engine:
     - punct_translator
     - echo_translator
     - script_translator
+    - "table_translator@custom_phrase"
 key_binder:
   bindings:
     - {accept: minus, send: Page_Up, when: has_menu}
