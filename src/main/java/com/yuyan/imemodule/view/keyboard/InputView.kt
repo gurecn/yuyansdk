@@ -965,7 +965,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                         if(result.isNotEmpty())showSymbols(result)
                     } else if (StringUtils.isChineseEnd(text)) {
                         DecodingInfo.isAssociate = true
-                        DecodingInfo.getAssociateWord(text)
+                        DecodingInfo.getAssociateWord(if (text.length > 10)text.substring(text.length - 10) else text)
                         updateCandidate()
                         updateCandidateBar()
                     }

@@ -156,13 +156,13 @@ object StringUtils {
     }
 
     fun predictAssociationWordsChinese(text: String):MutableList<String> {
-        val associations = mutableListOf<String>()
+        val associations = mutableListOf("，")
         val suffixesComma = setOf("的", "了", "吧",)
         val suffixesExclamation = setOf("啊", "呀", "呐", "啦", "噢", "哇", "吧", "呗", "了")
         val suffixesQuestion = setOf("吗", "么", "呢", "吧")
         if(suffixesComma.any{
             text.endsWith(it)
-        }){ associations.add("，");associations.add("。")  }
+        }){ associations.add("。")  }
         if(suffixesExclamation.any{
             text.endsWith(it)
         }){ associations.add("！") }
