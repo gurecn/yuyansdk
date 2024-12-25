@@ -9,12 +9,17 @@
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.activity.LauncherActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ui.setup.SetupActivity"
             android:exported="false"
             android:launchMode="singleTask" />

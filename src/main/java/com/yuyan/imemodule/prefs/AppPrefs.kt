@@ -171,6 +171,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 //        val titleChinese = category(R.string.chinese_input_setting)
     }
 
+    inner class Other : ManagedPreferenceCategory(R.string.setting_ime_other, sharedPreferences) {
+        val imeShowIcon = switch(R.string.ime_show_icon, "ime_show_icon_enable", false)
+    }
+
     inner class Handwriting : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
 
 
@@ -261,7 +265,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     val input = Input().register()
     val clipboard = Clipboard().register()
     val keyboardSetting = KeyboardSetting().register()
-
+    val other = Other().register()
 
     private val onSharedPreferenceChangeListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -289,6 +293,12 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 it.value.putValueTo(this@edit)
             }
             clipboard.managedPreferences.forEach {
+                it.value.putValueTo(this@edit)
+            }
+            keyboardSetting.managedPreferences.forEach {
+                it.value.putValueTo(this@edit)
+            }
+            other.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
             }
         }

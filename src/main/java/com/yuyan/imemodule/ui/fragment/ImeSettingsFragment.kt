@@ -71,14 +71,18 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
             }
             addCategory(R.string.advanced) {
                 isIconSpaceReserved = false
-
+                addDestinationPreference(
+                    R.string.setting_ime_other,
+                    R.drawable.ic_menu_more_horiz,
+                    R.id.action_settingsFragment_to_otherSettingsFragment
+                )
                 addPreference(R.string.feedback,"",
-                    R.drawable.ic_menu_feedback,) {
+                    R.drawable.ic_baseline_edit_circle_32,) {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.FEEDBACK_TXC_REPO)))
                 }
                 addDestinationPreference(
                     R.string.about,
-                    R.drawable.ic_menu_more_horiz,
+                    R.drawable.ic_menu_feedback,
                     R.id.action_settingsFragment_to_aboutFragment
                 )
             }

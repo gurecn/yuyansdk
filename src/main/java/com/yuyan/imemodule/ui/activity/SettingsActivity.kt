@@ -25,7 +25,7 @@ import com.yuyan.imemodule.utils.TimeUtils
 import splitties.dimensions.dp
 import splitties.views.topPadding
 
-class SettingsActivity : AppCompatActivity() {
+open class SettingsActivity : AppCompatActivity() {
 
     private val viewModel: SettingsViewModel by viewModels()
     private lateinit var navController: NavController
@@ -105,3 +105,5 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 }
+
+class LauncherActivity : SettingsActivity()
