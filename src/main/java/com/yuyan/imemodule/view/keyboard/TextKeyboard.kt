@@ -28,11 +28,8 @@ import kotlin.math.min
  * 软件盘视图
  */
 open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
-    /** Notes if the keyboard just changed, so that we could possibly reallocate the mBuffer.  */
     private var mKeyboardChanged = false
-    /** The keyboard bitmap for faster updates  */
     private var mBuffer: Bitmap? = null
-    /** The canvas for the above mutable keyboard bitmap  */
     private var mCanvas: Canvas? = null
     private var mNormalKeyTextSize = 0   //正常按键的文本大小
     private var mNormalKeyTextSizeSmall = 0  //正常按键的文本大小(小值)
@@ -71,7 +68,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         keyRadius = prefs.keyRadius.getValue()
         mActiveTheme = activeTheme
         mPaint.color = mActiveTheme.keyTextColor
-        // Hint to reallocate the buffer if the size changed
         mKeyboardChanged = true
         invalidateView()
     }
@@ -138,15 +134,14 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     public override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (mDrawPending || mBuffer == null || mKeyboardChanged) {
-            onBufferDraw()
+            onBufferDraw(null)
         }
         canvas.drawBitmap(mBuffer!!, 0f, 0f, null)
     }
 
-    override fun onBufferDraw() {
+    override fun onBufferDraw(invalidatedKey: SoftKey?) {
         if (mBuffer == null || mKeyboardChanged) {
             if (mBuffer == null || mBuffer!!.width != width || mBuffer!!.height != height) {
-                // Make sure our bitmap is at least 1x1
                 val width = max(1.0, width.toDouble()).toInt()
                 val height = max(1.0, height.toDouble()).toInt()
                 mBuffer = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -160,11 +155,10 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val canvas = mCanvas
         canvas?.clipRect(mDirtyRect)
         val clipRegion = Rect(0, 0, 0, 0)
-        val invalidKey = mInvalidatedKey
         var drawSingleKey = false
-        if (invalidKey != null && canvas!!.getClipBounds(clipRegion)) {
-            if (invalidKey.mLeft <= clipRegion.left && invalidKey.mTop <= clipRegion.top
-                && invalidKey.mRight >= clipRegion.right && invalidKey.mBottom >= clipRegion.bottom) {
+        if (invalidatedKey != null && canvas!!.getClipBounds(clipRegion)) {
+            if (invalidatedKey.mLeft <= clipRegion.left && invalidatedKey.mTop <= clipRegion.top
+                && invalidatedKey.mRight >= clipRegion.right && invalidatedKey.mBottom >= clipRegion.bottom) {
                 drawSingleKey = true
             }
         }
@@ -176,11 +170,10 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyYMargin = mSoftKeyboard!!.keyYMargin
         for (softKeys in mSoftKeyboard!!.row) {
             for (softKey in softKeys) {
-                if (drawSingleKey && invalidKey !== softKey) continue
+                if (drawSingleKey && invalidatedKey !== softKey) continue
                 canvas?.let { drawSoftKey(it, softKey, keyXMargin, keyYMargin) }
             }
         }
-        mInvalidatedKey = null
         mCanvas!!.restore()
         mDrawPending = false
         mDirtyRect.setEmpty()
