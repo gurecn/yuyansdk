@@ -173,6 +173,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         if(select == FlowerTypefaceMode.Disabled){
                             mLlContainer.visibility = GONE
                         }
+                        mCandidatesMenuAdapter.notifyDataSetChanged()// 刷新菜单栏
                         false
                     }
                 }
