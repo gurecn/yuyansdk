@@ -38,7 +38,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     protected var mSoftKeyboard: SoftKeyboard? = null
     private var mCurrentKey: SoftKey? = null
     private var mGestureDetector: GestureDetector? = null
-    protected var mInvalidatedKey: SoftKey? = null
     private var mLongPressKey = false
     private var mSwipeMoveKey = false
     private var mHandler: Handler? = null
@@ -97,14 +96,13 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     fun invalidateKey(key: SoftKey?) {
-        mInvalidatedKey = key
         if (key == null) return
         mDirtyRect.union(key.mLeft, key.mTop, key.mRight, key.mBottom)
-        onBufferDraw()
+        onBufferDraw(key)
         invalidate()
     }
 
-    open fun onBufferDraw() {}
+    open fun onBufferDraw(invalidatedKey: SoftKey?) {}
     private fun openPopupIfRequired() {
         if(mCurrentKey != null) {
             val softKey = mCurrentKey!!
