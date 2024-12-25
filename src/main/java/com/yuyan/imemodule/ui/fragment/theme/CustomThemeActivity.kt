@@ -387,7 +387,7 @@ class CustomThemeActivity : AppCompatActivity() {
                     fixAspectRatio = true,
                     customOutputUri = tempImageFile!!.toUri(),
                     outputCompressFormat = Bitmap.CompressFormat.PNG,
-                    cropMenuCropButtonIcon = R.drawable.ic_baseline_done_24,
+                    cropMenuCropButtonIcon = R.drawable.ic_menu_done,
                     showProgressBar = true,
                     progressBarColor = styledColor(android.R.attr.colorAccent),
                     activityMenuIconColor = styledColor(android.R.attr.colorControlNormal),
@@ -488,7 +488,7 @@ class CustomThemeActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (!newCreated) {
             menu.add(R.string.delete).apply {
-                icon = drawable(R.drawable.ic_baseline_delete_24)!!.apply {
+                icon = drawable(R.drawable.ic_menu_delete)!!.apply {
                     setTint(styledColor(android.R.attr.colorControlNormal))
                 }
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
@@ -499,7 +499,7 @@ class CustomThemeActivity : AppCompatActivity() {
             }
         }
         menu.add(R.string.save).apply {
-            icon = drawable(R.drawable.ic_baseline_done_24)!!.apply {
+            icon = drawable(R.drawable.ic_menu_done)!!.apply {
                 setTint(styledColor(android.R.attr.colorControlNormal))
             }
             setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)

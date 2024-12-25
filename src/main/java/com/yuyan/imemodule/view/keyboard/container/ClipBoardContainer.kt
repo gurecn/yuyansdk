@@ -107,11 +107,11 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                     if(data.isKeep == 1)R.drawable.ic_baseline_untop_circle_32
                     else R.drawable.ic_baseline_top_circle_32
                 }
-                else R.drawable.ic_baseline_edit_circle_32)
+                else R.drawable.ic_menu_edit)
             }
             rightMenu.addMenuItem(topItem)
             val deleteItem = SwipeMenuItem(mContext).apply {
-                setImage(R.drawable.ic_baseline_delete_24)
+                setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
         }

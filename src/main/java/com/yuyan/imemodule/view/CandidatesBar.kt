@@ -194,7 +194,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 isClickable = true
                 isEnabled = true
                 setPadding(mMenuPadding,0, mMenuPadding,0)
-                setImageResource(R.drawable.ic_baseline_arrow_down)
+                setImageResource(R.drawable.ic_menu_arrow_down)
                 layoutParams = LinearLayout.LayoutParams(instance.heightForCandidates, ViewGroup.LayoutParams.MATCH_PARENT, 0f)
             }
             mMenuRightArrowBtn.setOnClickListener { _: View ->

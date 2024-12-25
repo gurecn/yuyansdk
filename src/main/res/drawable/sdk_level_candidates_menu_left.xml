@@ -4,6 +4,6 @@
         android:drawable="@drawable/ic_sdk_launcher_transparent"
         android:maxLevel="0" />
     <item
-        android:drawable="@drawable/ic_baseline_arrow_up"
+        android:drawable="@drawable/ic_menu_arrow_up"
         android:maxLevel="1" />
 </level-list>

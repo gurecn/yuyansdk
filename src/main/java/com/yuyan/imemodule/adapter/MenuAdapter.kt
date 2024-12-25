@@ -76,9 +76,9 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
             holder.entranceOption?.visibility = View.VISIBLE
             val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue()
             if(keyboardBarMenuCommon.contains(item.skbMenuMode.name)){
-                holder.entranceOption?.setImageResource(R.drawable.baseline_delete_24)
+                holder.entranceOption?.setImageResource(R.drawable.ic_menu_minus)
             } else {
-                holder.entranceOption?.setImageResource(R.drawable.baseline_add_circle_24)
+                holder.entranceOption?.setImageResource(R.drawable.ic_menu_plus)
             }
             holder.entranceIconImageView?.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {

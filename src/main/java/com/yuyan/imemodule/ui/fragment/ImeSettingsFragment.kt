@@ -77,7 +77,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.id.action_settingsFragment_to_otherSettingsFragment
                 )
                 addPreference(R.string.feedback,"",
-                    R.drawable.ic_baseline_edit_circle_32,) {
+                    R.drawable.ic_menu_edit,) {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.FEEDBACK_TXC_REPO)))
                 }
                 addDestinationPreference(

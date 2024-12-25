@@ -91,7 +91,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
         }
         mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, _: Int ->
             val deleteItem = SwipeMenuItem(context).apply {
-                setImage(R.drawable.ic_baseline_delete_24)
+                setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
         }

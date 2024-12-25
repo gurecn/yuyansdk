@@ -53,7 +53,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:padding="5dp"
-                android:src="@drawable/ic_baseline_done_24"
+                android:src="@drawable/ic_menu_done"
                 android:tint="@color/skb_shadow_icon_color"
                 tools:ignore="UseAppTint"/>
             <TextView

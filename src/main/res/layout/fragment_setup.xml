@@ -42,7 +42,7 @@
         android:layout_height="24dp"
         android:layout_marginTop="36dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_baseline_done_24"
+        android:src="@drawable/ic_menu_done"
         app:tint="?android:attr/colorAccent"
         app:layout_constraintEnd_toStartOf="@id/done_text"
         app:layout_constraintHorizontal_chainStyle="packed"

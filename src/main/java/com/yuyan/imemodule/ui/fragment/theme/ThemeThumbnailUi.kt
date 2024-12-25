@@ -50,7 +50,7 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
     val editButton = imageView {
         setPaddingDp(16, 4, 4, 16)
         scaleType = ImageView.ScaleType.FIT_CENTER
-        imageResource = R.drawable.ic_baseline_edit_circle_32
+        imageResource = R.drawable.ic_menu_edit
     }
 
     override val root = constraintLayout {
@@ -99,14 +99,14 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
 
     fun setChecked(checked: Boolean) {
         checkMark.isVisible = checked
-        checkMark.imageResource = R.drawable.ic_baseline_done_24
+        checkMark.imageResource = R.drawable.ic_menu_done
     }
 
     fun setChecked(state: State) {
         checkMark.isVisible = state != State.Normal
         checkMark.imageResource = when (state) {
             State.Normal -> 0
-            State.Selected -> R.drawable.ic_baseline_done_24
+            State.Selected -> R.drawable.ic_menu_done
             State.LightMode -> R.drawable.ic_sharp_light_mode_24
             State.DarkMode -> R.drawable.ic_sharp_mode_night_24
         }
