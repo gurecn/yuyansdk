@@ -56,11 +56,11 @@ open class SoftKey {
     }
 
     fun onPressed() {
-        pressed = !pressed
+        pressed = true
     }
 
     fun onReleased() {
-        pressed = !pressed
+        pressed = false
     }
 
     fun setKeyDimensions(left: Float, top: Float) {

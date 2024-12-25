@@ -36,19 +36,14 @@ import kotlin.math.abs
 open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val popupComponent: PopupComponent = get()
     protected var mSoftKeyboard: SoftKeyboard? = null
-    private var mCurrentKeyPressed: SoftKey? = null // 按下的按键，用于界面更新
     private var mCurrentKey: SoftKey? = null
     private var mGestureDetector: GestureDetector? = null
     protected var mInvalidatedKey: SoftKey? = null
-    private var mAbortKey = false
     private var mLongPressKey = false
     private var mSwipeMoveKey = false
     private var mHandler: Handler? = null
-    /** Whether the keyboard bitmap needs to be redrawn before it's blitted.  */
     protected var mDrawPending = false
-    /** The dirty region in the keyboard bitmap  */
     protected var mDirtyRect = Rect()
-    //输入法服务
     protected var mService: InputView? = null
     fun setResponseKeyEvent(service: InputView) {
         mService = service
@@ -64,7 +59,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                         MSG_REPEAT -> {
                             if (repeatKey()) {
                                 val repeat = Message.obtain(this, MSG_REPEAT)
-                                sendMessageDelayed(repeat, REPEAT_INTERVAL.toLong())
+                                sendMessageDelayed(repeat, REPEAT_INTERVAL)
                             }
                         }
 
@@ -134,12 +129,14 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
-
     private var motionEventQueue: Queue<MotionEvent> = LinkedList()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(me: MotionEvent): Boolean {
-        val result: Boolean
+        var result = false
+        if (mGestureDetector!!.onTouchEvent(me)) {
+            return true
+        }
         when (val action = me.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 val actionIndex = me.actionIndex
@@ -149,19 +146,23 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 val down = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, x, y, me.metaState)
                 motionEventQueue.offer(down)
                 result = onModifiedTouchEvent(me)
+                val keyIndex = getKeyIndices(x.toInt(), y.toInt())
+                if(keyIndex != null) {
+                    DevicesUtils.tryPlayKeyDown(keyIndex)
+                    DevicesUtils.tryVibrate(this)
+                }
+                showPreview(keyIndex)
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
-                val first = motionEventQueue.poll()
-                if (first != null) {
-                    val now = me.eventTime
-                    val act = if(action == MotionEvent.ACTION_CANCEL)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP
-                    val up = MotionEvent.obtain(now, now, act, first.x, first.y, me.metaState)
-                    result = onModifiedTouchEvent(up)
-                    up.recycle()
-                    first.recycle()
-                } else {
-                    result = onModifiedTouchEvent(me)
+                val now = me.eventTime
+                val act = if(action == MotionEvent.ACTION_CANCEL)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP
+                while (!motionEventQueue.isEmpty()) {
+                    val first = motionEventQueue.poll()
+                    if(first!= null) {
+                        result = onModifiedTouchEvent(MotionEvent.obtain(now, now, act, first.x, first.y, me.metaState))
+                    }
                 }
+                dismissPreview()
             }
             else -> {
                 result = onModifiedTouchEvent(me)
@@ -171,50 +172,30 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun onModifiedTouchEvent(me: MotionEvent): Boolean {
-        val touchX = me.x.toInt()
-        val touchY = me.y.toInt()
-        val action = me.action
-        val keyIndex = getKeyIndices(touchX, touchY)
-        if (mAbortKey && action != MotionEvent.ACTION_DOWN) {
-            return true
-        }
-        if (mGestureDetector!!.onTouchEvent(me)) {
-            return true
-        }
-        when (action) {
+        mCurrentKey = getKeyIndices(me.x.toInt(), me.y.toInt())
+        when (me.action) {
             MotionEvent.ACTION_DOWN -> {
-                mAbortKey = false
                 mSwipeMoveKey = false
                 mLongPressKey = false
-                mCurrentKey = keyIndex
-                if(keyIndex != null)onPress(keyIndex)
-                if (keyIndex != null && keyIndex.repeatable()) {
-                    val msg = mHandler!!.obtainMessage(MSG_REPEAT)
-                    mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY.toLong())
-                    if (mAbortKey) return true
-                }
-                if (keyIndex != null) {
-                    val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
+                if(mCurrentKey != null){
+                    if (mCurrentKey!!.repeatable()) {
+                        val msg = mHandler!!.obtainMessage(MSG_REPEAT)
+                        mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY)
+                    }
+                    val msg = mHandler!!.obtainMessage(MSG_LONGPRESS)
                     mHandler!!.sendMessageDelayed(msg, AppPrefs.getInstance().keyboardSetting.longPressTimeout.getValue().toLong())
                 }
-                showPreview(keyIndex)
             }
-
             MotionEvent.ACTION_UP -> {
                 removeMessages()
-                mCurrentKey = keyIndex
-                if (!mAbortKey && !mSwipeMoveKey) {
-                    if (!mLongPressKey && keyIndex != null) {
-                        mService?.responseKeyEvent(keyIndex)
+                if (!mSwipeMoveKey) {
+                    if (!mLongPressKey && mCurrentKey != null) {
+                        mService?.responseKeyEvent(mCurrentKey!!)
                     }
-
                 }
-                dismissPreview()
             }
             MotionEvent.ACTION_CANCEL -> {
                 removeMessages()
-                mAbortKey = true
-                dismissPreview()
             }
         }
         return true
@@ -304,11 +285,14 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
      * 显示短按气泡
      */
     private fun showPreview(key: SoftKey?) {
+        if (mCurrentKey != null) {
+            mCurrentKey!!.onReleased()
+            invalidateKey(mCurrentKey)
+        }
         if (key != null) {
             key.onPressed()
             invalidateKey(key)
             showBalloonText(key)
-            mCurrentKeyPressed = key
         } else {
             popupComponent.dismissPopup()
         }
@@ -322,17 +306,16 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             mService?.responseLongKeyEvent(popupComponent.triggerFocused())
             mLongPressKey = false
         }
-        if (mCurrentKeyPressed != null) {
-            mCurrentKeyPressed!!.onReleased()
+        if (mCurrentKey != null) {
+            mCurrentKey!!.onReleased()
             if(mService == null) return
             if (InputModeSwitcherManager.isEnglish && (DecodingInfo.composingStrForDisplay.isBlank() ||  DecodingInfo.composingStrForDisplay.length == 1)) {
                 invalidateAllKeys()
             } else {
-                invalidateKey(mCurrentKeyPressed)
+                invalidateKey(mCurrentKey)
             }
         }
         popupComponent.dismissPopup()
-        mCurrentKeyPressed = null
         lastEventX = -1f
     }
 
@@ -360,17 +343,11 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         return mSoftKeyboard!!
     }
 
-    open fun onPress(key: SoftKey) {
-        // 播放按键声音和震动
-        DevicesUtils.tryPlayKeyDown(key)
-        DevicesUtils.tryVibrate(this)
-    }
-
     companion object {
         private const val MSG_SHOW_PREVIEW = 1
         private const val MSG_REPEAT = 3
         private const val MSG_LONGPRESS = 4
-        private const val REPEAT_INTERVAL = 50 // ~20 keys per second
-        private const val REPEAT_START_DELAY = 400
+        private const val REPEAT_INTERVAL = 50L // ~20 keys per second
+        private const val REPEAT_START_DELAY = 400L
     }
 }
