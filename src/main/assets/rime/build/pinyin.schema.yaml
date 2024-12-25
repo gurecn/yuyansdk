@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1734928958
-    default.custom: 1734928958
+    default: 1733884780
+    default.custom: 1733884780
     pinyin.custom: 0
-    pinyin.schema: 1734928958
+    pinyin.schema: 1733884780
 cn_en:
   comment_format:
     - "xform/^.+$//"
@@ -15,13 +15,6 @@ cn_en:
   initial_quality: 0.5
   user_dict: "en_dicts/cn_en"
 corrector: "{comment}"
-custom_phrase:
-  db_class: stabledb
-  dictionary: ""
-  enable_completion: false
-  enable_sentence: false
-  initial_quality: 99
-  user_dict: custom_phrase
 emoji:
   inherit_comment: false
   opencc_config: emoji.json
@@ -50,7 +43,6 @@ engine:
     - punct_translator
     - echo_translator
     - script_translator
-    - "table_translator@custom_phrase"
     - "table_translator@english"
     - "table_translator@cn_en"
 english:
