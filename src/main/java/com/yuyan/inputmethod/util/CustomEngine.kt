@@ -2,6 +2,7 @@ package com.yuyan.inputmethod.util
 
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.utils.StringUtils
+import com.yuyan.imemodule.utils.TimeUtils
 import com.yuyan.imemodule.utils.expression.ExpressionBuilder
 
 object CustomEngine {
@@ -37,19 +38,27 @@ object CustomEngine {
 
     fun predictAssociationWordsChinese(text: String):MutableList<String> {
         val associations = mutableListOf("，", "。")
+        val suffixesDays = setOf("大前天", "前天", "昨天", "今天", "明天", "大后天", "后天")
         val suffixesExclamation = setOf("啊", "呀", "呐", "啦", "噢", "哇", "吧", "呗", "了")
         val suffixesQuestion = setOf("吗", "啊", "呢", "吧", "谁", "何", "什么", "哪", "几", "多少", "怎", "难道", "岂", "不")
-        if(suffixesExclamation.any{
-                text.endsWith(it)
-            }){ associations.add(0, "！") }
-        if(suffixesQuestion.any{
-                text.contains(it)
-            }){ associations.add(0, "？") }
+        val days = suffixesDays.firstOrNull{ text.endsWith(it) }
+        if(days != null)associations.addAll(0, TimeUtils.getData(days))
+        else if(suffixesExclamation.any{ text.endsWith(it) }){ associations.add(0, "！") }
+        else if(suffixesQuestion.any{ text.contains(it) }){ associations.add(0, "？") }
         return associations
     }
 
     fun processPhrase(text: String):List<String> {
-        val phrase = DataBaseKT.instance.phraseDao().query(text)
-        return phrase.map { it.content }
+        val phrases = mutableListOf<String>()
+        phrases.addAll(DataBaseKT.instance.phraseDao().query(text).map { it.content })
+        val suffixesDate = setOf("rq", "riqi", "7474", "77")
+        if(suffixesDate.any { it == text }){
+            phrases.addAll(TimeUtils.getData())
+        }
+        val suffixesTime = setOf("sj", "shijian", "75", "7445426")
+        if(suffixesTime.any { it == text }){
+            phrases.addAll(TimeUtils.getTime())
+        }
+        return phrases
     }
 }
