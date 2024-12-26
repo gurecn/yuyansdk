@@ -172,7 +172,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     }
 
     inner class Other : ManagedPreferenceCategory(R.string.setting_ime_other, sharedPreferences) {
-        val imeShowIcon = switch(R.string.ime_show_icon, "ime_show_icon_enable", false)
+        val imeHideIcon = switch(R.string.ime_hide_icon, "ime_hide_icon_enable", false, R.string.ime_hide_icon_tips)
     }
 
     inner class Handwriting : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {

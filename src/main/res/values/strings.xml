@@ -189,5 +189,6 @@
     <string name="keyboard_symbol_slide_up_medium">标准</string>
     <string name="keyboard_symbol_slide_up_long">难触发</string>
 
-    <string name="ime_show_icon">隐藏应用图标(部分机型无效)</string>
+    <string name="ime_hide_icon">隐藏应用图标</string>
+    <string name="ime_hide_icon_tips">启动器不显示图标，部分机型无效</string>
 </resources>

@@ -91,6 +91,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:label="@string/full_display_keyboard" />
     <fragment
         android:id="@+id/otherSettingsFragment"
-        android:name="com.yuyan.imemodule.ui.fragment.theme.OtherSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.OtherSettingsFragment"
         android:label="@string/setting_ime_other" />
 </navigation>
