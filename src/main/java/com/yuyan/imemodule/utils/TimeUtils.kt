@@ -132,6 +132,5 @@ object TimeUtils {
         1220 to arrayOf("澳门回归祖国"),
         1224 to arrayOf("长津湖战役胜利"),
         1225 to arrayOf("圣诞节"),
-        1226 to arrayOf("测试"),
     )
 }
