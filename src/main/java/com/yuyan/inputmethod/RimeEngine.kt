@@ -2,12 +2,11 @@ package com.yuyan.inputmethod
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.application.CustomConstant
-import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
+import com.yuyan.inputmethod.util.CustomEngine
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import com.yuyan.inputmethod.util.buildSpannedString
 import com.yuyan.inputmethod.util.isDigitsOnly
@@ -89,7 +88,7 @@ object RimeEngine {
     fun predictAssociationWords(text: String) {
         pinyins = emptyArray()
         if (text.isNotEmpty()) {
-            val words = StringUtils.predictAssociationWordsChinese(text).plus(Rime.getAssociateList(text))
+            val words = CustomEngine.predictAssociationWordsChinese(text).plus(Rime.getAssociateList(text))
             showCandidates = words.filterNotNull().map {
                 CandidateListItem("", it)
             }
@@ -191,9 +190,8 @@ object RimeEngine {
             }
         showCandidates = when {
             Rime.compositionText.isNotBlank() -> {
-                val phrase = DataBaseKT.instance.phraseDao().query(Rime.compositionText.replace("\\s".toRegex(), ""))
-                phrase.map { cand -> CandidateListItem("📋", cand.content)
-                }.toMutableList().plus(candidates)
+                val phrase = CustomEngine.processPhrase(Rime.compositionText.replace("\\s".toRegex(), ""))
+                phrase.map { content -> CandidateListItem("📋", content) }.toMutableList().plus(candidates)
             }
             else -> candidates
         }

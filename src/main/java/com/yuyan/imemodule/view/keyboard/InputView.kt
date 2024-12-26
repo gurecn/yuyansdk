@@ -64,6 +64,7 @@ import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
+import com.yuyan.inputmethod.util.CustomEngine
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
@@ -901,8 +902,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mEtAddPhrasesContent?.commitText(text)
         } else {
             val ic = service.getCurrentInputConnection()
-            ic?.commitText(text, 1)
-            ic?.commitText(SymbolPreset[text]!!, 1)
+            ic?.commitText(text + SymbolPreset[text]!!, 1)
             ic.commitText("", -1)
         }
     }
@@ -917,7 +917,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             val inputConnection = service.getCurrentInputConnection()
             inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-            if (InputModeSwitcherManager.isEnglish && DecodingInfo.isFinish && getInstance().input.abcSpaceAuto.getValue()) {
+            if (InputModeSwitcherManager.isEnglish && DecodingInfo.isFinish && getInstance().input.abcSpaceAuto.getValue() && StringUtils.isLetter(resultText)) {
                 inputConnection.commitText(" ", 1)
             }
         }
@@ -927,9 +927,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         service.window.window!!.also {
             WindowCompat.setDecorFitsSystemWindows(it, false)
             it.navigationBarColor = Color.TRANSPARENT
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                it.isNavigationBarContrastEnforced = false
-            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) it.isNavigationBarContrastEnforced = false
         }
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             EnvironmentSingleton.instance.systemNavbarWindowsBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
@@ -959,10 +957,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 val inputConnection = service.getCurrentInputConnection()
                 val text = inputConnection.getTextBeforeCursor(100, 0).toString()
                 if (text.isNotBlank()) {
-                    val expressionEnd = StringUtils.getExpressionEnd(text)
-                    if(!expressionEnd.isNullOrBlank() && expressionEnd.length != 100) {
-                        val result = StringUtils.calculator(text, expressionEnd)
-                        if(result.isNotEmpty())showSymbols(result)
+                    val expressionEnd = CustomEngine.parseExpressionAtEnd(text)
+                    if(!expressionEnd.isNullOrBlank()) {
+                        if(expressionEnd.length < 100) {
+                            val result = CustomEngine.expressionCalculator(text, expressionEnd)
+                            if (result.isNotEmpty()) showSymbols(result)
+                        }
                     } else if (StringUtils.isChineseEnd(text)) {
                         DecodingInfo.isAssociate = true
                         DecodingInfo.getAssociateWord(if (text.length > 10)text.substring(text.length - 10) else text)
