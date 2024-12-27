@@ -309,6 +309,13 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     }
 
     /**
+     * 是否操作选词
+     */
+    fun isActiveCand():Boolean {
+        return activeCandNo > 0
+    }
+
+    /**
      * 选择花漾字
      */
     fun showFlowerTypeface() {

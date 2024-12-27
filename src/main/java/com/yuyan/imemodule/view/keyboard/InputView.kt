@@ -82,7 +82,6 @@ import kotlin.math.absoluteValue
 class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout(context), IResponseKeyEvent {
     private var chinesePrediction = true
     var isAddPhrases = false
-    private var oldAddPhrases = ""
     private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
@@ -441,7 +440,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 return true
             }
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-            if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
+            if (DecodingInfo.isFinish || (DecodingInfo.isAssociate && !mSkbCandidatesBarView.isActiveCand())) {
                 sendKeyEvent(keyCode)
                 resetToIdleState()
             } else {
@@ -460,7 +459,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             resetToIdleState()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            if(!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
+            if(!DecodingInfo.isCandidatesListEmpty) {
                 mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
                 return true
             }
@@ -745,7 +744,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
-                oldAddPhrases = extra
+                DataBaseKT.instance.phraseDao().deleteByContent(extra)
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
@@ -773,7 +772,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     private fun addPhrasesHandle() {
         val content = mEtAddPhrasesContent?.text.toString()
-        DataBaseKT.instance.phraseDao().deleteByContent(oldAddPhrases)
         if(content.isNotBlank()) {
             val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
             val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
