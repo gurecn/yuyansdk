@@ -33,6 +33,7 @@ import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.view.keyboard.InputView
+import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
@@ -147,6 +148,10 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 MotionEvent.ACTION_MOVE -> { }
                 MotionEvent.ACTION_UP -> {
                     inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                    if(DecodingInfo.isFinish) {
+                        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+                    }
                 }
             }
             true

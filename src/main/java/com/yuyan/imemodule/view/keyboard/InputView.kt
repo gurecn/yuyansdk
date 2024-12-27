@@ -510,9 +510,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     fun resetToIdleState() {
         resetCandidateWindow()
-        // 从候选词、符号界面切换到输入键盘
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         mComposingView.setDecodingInfo()
         mImeState = ImeState.STATE_IDLE
     }
@@ -522,9 +519,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     private fun resetToPredictState() {
         resetCandidateWindow()
-        // 从候选词、符号界面切换到输入键盘
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         mComposingView.setDecodingInfo()
         mImeState = ImeState.STATE_PREDICT
     }

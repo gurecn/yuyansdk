@@ -23,7 +23,6 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.UsedSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
@@ -38,17 +37,15 @@ import splitties.dimensions.dp
  * 符号界面使用RecyclerView + FlexboxLayoutManager实现Grid布局。
  * 符号类型行使用RecyclerView + LinearLayoutManager实现水平ListView效果。
  */
-@SuppressLint("ViewConstructor")
+@SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mShowType = 0
-    private lateinit var mVPSymbolsView: ViewPager2
-    private lateinit var tabLayout: TabLayout
+    private var mVPSymbolsView: ViewPager2
+    private var tabLayout: TabLayout
+    private val ivDelete: ImageView
+    var isLockSymbol = false
 
     init {
-        initView(context)
-    }
-    @SuppressLint("ClickableViewAccessibility")
-    private fun initView(context: Context) {
         val pressKeyBackground = GradientDrawable()
         if (ThemeManager.prefs.keyBorder.getValue()) {
             val keyRadius = ThemeManager.prefs.keyRadius.getValue()
@@ -72,7 +69,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         mLLSymbolType.visibility = VISIBLE
         val ivReturn:ImageView = mLLSymbolType.findViewById(R.id.iv_symbols_emoji_type_return)
         ivReturn.drawable.setTint(activeTheme.keyTextColor)
-        val ivDelete:ImageView = mLLSymbolType.findViewById(R.id.iv_symbols_emoji_type_delete)
+        ivDelete = mLLSymbolType.findViewById(R.id.iv_symbols_emoji_type_delete)
         ivDelete.drawable.setTint(activeTheme.keyTextColor)
         val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         if (isKeyBorder) {
@@ -105,7 +102,13 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                     DevicesUtils.tryVibrate(this)
                 }
                 MotionEvent.ACTION_UP -> {
-                    inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                    if(!isLockSymbol){
+                        isLockSymbol = true
+                        ivDelete.setImageResource(R.drawable.sdk_skb_key_delete_icon)
+                        ivDelete.drawable.setTint(activeTheme.keyTextColor)
+                    } else {
+                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                    }
                 }
             }
             true
@@ -123,9 +126,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         val result = value.replace("[ \\r]".toRegex(), "")
         if (mShowType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
             DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
-            if(!AppPrefs.getInstance().internal.keyboardLockSymbol.getValue()) {
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
+            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         } else {  //表情、颜文字
             DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = "emoji"))
         }
@@ -140,6 +141,9 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
      */
     fun setSymbolsView(showType: Int) {
         mShowType = showType
+        isLockSymbol = mShowType > CustomConstant.EMOJI_TYPR_FACE_DATA   // 符号键默认未锁定，表情键盘默认锁定
+        ivDelete.setImageResource( if(isLockSymbol) R.drawable.sdk_skb_key_delete_icon else R.drawable.icon_symbol_lock)
+        ivDelete.drawable.setTint(activeTheme.keyTextColor)
         var pos = 0
         val mSymbolsEmoji = when (mShowType) {
             5 -> EmojiconData.emoticonData
