@@ -53,7 +53,6 @@ import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
@@ -295,10 +294,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 响应软键盘按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
-    override fun responseKeyEvent(sKey: SoftKey, isFeedback:Boolean) {
-        mImeState = ImeState.STATE_INPUT
+    override fun responseKeyEvent(sKey: SoftKey) {
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
+            mImeState = ImeState.STATE_INPUT
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
@@ -319,8 +318,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
             }
-            mImeState = ImeState.STATE_IDLE
-            resetCandidateWindow()
+            if(mImeState != ImeState.STATE_IDLE) {
+                mImeState = ImeState.STATE_IDLE
+                resetCandidateWindow()
+            }
         }
     }
 
@@ -783,8 +784,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     /**
-     * 输入法状态
-     * 空闲，输入，联想
+     * 输入法状态: 空闲，输入，联想
      */
     enum class ImeState {
         STATE_IDLE, STATE_INPUT, STATE_PREDICT
@@ -812,14 +812,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     private fun requestHideSelf() {
         service.requestHideSelf(0)
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    fun onStartInputView(editorInfo: EditorInfo) {
-        resetToIdleState()
-        currentInputEditorInfo = editorInfo
-        InputModeSwitcherManager.requestInputWithSkb(editorInfo)
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
     /**
@@ -924,6 +916,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
+    fun onStartInputView(editorInfo: EditorInfo) {
+        currentInputEditorInfo = editorInfo
+        InputModeSwitcherManager.requestInputWithSkb(editorInfo)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+    }
+
     fun onWindowShown() {
         chinesePrediction = getInstance().input.chinesePrediction.getValue()
     }
@@ -934,23 +933,24 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             addPhrasesHandle()
             initView(context)
         }
+        resetToIdleState()
     }
 
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
         if(chinesePrediction && newSelStart == newSelEnd) {
             if (mImeState != ImeState.STATE_IDLE || InputModeSwitcherManager.isNumberSkb) {
                 val inputConnection = service.getCurrentInputConnection()
-                val text = inputConnection.getTextBeforeCursor(100, 0).toString()
-                if (text.isNotBlank()) {
-                    val expressionEnd = CustomEngine.parseExpressionAtEnd(text)
+                val textBeforeCursor = inputConnection.getTextBeforeCursor(100, 0).toString()
+                if (textBeforeCursor.isNotBlank()) {
+                    val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
                     if(!expressionEnd.isNullOrBlank()) {
                         if(expressionEnd.length < 100) {
-                            val result = CustomEngine.expressionCalculator(text, expressionEnd)
+                            val result = CustomEngine.expressionCalculator(textBeforeCursor, expressionEnd)
                             if (result.isNotEmpty()) showSymbols(result)
                         }
-                    } else if (StringUtils.isChineseEnd(text)) {
+                    } else if (StringUtils.isChineseEnd(textBeforeCursor)) {
                         DecodingInfo.isAssociate = true
-                        DecodingInfo.getAssociateWord(if (text.length > 10)text.substring(text.length - 10) else text)
+                        DecodingInfo.getAssociateWord(if (textBeforeCursor.length > 10)textBeforeCursor.substring(textBeforeCursor.length - 10) else textBeforeCursor)
                         updateCandidate()
                         updateCandidateBar()
                     }

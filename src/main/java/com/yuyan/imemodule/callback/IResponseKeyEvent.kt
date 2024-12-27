@@ -5,7 +5,7 @@ import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.inputmethod.core.CandidateListItem
 
 interface IResponseKeyEvent {
-    fun responseKeyEvent(sKey: SoftKey, isFeedback:Boolean = true)
+    fun responseKeyEvent(sKey: SoftKey)
     fun responseLongKeyEvent(result:Pair<PopupMenuMode, String>)
     fun responseHandwritingResultEvent(words: Array<CandidateListItem>)
 }
