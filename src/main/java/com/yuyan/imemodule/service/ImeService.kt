@@ -96,8 +96,8 @@ class ImeService : InputMethodService() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         //  0 != event.getRepeatCount()   单次点击onKeyDown操作不处理，在onKeyUp时处理；长按时才处理onKeyDown操作。
         return if (0 != event.repeatCount) super.onKeyDown(keyCode, event)
-        else if (isInputViewShown || 0 == event.repeatCount) true
-        else mInputView.processKey(event) || super.onKeyDown(keyCode, event)
+        else if (isInputViewShown) true
+        else super.onKeyDown(keyCode, event)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
