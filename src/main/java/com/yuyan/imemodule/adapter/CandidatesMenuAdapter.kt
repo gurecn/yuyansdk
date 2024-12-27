@@ -118,4 +118,8 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             return oldList[oldItemPosition].funName == newList[newItemPosition].funName
         }
     }
+
+    fun notifyChanged() {
+        notifyDataSetChanged()
+    }
 }

@@ -3,6 +3,7 @@ package com.yuyan.imemodule.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -55,6 +56,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private var mMenuHeight: Int = 0
     private var mMenuPadding: Int = 0
     private var mLastMenuHeight: Int = 0
+    private var activeCandNo:Int = 0
 
     fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
@@ -173,7 +175,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         if(select == FlowerTypefaceMode.Disabled){
                             mLlContainer.visibility = GONE
                         }
-                        mCandidatesMenuAdapter.notifyDataSetChanged()// 刷新菜单栏
+                        mCandidatesMenuAdapter.notifyChanged()// 刷新菜单栏
                         false
                     }
                 }
@@ -206,7 +208,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCandidatesMenuContainer.addView(mMenuRightArrowBtn, LinearLayout.LayoutParams(instance.heightForCandidates, instance.heightForCandidates, 0f))
             this.addView(mCandidatesMenuContainer, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
-        mCandidatesMenuAdapter.notifyDataSetChanged()  // 点击下拉菜单后，需要刷新菜单栏
+        mCandidatesMenuAdapter.notifyChanged()  // 点击下拉菜单后，需要刷新菜单栏
     }
 
     private fun onClickMenu(skbMenuMode: SkbMenuMode, view: View?) {
@@ -274,8 +276,36 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 else if(KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
             )
         }
-        mCandidatesAdapter.notifyDataSetChanged()
-        mCandidatesMenuAdapter.notifyDataSetChanged()
+        activeCandNo = 0
+        mCandidatesAdapter.activeCandidates(activeCandNo)
+        mCandidatesAdapter.notifyChanged()
+        mCandidatesMenuAdapter.notifyChanged()
+    }
+
+    /**
+     * 更新激活的候选词
+     */
+    fun updateActiveCandidateNo(keyCode: Int) {
+        if (!DecodingInfo.isCandidatesListEmpty) {
+            when(keyCode){
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                    if(--activeCandNo <= 0) activeCandNo = 0
+                }
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    if(++activeCandNo > DecodingInfo.candidateSize) activeCandNo = DecodingInfo.candidateSize
+                }
+            }
+            mCandidatesAdapter.activeCandidates(activeCandNo)
+            mCandidatesAdapter.notifyChanged()
+            mRVCandidates.layoutManager?.scrollToPosition(if(activeCandNo - 1 > 0) activeCandNo - 1 else 0 )
+        }
+    }
+
+    /**
+     * 获取激活的候选词
+     */
+    fun getActiveCandNo():Int {
+        return if(activeCandNo > 0) activeCandNo -1 else 0
     }
 
     /**
@@ -312,8 +342,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mRightArrowBtn.drawable.setTint(textColor)
         mMenuRightArrowBtn.drawable.setTint(textColor)
         mIvMenuSetting.drawable.setTint(textColor)
-        mCandidatesAdapter.updateTextColor(textColor)
-        mCandidatesMenuAdapter.notifyDataSetChanged()
+        mCandidatesAdapter.notifyChanged()
+        mCandidatesMenuAdapter.notifyChanged()
         mFlowerType.setTextColor(textColor)
     }
 }

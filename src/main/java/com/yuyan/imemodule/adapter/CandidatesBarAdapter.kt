@@ -19,19 +19,14 @@ import com.yuyan.imemodule.utils.DevicesUtils
 class CandidatesBarAdapter(context: Context?) :
     RecyclerView.Adapter<CandidatesBarAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater
-    private var textColor: Int
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
+    private var mActiveCandNo:Int = 0
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
 
-    fun updateTextColor(textColor: Int) {
-        this.textColor = textColor
-    }
-
     init {
-        val theme = activeTheme
-        textColor = theme.keyTextColor
+        mActiveCandNo = 0
         inflater = LayoutInflater.from(context)
     }
 
@@ -43,6 +38,7 @@ class CandidatesBarAdapter(context: Context?) :
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         if(DecodingInfo.isCandidatesListEmpty) return
         holder.textView.text = DecodingInfo.candidates[position].text
+        holder.textView.setTextColor(if(mActiveCandNo-1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor)
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->
                 mOnItemClickListener!!.onItemClick(this@CandidatesBarAdapter, view, position)
@@ -54,11 +50,19 @@ class CandidatesBarAdapter(context: Context?) :
         return DecodingInfo.candidateSize
     }
 
+    fun activeCandidates(activeCandNo:Int) {
+        mActiveCandNo = activeCandNo
+    }
+
+    fun notifyChanged() {
+        notifyDataSetChanged()
+    }
+
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
         var textView: EmojiTextView
         init {
             textView = view.findViewById(R.id.gv_item)
-            textView.setTextColor(textColor)
+            textView.setTextColor(activeTheme.keyTextColor)
             textView.textSize = DevicesUtils.px2dip(instance.candidateTextSize)
         }
     }

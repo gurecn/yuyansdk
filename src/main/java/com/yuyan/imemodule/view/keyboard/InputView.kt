@@ -459,6 +459,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             resetToIdleState()
             return true
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            if(!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
+                mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
+                return true
+            }
         }else if (keyCode == KeyEvent.KEYCODE_DEL && (InputModeSwitcherManager.mInputTypePassword || InputModeSwitcherManager.isNumberSkb)) {
             sendKeyEvent(keyCode)
             resetToIdleState()
@@ -527,7 +532,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 选择候选词，并根据条件是否进行下一步的预报。
      * @param candId 选择索引
      */
-    private fun chooseAndUpdate(candId: Int = 0) {
+    private fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
         val candidate = DecodingInfo.getCandidate(candId)
         if(candidate?.comment == "📋"){  // 处理剪贴板或常用语
             commitDecInfoText(candidate.text)
