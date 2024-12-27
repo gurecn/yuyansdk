@@ -303,11 +303,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             processKey(keyEvent)
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-                if(InputModeSwitcherManager.isChinese) {
-                    chooseAndUpdate()
-                } else if(InputModeSwitcherManager.isEnglish){
-                    commitDecInfoText(DecodingInfo.composingStrForCommit)  // 把输入的拼音字符串发送给EditText
-                }
+                if(InputModeSwitcherManager.isChinese)   chooseAndUpdate()
+                else if(InputModeSwitcherManager.isEnglish)  commitDecInfoText(DecodingInfo.composingStrForCommit)  // 把输入的拼音字符串发送给EditText
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
@@ -348,12 +345,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(SymbolPreset.containsKey(result.second))commitPairSymbol(result.second)
                 else commitText(result.second)
             }
-            PopupMenuMode.SwitchIME -> {
-                InputMethodUtil.showPicker()
-            }
+            PopupMenuMode.SwitchIME -> InputMethodUtil.showPicker()
             PopupMenuMode.EnglishCell -> {
-                val abcSearchEnglishCell = getInstance().input.abcSearchEnglishCell.getValue()
-                getInstance().input.abcSearchEnglishCell.setValue(!abcSearchEnglishCell)
+                getInstance().input.abcSearchEnglishCell.setValue(!getInstance().input.abcSearchEnglishCell.getValue())
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             PopupMenuMode.Clear -> {
                 if(isAddPhrases) mEtAddPhrasesContent?.setText("")
@@ -370,9 +365,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 commitText(textBeforeCursor)
                 textBeforeCursor = ""
             }
-            PopupMenuMode.Enter -> {  // 长按回车键
-                commitText("\n")
-            }
+            PopupMenuMode.Enter ->  commitText("\n") // 长按回车键
             else -> {}
         }
         if(result.first == PopupMenuMode.Text)resetToPredictState() else if(result.first != PopupMenuMode.None)resetToIdleState()
@@ -543,8 +536,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 resetToPredictState()
             } else {  // 不上屏，继续选择
                 if (!DecodingInfo.isFinish) {
-                    val composing = DecodingInfo.composingStrForDisplay
-                    if (InputModeSwitcherManager.isEnglish) setComposingText(composing)
+                    if (InputModeSwitcherManager.isEnglish) setComposingText(DecodingInfo.composingStrForDisplay)
                     updateCandidateBar()
                     (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 } else {
@@ -588,10 +580,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 选择候选词后的处理函数。
      */
     fun onChoiceTouched(activeCandNo: Int) {
-        // 播放按键声音和震动
         DevicesUtils.tryPlayKeyDown()
         DevicesUtils.tryVibrate(this)
-        // 选择候选词
         chooseAndUpdate(activeCandNo)
     }
 
@@ -642,19 +632,26 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:String = "") {
         when (skbMenuMode) {
             SkbMenuMode.EmojiKeyboard -> {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                if(KeyboardManager.instance.currentContainer is SymbolContainer  && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_FACE_DATA){
+                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                } else {
+                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
+                    mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                    (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                }
             }
             SkbMenuMode.Emoticons -> {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
+                if(KeyboardManager.instance.currentContainer is SymbolContainer  && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_SMILE_TEXT){
+                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                } else {
+                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
+                    mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
+                    (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
+                }
             }
             SkbMenuMode.SwitchKeyboard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSkbSelelctModeView()
-                updateCandidateBar()
             }
             SkbMenuMode.KeyboardHeight -> {
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
@@ -718,7 +715,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             SkbMenuMode.FlowerTypeface -> {
                 CustomConstant.flowerTypeface = if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) FlowerTypefaceMode.Mars else FlowerTypefaceMode.Disabled
-                showFlowerTypeface()
+                mSkbCandidatesBarView.showFlowerTypeface()
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.FloatKeyboard -> {
@@ -730,14 +727,19 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(skbMenuMode)
+                if(KeyboardManager.instance.currentContainer is ClipBoardContainer){
+                    val currentContainer = KeyboardManager.instance.currentContainer as ClipBoardContainer
+                    if(currentContainer.getMenuMode() == skbMenuMode) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                    else currentContainer.showClipBoardView(skbMenuMode)
+                } else {
+                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
+                    (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(skbMenuMode)
+                }
                 updateCandidateBar()
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
                 (KeyboardManager.instance.currentContainer as SettingsContainer?)?.enableDragItem(true)
-                updateCandidateBar()
             }
             SkbMenuMode.CloseSKB -> {
                 requestHideSelf()
@@ -746,7 +748,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 isAddPhrases = true
                 DataBaseKT.instance.phraseDao().deleteByContent(extra)
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-                (KeyboardManager.instance.currentContainer as InputBaseContainer?)?.updateStates()
                 initView(context)
                 mEtAddPhrasesContent?.setText(extra)
                 mEtAddPhrasesContent?.setSelection(extra.length)
@@ -790,13 +791,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     /**
-     * 点击花漾字菜单
-     */
-    private fun showFlowerTypeface() {
-        mSkbCandidatesBarView.showFlowerTypeface()
-    }
-
-    /**
      * 选择拼音
      */
     fun selectPrefix(position: Int) {
@@ -817,13 +811,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     private fun requestHideSelf() {
-        if(isAddPhrases){
-            isAddPhrases = false
-            addPhrasesHandle()
-            initView(context)
-        } else {
-            service.requestHideSelf(0)
-        }
+        service.requestHideSelf(0)
     }
 
     @SuppressLint("SimpleDateFormat")
