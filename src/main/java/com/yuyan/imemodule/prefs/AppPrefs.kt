@@ -16,6 +16,7 @@ import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
+import com.yuyan.imemodule.prefs.behavior.HalfWidthSymbolsMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.utils.DevicesUtils
 
@@ -163,6 +164,22 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             oneHandedModSwitch.getValue()
         }
 
+        val halfWidthSymbolsMode = list(
+            R.string.half_width_symbols_tips,
+            "half_width_symbols_tips",
+            HalfWidthSymbolsMode.All,
+            HalfWidthSymbolsMode,
+            listOf(
+                HalfWidthSymbolsMode.All,
+                HalfWidthSymbolsMode.OnlyUsed,
+                HalfWidthSymbolsMode.None
+            ),
+            listOf(
+                R.string.half_width_symbols_tips_all,
+                R.string.half_width_symbols_tips_only_used,
+                R.string.half_width_symbols_tips_none
+            )
+        )
     }
 
     inner class Voice : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {

@@ -50,7 +50,7 @@ class SymbolPagerAdapter(context: Context, private val mDatas: Map<EmojiconData.
         manager.flexWrap = FlexWrap.WRAP
         manager.justifyContent = JustifyContent.SPACE_AROUND
         holder.emojiGroupRv.layoutManager = manager
-        val mSymbolAdapter = SymbolAdapter(mContext, viewType, onClickSymbol)
+        val mSymbolAdapter = SymbolAdapter(mContext, viewType, position, onClickSymbol)
         mSymbolAdapter.mDatas = item
         holder.emojiGroupRv.adapter = mSymbolAdapter
     }

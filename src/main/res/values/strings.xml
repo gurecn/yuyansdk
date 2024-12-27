@@ -191,4 +191,10 @@
 
     <string name="ime_hide_icon">隐藏应用图标</string>
     <string name="ime_hide_icon_tips">启动器不显示图标，部分机型无效</string>
+
+
+    <string name="half_width_symbols_tips">区分半角符号提示</string>
+    <string name="half_width_symbols_tips_all">全部</string>
+    <string name="half_width_symbols_tips_only_used">仅常用</string>
+    <string name="half_width_symbols_tips_none">不显示</string>
 </resources>
