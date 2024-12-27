@@ -15,6 +15,7 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
@@ -95,19 +96,14 @@ class ImeService : InputMethodService() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         //  0 != event.getRepeatCount()   单次点击onKeyDown操作不处理，在onKeyUp时处理；长按时才处理onKeyDown操作。
-        return if (isInputViewShown || 0 == event.repeatCount) {
-            super.onKeyDown(keyCode, event)
-        } else {
-            mInputView.processKey(event) || super.onKeyDown(keyCode, event)
-        }
+        return if (0 != event.repeatCount) super.onKeyDown(keyCode, event)
+        else if (isInputViewShown || 0 == event.repeatCount) true
+        else mInputView.processKey(event) || super.onKeyDown(keyCode, event)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        return if (isInputViewShown) {
-            mInputView.processKey(event) || super.onKeyUp(keyCode, event)
-        } else {
-            super.onKeyUp(keyCode, event)
-        }
+        return if (isInputViewShown) mInputView.processKey(event) || super.onKeyUp(keyCode, event)
+        else super.onKeyUp(keyCode, event)
     }
 
     override fun setInputView(view: View) {
