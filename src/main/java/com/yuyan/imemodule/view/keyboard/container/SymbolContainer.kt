@@ -3,6 +3,9 @@ package com.yuyan.imemodule.view.keyboard.container
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -44,6 +47,31 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
     private var tabLayout: TabLayout
     private val ivDelete: ImageView
     var isLockSymbol = false
+    private var mHandler: Handler? = null
+
+    companion object {
+        private const val MSG_REPEAT = 3
+        private const val REPEAT_INTERVAL = 50L // ~20 keys per second
+        private const val REPEAT_START_DELAY = 400L
+    }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (mHandler == null) {
+            mHandler = object : Handler(Looper.getMainLooper()) {
+                override fun handleMessage(msg: Message) {
+                    if (isLockSymbol && repeatKey()) {
+                        val repeat = Message.obtain(this, MSG_REPEAT)
+                        sendMessageDelayed(repeat, REPEAT_INTERVAL)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun repeatKey(): Boolean {
+        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+        return true
+    }
 
     init {
         val pressKeyBackground = GradientDrawable()
@@ -100,6 +128,9 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                     // 播放按键声音和震动
                     DevicesUtils.tryPlayKeyDown(SoftKey(KeyEvent.KEYCODE_DEL))
                     DevicesUtils.tryVibrate(this)
+                    if(isLockSymbol) {
+                        mHandler?.sendEmptyMessageDelayed(MSG_REPEAT, REPEAT_START_DELAY)
+                    }
                 }
                 MotionEvent.ACTION_UP -> {
                     if(!isLockSymbol){
@@ -107,7 +138,8 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                         ivDelete.setImageResource(R.drawable.sdk_skb_key_delete_icon)
                         ivDelete.drawable.setTint(activeTheme.keyTextColor)
                     } else {
-                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                        repeatKey()
+                        mHandler?.removeMessages(MSG_REPEAT)
                     }
                 }
             }
