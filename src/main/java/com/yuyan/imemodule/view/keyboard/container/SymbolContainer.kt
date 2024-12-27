@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -26,6 +27,7 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import splitties.dimensions.dp
 
 
 /**
@@ -158,6 +160,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                     this?.setTint(activeTheme.keyTextColor)
                 })
             })
+            tab.view.setPadding(dp(5))
         }.attach()
         mVPSymbolsView.currentItem = pos
     }
