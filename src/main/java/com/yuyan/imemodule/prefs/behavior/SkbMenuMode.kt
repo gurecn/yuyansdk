@@ -31,7 +31,6 @@ enum class SkbMenuMode {
     Phrases,
     AddPhrases,
     CloseSKB,
-    Doutu,
     EmojiHot,
     Emoticons;
 

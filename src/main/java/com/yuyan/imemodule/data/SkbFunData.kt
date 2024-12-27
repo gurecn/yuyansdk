@@ -47,7 +47,6 @@ val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
     SkbMenuMode.Settings to SkbFunItem(ImeSdkApplication.context.getString(R.string.skb_item_settings), R.drawable.ic_menu_setting, SkbMenuMode.Settings),
     SkbMenuMode.CloseSKB to SkbFunItem(ImeSdkApplication.context.getString(R.string.keyboard_iv_menu_close), R.drawable.ic_menu_arrow_down, SkbMenuMode.CloseSKB),
     SkbMenuMode.ClearClipBoard to SkbFunItem(ImeSdkApplication.context.getString(R.string.clipboard_clear), R.drawable.ic_menu_delete, SkbMenuMode.ClearClipBoard),
-    SkbMenuMode.Doutu to SkbFunItem(ImeSdkApplication.context.getString(R.string.doutu), R.drawable.ic_menu_emoji_doutu, SkbMenuMode.Doutu),
     SkbMenuMode.EmojiHot to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoji_hot), R.drawable.ic_menu_emoji_hot, SkbMenuMode.EmojiHot),
     SkbMenuMode.Emoticons to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoticons), R.drawable.ic_menu_emoji_emoticons, SkbMenuMode.Emoticons),
     SkbMenuMode.AddPhrases to SkbFunItem(ImeSdkApplication.context.getString(R.string.add_phrases), R.drawable.ic_menu_plus, SkbMenuMode.AddPhrases),
