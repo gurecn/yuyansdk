@@ -583,6 +583,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         DevicesUtils.tryPlayKeyDown()
         DevicesUtils.tryVibrate(this)
         chooseAndUpdate(activeCandNo)
+        if(DecodingInfo.isFinish || DecodingInfo.isAssociate) {
+            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+        }
     }
 
     /**

@@ -94,10 +94,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
             inputView.onChoiceTouched(position)
             mRVSymbolsView.scrollToPosition(0)
-            if(DecodingInfo.isFinish || DecodingInfo.isAssociate) {
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-                (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-            }
         }
         val manager = CustomFlexboxLayoutManager(context)
         manager.flexDirection = FlexDirection.ROW //主轴为水平方向，起点在左端。
