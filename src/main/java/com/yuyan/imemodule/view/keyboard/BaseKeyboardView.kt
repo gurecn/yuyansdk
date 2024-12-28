@@ -260,7 +260,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun repeatKey(): Boolean {
-        if (mCurrentKey != null) {
+        if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
             mService?.responseKeyEvent(mCurrentKey!!)
         }
         return true
