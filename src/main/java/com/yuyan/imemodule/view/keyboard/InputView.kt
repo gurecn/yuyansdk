@@ -318,10 +318,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
             }
-            if(mImeState != ImeState.STATE_IDLE) {
-                mImeState = ImeState.STATE_IDLE
-                resetCandidateWindow()
-            }
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
         }
     }
 
@@ -369,7 +366,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             PopupMenuMode.Enter ->  commitText("\n") // 长按回车键
             else -> {}
         }
-        if(result.first == PopupMenuMode.Text)resetToPredictState() else if(result.first != PopupMenuMode.None)resetToIdleState()
+        if(result.first == PopupMenuMode.Text && mImeState != ImeState.STATE_PREDICT) resetToPredictState()
+        else if(result.first != PopupMenuMode.None && mImeState != ImeState.STATE_IDLE) resetToIdleState()
     }
 
     override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
@@ -405,7 +403,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val lable = keyChar.toChar().toString()
         if (keyCode == KeyEvent.KEYCODE_DEL) {
             sendKeyEvent(keyCode)
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
             if (!InputModeSwitcherManager.isEnglishLower) keyChar = keyChar - 'a'.code + 'A'.code
@@ -413,7 +411,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             return true
         } else if (keyCode != 0) {
             sendKeyEvent(keyCode)
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         } else if (lable.isNotEmpty()) {
             if(SymbolPreset.containsKey(lable))commitPairSymbol(lable)
@@ -436,13 +434,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
             if (DecodingInfo.isFinish || (DecodingInfo.isAssociate && !mSkbCandidatesBarView.isActiveCand())) {
                 sendKeyEvent(keyCode)
-                resetToIdleState()
+                if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             } else {
                 chooseAndUpdate()
             }
             return true
         } else if (keyCode == KeyEvent.KEYCODE_CLEAR) {
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         }  else if (keyCode == KeyEvent.KEYCODE_ENTER) {
             if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
@@ -450,7 +448,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             } else {
                 commitDecInfoText(DecodingInfo.composingStrForCommit)
             }
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             if(!DecodingInfo.isCandidatesListEmpty) {
@@ -459,7 +457,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
         }else if (keyCode == KeyEvent.KEYCODE_DEL && (InputModeSwitcherManager.mInputTypePassword || InputModeSwitcherManager.isNumberSkb)) {
             sendKeyEvent(keyCode)
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         }
         return false
@@ -479,7 +477,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (DecodingInfo.isFinish) {
                 sendKeyEvent(keyCode)
-                resetToIdleState()
+                if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             } else {
                 DecodingInfo.deleteAction()
                 updateCandidate()
@@ -490,7 +488,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 chooseAndUpdate()
             }
             sendKeyEvent(keyCode)
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         } else if(lable.isNotEmpty()) {
             if (!DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate) {
@@ -529,19 +527,19 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val candidate = DecodingInfo.getCandidate(candId)
         if(candidate?.comment == "📋"){  // 处理剪贴板或常用语
             commitDecInfoText(candidate.text)
-            resetToPredictState()
+            if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
         } else {
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
             if (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
-                resetToPredictState()
+                if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
             } else {  // 不上屏，继续选择
                 if (!DecodingInfo.isFinish) {
                     if (InputModeSwitcherManager.isEnglish) setComposingText(DecodingInfo.composingStrForDisplay)
                     updateCandidateBar()
                     (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 } else {
-                    resetToIdleState()
+                    if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
                 }
             }
         }
@@ -556,7 +554,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             updateCandidateBar()
             (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         } else {
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
         }
         if (InputModeSwitcherManager.isEnglish)setComposingText(DecodingInfo.composingStrForDisplay)
     }
@@ -575,6 +573,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun resetCandidateWindow() {
         DecodingInfo.reset()
         updateCandidateBar()
+        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
     }
 
     /**
@@ -620,7 +619,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
 
         override fun onClickClearCandidate() {
-            resetToIdleState()
+            if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         }
 
@@ -933,7 +932,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             addPhrasesHandle()
             initView(context)
         }
-        resetToIdleState()
+        if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
     }
 
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
