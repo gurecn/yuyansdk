@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_menu_menu"
-        android:tint="@color/skb_shadow_icon_color"
+        android:tint="@color/skb_elevation_color"
         tools:ignore="UseAppTint"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,12 +33,12 @@
                 android:layout_height="45dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_menu_reset"
-                android:tint="@color/skb_shadow_icon_color"
+                android:tint="@color/skb_elevation_color"
                 tools:ignore="UseAppTint" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/skb_shadow_icon_color"
+                android:textColor="@color/skb_elevation_color"
                 android:text="@string/setting_ime_keyboard_height_reset"/>
         </LinearLayout>
 
@@ -54,12 +54,12 @@
                 android:layout_height="45dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_menu_done"
-                android:tint="@color/skb_shadow_icon_color"
+                android:tint="@color/skb_elevation_color"
                 tools:ignore="UseAppTint"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/skb_shadow_icon_color"
+                android:textColor="@color/skb_elevation_color"
                 android:text="@string/setting_ime_keyboard_height_sure"/>
         </LinearLayout>
     </LinearLayout>
@@ -70,6 +70,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:src="@drawable/ic_menu_move"
-        android:tint="@color/skb_shadow_icon_color"
+        android:tint="@color/skb_elevation_color"
         tools:ignore="ContentDescription, UseAppTint" />
 </RelativeLayout>

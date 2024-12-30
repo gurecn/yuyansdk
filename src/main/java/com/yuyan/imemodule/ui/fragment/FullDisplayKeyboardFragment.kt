@@ -18,14 +18,12 @@ import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.callback.OnItemSelectedListener
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import splitties.dimensions.dp
-import splitties.resources.color
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.matchParent
@@ -93,7 +91,7 @@ class FullDisplayKeyboardFragment: Fragment(){
         }
         if(!fullDisplayKeyboardEnable)items.visibility = View.GONE
         val elevation = textView {
-            setBackgroundResource(R.color.skb_shadow_icon_color)
+            setBackgroundResource(R.color.skb_elevation_color)
         }
         verticalLayout {
             add(header, lParams(width = matchParent, height = wrapContent) {
@@ -131,10 +129,8 @@ class FullDisplayKeyboardFragment: Fragment(){
             if(isSelect){
                 icon.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_anim_reduce_90))
                 setBackgroundResource(R.drawable.shape_select_rectangle)
-                tip.setTextColor(ImeSdkApplication.context.color(R.color.color_1488CC))
             } else {
                 background = null
-                tip.setTextColor(ImeSdkApplication.context.color(R.color.skb_key_text_color))
             }
         }
     }
