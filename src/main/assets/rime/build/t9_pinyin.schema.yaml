@@ -57,7 +57,7 @@ recognizer:
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 schema:
   description: |
-    白霜拼音：雨燕输入法-九键拼音
+    白霜拼音：语燕输入法-九键拼音
     https://github.com/gaboolic/rime-frost
 
   name: "九键拼音"

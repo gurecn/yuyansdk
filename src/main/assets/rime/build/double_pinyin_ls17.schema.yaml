@@ -81,7 +81,7 @@ schema:
   dependencies:
     - english
   description: |
-    白霜拼音：雨燕输入法-乱序17双拼
+    白霜拼音：语燕输入法-乱序17双拼
 
   name: "乱序17双拼"
   schema_id: double_pinyin_ls17

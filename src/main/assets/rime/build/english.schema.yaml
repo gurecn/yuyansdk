@@ -614,7 +614,7 @@ recognizer:
     url: "^(www[.]|https?:|ftp[.:]|mailto:|file:).*$|^[a-z]+[.].+$"
 schema:
   description: |
-    白霜拼音：雨燕输入法-英语输入
+    白霜拼音：语燕输入法-英语输入
 
   name: "英语输入"
   schema_id: english

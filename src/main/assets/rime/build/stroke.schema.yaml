@@ -66,7 +66,7 @@ reverse_lookup:
   tips: "〔拼音〕"
 schema:
   description: |
-    五笔画：雨燕输入法
+    五笔画：语燕输入法
     https://github.com/rime/rime-stroke
     h,s,p,n,z 代表橫、豎、撇、捺、折
 
