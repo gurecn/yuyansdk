@@ -19,15 +19,15 @@ object CustomEngine {
                 val  resultFloat = evaluate.toFloat()
                 val  resultInt = evaluate.toInt()
                 if(evaluate.compareTo(resultInt) == 0){
-                    val resultIntStr = resultInt.toString()
-                    results.add(resultIntStr)
-                    if(!input.endsWith("=")) results.add("=".plus(resultIntStr))
+                    if(!input.endsWith("=")) results.add("=".plus(resultInt))
+                    else results.add(resultInt.toString())
                 } else {
-                    val resultFloatStr = resultFloat.toString()
-                    results.add(resultFloatStr)
-                    if(!input.endsWith("=")) results.add("=".plus(resultFloatStr))
-                    if(resultFloat < 1 && resultFloat > 0){
-                        results.add((evaluate * 100).toInt().toString() + "%")
+                    if(!input.endsWith("=")) {
+                        results.add("=".plus(resultFloat))
+                        if(resultFloat < 1 && resultFloat > 0)results.add("=".plus((evaluate * 100).toInt().toString() + "%"))
+                    } else {
+                        results.add(resultFloat.toString())
+                        if(resultFloat < 1 && resultFloat > 0)results.add((evaluate * 100).toInt().toString() + "%")
                     }
                 }
             } catch (_:Exception){ }
