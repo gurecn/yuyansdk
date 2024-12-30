@@ -78,7 +78,7 @@ android {
         debug {
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
             resValue("drawable", "app_icon_circle", "@drawable/ic_sdk_launcher_circle_debug")
-            resValue("string", "app_name", "@string/ime_yuyan_name_debug")
+            resValue("string", "app_name", "@string/ime_yuyan_name")
         }
     }
     sourceSets {

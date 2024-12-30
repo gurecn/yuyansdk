@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="ime_yuyan_name">语燕输入法</string>
-    <string name="ime_yuyan_name_debug">语燕输入D</string>
     <!--设置页面-->
     <string name="setting_ime_sdk">输入法设置</string>
     <string name="setting_ime_input">输入设置</string>
@@ -191,7 +190,6 @@
 
     <string name="ime_hide_icon">隐藏应用图标</string>
     <string name="ime_hide_icon_tips">启动器不显示图标，部分机型无效</string>
-
 
     <string name="half_width_symbols_tips">区分半角符号提示</string>
     <string name="half_width_symbols_tips_all">全部</string>
