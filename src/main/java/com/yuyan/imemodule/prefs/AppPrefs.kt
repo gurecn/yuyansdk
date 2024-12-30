@@ -106,7 +106,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val titleEmoji = category(R.string.emoji_setting)
         val emojiInput = switch(
-            R.string.emoji_input, "emoji_input_enable", false
+            R.string.emoji_input, "emoji_input_enable", true
         )
     }
 
