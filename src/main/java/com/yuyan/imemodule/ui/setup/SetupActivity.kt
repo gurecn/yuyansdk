@@ -115,7 +115,7 @@ class SetupActivity : FragmentActivity() {
     override fun onPause() {
         if (SetupPage.hasUndonePage())
             NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_sdk_launcher_small)
+                .setSmallIcon(R.drawable.ic_sdk_launcher_transparent)
                 .setContentTitle(getText(R.string.app_name))
                 .setContentText(getText(R.string.setup_keyboard))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
