@@ -128,17 +128,13 @@ class KeyboardFeedbacksFragment : Fragment(){
             setText(R.string.button_sound_volume)
             textSize = 16f
             gravity = gravityVerticalCenter
-            setTextColor(context.color(R.color.skb_key_text_color))
         }
 
         val vibrationTitle = textView {
             setText(R.string.button_vibration_amplitude)
             textSize = 16f
             gravity = gravityVerticalCenter
-            setTextColor(context.color(R.color.skb_key_text_color))
         }
-
-
 
         constraintLayout {
             val lineHeight = dp(48)

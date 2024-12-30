@@ -148,7 +148,6 @@ class FullDisplayKeyboardFragment: Fragment(){
             gravity = Gravity.CENTER
             title = textView {
                 textSize = 16f
-                setTextColor(ImeSdkApplication.context.color(R.color.skb_key_text_color))
             }
             val keyMode = resources.getStringArray(keyModId)
             val adapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, keyMode)
