@@ -11,6 +11,7 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
 import com.yuyan.imemodule.data.theme.ThemeManager.removeOnChangedListener
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -89,7 +90,7 @@ class ImeService : InputMethodService() {
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
-            if (::mInputView.isInitialized) mInputView.resetToIdleState()
+            if (::mInputView.isInitialized) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         }
     }
 

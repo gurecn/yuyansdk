@@ -36,9 +36,7 @@ class KeyboardManager {
 
     fun clearKeyboard() {
         keyboards.clear()
-        if (::mInputView.isInitialized) {
-            mInputView.initView(mInputView.context)
-        }
+        if (::mInputView.isInitialized) mInputView.initView(mInputView.context)
     }
 
     fun switchKeyboard(layout: Int) {
