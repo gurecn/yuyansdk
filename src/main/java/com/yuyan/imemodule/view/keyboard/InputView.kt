@@ -29,6 +29,7 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
@@ -84,7 +85,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private var mEtAddPhrasesContent: ImeEditText? = null
     private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
-    private var currentInputEditorInfo:EditorInfo? = null
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
     private var mChoiceNotifier = ChoiceNotifier()
     private lateinit var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
@@ -258,23 +258,24 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     // 刷新主题
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
+        val keyTextColor = ThemeManager.activeTheme.keyTextColor
         mSkbRoot.background = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
         mComposingView.updateTheme(ThemeManager.activeTheme)
-        mSkbCandidatesBarView.updateTheme(ThemeManager.activeTheme.keyTextColor)
+        mSkbCandidatesBarView.updateTheme(keyTextColor)
         if(::mOnehandHoderLayout.isInitialized) {
-            (mOnehandHoderLayout[0] as ImageButton).drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
-            (mOnehandHoderLayout[1] as ImageButton).drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
+            (mOnehandHoderLayout[0] as ImageButton).drawable?.setTint(keyTextColor)
+            (mOnehandHoderLayout[1] as ImageButton).drawable?.setTint(keyTextColor)
         }
-        mFullDisplayKeyboardBar?.updateTheme(ThemeManager.activeTheme.keyTextColor)
+        mFullDisplayKeyboardBar?.updateTheme(keyTextColor)
         mAddPhrasesLayout.setBackgroundColor(ThemeManager.activeTheme.barColor)
         mEtAddPhrasesContent?.background = GradientDrawable().apply {
             setColor(ThemeManager.activeTheme.keyBackgroundColor)
             shape = GradientDrawable.RECTANGLE
             cornerRadius = ThemeManager.prefs.keyRadius.getValue().toFloat()
         }
-        mEtAddPhrasesContent?.setTextColor(ThemeManager.activeTheme.keyTextColor)
-        mEtAddPhrasesContent?.setHintTextColor(ThemeManager.activeTheme.keyTextColor)
-        tvAddPhrasesTips?.setTextColor(ThemeManager.activeTheme.keyTextColor)
+        mEtAddPhrasesContent?.setTextColor(keyTextColor)
+        mEtAddPhrasesContent?.setHintTextColor(keyTextColor)
+        tvAddPhrasesTips?.setTextColor(keyTextColor)
     }
 
     private fun onClick(view: View) {
@@ -845,7 +846,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 service.sendDownUpKeyEvents(keyCode)
             } else {
                 val inputConnection = service.getCurrentInputConnection()
-                currentInputEditorInfo?.run {
+                YuyanEmojiCompat.editorInfo?.run {
                     if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
                         service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
                     } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
@@ -921,7 +922,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo) {
-        currentInputEditorInfo = editorInfo
         InputModeSwitcherManager.requestInputWithSkb(editorInfo)
         KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }

@@ -7,7 +7,6 @@ import android.graphics.Typeface
 import android.view.inputmethod.EditorInfo
 import androidx.emoji2.text.DefaultEmojiCompatConfig
 import androidx.emoji2.text.EmojiCompat
-import com.yuyan.imemodule.utils.LogUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 object YuyanEmojiCompat {
+    var editorInfo:EditorInfo? = null
     private var metadataVersion: Int = 0
     private var replaceAll: Boolean = false
     private var isWeChatInput: Boolean = false
@@ -46,6 +46,7 @@ object YuyanEmojiCompat {
     }
 
     fun setEditorInfo(editorInfo: EditorInfo?) {
+        this.editorInfo = editorInfo
         metadataVersion = editorInfo?.extras?.getInt(EmojiCompat.EDITOR_INFO_METAVERSION_KEY, 0) ?: 0
         replaceAll = editorInfo?.extras?.getBoolean(EmojiCompat.EDITOR_INFO_REPLACE_ALL_KEY, false) ?: false
         isWeChatInput = isWechatInput(editorInfo)
