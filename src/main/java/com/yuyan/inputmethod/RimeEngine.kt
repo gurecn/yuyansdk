@@ -6,7 +6,6 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
-import com.yuyan.inputmethod.util.CustomEngine
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import com.yuyan.inputmethod.util.buildSpannedString
 import com.yuyan.inputmethod.util.isDigitsOnly
@@ -23,6 +22,7 @@ object RimeEngine {
     var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
+    private var customPhraseSize: Int = 0 // 自定义引擎候选词长度
     fun init() {
         Rime.getInstance(false)
     }
@@ -67,7 +67,8 @@ object RimeEngine {
     }
 
     fun selectCandidate(index: Int): String? {
-        Rime.selectCandidate(index)
+        val indexReal = index - customPhraseSize
+        Rime.selectCandidate(indexReal)
         keyRecordStack.pushCandidateSelectAction()
         return updateCandidatesOrCommitText()
     }
@@ -97,8 +98,10 @@ object RimeEngine {
     }
 
     fun selectAssociation(index: Int) {
-        Rime.chooseAssociate(index)
-        preCommitText = showCandidates.getOrNull(index)?.text?:""
+        val indexReal = index - customPhraseSize
+        Rime.chooseAssociate(indexReal)
+        updateCandidatesOrCommitText()
+        preCommitText = showCandidates.getOrNull(indexReal)?.text?:""
     }
 
     fun reset() {
@@ -188,9 +191,11 @@ object RimeEngine {
             } else {
                 emptyArray()
             }
+        customPhraseSize = 0
         showCandidates = when {
             Rime.compositionText.isNotBlank() -> {
                 val phrase = CustomEngine.processPhrase(Rime.compositionText.replace("\\s".toRegex(), ""))
+                customPhraseSize = phrase.size
                 phrase.map { content -> CandidateListItem("📋", content) }.toMutableList().plus(candidates)
             }
             else -> candidates

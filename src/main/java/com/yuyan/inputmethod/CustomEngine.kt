@@ -1,4 +1,4 @@
-package com.yuyan.inputmethod.util
+package com.yuyan.inputmethod
 
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.utils.StringUtils
