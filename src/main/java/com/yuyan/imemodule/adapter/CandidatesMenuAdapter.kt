@@ -17,6 +17,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
+import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
@@ -94,10 +95,10 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
             SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface != FlowerTypefaceMode.Disabled
             SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.keyboardModeFloat
-            SkbMenuMode.ClipBoard -> KeyboardManager.instance.currentContainer is ClipBoardContainer && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard
-            SkbMenuMode.Phrases -> KeyboardManager.instance.currentContainer is ClipBoardContainer && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.Phrases
-            SkbMenuMode.EmojiKeyboard -> KeyboardManager.instance.currentContainer is SymbolContainer  && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_FACE_DATA
-            SkbMenuMode.Emoticons -> KeyboardManager.instance.currentContainer is SymbolContainer && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_SMILE_TEXT
+            SkbMenuMode.ClipBoard -> (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.getMenuMode() == SkbMenuMode.ClipBoard
+            SkbMenuMode.Phrases -> (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.getMenuMode() == SkbMenuMode.Phrases
+            SkbMenuMode.Emojicon -> (KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emojicon
+            SkbMenuMode.Emoticon -> (KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emoticon
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
             SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY

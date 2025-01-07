@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 object YuyanEmojiCompat {
-    var editorInfo:EditorInfo? = null
+    var mEditorInfo:EditorInfo? = null
     private var metadataVersion: Int = 0
     private var replaceAll: Boolean = false
     private var isWeChatInput: Boolean = false
@@ -46,7 +46,7 @@ object YuyanEmojiCompat {
     }
 
     fun setEditorInfo(editorInfo: EditorInfo?) {
-        this.editorInfo = editorInfo
+        this.mEditorInfo = editorInfo
         metadataVersion = editorInfo?.extras?.getInt(EmojiCompat.EDITOR_INFO_METAVERSION_KEY, 0) ?: 0
         replaceAll = editorInfo?.extras?.getBoolean(EmojiCompat.EDITOR_INFO_REPLACE_ALL_KEY, false) ?: false
         isWeChatInput = isWechatInput(editorInfo)

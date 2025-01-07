@@ -11,18 +11,18 @@ import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 
 /**
  * 表情或符号界面适配器
  */
-class SymbolPagerAdapter(context: Context, private val mDatas: Map<EmojiconData.Category, List<String>>, val viewType: Int, private val onClickSymbol: (String, Int) -> Unit) :
+class SymbolPagerAdapter(context: Context, private val mDatas: Map<EmojiconData.Category, List<String>>, val viewType: SymbolMode, private val onClickSymbol: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolPagerAdapter.ViewHolder>() {
     private val mContext: Context
 
     init {
         mContext = context
-
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

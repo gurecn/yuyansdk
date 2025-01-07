@@ -40,6 +40,7 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
+import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -308,11 +309,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(0)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setSymbolsView()
             } else  if (InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 == keyCode) {  // 点击表情按钮
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setEmojisView(SymbolMode.Emojicon)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 InputModeSwitcherManager.switchModeForUserKey(keyCode)
             }else if(sKey.keyLabel.isNotBlank()){
@@ -636,22 +637,22 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:String = "") {
         when (skbMenuMode) {
-            SkbMenuMode.EmojiKeyboard -> {
-                if(KeyboardManager.instance.currentContainer is SymbolContainer  && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_FACE_DATA){
+            SkbMenuMode.Emojicon -> {
+                if((KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emojicon){
                     KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 } else {
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                     mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                    (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_FACE_DATA)
+                    (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setEmojisView(SymbolMode.Emojicon)
                 }
             }
-            SkbMenuMode.Emoticons -> {
-                if(KeyboardManager.instance.currentContainer is SymbolContainer  && (KeyboardManager.instance.currentContainer as SymbolContainer).getMenuMode() == CustomConstant.EMOJI_TYPR_SMILE_TEXT){
+            SkbMenuMode.Emoticon -> {
+                if((KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emoticon){
                     KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 } else {
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                     mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
-                    (KeyboardManager.instance.currentContainer as SymbolContainer?)!!.setSymbolsView(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
+                    (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setEmojisView(SymbolMode.Emoticon)
                 }
             }
             SkbMenuMode.SwitchKeyboard -> {
@@ -732,8 +733,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
-                if(KeyboardManager.instance.currentContainer is ClipBoardContainer){
-                    val currentContainer = KeyboardManager.instance.currentContainer as ClipBoardContainer
+                val currentContainer = KeyboardManager.instance.currentContainer as ClipBoardContainer?
+                if(currentContainer != null){
                     if(currentContainer.getMenuMode() == skbMenuMode) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                     else currentContainer.showClipBoardView(skbMenuMode)
                 } else {
@@ -846,7 +847,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 service.sendDownUpKeyEvents(keyCode)
             } else {
                 val inputConnection = service.getCurrentInputConnection()
-                YuyanEmojiCompat.editorInfo?.run {
+                YuyanEmojiCompat.mEditorInfo?.run {
                     if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
                         service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
                     } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {

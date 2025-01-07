@@ -3,7 +3,6 @@ package com.yuyan.imemodule.prefs.behavior
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 enum class SkbMenuMode {
-    EmojiKeyboard,
     SwitchKeyboard,
     KeyboardHeight,
     DarkTheme,
@@ -31,8 +30,8 @@ enum class SkbMenuMode {
     Phrases,
     AddPhrases,
     CloseSKB,
-    EmojiHot,
-    Emoticons;
+    Emojicon,
+    Emoticon;
 
     companion object : ManagedPreference.StringLikeCodec<SkbMenuMode> {
         override fun decode(raw: String): SkbMenuMode =

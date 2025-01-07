@@ -251,7 +251,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
         } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA || showType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) {
             showViewVisibility(mCandidatesMenuContainer)
-            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
+            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticon")]!!,menuSkbFunsPreset[SkbMenuMode.decode("Emojicon")]!!)
         } else if (DecodingInfo.isCandidatesListEmpty) {
             mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
