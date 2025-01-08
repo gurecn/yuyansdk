@@ -59,7 +59,6 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         private const val MSG_REPEAT = 3
         private const val REPEAT_INTERVAL = 50L // ~20 keys per second
         private const val REPEAT_START_DELAY = 400L
-        private val WECHAT_EMOJI = arrayOf("[炸弹]", "[烟花]", "[庆祝]")
     }
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -178,13 +177,11 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                 val emojions = EmojiconData.wechatEmojiconData[value]
                 if(emojions?.isNotEmpty() == true) {
                     CoroutineScope(Dispatchers.Main).launch {
-                        val random = Random.nextInt(emojions.size)
-                        val emojion = emojions[random]
-                        inputView.responseKeyEvent(SoftKey(emojion))
-                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
-                        delay(50)
-                        inputView.responseKeyEvent(SoftKey(WECHAT_EMOJI[random % 3]))
-                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
+                        emojions[Random.nextInt(emojions.size)].forEach {
+                            inputView.responseKeyEvent(SoftKey(it))
+                            inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
+                            delay(100)
+                        }
                     }
                 }
             }
