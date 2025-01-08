@@ -30,7 +30,12 @@ import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import splitties.dimensions.dp
+import kotlin.random.Random
 
 
 /**
@@ -54,6 +59,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         private const val MSG_REPEAT = 3
         private const val REPEAT_INTERVAL = 50L // ~20 keys per second
         private const val REPEAT_START_DELAY = 400L
+        private val WECHAT_EMOJI = arrayOf("[炸弹]", "[烟花]", "[庆祝]")
     }
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -157,17 +163,32 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
 
     private fun onItemClickOperate(value: String) {
         val result = value.replace("[ \\r]".toRegex(), "")
-        if (mShowType == SymbolMode.Symbol) {  // 非表情键盘
-            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
-            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        } else {  //表情、颜文字
-            if(!YuyanEmojiCompat.isWeChatInput || mVPSymbolsView.currentItem != 1 )
-            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = "emoji"))
-        }
         val softKey = SoftKey(result)
         DevicesUtils.tryPlayKeyDown(softKey)
         DevicesUtils.tryVibrate(this)
-        inputView.responseKeyEvent(softKey)
+        if (mShowType == SymbolMode.Symbol) {  // 非表情键盘
+            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
+            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            inputView.responseKeyEvent(softKey)
+        } else {  //表情、颜文字
+            if(!YuyanEmojiCompat.isWeChatInput || mVPSymbolsView.currentItem != 1 ) {
+                DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = "emoji"))
+                inputView.responseKeyEvent(softKey)
+            } else {
+                val emojions = EmojiconData.wechatEmojiconData[value]
+                if(emojions?.isNotEmpty() == true) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val random = Random.nextInt(emojions.size)
+                        val emojion = emojions[random]
+                        inputView.responseKeyEvent(SoftKey(emojion))
+                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
+                        delay(200)
+                        inputView.responseKeyEvent(SoftKey(WECHAT_EMOJI[random % 3]))
+                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -206,13 +227,12 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         val mSymbolsEmoji = when (mShowType) {
             SymbolMode.Emoticon -> EmojiconData.emoticonData
             else -> {
-//                if (!YuyanEmojiCompat.isWeChatInput) {
-//                    val data = LinkedHashMap<Int, List<String>>()
-//                    data.putAll(EmojiconData.emojiconData)
-//                    data.remove(R.drawable.icon_emojibar_wechat)
-//                    data
-//                } else
-                    EmojiconData.emojiconData
+                if (!YuyanEmojiCompat.isWeChatInput) {
+                    val data = LinkedHashMap<Int, List<String>>()
+                    data.putAll(EmojiconData.emojiconData)
+                    data.remove(R.drawable.icon_emojibar_wechat)
+                    data
+                } else EmojiconData.emojiconData
             }
         }
         mVPSymbolsView.adapter = SymbolPagerAdapter(context, mSymbolsEmoji, mShowType){ symbol, _ ->
