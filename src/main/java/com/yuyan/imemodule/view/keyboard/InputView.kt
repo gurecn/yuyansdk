@@ -25,12 +25,10 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
-import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Phrase
@@ -40,11 +38,9 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
@@ -64,7 +60,6 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.core.CandidateListItem
-import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.inputmethod.util.CustomEngine
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
@@ -90,7 +85,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private var mChoiceNotifier = ChoiceNotifier()
     private lateinit var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
     lateinit var mSkbRoot: RelativeLayout
-    private lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
+    lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
@@ -635,111 +630,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:String = "") {
         when (skbMenuMode) {
-            SkbMenuMode.Emojicon, SkbMenuMode.Emoticon -> {
-                val symbolType = if(skbMenuMode == SkbMenuMode.Emoticon) SymbolMode.Emoticon else SymbolMode.Emojicon
-                if((KeyboardManager.instance.currentContainer as? SymbolContainer)?.getMenuMode() == symbolType){
-                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-                } else {
-                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                    mSkbCandidatesBarView.showEmoji()
-                    (KeyboardManager.instance.currentContainer as? SymbolContainer)?.setEmojisView(symbolType)
-                }
-            }
-            SkbMenuMode.SwitchKeyboard -> {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSkbSelelctModeView()
-            }
-            SkbMenuMode.KeyboardHeight -> {
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-                KeyboardManager.instance.currentContainer!!.setKeyboardHeight()
-            }
-            SkbMenuMode.DarkTheme -> {
-                val theme = (if (ThemeManager.activeTheme.isDark) ThemeManager.prefs.lightModeTheme else ThemeManager.prefs.darkModeTheme).getValue()
-                ThemeManager.setNormalModeTheme(theme)
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.Feedback -> {
-                AppUtil.launchSettingsToKeyboard(context)
-            }
-            SkbMenuMode.NumberRow -> {
-                val abcNumberLine = getInstance().keyboardSetting.abcNumberLine.getValue()
-                getInstance().keyboardSetting.abcNumberLine.setValue(!abcNumberLine)
-                //更换键盘模式后 重亲加载键盘
-                KeyboardLoaderUtil.instance.changeSKBNumberRow()
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.JianFan -> {
-                val chineseFanTi = getInstance().input.chineseFanTi.getValue()
-                getInstance().input.chineseFanTi.setValue(!chineseFanTi)
-                Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.LockEnglish -> {
-                val keyboardLockEnglish = getInstance().keyboardSetting.keyboardLockEnglish.getValue()
-                getInstance().keyboardSetting.keyboardLockEnglish.setValue(!keyboardLockEnglish)
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.SymbolShow -> {
-                val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-                ThemeManager.prefs.keyboardSymbol.setValue(!keyboardSymbol)
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.Mnemonic -> {
-                val keyboardMnemonic = ThemeManager.prefs.keyboardMnemonic.getValue()
-                ThemeManager.prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
-                KeyboardLoaderUtil.instance.clearKeyboardMap()
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.EmojiInput -> {
-                val emojiInput = getInstance().input.emojiInput.getValue()
-                getInstance().input.emojiInput.setValue(!emojiInput)
-                Kernel.nativeUpdateImeOption()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.Handwriting -> AppUtil.launchSettingsToHandwriting(context)
-            SkbMenuMode.Settings -> AppUtil.launchSettings(context)
-            SkbMenuMode.OneHanded -> {
-                getInstance().keyboardSetting.oneHandedModSwitch.setValue(!getInstance().keyboardSetting.oneHandedModSwitch.getValue())
-                EnvironmentSingleton.instance.initData()
-                KeyboardLoaderUtil.instance.clearKeyboardMap()
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.FlowerTypeface -> {
-                CustomConstant.flowerTypeface = if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) FlowerTypefaceMode.Mars else FlowerTypefaceMode.Disabled
-                mSkbCandidatesBarView.showFlowerTypeface()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.FloatKeyboard -> {
-                val keyboardModeFloat = EnvironmentSingleton.instance.keyboardModeFloat
-                EnvironmentSingleton.instance.keyboardModeFloat = !keyboardModeFloat
-                EnvironmentSingleton.instance.initData()
-                KeyboardLoaderUtil.instance.clearKeyboardMap()
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            }
-            SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
-                val currentContainer = KeyboardManager.instance.currentContainer as? ClipBoardContainer
-                if(currentContainer != null){
-                    if(currentContainer.getMenuMode() == skbMenuMode) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-                    else currentContainer.showClipBoardView(skbMenuMode)
-                } else {
-                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                    (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(skbMenuMode)
-                }
-                updateCandidateBar()
-            }
-            SkbMenuMode.Custom -> {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.enableDragItem(true)
-            }
-            SkbMenuMode.CloseSKB -> {
-                requestHideSelf()
-            }
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
                 DataBaseKT.instance.phraseDao().deleteByContent(extra)
@@ -748,7 +638,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 mEtAddPhrasesContent?.setText(extra)
                 mEtAddPhrasesContent?.setSelection(extra.length)
             }
-            else ->{}
+            else ->onSettingsMenuClick(this, skbMenuMode)
         }
         mSkbCandidatesBarView.initMenuView()
     }
@@ -805,7 +695,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         updateCandidateBar()
     }
 
-    private fun requestHideSelf() {
+    fun requestHideSelf() {
         service.requestHideSelf(0)
     }
 
