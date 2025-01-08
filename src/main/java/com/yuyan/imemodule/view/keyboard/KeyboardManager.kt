@@ -80,7 +80,6 @@ class KeyboardManager {
         get() = currentContainer is InputBaseContainer
 
     companion object {
-        private val TAG = KeyboardManager::class.java.getSimpleName()
         private var mInstance: KeyboardManager? = null
         @JvmStatic
         val instance: KeyboardManager
