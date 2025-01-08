@@ -9,7 +9,6 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.data.emojicon.EmojiconData
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
@@ -17,7 +16,7 @@ import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 /**
  * 表情或符号界面适配器
  */
-class SymbolPagerAdapter(context: Context, private val mDatas: Map<EmojiconData.Category, List<String>>, val viewType: SymbolMode, private val onClickSymbol: (String, Int) -> Unit) :
+class SymbolPagerAdapter(context: Context, private val mDatas: Map<Int, List<String>>, val viewType: SymbolMode, private val onClickSymbol: (String, Int) -> Unit) :
     RecyclerView.Adapter<SymbolPagerAdapter.ViewHolder>() {
     private val mContext: Context
 
@@ -38,11 +37,11 @@ class SymbolPagerAdapter(context: Context, private val mDatas: Map<EmojiconData.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val key = mDatas.keys.toList()[position]
-
-        val item = when (key.label) {
-            "🕝" -> { DataBaseKT.instance.usedSymbolDao().getAllSymbolEmoji().map{ it.symbol }.takeIf { it.isNotEmpty() }?:mDatas[mDatas.keys.toList()[1]]}
-            "最近" -> { DataBaseKT.instance.usedSymbolDao().getAllUsedSymbol().map{ it.symbol }.takeIf { it.isNotEmpty() }?:mDatas[mDatas.keys.toList()[1]] }
+        val item = when (val key = mDatas.keys.toList()[position]) {
+            R.drawable.icon_emojibar_recents -> {
+                if (viewType != SymbolMode.Symbol) DataBaseKT.instance.usedSymbolDao().getAllSymbolEmoji().map { it.symbol }.takeIf { it.isNotEmpty() } ?: mDatas[mDatas.keys.toList()[1]]
+                else DataBaseKT.instance.usedSymbolDao().getAllUsedSymbol().map { it.symbol }.takeIf { it.isNotEmpty() } ?: mDatas[mDatas.keys.toList()[1]]
+            }
             else -> mDatas[key]
         }
         val manager = CustomFlexboxLayoutManager(mContext)

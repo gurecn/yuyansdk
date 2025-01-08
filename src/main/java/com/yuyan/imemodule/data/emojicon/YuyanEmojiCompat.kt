@@ -18,8 +18,8 @@ object YuyanEmojiCompat {
     var mEditorInfo:EditorInfo? = null
     private var metadataVersion: Int = 0
     private var replaceAll: Boolean = false
-    private var isWeChatInput: Boolean = false
-    private var isQQChatInput: Boolean = false
+    var isWeChatInput: Boolean = false
+    var isQQChatInput: Boolean = false
     private lateinit var systemFontPaint: Paint
     private lateinit var instanceNoReplace: InstanceHandler
     private lateinit var instanceReplaceAll: InstanceHandler

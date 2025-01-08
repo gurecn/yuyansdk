@@ -7,8 +7,6 @@ import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
  */
 object CustomConstant {
     var RIME_DICT_PATH = ImeSdkApplication.context.getExternalFilesDir("rime").toString()
-    var EMOJI_TYPR_FACE_DATA = 1 //emoji表情
-    var EMOJI_TYPR_SMILE_TEXT = EMOJI_TYPR_FACE_DATA + 11 //颜文字：5。   序号需和SymbolsManager中mSymbolsEmoji Key对应
     const val SCHEMA_ZH_T9 = "t9_pinyin" // 拼音九键
     const val SCHEMA_ZH_QWERTY = "pinyin" // 拼音全键
     const val SCHEMA_EN = "english"         // 英语方案

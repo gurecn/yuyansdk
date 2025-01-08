@@ -309,11 +309,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setSymbolsView()
+                (KeyboardManager.instance.currentContainer as? SymbolContainer)?.setSymbolsView()
             } else  if (InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 == keyCode) {  // 点击表情按钮
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setEmojisView(SymbolMode.Emojicon)
+                onSettingsMenuClick(SkbMenuMode.Emojicon)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 InputModeSwitcherManager.switchModeForUserKey(keyCode)
             }else if(sKey.keyLabel.isNotBlank()){
@@ -613,7 +611,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         override fun onClickSetting() {
             if (KeyboardManager.instance.isInputKeyboard) {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSettingsView()
+                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSettingsView()
                 updateCandidateBar()
             } else {
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
@@ -631,33 +629,25 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
         override fun onClickClearClipBoard() {
             DataBaseKT.instance.clipboardDao().deleteAll()
-            (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(SkbMenuMode.ClipBoard)
+            (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
     }
 
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:String = "") {
         when (skbMenuMode) {
-            SkbMenuMode.Emojicon -> {
-                if((KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emojicon){
+            SkbMenuMode.Emojicon, SkbMenuMode.Emoticon -> {
+                val symbolType = if(skbMenuMode == SkbMenuMode.Emoticon) SymbolMode.Emoticon else SymbolMode.Emojicon
+                if((KeyboardManager.instance.currentContainer as? SymbolContainer)?.getMenuMode() == symbolType){
                     KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 } else {
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                    mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_FACE_DATA)
-                    (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setEmojisView(SymbolMode.Emojicon)
-                }
-            }
-            SkbMenuMode.Emoticon -> {
-                if((KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emoticon){
-                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-                } else {
-                    KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
-                    mSkbCandidatesBarView.showCandidates(CustomConstant.EMOJI_TYPR_SMILE_TEXT)
-                    (KeyboardManager.instance.currentContainer as SymbolContainer?)?.setEmojisView(SymbolMode.Emoticon)
+                    mSkbCandidatesBarView.showEmoji()
+                    (KeyboardManager.instance.currentContainer as? SymbolContainer)?.setEmojisView(symbolType)
                 }
             }
             SkbMenuMode.SwitchKeyboard -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance.currentContainer as SettingsContainer?)?.showSkbSelelctModeView()
+                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSkbSelelctModeView()
             }
             SkbMenuMode.KeyboardHeight -> {
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
@@ -733,19 +723,19 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             SkbMenuMode.ClipBoard,SkbMenuMode.Phrases -> {
-                val currentContainer = KeyboardManager.instance.currentContainer as ClipBoardContainer?
+                val currentContainer = KeyboardManager.instance.currentContainer as? ClipBoardContainer
                 if(currentContainer != null){
                     if(currentContainer.getMenuMode() == skbMenuMode) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                     else currentContainer.showClipBoardView(skbMenuMode)
                 } else {
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
-                    (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(skbMenuMode)
+                    (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(skbMenuMode)
                 }
                 updateCandidateBar()
             }
             SkbMenuMode.Custom -> {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance.currentContainer as SettingsContainer?)?.enableDragItem(true)
+                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.enableDragItem(true)
             }
             SkbMenuMode.CloseSKB -> {
                 requestHideSelf()

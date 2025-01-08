@@ -95,10 +95,10 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
             SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface != FlowerTypefaceMode.Disabled
             SkbMenuMode.FloatKeyboard -> EnvironmentSingleton.instance.keyboardModeFloat
-            SkbMenuMode.ClipBoard -> (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.getMenuMode() == SkbMenuMode.ClipBoard
-            SkbMenuMode.Phrases -> (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.getMenuMode() == SkbMenuMode.Phrases
-            SkbMenuMode.Emojicon -> (KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emojicon
-            SkbMenuMode.Emoticon -> (KeyboardManager.instance.currentContainer as SymbolContainer?)?.getMenuMode() == SymbolMode.Emoticon
+            SkbMenuMode.ClipBoard -> (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.getMenuMode() == SkbMenuMode.ClipBoard
+            SkbMenuMode.Phrases -> (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.getMenuMode() == SkbMenuMode.Phrases
+            SkbMenuMode.Emojicon -> (KeyboardManager.instance.currentContainer as? SymbolContainer)?.getMenuMode() == SymbolMode.Emojicon
+            SkbMenuMode.Emoticon -> (KeyboardManager.instance.currentContainer as? SymbolContainer)?.getMenuMode() == SymbolMode.Emoticon
             // Keyboard Menu
             SkbMenuMode.PinyinT9 -> rimeValue == CustomConstant.SCHEMA_ZH_T9
             SkbMenuMode.Pinyin26Jian -> rimeValue == CustomConstant.SCHEMA_ZH_QWERTY

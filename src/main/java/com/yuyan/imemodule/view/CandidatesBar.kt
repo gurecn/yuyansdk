@@ -233,25 +233,16 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     /**
      * 显示候选词
      */
-    fun showCandidates(showType: Int = 0) {
+    fun showCandidates() {
         val container = KeyboardManager.instance.currentContainer
         mIvMenuSetting.drawable.setLevel( if(container is InputBaseContainer) 0 else 1)
         if (container is ClipBoardContainer) {
             showViewVisibility(mCandidatesMenuContainer)
             mCandidatesMenuAdapter.items = if(container.getMenuMode() == SkbMenuMode.ClipBoard) {
-                listOf(menuSkbFunsPreset[SkbMenuMode.decode("ClearClipBoard")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
-                )
+                listOf(menuSkbFunsPreset[SkbMenuMode.ClearClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!)
             } else {
-                listOf(menuSkbFunsPreset[SkbMenuMode.decode("AddPhrases")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
-                )
+                listOf(menuSkbFunsPreset[SkbMenuMode.AddPhrases]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!)
             }
-        } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA || showType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) {
-            showViewVisibility(mCandidatesMenuContainer)
-            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticon")]!!,menuSkbFunsPreset[SkbMenuMode.decode("Emojicon")]!!)
         } else if (DecodingInfo.isCandidatesListEmpty) {
             mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
@@ -276,6 +267,18 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 else if(KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
             )
         }
+        activeCandNo = 0
+        mCandidatesAdapter.activeCandidates(activeCandNo)
+        mCandidatesAdapter.notifyChanged()
+        mCandidatesMenuAdapter.notifyChanged()
+    }
+
+    /**
+     * 显示表情
+     */
+    fun showEmoji() {
+        showViewVisibility(mCandidatesMenuContainer)
+        mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.Emoticon]!!,menuSkbFunsPreset[SkbMenuMode.Emojicon]!!)
         activeCandNo = 0
         mCandidatesAdapter.activeCandidates(activeCandNo)
         mCandidatesAdapter.notifyChanged()
