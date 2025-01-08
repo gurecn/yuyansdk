@@ -4,10 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import splitties.dimensions.dp
 import android.widget.TextView
+import androidx.core.view.setMargins
 import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.HalfWidthSymbolsMode
@@ -61,6 +65,17 @@ class SymbolAdapter(context: Context?, val viewType: SymbolMode, private val pag
             textView.textSize = DevicesUtils.px2dip(EnvironmentSingleton.instance.candidateTextSize) * 0.7f
             tVSdb = view.findViewById(R.id.tv_Sdb)
             tVSdb.setTextColor(activeTheme.keyTextColor)
+            if(viewType == SymbolMode.Emojicon && pagerIndex == 1 && YuyanEmojiCompat.isWeChatInput){
+                (view.layoutParams as FlexboxLayoutManager.LayoutParams) .apply {
+                    width = (EnvironmentSingleton.instance.skbWidth - view.dp(18)) / 3
+                   setMargins(view.dp(3))
+                }
+               val paddingStart =  view.dp(5)
+               val paddingTop =  view.dp(10)
+                textView.setPadding(paddingStart, paddingTop, paddingStart, paddingTop)
+                view.setBackgroundResource(R.drawable.shape_emojicon_background)
+            }
+
         }
     }
 }

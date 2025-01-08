@@ -7,6 +7,7 @@
         android:id="@+id/gv_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:singleLine="true"
         android:ellipsize="none"
         android:gravity="center"
