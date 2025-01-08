@@ -182,7 +182,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                         val emojion = emojions[random]
                         inputView.responseKeyEvent(SoftKey(emojion))
                         inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
-                        delay(200)
+                        delay(50)
                         inputView.responseKeyEvent(SoftKey(WECHAT_EMOJI[random % 3]))
                         inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
                     }
