@@ -243,29 +243,35 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             } else {
                 listOf(menuSkbFunsPreset[SkbMenuMode.AddPhrases]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!)
             }
-        } else if (DecodingInfo.isCandidatesListEmpty) {
-            mRightArrowBtn.drawable.setLevel(0)
-            showViewVisibility(mCandidatesMenuContainer)
-            val mFunItems: MutableList<SkbFunItem> = mutableListOf()
-            val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
-            for (item in keyboardBarMenuCommon) {
-                if(item.isNotBlank()) {
-                    val skbMenuMode = SkbMenuMode.decode(item)
-                    if(skbMenuMode != SkbMenuMode.CloseSKB) {
-                        val skbFunItem = menuSkbFunsPreset[skbMenuMode]
-                        if (skbFunItem != null) {
-                            mFunItems.add(skbFunItem)
+        } else if (container is InputBaseContainer) {
+            if (DecodingInfo.isCandidatesListEmpty) {
+                mRightArrowBtn.drawable.setLevel(0)
+                showViewVisibility(mCandidatesMenuContainer)
+                val mFunItems: MutableList<SkbFunItem> = mutableListOf()
+                val keyboardBarMenuCommon =
+                    AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
+                for (item in keyboardBarMenuCommon) {
+                    if (item.isNotBlank()) {
+                        val skbMenuMode = SkbMenuMode.decode(item)
+                        if (skbMenuMode != SkbMenuMode.CloseSKB) {
+                            val skbFunItem = menuSkbFunsPreset[skbMenuMode]
+                            if (skbFunItem != null) {
+                                mFunItems.add(skbFunItem)
+                            }
                         }
                     }
                 }
+                mCandidatesMenuAdapter.items = mFunItems
+            } else {
+                if (DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(
+                    DecodingInfo.activeCandidateBar
+                )
+                showViewVisibility(mCandidatesDataContainer)
+                mRightArrowBtn.drawable.setLevel(
+                    if (DecodingInfo.isAssociate) 2
+                    else if (KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
+                )
             }
-            mCandidatesMenuAdapter.items = mFunItems
-        } else {
-            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar)mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
-            showViewVisibility(mCandidatesDataContainer)
-            mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2
-                else if(KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
-            )
         }
         activeCandNo = 0
         mCandidatesAdapter.activeCandidates(activeCandNo)
