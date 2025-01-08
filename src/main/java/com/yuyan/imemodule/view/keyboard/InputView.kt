@@ -914,12 +914,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo) {
         InputModeSwitcherManager.requestInputWithSkb(editorInfo)
-        if(!YuyanEmojiCompat.isWeChatInput || KeyboardManager.instance.currentContainer !is SymbolContainer)KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        else (KeyboardManager.instance.currentContainer as? SymbolContainer)?.setEmojisView(SymbolMode.Emojicon)
     }
 
     fun onWindowShown() {
         chinesePrediction = getInstance().input.chinesePrediction.getValue()
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
     fun onWindowHidden() {
