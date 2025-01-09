@@ -244,21 +244,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             } else {
                 listOf(menuSkbFunsPreset[SkbMenuMode.AddPhrases]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!)
             }
-        } else if (container is InputBaseContainer) {
-            if (DecodingInfo.isCandidatesListEmpty) {
-                mRightArrowBtn.drawable.setLevel(0)
-                showViewVisibility(mCandidatesMenuContainer)
-            } else {
-                if (DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(
-                    DecodingInfo.activeCandidateBar
-                )
-                showViewVisibility(mCandidatesDataContainer)
-                mRightArrowBtn.drawable.setLevel(
-                    if (DecodingInfo.isAssociate) 2
-                    else if (KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
-                )
-            }
-        } else {
+        } else if (DecodingInfo.isCandidatesListEmpty) {
+            mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
             val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
@@ -270,6 +257,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 }
             }
             mCandidatesMenuAdapter.items = mFunItems
+        } else {
+            if (DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
+            showViewVisibility(mCandidatesDataContainer)
+            mRightArrowBtn.drawable.setLevel(if (DecodingInfo.isAssociate) 2 else if (KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0)
         }
         activeCandNo = 0
         mCandidatesAdapter.activeCandidates(activeCandNo)

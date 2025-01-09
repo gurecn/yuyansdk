@@ -7,10 +7,10 @@ import com.yuyan.imemodule.database.entry.SkbFun
 
 @Dao
 interface SkbFunDao : BaseDao<SkbFun> {
-    @Query("select * from skbfun  where isKeep = 0 ORDER BY `index` DESC")
+    @Query("select * from skbfun  where isKeep = 0 ORDER BY `index` ASC")
     fun getAllMenu(): List<SkbFun>
 
-    @Query("select * from skbfun  where isKeep = 1 ORDER BY `index` DESC")
+    @Query("select * from skbfun  where isKeep = 1")
     fun getALlBarMenu(): List<SkbFun>
 
     @Query("select * from skbfun where name = :name AND isKeep = 1")
