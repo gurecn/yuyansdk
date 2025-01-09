@@ -9,6 +9,6 @@ data class SkbFun(
     var name: String,
     @ColumnInfo(name = "isKeep")
     var isKeep: Int = 0,
-    @ColumnInfo(name = "index")
-    var index: Int = 0,
+    @ColumnInfo(name = "position")
+    var position: Int = 0,
 )

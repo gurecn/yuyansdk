@@ -37,7 +37,7 @@ abstract class DataBaseKT : RoomDatabase() {
 
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE TABLE IF NOT EXISTS skbfun (name TEXT KEY NOT NULL, isKeep INTEGER NOT NULL, index INTEGER NOT NULL, PRIMARY KEY (name, isKeep))")
+                db.execSQL("CREATE TABLE IF NOT EXISTS skbfun (name TEXT KEY NOT NULL, isKeep INTEGER NOT NULL, position INTEGER NOT NULL, PRIMARY KEY (name, isKeep))")
             }
         }
 
@@ -88,21 +88,21 @@ abstract class DataBaseKT : RoomDatabase() {
                     SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1),
                     SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1),
 
-                    SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 0, index = 0),
-                    SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 0, index = 1),
-                    SkbFun(name = SkbMenuMode.KeyboardHeight.name, isKeep = 0, index = 2),
-                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 0, index = 3),
-                    SkbFun(name = SkbMenuMode.Phrases.name, isKeep = 0, index = 4),
-                    SkbFun(name = SkbMenuMode.DarkTheme.name, isKeep = 0, index = 5),
-                    SkbFun(name = SkbMenuMode.Feedback.name, isKeep = 0, index = 6),
-                    SkbFun(name = SkbMenuMode.OneHanded.name, isKeep = 0, index = 7),
-                    SkbFun(name = SkbMenuMode.NumberRow.name, isKeep = 0, index = 8),
-                    SkbFun(name = SkbMenuMode.JianFan.name, isKeep = 0, index = 9),
-                    SkbFun(name = SkbMenuMode.Mnemonic.name, isKeep = 0, index = 10),
-                    SkbFun(name = SkbMenuMode.FloatKeyboard.name, isKeep = 0, index = 11),
-                    SkbFun(name = SkbMenuMode.FlowerTypeface.name, isKeep = 0, index = 12),
-                    SkbFun(name = SkbMenuMode.Custom.name, isKeep = 0, index = 13),
-                    SkbFun(name = SkbMenuMode.Settings.name, isKeep = 0, index = 14),
+                    SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 0, position = 0),
+                    SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 0, position = 1),
+                    SkbFun(name = SkbMenuMode.KeyboardHeight.name, isKeep = 0, position = 2),
+                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 0, position = 3),
+                    SkbFun(name = SkbMenuMode.Phrases.name, isKeep = 0, position = 4),
+                    SkbFun(name = SkbMenuMode.DarkTheme.name, isKeep = 0, position = 5),
+                    SkbFun(name = SkbMenuMode.Feedback.name, isKeep = 0, position = 6),
+                    SkbFun(name = SkbMenuMode.OneHanded.name, isKeep = 0, position = 7),
+                    SkbFun(name = SkbMenuMode.NumberRow.name, isKeep = 0, position = 8),
+                    SkbFun(name = SkbMenuMode.JianFan.name, isKeep = 0, position = 9),
+                    SkbFun(name = SkbMenuMode.Mnemonic.name, isKeep = 0, position = 10),
+                    SkbFun(name = SkbMenuMode.FloatKeyboard.name, isKeep = 0, position = 11),
+                    SkbFun(name = SkbMenuMode.FlowerTypeface.name, isKeep = 0, position = 12),
+                    SkbFun(name = SkbMenuMode.Custom.name, isKeep = 0, position = 13),
+                    SkbFun(name = SkbMenuMode.Settings.name, isKeep = 0, position = 14),
                 )
                 instance.skbFunDao().insertAll(skbFuns)
             }

@@ -93,7 +93,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                     }
                     adapter?.notifyItemMoved(fromPosition, toPosition)
                     funItems.forEachIndexed {index, item ->
-                        DataBaseKT.instance.skbFunDao().update(SkbFun(name = item.skbMenuMode.name, isKeep = 0, index = index))
+                        DataBaseKT.instance.skbFunDao().update(SkbFun(name = item.skbMenuMode.name, isKeep = 0, position = index))
                     }
                     return true
                 }
