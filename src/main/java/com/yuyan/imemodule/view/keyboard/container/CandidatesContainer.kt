@@ -168,14 +168,14 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showCandidatesView() {
-        if (DecodingInfo.isCandidatesListEmpty) {
-            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate)mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
-            return
-        }
-        mCandidatesAdapter.notifyDataSetChanged()
-        if (InputModeSwitcherManager.isChineseT9) {
-            mRVLeftPrefix.visibility = VISIBLE
-            updatePrefixsView()
+        if (DecodingInfo.isCandidatesListEmpty || DecodingInfo.isAssociate){
+            mRVSymbolsView.removeAllViews()
+        } else {
+            mCandidatesAdapter.notifyDataSetChanged()
+            if (InputModeSwitcherManager.isChineseT9) {
+                mRVLeftPrefix.visibility = VISIBLE
+                updatePrefixsView()
+            }
         }
     }
 
