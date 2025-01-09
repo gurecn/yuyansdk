@@ -16,6 +16,7 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -74,8 +75,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         holder.entranceIconImageView?.getDrawable()?.setTint(color)
         if (dragOverListener != null) {
             holder.entranceOption?.visibility = View.VISIBLE
-            val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue()
-            if(keyboardBarMenuCommon.contains(item.skbMenuMode.name)){
+            if(DataBaseKT.instance.skbFunDao().getBarMenu(item.skbMenuMode.name) != null){
                 holder.entranceOption?.setImageResource(R.drawable.ic_menu_minus)
             } else {
                 holder.entranceOption?.setImageResource(R.drawable.ic_menu_plus)

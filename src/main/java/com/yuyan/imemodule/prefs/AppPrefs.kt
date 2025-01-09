@@ -9,8 +9,6 @@ import androidx.preference.PreferenceManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.application.CustomConstant
-import com.yuyan.imemodule.data.allSkbFuns
-import com.yuyan.imemodule.data.commonSkbFuns
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
@@ -40,10 +38,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardRightPaddingLandscapeFloat = int("keyboard_padding_right_landscape", DevicesUtils.dip2px(20))     //横屏悬浮模式右边距
         val keyboardBottomPadding = int("keyboard_padding_bottom_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮底边距
         val keyboardRightPadding = int("keyboard_padding_right_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮右边距
-
-        val keyboardBarMenuCommon = string("keyboard_bar_menu_common", commonSkbFuns.joinToString())     //缓存候选词菜单栏
-        val keyboardSettingMenuAll = string("keyboard_bar_menu_all", allSkbFuns.joinToString())     //缓存候键盘设置菜单
-
         val clipboardUpdateTime = long("clipboard_update_time", 0)     //剪切板更新时间
         val clipboardUpdateContent = string("clipboard_update_content","")     //剪切板更新内容
         val fullDisplayKeyboardEnable = bool("full_display_keyboard_enable", true)     //全面屏键盘优化

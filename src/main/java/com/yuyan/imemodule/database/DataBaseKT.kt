@@ -9,20 +9,24 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.database.dao.ClipboardDao
 import com.yuyan.imemodule.database.dao.PhraseDao
 import com.yuyan.imemodule.database.dao.SideSymbolDao
+import com.yuyan.imemodule.database.dao.SkbFunDao
 import com.yuyan.imemodule.database.dao.UsedSymbolDao
 import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.database.entry.SideSymbol
+import com.yuyan.imemodule.database.entry.SkbFun
 import com.yuyan.imemodule.database.entry.UsedSymbol
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 
 //@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class], version = 1, exportSchema = false)
-@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class, Phrase::class], version = 2, exportSchema = false)
+@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class, Phrase::class, SkbFun::class], version = 3, exportSchema = false)
 abstract class DataBaseKT : RoomDatabase() {
     abstract fun sideSymbolDao(): SideSymbolDao
     abstract fun clipboardDao(): ClipboardDao
     abstract fun usedSymbolDao(): UsedSymbolDao
     abstract fun phraseDao(): PhraseDao
+    abstract fun skbFunDao(): SkbFunDao
     companion object {
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -31,9 +35,16 @@ abstract class DataBaseKT : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS skbfun (name TEXT KEY NOT NULL, isKeep INTEGER NOT NULL, index INTEGER NOT NULL, PRIMARY KEY (name, isKeep))")
+            }
+        }
+
         val instance = Room.databaseBuilder(ImeSdkApplication.context, DataBaseKT::class.java, "ime_db")
             .allowMainThreadQueries()
             .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_2_3)
             .addCallback(object :Callback(){
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
@@ -62,15 +73,39 @@ abstract class DataBaseKT : RoomDatabase() {
         }
 
         private fun initPhrasesDb() {  //初始化常用语数据数据
-            if(instance.phraseDao().getAll().isNotEmpty())return
-            val phrases = listOf(
-                Phrase(content = "我的电话是__，常联系。", t9 = "9334", qwerty = "wddh", lx17 = ""),
-                Phrase(content = "抱歉，我现在不方便接电话，稍后联系。", t9 = "2799", qwerty = "bqwx", lx17 = ""),
-                Phrase(content = "我正在开会，有急事请发短信。", t9 = "9995", qwerty = "wzzk", lx17 = ""),
-                Phrase(content = "我很快就到，请稍微等一会儿。", t9 = "9455", qwerty = "whkj", lx17 = ""),
-                Phrase(content = "麻烦放驿站，谢谢。", t9 = "6339", qwerty = "mffy", lx17 = ""),
-            )
-            instance.phraseDao().insertAll(phrases)
+            if(instance.phraseDao().getAll().isEmpty()) {
+                val phrases = listOf(
+                    Phrase(content = "我的电话是__，常联系。", t9 = "9334", qwerty = "wddh", lx17 = ""),
+                    Phrase(content = "抱歉，我现在不方便接电话，稍后联系。", t9 = "2799", qwerty = "bqwx", lx17 = ""),
+                    Phrase(content = "我正在开会，有急事请发短信。", t9 = "9995", qwerty = "wzzk", lx17 = ""),
+                    Phrase(content = "我很快就到，请稍微等一会儿。", t9 = "9455", qwerty = "whkj", lx17 = ""),
+                    Phrase(content = "麻烦放驿站，谢谢。", t9 = "6339", qwerty = "mffy", lx17 = ""),
+                )
+                instance.phraseDao().insertAll(phrases)
+            }
+            if(instance.skbFunDao().getAllMenu().isEmpty()) {
+                val skbFuns = listOf(
+                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1, index = 0),
+                    SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1, index = 1),
+
+                    SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 0, index = 0),
+                    SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 0, index = 1),
+                    SkbFun(name = SkbMenuMode.KeyboardHeight.name, isKeep = 0, index = 2),
+                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 0, index = 3),
+                    SkbFun(name = SkbMenuMode.Phrases.name, isKeep = 0, index = 4),
+                    SkbFun(name = SkbMenuMode.DarkTheme.name, isKeep = 0, index = 5),
+                    SkbFun(name = SkbMenuMode.Feedback.name, isKeep = 0, index = 6),
+                    SkbFun(name = SkbMenuMode.OneHanded.name, isKeep = 0, index = 7),
+                    SkbFun(name = SkbMenuMode.NumberRow.name, isKeep = 0, index = 8),
+                    SkbFun(name = SkbMenuMode.JianFan.name, isKeep = 0, index = 9),
+                    SkbFun(name = SkbMenuMode.Mnemonic.name, isKeep = 0, index = 10),
+                    SkbFun(name = SkbMenuMode.FloatKeyboard.name, isKeep = 0, index = 11),
+                    SkbFun(name = SkbMenuMode.FlowerTypeface.name, isKeep = 0, index = 12),
+                    SkbFun(name = SkbMenuMode.Custom.name, isKeep = 0, index = 13),
+                    SkbFun(name = SkbMenuMode.Settings.name, isKeep = 0, index = 14),
+                )
+                instance.skbFunDao().insertAll(skbFuns)
+            }
         }
     }
 }

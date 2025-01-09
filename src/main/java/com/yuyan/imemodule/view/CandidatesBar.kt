@@ -22,6 +22,7 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -247,21 +248,6 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             if (DecodingInfo.isCandidatesListEmpty) {
                 mRightArrowBtn.drawable.setLevel(0)
                 showViewVisibility(mCandidatesMenuContainer)
-                val mFunItems: MutableList<SkbFunItem> = mutableListOf()
-                val keyboardBarMenuCommon =
-                    AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
-                for (item in keyboardBarMenuCommon) {
-                    if (item.isNotBlank()) {
-                        val skbMenuMode = SkbMenuMode.decode(item)
-                        if (skbMenuMode != SkbMenuMode.CloseSKB) {
-                            val skbFunItem = menuSkbFunsPreset[skbMenuMode]
-                            if (skbFunItem != null) {
-                                mFunItems.add(skbFunItem)
-                            }
-                        }
-                    }
-                }
-                mCandidatesMenuAdapter.items = mFunItems
             } else {
                 if (DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(
                     DecodingInfo.activeCandidateBar
@@ -272,6 +258,18 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     else if (KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
                 )
             }
+        } else {
+            showViewVisibility(mCandidatesMenuContainer)
+            val mFunItems: MutableList<SkbFunItem> = mutableListOf()
+            val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
+            for (item in barMenus) {
+                val skbMenuMode = SkbMenuMode.decode(item.name)
+                val skbFunItem = menuSkbFunsPreset[skbMenuMode]
+                if (skbFunItem != null) {
+                    mFunItems.add(skbFunItem)
+                }
+            }
+            mCandidatesMenuAdapter.items = mFunItems
         }
         activeCandNo = 0
         mCandidatesAdapter.activeCandidates(activeCandNo)

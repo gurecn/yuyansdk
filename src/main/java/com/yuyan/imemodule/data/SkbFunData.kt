@@ -5,30 +5,6 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 
-val commonSkbFuns = arrayOf(
-    SkbMenuMode.ClipBoard.name,
-    SkbMenuMode.Emojicon.name,
-)
-
-val allSkbFuns = arrayOf(
-    SkbMenuMode.Emojicon.name,
-    SkbMenuMode.SwitchKeyboard.name,
-    SkbMenuMode.KeyboardHeight.name,
-    SkbMenuMode.ClipBoard.name,
-    SkbMenuMode.Phrases.name,
-    SkbMenuMode.DarkTheme.name,
-    SkbMenuMode.Feedback.name,
-    SkbMenuMode.OneHanded.name,
-    SkbMenuMode.NumberRow.name,
-    SkbMenuMode.JianFan.name,
-    SkbMenuMode.Mnemonic.name,
-    SkbMenuMode.FloatKeyboard.name,
-    SkbMenuMode.FlowerTypeface.name,
-    SkbMenuMode.Custom.name,
-    SkbMenuMode.Settings.name,
-)
-
-
 val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
     SkbMenuMode.Emojicon to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoji_setting), R.drawable.ic_menu_emoji, SkbMenuMode.Emojicon),
     SkbMenuMode.SwitchKeyboard to SkbFunItem(ImeSdkApplication.context.getString(R.string.changeKeyboard), R.drawable.ic_menu_keyboard, SkbMenuMode.SwitchKeyboard),

@@ -12,6 +12,8 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.SkbFun
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -59,12 +61,9 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
      */
     fun showSettingsView() {
         funItems.clear()
-        val keyboardMenu = AppPrefs.getInstance().internal.keyboardSettingMenuAll.getValue().split(", ")
-        for(item in keyboardMenu){
-            val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item)]
-            if(skbMenuMode != null){
-                funItems.add(skbMenuMode)
-            }
+        for(item in DataBaseKT.instance.skbFunDao().getAllMenu()){
+            val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item.name)]
+            if(skbMenuMode != null)funItems.add(skbMenuMode)
         }
         adapter = MenuAdapter(context, funItems)
         adapter?.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -93,8 +92,9 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                         }
                     }
                     adapter?.notifyItemMoved(fromPosition, toPosition)
-                    val funItemNames =  funItems.joinToString(separator = ", "){it.skbMenuMode.name}
-                    AppPrefs.getInstance().internal.keyboardSettingMenuAll.setValue(funItemNames)
+                    funItems.forEachIndexed {index, item ->
+                        DataBaseKT.instance.skbFunDao().update(SkbFun(name = item.skbMenuMode.name, isKeep = 0, index = index))
+                    }
                     return true
                 }
 
@@ -110,13 +110,12 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                     itemTouchHelper.startDrag(holder)
                 }
                 override fun onOptionClick(parent: RecyclerView.Adapter<*>?, v: SkbFunItem, position: Int) {
-                    val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ").toMutableList()
-                    if(keyboardBarMenuCommon.contains(v.skbMenuMode.name)){
-                        keyboardBarMenuCommon.remove(v.skbMenuMode.name)
+                    val barMenu = DataBaseKT.instance.skbFunDao().getBarMenu(v.skbMenuMode.name)
+                    if(barMenu == null){
+                        DataBaseKT.instance.skbFunDao().insert(SkbFun(name = v.skbMenuMode.name, isKeep = 1))
                     } else {
-                        keyboardBarMenuCommon.add(v.skbMenuMode.name)
+                        DataBaseKT.instance.skbFunDao().delete(SkbFun(name = v.skbMenuMode.name, isKeep = 1))
                     }
-                    AppPrefs.getInstance().internal.keyboardBarMenuCommon.setValue(keyboardBarMenuCommon.joinToString())
                     inputView.updateCandidateBar()
                     adapter?.notifyDataSetChanged()
                 }
