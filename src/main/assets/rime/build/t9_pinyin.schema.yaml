@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1733884780
-    default.custom: 1733884780
+    default: 1737002195
+    default.custom: 1737002195
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1733884780
+    t9_pinyin.schema: 1737002195
 corrector: "{comment}"
 emoji:
   inherit_comment: false

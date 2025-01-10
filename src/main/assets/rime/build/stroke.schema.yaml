@@ -1,17 +1,13 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1733884780
-    default.custom: 1733884780
+    default: 1737002195
+    default.custom: 1737002195
     stroke.custom: 0
-    stroke.schema: 1733884780
+    stroke.schema: 1737002195
 abc_segmentor:
   extra_tags:
     - reverse_lookup
-emoji:
-  inherit_comment: false
-  opencc_config: emoji.json
-  option_name: emoji
 engine:
   processors:
     - ascii_composer
@@ -57,13 +53,8 @@ reverse_lookup:
   comment_format:
     - "xlit/hspnz/⼀⼁⼃⼂⼄/"
   dictionary: stroke
-  preedit_format:
-    - "xform/([nl])v/$1ü/"
-    - "xform/([nl])ue/$1üe/"
-    - "xform/([jqxy])v/$1u/"
   prefix: "`"
   suffix: "'"
-  tips: "〔拼音〕"
 schema:
   description: |
     五笔画：语燕输入法
@@ -77,18 +68,13 @@ speller:
   alphabet: abcdefghijklmnopqrstuvwxyz
   delimiter: " '"
 switches:
-  - name: traditionalization
-    states: ["简", "繁"]
-  - name: emoji
-    reset: 1
-    states: ["💀", "😄"]
-traditionalize:
-  opencc_config: s2t.json
-  option_name: traditionalization
-  tags:
-    - abc
-    - number
-  tips: none
+  - name: ascii_mode
+    reset: 0
+    states: ["中文", "西文"]
+  - name: full_shape
+    states: ["半角", "全角"]
+  - name: ascii_punct
+    states: ["。，", "．，"]
 translator:
   comment_format:
     - "xform/~//"
