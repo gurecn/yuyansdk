@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
  * Main class of the Pinyin input method. 输入法服务
  */
 class ImeService : InputMethodService() {
+    private var isWindowShown = false // 键盘窗口是否已显示
     private lateinit var mInputView: InputView
     private val clipboardItemTimeout = getInstance().clipboard.clipboardItemTimeout.getValue()
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme() }
@@ -59,8 +60,8 @@ class ImeService : InputMethodService() {
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        mInputView.onStartInputView(editorInfo)
         YuyanEmojiCompat.setEditorInfo(editorInfo)
+        mInputView.onStartInputView(editorInfo)
         if(getInstance().clipboard.clipboardSuggestion.getValue()){
             val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
             if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
@@ -139,12 +140,15 @@ class ImeService : InputMethodService() {
     }
 
     override fun onWindowShown() {
+        if(isWindowShown) return
+        isWindowShown = true
         if (::mInputView.isInitialized) mInputView.onWindowShown()
         super.onWindowShown()
     }
 
     override fun onWindowHidden() {
-        if (::mInputView.isInitialized) mInputView.onWindowHidden()
+        isWindowShown = false
+        if(::mInputView.isInitialized) mInputView.onWindowHidden()
         super.onWindowHidden()
     }
 }

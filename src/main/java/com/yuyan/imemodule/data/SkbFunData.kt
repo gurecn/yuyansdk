@@ -5,32 +5,8 @@ import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 
-val commonSkbFuns = arrayOf(
-    SkbMenuMode.ClipBoard.name,
-    SkbMenuMode.EmojiKeyboard.name,
-)
-
-val allSkbFuns = arrayOf(
-    SkbMenuMode.EmojiKeyboard.name,
-    SkbMenuMode.SwitchKeyboard.name,
-    SkbMenuMode.KeyboardHeight.name,
-    SkbMenuMode.ClipBoard.name,
-    SkbMenuMode.Phrases.name,
-    SkbMenuMode.DarkTheme.name,
-    SkbMenuMode.Feedback.name,
-    SkbMenuMode.OneHanded.name,
-    SkbMenuMode.NumberRow.name,
-    SkbMenuMode.JianFan.name,
-    SkbMenuMode.Mnemonic.name,
-    SkbMenuMode.FloatKeyboard.name,
-    SkbMenuMode.FlowerTypeface.name,
-    SkbMenuMode.Custom.name,
-    SkbMenuMode.Settings.name,
-)
-
-
 val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
-    SkbMenuMode.EmojiKeyboard to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoji_setting), R.drawable.ic_menu_emoji, SkbMenuMode.EmojiKeyboard),
+    SkbMenuMode.Emojicon to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoji_setting), R.drawable.ic_menu_emoji, SkbMenuMode.Emojicon),
     SkbMenuMode.SwitchKeyboard to SkbFunItem(ImeSdkApplication.context.getString(R.string.changeKeyboard), R.drawable.ic_menu_keyboard, SkbMenuMode.SwitchKeyboard),
     SkbMenuMode.KeyboardHeight to SkbFunItem(ImeSdkApplication.context.getString(R.string.setting_ime_keyboard_height), R.drawable.ic_menu_height, SkbMenuMode.KeyboardHeight),
     SkbMenuMode.ClipBoard to SkbFunItem(ImeSdkApplication.context.getString(R.string.clipboard), R.drawable.ic_menu_clipboard, SkbMenuMode.ClipBoard),
@@ -47,7 +23,6 @@ val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
     SkbMenuMode.Settings to SkbFunItem(ImeSdkApplication.context.getString(R.string.skb_item_settings), R.drawable.ic_menu_setting, SkbMenuMode.Settings),
     SkbMenuMode.CloseSKB to SkbFunItem(ImeSdkApplication.context.getString(R.string.keyboard_iv_menu_close), R.drawable.ic_menu_arrow_down, SkbMenuMode.CloseSKB),
     SkbMenuMode.ClearClipBoard to SkbFunItem(ImeSdkApplication.context.getString(R.string.clipboard_clear), R.drawable.ic_menu_delete, SkbMenuMode.ClearClipBoard),
-    SkbMenuMode.EmojiHot to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoji_hot), R.drawable.ic_menu_emoji_hot, SkbMenuMode.EmojiHot),
-    SkbMenuMode.Emoticons to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoticons), R.drawable.ic_menu_emoji_emoticons, SkbMenuMode.Emoticons),
+    SkbMenuMode.Emoticon to SkbFunItem(ImeSdkApplication.context.getString(R.string.emoticons), R.drawable.ic_menu_emoji_emoticons, SkbMenuMode.Emoticon),
     SkbMenuMode.AddPhrases to SkbFunItem(ImeSdkApplication.context.getString(R.string.add_phrases), R.drawable.ic_menu_plus, SkbMenuMode.AddPhrases),
     )

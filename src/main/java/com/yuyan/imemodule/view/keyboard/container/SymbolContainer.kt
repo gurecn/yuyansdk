@@ -18,18 +18,24 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.SymbolPagerAdapter
-import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.emojicon.EmojiconData
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.UsedSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import splitties.dimensions.dp
+import kotlin.random.Random
 
 
 /**
@@ -42,7 +48,7 @@ import splitties.dimensions.dp
  */
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
-    private var mShowType = 0
+    private var mShowType: SymbolMode = SymbolMode.Symbol
     private var mVPSymbolsView: ViewPager2
     private var tabLayout: TabLayout
     private val ivDelete: ImageView
@@ -156,33 +162,74 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
 
     private fun onItemClickOperate(value: String) {
         val result = value.replace("[ \\r]".toRegex(), "")
-        if (mShowType < CustomConstant.EMOJI_TYPR_FACE_DATA) {  // 非表情键盘
-            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
-            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        } else {  //表情、颜文字
-            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = "emoji"))
-        }
         val softKey = SoftKey(result)
         DevicesUtils.tryPlayKeyDown(softKey)
         DevicesUtils.tryVibrate(this)
-        inputView.responseKeyEvent(softKey)
+        if (mShowType == SymbolMode.Symbol) {  // 非表情键盘
+            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
+            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            inputView.responseKeyEvent(softKey)
+        } else {  //表情、颜文字
+            if(!YuyanEmojiCompat.isWeChatInput || mVPSymbolsView.currentItem != 1 ) {
+                DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = "emoji"))
+                inputView.responseKeyEvent(softKey)
+            } else {
+                val emojions = EmojiconData.wechatEmojiconData[value]
+                if(emojions?.isNotEmpty() == true) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        emojions[Random.nextInt(emojions.size)].forEach {
+                            inputView.responseKeyEvent(SoftKey(it))
+                            inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_ENTER))
+                            delay(100)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
      * 切换显示界面
      */
-    fun setSymbolsView(showType: Int) {
-        mShowType = showType
-        isLockSymbol = mShowType > CustomConstant.EMOJI_TYPR_FACE_DATA   // 符号键默认未锁定，表情键盘默认锁定
-        ivDelete.setImageResource( if(isLockSymbol) R.drawable.sdk_skb_key_delete_icon else R.drawable.icon_symbol_lock)
+    fun setSymbolsView() {
+        mShowType = SymbolMode.Symbol
+        isLockSymbol = false   // 符号键默认未锁定，表情键盘默认锁定
+        ivDelete.setImageResource(R.drawable.icon_symbol_lock)
         ivDelete.drawable.setTint(activeTheme.keyTextColor)
-        var pos = 0
+        val mSymbolsEmoji = EmojiconData.symbolData
+        mVPSymbolsView.adapter = SymbolPagerAdapter(context, mSymbolsEmoji, mShowType){ symbol, _ ->
+            onItemClickOperate(symbol)
+        }
+        val data = mSymbolsEmoji.keys.toList()
+        TabLayoutMediator(tabLayout, mVPSymbolsView) { tab, position ->
+            tab.view.background = null
+            tab.setCustomView(ImageView(context).apply {
+                setImageDrawable(ContextCompat.getDrawable(context,data[position]).apply {
+                    this?.setTint(activeTheme.keyTextColor)
+                })
+            })
+            tab.view.setPadding(dp(5))
+        }.attach()
+        mVPSymbolsView.currentItem = 0
+    }
+
+    /**
+     * 切换显示界面
+     */
+    fun setEmojisView(showType: SymbolMode) {
+        mShowType = showType
+        isLockSymbol = true   // 符号键默认未锁定，表情键盘默认锁定
+        ivDelete.setImageResource(R.drawable.sdk_skb_key_delete_icon)
+        ivDelete.drawable.setTint(activeTheme.keyTextColor)
         val mSymbolsEmoji = when (mShowType) {
-            5 -> EmojiconData.emoticonData
-            4 -> EmojiconData.emojiconData
+            SymbolMode.Emoticon -> EmojiconData.emoticonData
             else -> {
-                pos = showType
-                EmojiconData.symbolData
+                if (!YuyanEmojiCompat.isWeChatInput) {
+                    val data = LinkedHashMap<Int, List<String>>()
+                    data.putAll(EmojiconData.emojiconData)
+                    data.remove(R.drawable.icon_emojibar_wechat)
+                    data
+                } else EmojiconData.emojiconData
             }
         }
         mVPSymbolsView.adapter = SymbolPagerAdapter(context, mSymbolsEmoji, mShowType){ symbol, _ ->
@@ -192,16 +239,15 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         TabLayoutMediator(tabLayout, mVPSymbolsView) { tab, position ->
             tab.view.background = null
             tab.setCustomView(ImageView(context).apply {
-                setImageDrawable(ContextCompat.getDrawable(context,data[position].icon).apply {
+                setImageDrawable(ContextCompat.getDrawable(context,data[position]).apply {
                     this?.setTint(activeTheme.keyTextColor)
                 })
             })
             tab.view.setPadding(dp(5))
         }.attach()
-        mVPSymbolsView.currentItem = pos
     }
 
-    fun getMenuMode(): Int {
+    fun getMenuMode(): SymbolMode {
         return mShowType
     }
 }

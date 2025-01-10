@@ -92,7 +92,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(ivDelete)
         mCandidatesAdapter = CandidatesAdapter(context)
         mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            inputView.onChoiceTouched(position)
+            DevicesUtils.tryPlayKeyDown()
+            DevicesUtils.tryVibrate(this)
+            inputView.chooseAndUpdate(position)
             mRVSymbolsView.scrollToPosition(0)
         }
         val manager = CustomFlexboxLayoutManager(context)
@@ -168,14 +170,14 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showCandidatesView() {
-        if (DecodingInfo.isCandidatesListEmpty) {
-            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate)mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
-            return
-        }
-        mCandidatesAdapter.notifyDataSetChanged()
-        if (InputModeSwitcherManager.isChineseT9) {
-            mRVLeftPrefix.visibility = VISIBLE
-            updatePrefixsView()
+        if (DecodingInfo.isCandidatesListEmpty || DecodingInfo.isAssociate){
+            mRVSymbolsView.removeAllViews()
+        } else {
+            mCandidatesAdapter.notifyDataSetChanged()
+            if (InputModeSwitcherManager.isChineseT9) {
+                mRVLeftPrefix.visibility = VISIBLE
+                updatePrefixsView()
+            }
         }
     }
 

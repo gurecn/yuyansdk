@@ -1,6 +1,6 @@
 package com.yuyan.imemodule.entity.keyboard
 
-import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 /**
  * Class used to represent a soft keyboard definition, including the height, the
  * background image, the image for high light, the keys, etc.
@@ -14,7 +14,7 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
      * Rows in this soft keyboard. Each row has a id. Only matched rows will be
      * enabled. 按键排列的行的链表，每个元素都是一行。
      */
-    private var mKeyRows = listOf<List<SoftKey>>()
+    var mKeyRows = listOf<List<SoftKey>>()
 
     fun setSkbValue(skbValue: Int) {
         this.skbValue = skbValue
@@ -52,14 +52,12 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
         /**
          * 按键左右间隔距离
          */
-        get() = (instance.keyXMargin * skbCoreWidth).toInt()
+        get() = (EnvironmentSingleton.instance.keyXMargin * skbCoreWidth).toInt()
     val keyYMargin: Int
         /**
          * 按键上下间隔距离
          */
-        get() = (instance.keyYMargin * skbCoreHeight).toInt()
-    val row: List<List<SoftKey>>
-        get() = mKeyRows
+        get() = (EnvironmentSingleton.instance.keyYMargin * skbCoreHeight).toInt()
 
     /**
      * 根据坐标查找按键，如果坐标在某个按键区域内，就返回这个按键，如果坐标不在所有的按键区域内，返回离它最近的按键。

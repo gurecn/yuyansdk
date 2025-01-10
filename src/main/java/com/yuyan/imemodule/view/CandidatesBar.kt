@@ -22,6 +22,7 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -143,7 +144,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 isClickable = true
                 isEnabled = true
                 setPadding(mMenuPadding, 0,mMenuPadding/2,0)
-                setOnClickListener{mCvListener.onClickSetting()}
+                setOnClickListener{mCvListener.onClickMenu(SkbMenuMode.SettingsMenu)}
             }
             mLlContainer = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
@@ -233,49 +234,46 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     /**
      * 显示候选词
      */
-    fun showCandidates(showType: Int = 0) {
+    fun showCandidates() {
         val container = KeyboardManager.instance.currentContainer
         mIvMenuSetting.drawable.setLevel( if(container is InputBaseContainer) 0 else 1)
         if (container is ClipBoardContainer) {
             showViewVisibility(mCandidatesMenuContainer)
             mCandidatesMenuAdapter.items = if(container.getMenuMode() == SkbMenuMode.ClipBoard) {
-                listOf(menuSkbFunsPreset[SkbMenuMode.decode("ClearClipBoard")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
-                )
+                listOf(menuSkbFunsPreset[SkbMenuMode.ClearClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!)
             } else {
-                listOf(menuSkbFunsPreset[SkbMenuMode.decode("AddPhrases")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("ClipBoard")]!!,
-                    menuSkbFunsPreset[SkbMenuMode.decode("Phrases")]!!
-                )
+                listOf(menuSkbFunsPreset[SkbMenuMode.AddPhrases]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!)
             }
-        } else if (showType == CustomConstant.EMOJI_TYPR_FACE_DATA || showType == CustomConstant.EMOJI_TYPR_SMILE_TEXT) {
-            showViewVisibility(mCandidatesMenuContainer)
-            mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.decode("Emoticons")]!!,menuSkbFunsPreset[SkbMenuMode.decode("EmojiKeyboard")]!!)
         } else if (DecodingInfo.isCandidatesListEmpty) {
             mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
-            val keyboardBarMenuCommon = AppPrefs.getInstance().internal.keyboardBarMenuCommon.getValue().split(", ")
-            for (item in keyboardBarMenuCommon) {
-                if(item.isNotBlank()) {
-                    val skbMenuMode = SkbMenuMode.decode(item)
-                    if(skbMenuMode != SkbMenuMode.CloseSKB) {
-                        val skbFunItem = menuSkbFunsPreset[skbMenuMode]
-                        if (skbFunItem != null) {
-                            mFunItems.add(skbFunItem)
-                        }
-                    }
+            val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
+            for (item in barMenus) {
+                val skbMenuMode = SkbMenuMode.decode(item.name)
+                val skbFunItem = menuSkbFunsPreset[skbMenuMode]
+                if (skbFunItem != null) {
+                    mFunItems.add(skbFunItem)
                 }
             }
             mCandidatesMenuAdapter.items = mFunItems
         } else {
-            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar)mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
+            if (DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
             showViewVisibility(mCandidatesDataContainer)
-            mRightArrowBtn.drawable.setLevel(if(DecodingInfo.isAssociate) 2
-                else if(KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0
-            )
+            mRightArrowBtn.drawable.setLevel(if (DecodingInfo.isAssociate) 2 else if (KeyboardManager.instance.currentContainer is CandidatesContainer) 1 else 0)
         }
+        activeCandNo = 0
+        mCandidatesAdapter.activeCandidates(activeCandNo)
+        mCandidatesAdapter.notifyChanged()
+        mCandidatesMenuAdapter.notifyChanged()
+    }
+
+    /**
+     * 显示表情
+     */
+    fun showEmoji() {
+        showViewVisibility(mCandidatesMenuContainer)
+        mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.Emoticon]!!,menuSkbFunsPreset[SkbMenuMode.Emojicon]!!)
         activeCandNo = 0
         mCandidatesAdapter.activeCandidates(activeCandNo)
         mCandidatesAdapter.notifyChanged()
