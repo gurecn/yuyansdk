@@ -168,7 +168,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         mNormalKeyTextSizeSmall = env.keyTextSmallSize
         val keyXMargin = mSoftKeyboard!!.keyXMargin
         val keyYMargin = mSoftKeyboard!!.keyYMargin
-        for (softKeys in mSoftKeyboard!!.row) {
+        for (softKeys in mSoftKeyboard!!.mKeyRows) {
             for (softKey in softKeys) {
                 if (drawSingleKey && invalidatedKey !== softKey) continue
                 canvas?.let { drawSoftKey(it, softKey, keyXMargin, keyYMargin) }

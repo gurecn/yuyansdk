@@ -75,7 +75,21 @@ object RimeEngine {
     fun getNextPageCandidates(): Array<CandidateListItem> {
         return if (Rime.hasRight()) {
             Rime.processKey(getRimeKeycodeByName("Page_Down"), 0)
-            Rime.getRimeContext()!!.candidates
+           val candidates = Rime.getRimeContext()!!.candidates
+            if (InputModeSwitcherManager.isEnglishUpperCase) {
+                for (item in candidates) {
+                    item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                }
+            } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
+                for (item in candidates) {
+                    item.text = item.text.uppercase()
+                }
+            } else {
+                for (item in candidates) {
+                    item.text = item.text.lowercase()
+                }
+            }
+            candidates
         } else emptyArray()
     }
 
@@ -170,6 +184,11 @@ object RimeEngine {
                 item.text = item.text.uppercase()
             }
             composition = composition.uppercase()
+        } else {
+            for (item in candidates) {
+                item.text = item.text.lowercase()
+            }
+            composition = composition.lowercase()
         }
         var count = Rime.compositionText.count { it in '1'..'9' }
         pinyins =
