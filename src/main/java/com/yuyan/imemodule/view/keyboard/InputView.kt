@@ -518,7 +518,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 选择候选词，并根据条件是否进行下一步的预报。
      * @param candId 选择索引
      */
-    private fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
+    fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
         val candidate = DecodingInfo.getCandidate(candId)
         if(candidate?.comment == "📋"){  // 处理剪贴板或常用语
             commitDecInfoText(candidate.text)
@@ -527,6 +527,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
             if (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
             } else {  // 不上屏，继续选择
                 if (!DecodingInfo.isFinish) {
@@ -572,44 +574,22 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     /**
-     * 选择候选词后的处理函数。
-     */
-    fun onChoiceTouched(activeCandNo: Int) {
-        DevicesUtils.tryPlayKeyDown()
-        DevicesUtils.tryVibrate(this)
-        chooseAndUpdate(activeCandNo)
-        if(DecodingInfo.isFinish || DecodingInfo.isAssociate) {
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-            (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-        }
-    }
-
-    /**
      * 当用户选择了候选词或者在候选词视图滑动了手势时的通知输入法。实现了候选词视图的监听器CandidateViewListener，
      * 有选择候选词的处理函数、隐藏键盘的事件
      */
     inner class ChoiceNotifier internal constructor() : CandidateViewListener {
         override fun onClickChoice(choiceId: Int) {
-            onChoiceTouched(choiceId)
+            DevicesUtils.tryPlayKeyDown()
+            DevicesUtils.tryVibrate(KeyboardManager.instance.currentContainer)
+            chooseAndUpdate(choiceId)
         }
 
         override fun onClickMore(level: Int) {
             if (level == 0) {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
-                (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
+                onSettingsMenuClick(SkbMenuMode.CandidatesMore)
             } else {
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-            }
-        }
-
-        override fun onClickSetting() {
-            if (KeyboardManager.instance.isInputKeyboard) {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSettingsView()
-                updateCandidateBar()
-            } else {
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
         }
 

@@ -11,6 +11,7 @@ import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
@@ -123,6 +124,19 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         }
         SkbMenuMode.CloseSKB -> {
             inputView.requestHideSelf()
+        }
+        SkbMenuMode.SettingsMenu -> {
+            if (KeyboardManager.instance.isInputKeyboard) {
+                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
+                (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSettingsView()
+                inputView.updateCandidateBar()
+            } else {
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            }
+        }
+        SkbMenuMode.CandidatesMore -> {
+            KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
+            (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
         }
         else ->{}
     }

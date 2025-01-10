@@ -144,7 +144,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 isClickable = true
                 isEnabled = true
                 setPadding(mMenuPadding, 0,mMenuPadding/2,0)
-                setOnClickListener{mCvListener.onClickSetting()}
+                setOnClickListener{mCvListener.onClickMenu(SkbMenuMode.SettingsMenu)}
             }
             mLlContainer = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL

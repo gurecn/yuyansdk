@@ -92,7 +92,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(ivDelete)
         mCandidatesAdapter = CandidatesAdapter(context)
         mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            inputView.onChoiceTouched(position)
+            DevicesUtils.tryPlayKeyDown()
+            DevicesUtils.tryVibrate(this)
+            inputView.chooseAndUpdate(position)
             mRVSymbolsView.scrollToPosition(0)
         }
         val manager = CustomFlexboxLayoutManager(context)
