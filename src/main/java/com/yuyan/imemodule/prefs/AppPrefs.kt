@@ -102,6 +102,11 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val emojiInput = switch(
             R.string.emoji_input, "emoji_input_enable", true
         )
+
+        val titleSymbol = category(R.string.symbol_setting)
+        val symbolPairInput = switch(
+            R.string.symbol_pair_input, "symbol_pair_input_enable", true
+        )
     }
 
     inner class KeyboardSetting : ManagedPreferenceCategory(R.string.setting_ime_keyboard, sharedPreferences) {

@@ -746,8 +746,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mEtAddPhrasesContent?.commitText(text)
         } else {
             val ic = service.getCurrentInputConnection()
-            ic?.commitText(text + SymbolPreset[text]!!, 1)
-            moveCursorPosition(KeyEvent.KEYCODE_DPAD_LEFT)
+            if(getInstance().input.symbolPairInput.getValue()) {
+                ic?.commitText(text + SymbolPreset[text]!!, 1)
+                moveCursorPosition(KeyEvent.KEYCODE_DPAD_LEFT)
+            } else ic?.commitText(text, 1)
         }
     }
 

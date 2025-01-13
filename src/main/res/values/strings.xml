@@ -30,6 +30,8 @@
     <string name="space_auto">英文单词自动追加空格</string>
     <string name="emoji_setting">表情输入</string>
     <string name="emoji_input">候选词中显示Emoji表情</string>
+    <string name="symbol_setting">符号输入</string>
+    <string name="symbol_pair_input">成对符号自动匹配</string>
     <!-- Used by the toggle keys in soft keyboards. -->
     <string name="cancel">取消</string>
     <!--键盘设置条目-->
