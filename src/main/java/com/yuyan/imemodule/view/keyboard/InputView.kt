@@ -747,7 +747,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             val ic = service.getCurrentInputConnection()
             ic?.commitText(text + SymbolPreset[text]!!, 1)
-            ic.commitText("", -1)
+            moveCursorPosition(KeyEvent.KEYCODE_DPAD_LEFT)
         }
     }
 
