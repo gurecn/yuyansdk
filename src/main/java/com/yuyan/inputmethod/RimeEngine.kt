@@ -166,10 +166,12 @@ object RimeEngine {
         if (rimeCommit != null) {
             keyRecordStack.clear()
             preCommitText = rimeCommit.commitText
-            if (InputModeSwitcherManager.isEnglishUpperCase) {
-                preCommitText = preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            preCommitText = if (InputModeSwitcherManager.isEnglishUpperCase) {
+                preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
-                preCommitText = preCommitText.uppercase()
+                preCommitText.uppercase()
+            } else {
+                preCommitText.lowercase()
             }
             showComposition = ""
             showCandidates = emptyList()
