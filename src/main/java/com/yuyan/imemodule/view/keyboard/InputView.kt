@@ -52,7 +52,6 @@ import com.yuyan.imemodule.view.FullDisplayKeyboardBar
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.view.keyboard.container.InputViewParent
-import com.yuyan.imemodule.view.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
@@ -60,7 +59,6 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.core.CandidateListItem
-import com.yuyan.inputmethod.core.Kernel
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
@@ -447,7 +445,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            if(!DecodingInfo.isCandidatesListEmpty) {
+            if(event.flags != KeyEvent.FLAG_SOFT_KEYBOARD && !DecodingInfo.isCandidatesListEmpty) {
                 mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
                 return true
             }
