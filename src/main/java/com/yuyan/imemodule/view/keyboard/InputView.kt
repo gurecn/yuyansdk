@@ -5,9 +5,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.os.SystemClock
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.view.InputDevice
+import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -447,8 +450,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             if(event.flags != KeyEvent.FLAG_SOFT_KEYBOARD && !DecodingInfo.isCandidatesListEmpty) {
                 mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
-                return true
-            }
+            } else moveCursorPosition(keyCode)
+            return  true
         }else if (keyCode == KeyEvent.KEYCODE_DEL && (InputModeSwitcherManager.mInputTypePassword || InputModeSwitcherManager.isNumberSkb)) {
             sendKeyEvent(keyCode)
             if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
@@ -762,6 +765,18 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 inputConnection.commitText(" ", 1)
             }
         }
+    }
+
+    /**
+     * 移动光标
+     */
+    private fun moveCursorPosition(keyCode:Int) {
+        val inputConnection = service.getCurrentInputConnection()
+        inputConnection.beginBatchEdit()
+        val eventTime = SystemClock.uptimeMillis()
+        inputConnection.sendKeyEvent(KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE, InputDevice.SOURCE_KEYBOARD,))
+        inputConnection.sendKeyEvent(KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE, InputDevice.SOURCE_KEYBOARD,))
+        inputConnection.endBatchEdit()
     }
 
     private fun initNavbarBackground(service: ImeService) {
