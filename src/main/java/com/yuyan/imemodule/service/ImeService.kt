@@ -116,6 +116,9 @@ class ImeService : InputMethodService() {
         }
     }
 
+    override fun onEvaluateFullscreenMode(): Boolean = false //修复横屏之后输入框遮挡问题
+
+
     override fun onComputeInsets(outInsets: Insets) {
         if (!::mInputView.isInitialized) return
         val (x, y) = intArrayOf(0, 0).also {if(mInputView.isAddPhrases) mInputView.mAddPhrasesLayout.getLocationInWindow(it) else mInputView.mSkbRoot.getLocationInWindow(it) }
