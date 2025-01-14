@@ -2,7 +2,9 @@ package com.yuyan.imemodule.view.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.SystemClock
@@ -61,8 +63,8 @@ import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
-import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.CustomEngine
+import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
@@ -257,7 +259,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
         val keyTextColor = ThemeManager.activeTheme.keyTextColor
-        mSkbRoot.background = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
+        val backgrounde = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
+        mSkbRoot.background = if(backgrounde is BitmapDrawable) BitmapDrawable(context.resources, Bitmap.createScaledBitmap(backgrounde.bitmap, EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight, true)) else backgrounde
         mComposingView.updateTheme(ThemeManager.activeTheme)
         mSkbCandidatesBarView.updateTheme(keyTextColor)
         if(::mOnehandHoderLayout.isInitialized) {
