@@ -479,7 +479,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            if (DecodingInfo.isFinish) {
+            if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
                 sendKeyEvent(keyCode)
                 if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             } else {
