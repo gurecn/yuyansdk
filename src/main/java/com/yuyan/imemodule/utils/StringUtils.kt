@@ -8,13 +8,19 @@ import java.util.regex.Pattern
 object StringUtils {
     /**
      * 判断字符串是不是字母
-     *
-     * @param str 需要判断得字符串
-     * @return 判断结果
      */
     @JvmStatic
     fun isLetter(str: String?): Boolean {
         val pattern = Pattern.compile("[a-zA-Z]*")
+        return pattern.matcher(str.toString()).matches()
+    }
+
+    /**
+     * 判断字符串是不是英文
+     */
+    @JvmStatic
+    fun isEnglishWord(str: String?): Boolean {
+        val pattern = Pattern.compile("[a-zA-Z ]*")
         return pattern.matcher(str.toString()).matches()
     }
 

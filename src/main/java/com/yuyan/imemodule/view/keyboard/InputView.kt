@@ -770,7 +770,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             val inputConnection = service.getCurrentInputConnection()
             inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
-            if (InputModeSwitcherManager.isEnglish && DecodingInfo.isFinish && getInstance().input.abcSpaceAuto.getValue() && StringUtils.isLetter(resultText)) {
+            if (InputModeSwitcherManager.isEnglish && DecodingInfo.isEngineFinish && getInstance().input.abcSpaceAuto.getValue() && StringUtils.isEnglishWord(resultText)) {
                 inputConnection.commitText(" ", 1)
             }
         }
