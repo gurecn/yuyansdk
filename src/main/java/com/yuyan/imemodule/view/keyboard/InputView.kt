@@ -807,11 +807,11 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo) {
         InputModeSwitcherManager.requestInputWithSkb(editorInfo)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
     fun onWindowShown() {
         chinesePrediction = getInstance().input.chinesePrediction.getValue()
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
     fun onWindowHidden() {

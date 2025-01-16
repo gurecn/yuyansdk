@@ -60,15 +60,17 @@ class ImeService : InputMethodService() {
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        YuyanEmojiCompat.setEditorInfo(editorInfo)
-        mInputView.onStartInputView(editorInfo)
-        if(getInstance().clipboard.clipboardSuggestion.getValue()){
-            val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
-            if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
-                val lastClipboardContent = getInstance().internal.clipboardUpdateContent.getValue()
-                if(lastClipboardContent.isNotBlank()) {
-                    mInputView.showSymbols(arrayOf(lastClipboardContent))
-                    getInstance().internal.clipboardUpdateTime.setValue(0L)
+        if(!restarting) {
+            YuyanEmojiCompat.setEditorInfo(editorInfo)
+            mInputView.onStartInputView(editorInfo)
+            if (getInstance().clipboard.clipboardSuggestion.getValue()) {
+                val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
+                if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
+                    val lastClipboardContent = getInstance().internal.clipboardUpdateContent.getValue()
+                    if (lastClipboardContent.isNotBlank()) {
+                        mInputView.showSymbols(arrayOf(lastClipboardContent))
+                        getInstance().internal.clipboardUpdateTime.setValue(0L)
+                    }
                 }
             }
         }
