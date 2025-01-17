@@ -36,11 +36,11 @@
             android:exported="false"
             android:label="@string/edit_theme" />
         <activity
-            android:name="com.canhub.cropper.CropImageActivity"
+            android:name=".utils.cropper.CropImageActivity"
             android:exported="false"
             android:theme="@style/Theme.CropActivityTheme"/>
         <provider
-            android:name="com.canhub.cropper.CropFileProvider"
+            android:name=".utils.cropper.CropFileProvider"
             android:authorities="${applicationId}.cropper.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

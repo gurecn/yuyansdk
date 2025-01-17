@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.Manifest
 import android.app.Activity
@@ -16,8 +16,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.yuyan.imemodule.R
 
 internal class CropImageIntentChooser(
-  private val activity: ComponentActivity,
-  private val callback: ResultCallback,
+    private val activity: ComponentActivity,
+    private val callback: ResultCallback,
 ) {
   internal interface ResultCallback {
     fun onSuccess(uri: Uri?)

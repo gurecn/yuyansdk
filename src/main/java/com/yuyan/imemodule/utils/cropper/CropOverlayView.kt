@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -19,8 +19,8 @@ import android.view.ScaleGestureDetector
 import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener
 import android.view.View
 import androidx.annotation.RequiresApi
-import com.canhub.cropper.CropImageView.CropShape
-import com.canhub.cropper.CropImageView.Guidelines
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropShape
+import com.yuyan.imemodule.utils.cropper.CropImageView.Guidelines
 import java.util.Arrays
 import kotlin.math.abs
 import kotlin.math.acos
