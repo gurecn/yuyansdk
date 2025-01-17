@@ -88,7 +88,7 @@ class SetupActivity : FragmentActivity() {
         if(InputMethodUtil.isSelected()){
             finish()
         } else if(InputMethodUtil.isEnabled()){
-            viewPager.currentItem = SetupPage.entries.size - 1;
+            viewPager.currentItem = SetupPage.entries.size - 1
         }
     }
 
@@ -97,7 +97,7 @@ class SetupActivity : FragmentActivity() {
         if(InputMethodUtil.isSelected()){
             finish()
         } else if(InputMethodUtil.isEnabled()){
-            viewPager.currentItem = SetupPage.entries.size - 1;
+            viewPager.currentItem = SetupPage.entries.size - 1
         }
     }
 

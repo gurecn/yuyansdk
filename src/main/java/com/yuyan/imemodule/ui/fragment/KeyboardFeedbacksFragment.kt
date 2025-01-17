@@ -13,7 +13,6 @@ import com.yuyan.imemodule.utils.DevicesUtils.sp2px
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
 import splitties.dimensions.dp
-import splitties.resources.color
 import splitties.views.dsl.appcompat.switch
 import splitties.views.dsl.constraintlayout.above
 import splitties.views.dsl.constraintlayout.before
@@ -181,6 +180,6 @@ class KeyboardFeedbacksFragment : Fragment(){
 
     override fun onStop() {
         super.onStop()
-        KeyboardManager.instance.clearKeyboard();
+        KeyboardManager.instance.clearKeyboard()
     }
 }

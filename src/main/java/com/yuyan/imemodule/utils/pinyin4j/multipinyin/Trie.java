@@ -8,7 +8,7 @@ import java.util.Hashtable;
 
 public class Trie {
 
-    private Hashtable<String, Trie> values = new Hashtable<String, Trie>();//本节点包含的值
+    private final Hashtable<String, Trie> values = new Hashtable<String, Trie>();//本节点包含的值
 
     private String pinyin;//本节点的拼音
 

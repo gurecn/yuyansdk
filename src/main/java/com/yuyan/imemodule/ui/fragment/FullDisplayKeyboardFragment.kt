@@ -166,6 +166,6 @@ class FullDisplayKeyboardFragment: Fragment(){
 
     override fun onStop() {
         super.onStop()
-        KeyboardManager.instance.clearKeyboard();
+        KeyboardManager.instance.clearKeyboard()
     }
 }

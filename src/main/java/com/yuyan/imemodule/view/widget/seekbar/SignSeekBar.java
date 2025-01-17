@@ -27,6 +27,7 @@ import com.yuyan.imemodule.utils.DevicesUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 public class SignSeekBar extends View {
@@ -88,8 +89,8 @@ public class SignSeekBar extends View {
     private OnProgressChangedListener mProgressListener; // progress changing listener
     private float mLeft; // space between left of track and left of the view
     private float mRight; // space between right of track and left of the view
-    private Paint mPaint;
-    private Rect mRectText;
+    private final Paint mPaint;
+    private final Rect mRectText;
 
     private boolean isTouchToSeekAnimEnd = true;
     private float mPreSecValue; // previous SectionValue
@@ -102,20 +103,20 @@ public class SignSeekBar extends View {
     private boolean isShowSign;
     private boolean isSignArrowAutofloat;
 
-    private Rect valueSignBounds;
-    private RectF roundRectangleBounds;
+    private final Rect valueSignBounds;
+    private final RectF roundRectangleBounds;
     private int mSignArrowHeight;   //提示框箭头的高度
     private int mSignArrowWidth;   //提示框箭头的宽度
     private int mSignRound;      //提示框的圆角大小
     private int barRoundingRadius = 0;
-    private Point point1;
-    private Point point2;
-    private Point point3;
+    private final Point point1;
+    private final Point point2;
+    private final Point point3;
     private Paint signPaint;
     private Paint signborderPaint;
     private StaticLayout valueTextLayout;
-    private Path trianglePath;
-    private Path triangleboderPath;
+    private final Path trianglePath;
+    private final Path triangleboderPath;
     private String unit;
     private boolean mReverse;
     private TextPaint valueTextPaint;  //滑块数值文本
@@ -303,7 +304,7 @@ public class SignSeekBar extends View {
         }
 
         mTrackLength = mRight - mLeft;
-        mSectionOffset = mTrackLength * 1f / mSectionCount;
+        mSectionOffset = mTrackLength / mSectionCount;
     }
 
     @Override
@@ -840,7 +841,7 @@ public class SignSeekBar extends View {
 
         BigDecimal bigDecimal = BigDecimal.valueOf(mThumbCenterX);
         //BigDecimal setScale保留1位小数，四舍五入，2.35变成2.4
-        float x_ = bigDecimal.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+        float x_ = bigDecimal.setScale(1, RoundingMode.HALF_UP).floatValue();
         boolean onSection = x_ == x; // 就在section处，不作valueAnim，优化性能
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -1079,8 +1080,7 @@ public class SignSeekBar extends View {
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof Bundle) {
-            Bundle bundle = (Bundle) state;
+        if (state instanceof Bundle bundle) {
             mProgress = bundle.getFloat("progress");
             super.onRestoreInstanceState(bundle.getParcelable("save_instance"));
             setProgress(mProgress);
@@ -1095,7 +1095,7 @@ public class SignSeekBar extends View {
 
     private float formatFloat(float value) {
         BigDecimal bigDecimal = BigDecimal.valueOf(value);
-        return bigDecimal.setScale(1, BigDecimal.ROUND_HALF_UP).floatValue();
+        return bigDecimal.setScale(1, RoundingMode.HALF_UP).floatValue();
     }
 
     /**

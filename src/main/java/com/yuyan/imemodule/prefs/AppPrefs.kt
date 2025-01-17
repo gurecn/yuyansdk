@@ -327,7 +327,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             if (instance != null)
                 return
             instance = AppPrefs(sharedPreferences)
-            sharedPreferences.registerOnSharedPreferenceChangeListener(AppPrefs.getInstance().onSharedPreferenceChangeListener)
+            sharedPreferences.registerOnSharedPreferenceChangeListener(getInstance().onSharedPreferenceChangeListener)
         }
 
         fun getInstance() = instance!!

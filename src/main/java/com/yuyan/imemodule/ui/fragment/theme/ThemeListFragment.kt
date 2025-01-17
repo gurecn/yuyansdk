@@ -149,7 +149,4 @@ class ThemeListFragment : Fragment() {
         imageLauncher.launch(theme)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }

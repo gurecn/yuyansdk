@@ -77,7 +77,6 @@ object ThemeManager {
     }
 
     val prefs = AppPrefs.getInstance().registerProvider(::ThemePrefs)
-        get() = field
 
     fun saveTheme(theme: Theme.Custom) {
         ThemeFilesManager.saveThemeFiles(theme)

@@ -28,7 +28,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<PreferenceCategory>("", enableUiOn) {
         override fun createUi(context: Context) = PreferenceCategory(context).apply {
-            isIconSpaceReserved = false;
+            isIconSpaceReserved = false
             setTitle(this@Category.title)
         }
     }

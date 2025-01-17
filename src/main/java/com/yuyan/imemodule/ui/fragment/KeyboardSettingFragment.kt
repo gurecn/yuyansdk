@@ -12,6 +12,6 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
         super.onStop()
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
-        KeyboardManager.instance.clearKeyboard();
+        KeyboardManager.instance.clearKeyboard()
     }
 }

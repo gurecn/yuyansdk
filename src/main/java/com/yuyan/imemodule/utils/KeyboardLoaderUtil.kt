@@ -294,7 +294,7 @@ class KeyboardLoaderUtil private constructor() {
         }
         if(t9Keys.size == 5){
             softKeyToggle.widthF = 0.147f
-            t9Keys[0].widthF = 0.147f;t9Keys[1].widthF = 0.099f;
+            t9Keys[0].widthF = 0.147f;t9Keys[1].widthF = 0.099f
             t9Keys[2].widthF = 0.099f;t9Keys[3].widthF = 0.396f
             t9Keys[4].widthF = 0.099f
         } else{
