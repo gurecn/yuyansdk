@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -13,9 +13,9 @@ import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
 internal class BitmapLoadingWorkerJob internal constructor(
-  private val context: Context,
-  cropImageView: CropImageView,
-  internal val uri: Uri,
+    private val context: Context,
+    cropImageView: CropImageView,
+    internal val uri: Uri,
 ) : CoroutineScope {
   private val width: Int
   private val height: Int
@@ -36,17 +36,17 @@ internal class BitmapLoadingWorkerJob internal constructor(
       try {
         if (isActive) {
           val decodeResult = BitmapUtils.decodeSampledBitmap(
-            context = context,
-            uri = uri,
-            reqWidth = width,
-            reqHeight = height,
+              context = context,
+              uri = uri,
+              reqWidth = width,
+              reqHeight = height,
           )
 
           if (isActive) {
             val orientateResult = BitmapUtils.orientateBitmapByExif(
-              bitmap = decodeResult.bitmap,
-              context = context,
-              uri = uri,
+                bitmap = decodeResult.bitmap,
+                context = context,
+                uri = uri,
             )
 
             onPostExecute(

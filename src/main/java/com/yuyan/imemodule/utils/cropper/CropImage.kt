@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -10,7 +10,7 @@ import android.graphics.RectF
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
-import com.canhub.cropper.CropImageView.CropResult
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropResult
 
 /**
  * Helper to simplify crop image work like starting pick-image activity and handling camera/gallery

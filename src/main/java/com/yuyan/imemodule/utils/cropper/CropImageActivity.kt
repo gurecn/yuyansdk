@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.content.Intent
 import android.graphics.PorterDuff
@@ -22,10 +22,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.net.toUri
-import com.canhub.cropper.CropImageView.CropResult
-import com.canhub.cropper.CropImageView.OnCropImageCompleteListener
-import com.canhub.cropper.CropImageView.OnSetImageUriCompleteListener
-import com.canhub.cropper.utils.getUriForFile
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropResult
+import com.yuyan.imemodule.utils.cropper.CropImageView.OnCropImageCompleteListener
+import com.yuyan.imemodule.utils.cropper.CropImageView.OnSetImageUriCompleteListener
+import com.yuyan.imemodule.utils.cropper.utils.getUriForFile
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.databinding.CropImageActivityBinding
 import java.io.File
@@ -408,14 +408,14 @@ open class CropImageActivity : AppCompatActivity(), OnSetImageUriCompleteListene
    */
   open fun getResultIntent(uri: Uri?, error: Exception?, sampleSize: Int): Intent {
     val result = CropImage.ActivityResult(
-      originalUri = cropImageView?.imageUri,
-      uriContent = uri,
-      error = error,
-      cropPoints = cropImageView?.cropPoints,
-      cropRect = cropImageView?.cropRect,
-      rotation = cropImageView?.rotatedDegrees ?: 0,
-      wholeImageRect = cropImageView?.wholeImageRect,
-      sampleSize = sampleSize,
+        originalUri = cropImageView?.imageUri,
+        uriContent = uri,
+        error = error,
+        cropPoints = cropImageView?.cropPoints,
+        cropRect = cropImageView?.cropRect,
+        rotation = cropImageView?.rotatedDegrees ?: 0,
+        wholeImageRect = cropImageView?.wholeImageRect,
+        sampleSize = sampleSize,
     )
     val intent = Intent()
     intent.extras?.let(intent::putExtras)

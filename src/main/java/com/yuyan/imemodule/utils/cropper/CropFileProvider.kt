@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import androidx.core.content.FileProvider
 import com.yuyan.imemodule.R

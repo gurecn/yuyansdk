@@ -1,4 +1,4 @@
-package com.canhub.cropper.utils
+package com.yuyan.imemodule.utils.cropper.utils
 
 import android.content.Context
 import android.net.Uri

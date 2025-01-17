@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.content.ContentResolver
 import android.content.Context
@@ -14,8 +14,8 @@ import android.os.Build.VERSION.SDK_INT
 import android.util.Log
 import android.util.Pair
 import androidx.exifinterface.media.ExifInterface
-import com.canhub.cropper.CropImageView.RequestSizeOptions
-import com.canhub.cropper.utils.getUriForFile
+import com.yuyan.imemodule.utils.cropper.CropImageView.RequestSizeOptions
+import com.yuyan.imemodule.utils.cropper.utils.getUriForFile
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException

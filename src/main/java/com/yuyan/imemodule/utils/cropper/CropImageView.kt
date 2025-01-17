@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.app.Activity
 import android.content.Context
@@ -23,8 +23,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.core.util.component1
 import androidx.core.util.component2
-import com.canhub.cropper.CropOverlayView.CropWindowChangeListener
-import com.canhub.cropper.utils.getFilePathFromUri
+import com.yuyan.imemodule.utils.cropper.CropOverlayView.CropWindowChangeListener
+import com.yuyan.imemodule.utils.cropper.utils.getFilePathFromUri
 import com.yuyan.imemodule.R
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -236,12 +236,12 @@ class CropImageView @JvmOverloads constructor(
       val orgHeight = bitmap.height * loadedSampleSize
       // get the rectangle for the points (it may be larger than original if rotation is not straight)
       return BitmapUtils.getRectFromPoints(
-        cropPoints = points,
-        imageWidth = orgWidth,
-        imageHeight = orgHeight,
-        fixAspectRatio = mCropOverlayView!!.isFixAspectRatio,
-        aspectRatioX = mCropOverlayView.aspectRatioX,
-        aspectRatioY = mCropOverlayView.aspectRatioY,
+          cropPoints = points,
+          imageWidth = orgWidth,
+          imageHeight = orgHeight,
+          fixAspectRatio = mCropOverlayView!!.isFixAspectRatio,
+          aspectRatioX = mCropOverlayView.aspectRatioX,
+          aspectRatioY = mCropOverlayView.aspectRatioY,
       )
     }
     set(rect) {
@@ -299,47 +299,47 @@ class CropImageView @JvmOverloads constructor(
    */
   @JvmOverloads
   fun getCroppedImage(
-    reqWidth: Int = 0,
-    reqHeight: Int = 0,
-    options: RequestSizeOptions = RequestSizeOptions.RESIZE_INSIDE,
+      reqWidth: Int = 0,
+      reqHeight: Int = 0,
+      options: RequestSizeOptions = RequestSizeOptions.RESIZE_INSIDE,
   ): Bitmap? {
     if (originalBitmap != null) {
       val newReqWidth = if (options != RequestSizeOptions.NONE) reqWidth else 0
       val newReqHeight = if (options != RequestSizeOptions.NONE) reqHeight else 0
       val croppedBitmap = if (imageUri != null && (loadedSampleSize > 1 || options == RequestSizeOptions.SAMPLING)) {
         BitmapUtils.cropBitmap(
-          context = context,
-          loadedImageUri = imageUri,
-          cropPoints = cropPoints,
-          degreesRotated = mDegreesRotated,
-          orgWidth = originalBitmap!!.width * loadedSampleSize,
-          orgHeight = originalBitmap!!.height * loadedSampleSize,
-          fixAspectRatio = mCropOverlayView!!.isFixAspectRatio,
-          aspectRatioX = mCropOverlayView.aspectRatioX,
-          aspectRatioY = mCropOverlayView.aspectRatioY,
-          reqWidth = newReqWidth,
-          reqHeight = newReqHeight,
-          flipHorizontally = mFlipHorizontally,
-          flipVertically = mFlipVertically,
+            context = context,
+            loadedImageUri = imageUri,
+            cropPoints = cropPoints,
+            degreesRotated = mDegreesRotated,
+            orgWidth = originalBitmap!!.width * loadedSampleSize,
+            orgHeight = originalBitmap!!.height * loadedSampleSize,
+            fixAspectRatio = mCropOverlayView!!.isFixAspectRatio,
+            aspectRatioX = mCropOverlayView.aspectRatioX,
+            aspectRatioY = mCropOverlayView.aspectRatioY,
+            reqWidth = newReqWidth,
+            reqHeight = newReqHeight,
+            flipHorizontally = mFlipHorizontally,
+            flipVertically = mFlipVertically,
         ).bitmap
       } else {
         BitmapUtils.cropBitmapObjectHandleOOM(
-          bitmap = originalBitmap,
-          cropPoints = cropPoints,
-          degreesRotated = mDegreesRotated,
-          fixAspectRatio = mCropOverlayView!!.isFixAspectRatio,
-          aspectRatioX = mCropOverlayView.aspectRatioX,
-          aspectRatioY = mCropOverlayView.aspectRatioY,
-          flipHorizontally = mFlipHorizontally,
-          flipVertically = mFlipVertically,
+            bitmap = originalBitmap,
+            cropPoints = cropPoints,
+            degreesRotated = mDegreesRotated,
+            fixAspectRatio = mCropOverlayView!!.isFixAspectRatio,
+            aspectRatioX = mCropOverlayView.aspectRatioX,
+            aspectRatioY = mCropOverlayView.aspectRatioY,
+            flipHorizontally = mFlipHorizontally,
+            flipVertically = mFlipVertically,
         ).bitmap
       }
 
       return BitmapUtils.resizeBitmap(
-        bitmap = croppedBitmap,
-        reqWidth = newReqWidth,
-        reqHeight = newReqHeight,
-        options = options,
+          bitmap = croppedBitmap,
+          reqWidth = newReqWidth,
+          reqHeight = newReqHeight,
+          options = options,
       )
     }
 
@@ -357,12 +357,12 @@ class CropImageView @JvmOverloads constructor(
    * [options] the resize method to use, see its documentation
    */
   fun croppedImageAsync(
-    saveCompressFormat: CompressFormat = CompressFormat.JPEG,
-    saveCompressQuality: Int = 90,
-    reqWidth: Int = 0,
-    reqHeight: Int = 0,
-    options: RequestSizeOptions = RequestSizeOptions.RESIZE_INSIDE,
-    customOutputUri: Uri? = null,
+      saveCompressFormat: CompressFormat = CompressFormat.JPEG,
+      saveCompressQuality: Int = 90,
+      reqWidth: Int = 0,
+      reqHeight: Int = 0,
+      options: RequestSizeOptions = RequestSizeOptions.RESIZE_INSIDE,
+      customOutputUri: Uri? = null,
   ) {
     requireNotNull(mOnCropImageCompleteListener) { "mOnCropImageCompleteListener is not set" }
     startCropWorkerTask(
@@ -647,12 +647,12 @@ class CropImageView @JvmOverloads constructor(
    * compression.
    */
   private fun startCropWorkerTask(
-    reqWidth: Int,
-    reqHeight: Int,
-    options: RequestSizeOptions,
-    saveCompressFormat: CompressFormat,
-    saveCompressQuality: Int,
-    customOutputUri: Uri?,
+      reqWidth: Int,
+      reqHeight: Int,
+      options: RequestSizeOptions,
+      saveCompressFormat: CompressFormat,
+      saveCompressQuality: Int,
+      customOutputUri: Uri?,
   ) {
     val bitmap = originalBitmap
     if (bitmap != null) {
@@ -704,11 +704,11 @@ class CropImageView @JvmOverloads constructor(
     val bundle = Bundle()
     @Suppress("DEPRECATION") val loadedImageUri =
       if (isSaveBitmapToInstanceState && imageUri == null && mImageResource < 1) {
-        BitmapUtils.writeTempStateStoreBitmap(
-          context = context,
-          bitmap = originalBitmap,
-          customOutputUri = customOutputUri,
-        )
+          BitmapUtils.writeTempStateStoreBitmap(
+              context = context,
+              bitmap = originalBitmap,
+              customOutputUri = customOutputUri,
+          )
       } else {
         imageUri
       }
@@ -995,8 +995,8 @@ class CropImageView @JvmOverloads constructor(
       if (mDegreesRotated > 0) {
         mImageMatrix.postRotate(
           mDegreesRotated.toFloat(),
-          BitmapUtils.getRectCenterX(mImagePoints),
-          BitmapUtils.getRectCenterY(mImagePoints),
+            BitmapUtils.getRectCenterX(mImagePoints),
+            BitmapUtils.getRectCenterY(mImagePoints),
         )
         mapImagePointsByImageMatrix()
       }
@@ -1011,8 +1011,8 @@ class CropImageView @JvmOverloads constructor(
         mImageMatrix.postScale(
           scale,
           scale,
-          BitmapUtils.getRectCenterX(mImagePoints),
-          BitmapUtils.getRectCenterY(mImagePoints),
+            BitmapUtils.getRectCenterX(mImagePoints),
+            BitmapUtils.getRectCenterY(mImagePoints),
         )
         mapImagePointsByImageMatrix()
       } else if (mScaleType == ScaleType.CENTER_CROP) {
@@ -1027,8 +1027,8 @@ class CropImageView @JvmOverloads constructor(
       mImageMatrix.postScale(
         scaleX,
         scaleY,
-        BitmapUtils.getRectCenterX(mImagePoints),
-        BitmapUtils.getRectCenterY(mImagePoints),
+          BitmapUtils.getRectCenterX(mImagePoints),
+          BitmapUtils.getRectCenterY(mImagePoints),
       )
       mapImagePointsByImageMatrix()
       mImageMatrix.mapRect(cropRect)
@@ -1414,7 +1414,9 @@ class CropImageView @JvmOverloads constructor(
   }
 
   init {
-    val options = (context as? Activity)?.intent?.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)?.parcelable(CropImage.CROP_IMAGE_EXTRA_OPTIONS) ?: CropImageOptions()
+    val options = (context as? Activity)?.intent?.getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE)?.parcelable(
+        CropImage.CROP_IMAGE_EXTRA_OPTIONS
+    ) ?: CropImageOptions()
     mScaleType = options.scaleType
     mAutoZoomEnabled = options.autoZoomEnabled
     mMaxZoom = options.maxZoom

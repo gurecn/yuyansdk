@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.graphics.PointF
 import android.graphics.RectF
@@ -7,13 +7,13 @@ import kotlin.math.min
 
 /** Handler to update crop window edges by the move type - Horizontal, Vertical, Corner or Center. */
 internal class CropWindowMoveHandler(
-  /** The type of move this handler is executing */
+    /** The type of move this handler is executing */
   private val type: Type,
-  /** Main crop window handle to get and update the crop window edges */
+    /** Main crop window handle to get and update the crop window edges */
   cropWindowHandler: CropWindowHandler,
-  /** The location of the initial touch position to measure move distance */
+    /** The location of the initial touch position to measure move distance */
   touchX: Float,
-  /** The location of the initial touch position to measure move distance */
+    /** The location of the initial touch position to measure move distance */
   touchY: Float,
 ) {
 

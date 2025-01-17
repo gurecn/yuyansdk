@@ -1,10 +1,10 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.graphics.RectF
-import com.canhub.cropper.CropImageView.CropShape.OVAL
-import com.canhub.cropper.CropImageView.CropShape.RECTANGLE
-import com.canhub.cropper.CropImageView.CropShape.RECTANGLE_HORIZONTAL_ONLY
-import com.canhub.cropper.CropImageView.CropShape.RECTANGLE_VERTICAL_ONLY
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropShape.OVAL
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropShape.RECTANGLE
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropShape.RECTANGLE_HORIZONTAL_ONLY
+import com.yuyan.imemodule.utils.cropper.CropImageView.CropShape.RECTANGLE_VERTICAL_ONLY
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -158,11 +158,11 @@ internal class CropWindowHandler {
    * @return the Handle that was pressed; null if no Handle was pressed
    */
   fun getMoveHandler(
-    x: Float,
-    y: Float,
-    targetRadius: Float,
-    cropShape: CropImageView.CropShape,
-    isCenterMoveEnabled: Boolean,
+      x: Float,
+      y: Float,
+      targetRadius: Float,
+      cropShape: CropImageView.CropShape,
+      isCenterMoveEnabled: Boolean,
   ): CropWindowMoveHandler? {
     val type: CropWindowMoveHandler.Type? = when (cropShape) {
       RECTANGLE -> getRectanglePressedMoveType(x, y, targetRadius, isCenterMoveEnabled)
@@ -193,38 +193,38 @@ internal class CropWindowHandler {
     // Note: corner-handles take precedence, then side-handles, then center.
     return when {
       isInCornerTargetZone(x, y, mEdges.left, mEdges.top, targetRadius) -> {
-        CropWindowMoveHandler.Type.TOP_LEFT
+          CropWindowMoveHandler.Type.TOP_LEFT
       }
       isInCornerTargetZone(x, y, mEdges.right, mEdges.top, targetRadius) -> {
-        CropWindowMoveHandler.Type.TOP_RIGHT
+          CropWindowMoveHandler.Type.TOP_RIGHT
       }
       isInCornerTargetZone(x, y, mEdges.left, mEdges.bottom, targetRadius) -> {
-        CropWindowMoveHandler.Type.BOTTOM_LEFT
+          CropWindowMoveHandler.Type.BOTTOM_LEFT
       }
       isInCornerTargetZone(x, y, mEdges.right, mEdges.bottom, targetRadius) -> {
-        CropWindowMoveHandler.Type.BOTTOM_RIGHT
+          CropWindowMoveHandler.Type.BOTTOM_RIGHT
       }
       isCenterMoveEnabled &&
         isInCenterTargetZone(x, y, mEdges.left, mEdges.top, mEdges.right, mEdges.bottom) &&
         focusCenter() -> {
-        CropWindowMoveHandler.Type.CENTER
+          CropWindowMoveHandler.Type.CENTER
       }
       isInHorizontalTargetZone(x, y, mEdges.left, mEdges.right, mEdges.top, targetRadius) -> {
-        CropWindowMoveHandler.Type.TOP
+          CropWindowMoveHandler.Type.TOP
       }
       isInHorizontalTargetZone(x, y, mEdges.left, mEdges.right, mEdges.bottom, targetRadius) -> {
-        CropWindowMoveHandler.Type.BOTTOM
+          CropWindowMoveHandler.Type.BOTTOM
       }
       isInVerticalTargetZone(x, y, mEdges.left, mEdges.top, mEdges.bottom, targetRadius) -> {
-        CropWindowMoveHandler.Type.LEFT
+          CropWindowMoveHandler.Type.LEFT
       }
       isInVerticalTargetZone(x, y, mEdges.right, mEdges.top, mEdges.bottom, targetRadius) -> {
-        CropWindowMoveHandler.Type.RIGHT
+          CropWindowMoveHandler.Type.RIGHT
       }
       isCenterMoveEnabled &&
         isInCenterTargetZone(x, y, mEdges.left, mEdges.top, mEdges.right, mEdges.bottom) &&
         !focusCenter() -> {
-        CropWindowMoveHandler.Type.CENTER
+          CropWindowMoveHandler.Type.CENTER
       }
       else -> getOvalPressedMoveType(x, y, isCenterMoveEnabled)
     }
@@ -274,7 +274,7 @@ internal class CropWindowHandler {
         when {
           y < topCenter -> CropWindowMoveHandler.Type.TOP
           y < bottomCenter -> if (isCenterMoveEnabled) {
-            CropWindowMoveHandler.Type.CENTER
+              CropWindowMoveHandler.Type.CENTER
           } else {
             null
           }
@@ -312,14 +312,14 @@ internal class CropWindowHandler {
     // window they can drag from the left and right sides.
     return when {
       distance(x, y, mEdges.centerX(), mEdges.top) <= targetRadius -> {
-        CropWindowMoveHandler.Type.TOP
+          CropWindowMoveHandler.Type.TOP
       }
       distance(x, y, mEdges.centerX(), mEdges.bottom) <= targetRadius -> {
-        CropWindowMoveHandler.Type.BOTTOM
+          CropWindowMoveHandler.Type.BOTTOM
       }
       isCenterMoveEnabled &&
         isInCenterTargetZone(x, y, mEdges.left, mEdges.top, mEdges.right, mEdges.bottom) -> {
-        CropWindowMoveHandler.Type.CENTER
+          CropWindowMoveHandler.Type.CENTER
       }
       else -> getOvalPressedMoveType(x, y, isCenterMoveEnabled)
     }
@@ -346,14 +346,14 @@ internal class CropWindowHandler {
     // window they can drag from the top and bottom sides.
     return when {
       distance(x, y, mEdges.left, mEdges.centerY()) <= targetRadius -> {
-        CropWindowMoveHandler.Type.LEFT
+          CropWindowMoveHandler.Type.LEFT
       }
       distance(x, y, mEdges.right, mEdges.centerY()) <= targetRadius -> {
-        CropWindowMoveHandler.Type.RIGHT
+          CropWindowMoveHandler.Type.RIGHT
       }
       isCenterMoveEnabled &&
         isInCenterTargetZone(x, y, mEdges.left, mEdges.top, mEdges.right, mEdges.bottom) -> {
-        CropWindowMoveHandler.Type.CENTER
+          CropWindowMoveHandler.Type.CENTER
       }
       else -> getOvalPressedMoveType(x, y, isCenterMoveEnabled)
     }

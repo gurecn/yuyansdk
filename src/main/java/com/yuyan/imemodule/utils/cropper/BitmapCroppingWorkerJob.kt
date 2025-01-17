@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -13,25 +13,25 @@ import java.lang.ref.WeakReference
 import kotlin.coroutines.CoroutineContext
 
 internal class BitmapCroppingWorkerJob(
-  private val context: Context,
-  private val cropImageViewReference: WeakReference<CropImageView>,
-  private val uri: Uri?,
-  private val bitmap: Bitmap?,
-  private val cropPoints: FloatArray,
-  private val degreesRotated: Int,
-  private val orgWidth: Int,
-  private val orgHeight: Int,
-  private val fixAspectRatio: Boolean,
-  private val aspectRatioX: Int,
-  private val aspectRatioY: Int,
-  private val reqWidth: Int,
-  private val reqHeight: Int,
-  private val flipHorizontally: Boolean,
-  private val flipVertically: Boolean,
-  private val options: CropImageView.RequestSizeOptions,
-  private val saveCompressFormat: Bitmap.CompressFormat,
-  private val saveCompressQuality: Int,
-  private val customOutputUri: Uri?,
+    private val context: Context,
+    private val cropImageViewReference: WeakReference<CropImageView>,
+    private val uri: Uri?,
+    private val bitmap: Bitmap?,
+    private val cropPoints: FloatArray,
+    private val degreesRotated: Int,
+    private val orgWidth: Int,
+    private val orgHeight: Int,
+    private val fixAspectRatio: Boolean,
+    private val aspectRatioX: Int,
+    private val aspectRatioY: Int,
+    private val reqWidth: Int,
+    private val reqHeight: Int,
+    private val flipHorizontally: Boolean,
+    private val flipVertically: Boolean,
+    private val options: CropImageView.RequestSizeOptions,
+    private val saveCompressFormat: Bitmap.CompressFormat,
+    private val saveCompressQuality: Int,
+    private val customOutputUri: Uri?,
 ) : CoroutineScope {
   private var job: Job = Job()
 
@@ -45,31 +45,31 @@ internal class BitmapCroppingWorkerJob(
           when {
             uri != null -> {
               bitmapSampled = BitmapUtils.cropBitmap(
-                context = context,
-                loadedImageUri = uri,
-                cropPoints = cropPoints,
-                degreesRotated = degreesRotated,
-                orgWidth = orgWidth,
-                orgHeight = orgHeight,
-                fixAspectRatio = fixAspectRatio,
-                aspectRatioX = aspectRatioX,
-                aspectRatioY = aspectRatioY,
-                reqWidth = reqWidth,
-                reqHeight = reqHeight,
-                flipHorizontally = flipHorizontally,
-                flipVertically = flipVertically,
+                  context = context,
+                  loadedImageUri = uri,
+                  cropPoints = cropPoints,
+                  degreesRotated = degreesRotated,
+                  orgWidth = orgWidth,
+                  orgHeight = orgHeight,
+                  fixAspectRatio = fixAspectRatio,
+                  aspectRatioX = aspectRatioX,
+                  aspectRatioY = aspectRatioY,
+                  reqWidth = reqWidth,
+                  reqHeight = reqHeight,
+                  flipHorizontally = flipHorizontally,
+                  flipVertically = flipVertically,
               )
             }
             bitmap != null -> {
               bitmapSampled = BitmapUtils.cropBitmapObjectHandleOOM(
-                bitmap = bitmap,
-                cropPoints = cropPoints,
-                degreesRotated = degreesRotated,
-                fixAspectRatio = fixAspectRatio,
-                aspectRatioX = aspectRatioX,
-                aspectRatioY = aspectRatioY,
-                flipHorizontally = flipHorizontally,
-                flipVertically = flipVertically,
+                  bitmap = bitmap,
+                  cropPoints = cropPoints,
+                  degreesRotated = degreesRotated,
+                  fixAspectRatio = fixAspectRatio,
+                  aspectRatioX = aspectRatioX,
+                  aspectRatioY = aspectRatioY,
+                  flipHorizontally = flipHorizontally,
+                  flipVertically = flipVertically,
               )
             }
             else -> {
@@ -86,19 +86,19 @@ internal class BitmapCroppingWorkerJob(
           }
 
           val resizedBitmap = BitmapUtils.resizeBitmap(
-            bitmap = bitmapSampled.bitmap,
-            reqWidth = reqWidth,
-            reqHeight = reqHeight,
-            options = options,
+              bitmap = bitmapSampled.bitmap,
+              reqWidth = reqWidth,
+              reqHeight = reqHeight,
+              options = options,
           )
 
           launch(Dispatchers.IO) {
             val newUri = BitmapUtils.writeBitmapToUri(
-              context = context,
-              bitmap = resizedBitmap,
-              compressFormat = saveCompressFormat,
-              compressQuality = saveCompressQuality,
-              customOutputUri = customOutputUri,
+                context = context,
+                bitmap = resizedBitmap,
+                compressFormat = saveCompressFormat,
+                compressQuality = saveCompressQuality,
+                customOutputUri = customOutputUri,
             )
 
             onPostExecute(

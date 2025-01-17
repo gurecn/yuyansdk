@@ -1,4 +1,4 @@
-package com.canhub.cropper
+package com.yuyan.imemodule.utils.cropper
 
 import android.graphics.Matrix
 import android.graphics.RectF
@@ -13,8 +13,8 @@ import android.widget.ImageView
  * zoom-in/out.
  */
 internal class CropImageAnimation(
-  private val imageView: ImageView,
-  private val cropOverlayView: CropOverlayView,
+    private val imageView: ImageView,
+    private val cropOverlayView: CropOverlayView,
 ) : Animation(),
   AnimationListener {
 
