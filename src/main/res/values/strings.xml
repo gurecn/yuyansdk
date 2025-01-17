@@ -198,4 +198,14 @@
     <string name="half_width_symbols_tips_all">全部</string>
     <string name="half_width_symbols_tips_only_used">仅常用</string>
     <string name="half_width_symbols_tips_none">不显示</string>
+
+    <string name="ic_rotate_left_24">逆时针旋转</string>
+    <string name="ic_rotate_right_24">旋转</string>
+    <string name="crop_image_menu_crop">裁剪</string>
+    <string name="ic_flip_24">翻转</string>
+    <string name="ic_flip_24_horizontally">水平翻转</string>
+    <string name="ic_flip_24_vertically">垂直翻转</string>
+    <string name="pick_image_chooser_title">选择来源</string>
+    <string name="pick_image_camera">相机</string>
+    <string name="pick_image_gallery">图库</string>
 </resources>

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.VIBRATE" />
-
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT"/>
+            <category android:name="android.intent.category.OPENABLE"/>
+            <data android:mimeType="*/*"/>
+        </intent>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE"/>
+        </intent>
+    </queries>
     <application
         android:supportsRtl="true">
         <activity
@@ -28,12 +35,19 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:label="@string/edit_theme" />
-        <!-- don't export CropImageActivity -->
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:exported="false"
-            android:theme="@style/Theme.CropActivityTheme"
-            tools:replace="android:exported" />
+            android:theme="@style/Theme.CropActivityTheme"/>
+        <provider
+            android:name="com.canhub.cropper.CropFileProvider"
+            android:authorities="${applicationId}.cropper.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/cropper_library_file_paths"/>
+        </provider>
     </application>
 
 </manifest>

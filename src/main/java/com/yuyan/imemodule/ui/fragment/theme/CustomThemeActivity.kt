@@ -317,7 +317,7 @@ class CustomThemeActivity : AppCompatActivity() {
                 } else {
                     if (newCreated) {
                         srcImageExtension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(it.originalUri!!))
-                        srcImageBuffer = contentResolver.openInputStream(it.originalUri!!)!!.use { x -> x.readBytes() }
+                        srcImageBuffer = contentResolver.openInputStream(it.originalUri)!!.use { x -> x.readBytes() }
                     }
                     cropRect = it.cropRect!!
 
