@@ -55,10 +55,12 @@ android {
         online {
             dimension "default"
             buildConfigField "Boolean", "offline", "false"
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
         }
         offline {
             dimension "default"
             buildConfigField "Boolean", "offline", "true"
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
         }
     }
 
@@ -71,10 +73,10 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
-            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
+            resValue("string", "app_name", "@string/ime_yuyan_name")
         }
         debug {
-            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
+            resValue("string", "app_name", "@string/ime_yuyan_name_debug")
         }
     }
     sourceSets {
