@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="ime_yuyan_name">语燕输入法</string>
+    <string name="app_name">语燕输入法</string>
     <!--设置页面-->
     <string name="setting_ime_sdk">输入法设置</string>
     <string name="setting_ime_input">输入设置</string>
@@ -76,7 +76,6 @@
     <string name="keyboard_full_display_key_center">中间区域</string>
     <string name="phrases">常用语</string>
     <string name="add_phrases">增加常用语</string>
-    <string name="wechat">微信</string>
     <string name="add_phrases_input_hint">输入常用内容</string>
     <string name="add_phrases_input_tips">快捷输入为拼音首字母前4位</string>
     <string name="keyboard">键盘</string>
@@ -85,8 +84,6 @@
     <string name="source_code">源代码</string>
     <string name="privacy_policy">隐私政策</string>
     <string name="license">开放许可</string>
-    <string name="open_source_licenses">开源软件许可</string>
-    <string name="licenses_of_third_party_libraries">第三方库许可证</string>
     <string name="github_repo">GitHub 仓库</string>
     <string name="reset">重置</string>
     <string name="theme">主题</string>
@@ -117,10 +114,6 @@
     <string name="number_400_ms">400毫秒</string>
 
     <string name="new_theme">新增主题</string>
-    <string name="exception_theme_json">找不到主题 JSON</string>
-    <string name="exception_theme_name_clash">主题名称与内置主题冲突</string>
-    <string name="exception_theme_src_image">无法保存主题背景原图片</string>
-    <string name="exception_theme_cropped_image">无法保存裁切后的主题背景图片</string>
 
     <string name="follow_system_day_night_theme">跟随系统夜间模式</string>
     <string name="follow_system_day_night_theme_summary">覆盖手动主题选择</string>
@@ -168,20 +161,13 @@
     <string name="keyboard_menu_float">悬浮键盘</string>
 
     <string name="emoticons">颜文字</string>
-    <string name="doutu">斗图</string>
-    <string name="emoji_hot">热门表情</string>
 
     <string name="skb_prefix_show_tips">显示内容</string>
     <string name="skb_prefix_commit_tips">上屏内容</string>
     <string name="skb_prefix_sort_tips">长按排序\n(左滑删除)</string>
-    <string name="skb_prefix_delete_title">删除？</string>
-    <string name="skb_prefix_delete_tips">是否删除符号[%s]？</string>
-    <string name="sure">确定</string>
     <string name="dialog_tips_title">提示</string>
     <string name="app_build_timeout_30">距离该版本已超30天，为保证体验，建议下载最新版本。</string>
-    <string name="go_extension">延迟升级</string>
     <string name="app_build_timeout_60">距离该版本已超60天，为保证体验，您需下载最新版本。</string>
-    <string name="exit">退出</string>
     <string name="go_download_github">Github下载</string>
     <string name="go_download_gitee">Gitee下载</string>
     <string name="go_download_appstore">应用商店</string>
