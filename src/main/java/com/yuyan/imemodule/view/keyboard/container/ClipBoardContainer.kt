@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yanzhenjie.recyclerview.SwipeMenu
-import com.yanzhenjie.recyclerview.SwipeMenuBridge
-import com.yanzhenjie.recyclerview.SwipeMenuItem
-import com.yanzhenjie.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.utils.recyclerview.SwipeMenu
+import com.yuyan.imemodule.utils.recyclerview.SwipeMenuBridge
+import com.yuyan.imemodule.utils.recyclerview.SwipeMenuItem
+import com.yuyan.imemodule.utils.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -41,7 +41,8 @@ import kotlin.math.ceil
 @SuppressLint("ViewConstructor")
 class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private val mPaint : Paint = Paint() // 测量字符串长度
-    private val mRVSymbolsView: SwipeRecyclerView = SwipeRecyclerView(context)
+    private val mRVSymbolsView: SwipeRecyclerView =
+        SwipeRecyclerView(context)
     private var mTVLable: TextView? = null
     private var itemMode:SkbMenuMode? = null
 
@@ -101,7 +102,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 inputView.responseLongKeyEvent(Pair(PopupMenuMode.Text, copyContents[position].content))
         }
         mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, position: Int ->
-            val topItem = SwipeMenuItem(mContext).apply {
+            val topItem = SwipeMenuItem(
+                mContext
+            ).apply {
                 setImage(if(itemMode == SkbMenuMode.ClipBoard) {
                     val data: Clipboard = copyContents[position]
                     if(data.isKeep == 1)R.drawable.ic_baseline_untop_circle_32
@@ -110,7 +113,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 else R.drawable.ic_menu_edit)
             }
             rightMenu.addMenuItem(topItem)
-            val deleteItem = SwipeMenuItem(mContext).apply {
+            val deleteItem = SwipeMenuItem(
+                mContext
+            ).apply {
                 setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
