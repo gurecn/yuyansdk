@@ -3,7 +3,7 @@ package com.yuyan.inputmethod
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.TimeUtils
-import com.yuyan.imemodule.utils.expression.ExpressionBuilder
+import com.yuyan.imemodule.libs.expression.ExpressionBuilder
 
 object CustomEngine {
     fun parseExpressionAtEnd(input: String): String? {

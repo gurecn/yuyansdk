@@ -50,7 +50,7 @@ import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
-import com.yuyan.imemodule.utils.pinyin4j.PinyinHelper
+import com.yuyan.imemodule.libs.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
@@ -641,7 +641,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                tvAddPhrasesTips?.text = tips.plus(PinyinHelper.getPinYinHeadChar(editable.toString()))
+                tvAddPhrasesTips?.text = tips.plus(com.yuyan.imemodule.libs.pinyin4j.PinyinHelper.getPinYinHeadChar(editable.toString()))
             }
         })
     }
@@ -649,7 +649,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun addPhrasesHandle() {
         val content = mEtAddPhrasesContent?.text.toString()
         if(content.isNotBlank()) {
-            val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(content)
+            val pinYinHeadChar = com.yuyan.imemodule.libs.pinyin4j.PinyinHelper.getPinYinHeadChar(content)
             val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
             val phrase =  Phrase(content = content, t9 = pinYinHeadT9, qwerty = pinYinHeadChar, lx17 = "")
             DataBaseKT.instance.phraseDao().insert(phrase)

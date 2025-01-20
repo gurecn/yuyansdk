@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.JustifyContent
-import com.yuyan.imemodule.utils.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.PrefixAdapter
@@ -49,7 +49,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     private val mSideSymbolsPinyin:List<SideSymbol>
     private lateinit var mRVSymbolsView: RecyclerView
     private lateinit var mCandidatesAdapter: CandidatesAdapter
-    private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
+    private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
     private var isLoadingMore = false // 正在加载更多
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
         layoutParams = LinearLayout.LayoutParams(

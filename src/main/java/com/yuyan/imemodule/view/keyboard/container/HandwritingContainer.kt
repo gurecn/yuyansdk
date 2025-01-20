@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yuyan.imemodule.utils.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -36,7 +36,7 @@ import splitties.views.dsl.core.margin
 class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     private val mSideSymbolsPinyin:List<SideSymbol>
     // 键盘界面上符号(T9左侧、手写右侧)
-    private var mRVRightSymbols: SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
+    private var mRVRightSymbols: com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
