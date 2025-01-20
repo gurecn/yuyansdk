@@ -39,7 +39,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var mCurrentKey: SoftKey? = null
     private var mGestureDetector: GestureDetector? = null
     private var mLongPressKey = false
-    private var mSwipeMoveKey = false
+    private var mAbortKey = false
     private var mHandler: Handler? = null
     protected var mDrawPending = false
     protected var mDirtyRect = Rect()
@@ -121,7 +121,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mLongPressKey = true
             } else {
                 mLongPressKey = true
-                mSwipeMoveKey = true
+                mAbortKey = true
                 dismissPreview()
             }
         }
@@ -173,7 +173,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         mCurrentKey = getKeyIndices(me.x.toInt(), me.y.toInt())
         when (me.action) {
             MotionEvent.ACTION_DOWN -> {
-                mSwipeMoveKey = false
+                mAbortKey = false
                 mLongPressKey = false
                 if(mCurrentKey != null){
                     if (mCurrentKey!!.repeatable()) {
@@ -186,10 +186,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             }
             MotionEvent.ACTION_UP -> {
                 removeMessages()
-                if (!mSwipeMoveKey) {
-                    if (!mLongPressKey && mCurrentKey != null) {
-                        mService?.responseKeyEvent(mCurrentKey!!)
-                    }
+                if (!mAbortKey && !mLongPressKey && mCurrentKey != null) {
+                    mService?.responseKeyEvent(mCurrentKey!!)
                 }
             }
             MotionEvent.ACTION_CANCEL -> {
@@ -225,14 +223,16 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
         if (!isVertical && relDiffX > 10) {  // 左右滑动
             val isSwipeKey = mCurrentKey?.keyCode == KeyEvent.KEYCODE_SPACE || mCurrentKey?.keyCode == KeyEvent.KEYCODE_0
-            if (isSwipeKey && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {  // 左右滑动
-                mHandler!!.removeMessages(MSG_LONGPRESS)
+            if(mCurrentKey?.keyCode == KeyEvent.KEYCODE_DEL && distanceX > 20){// 左滑删除
+                removeMessages()
+                mAbortKey = true
+                mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_CLEAR))
+            } else if (isSwipeKey && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {  // 左右滑动
+                removeMessages()
                 lastEventX = currentX
                 lastEventY = currentY
-                mSwipeMoveKey = true
-                val key = SoftKey()
-                key.keyCode = if (distanceX > 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-                mService!!.responseKeyEvent(key)
+                mAbortKey = true
+                mService!!.responseKeyEvent(SoftKey(if (distanceX > 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT))
                 result = true
             }
         } else if(keyLableSmall?.isNotBlank() == true){
@@ -241,7 +241,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 lastEventY = currentY
                 lastEventActionIndex = currentEvent.actionIndex
                 mLongPressKey = true
-                mHandler!!.removeMessages(MSG_LONGPRESS)
+                removeMessages()
                 mService?.responseLongKeyEvent(Pair(PopupMenuMode.Text, keyLableSmall))
                 result = true
             }
