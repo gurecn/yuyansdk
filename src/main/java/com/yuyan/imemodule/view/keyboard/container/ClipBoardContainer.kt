@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yuyan.imemodule.utils.recyclerview.SwipeMenu
-import com.yuyan.imemodule.utils.recyclerview.SwipeMenuBridge
-import com.yuyan.imemodule.utils.recyclerview.SwipeMenuItem
-import com.yuyan.imemodule.utils.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.libs.recyclerview.SwipeMenu
+import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
+import com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem
+import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -41,8 +41,8 @@ import kotlin.math.ceil
 @SuppressLint("ViewConstructor")
 class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private val mPaint : Paint = Paint() // 测量字符串长度
-    private val mRVSymbolsView: SwipeRecyclerView =
-        SwipeRecyclerView(context)
+    private val mRVSymbolsView: com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView =
+        com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView(context)
     private var mTVLable: TextView? = null
     private var itemMode:SkbMenuMode? = null
 
@@ -101,8 +101,8 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         mRVSymbolsView.setOnItemClickListener{ _: View?, position: Int ->
                 inputView.responseLongKeyEvent(Pair(PopupMenuMode.Text, copyContents[position].content))
         }
-        mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, position: Int ->
-            val topItem = SwipeMenuItem(
+        mRVSymbolsView.setSwipeMenuCreator{ _: com.yuyan.imemodule.libs.recyclerview.SwipeMenu, rightMenu: com.yuyan.imemodule.libs.recyclerview.SwipeMenu, position: Int ->
+            val topItem = com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem(
                 mContext
             ).apply {
                 setImage(if(itemMode == SkbMenuMode.ClipBoard) {
@@ -113,14 +113,14 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 else R.drawable.ic_menu_edit)
             }
             rightMenu.addMenuItem(topItem)
-            val deleteItem = SwipeMenuItem(
+            val deleteItem = com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem(
                 mContext
             ).apply {
                 setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
         }
-        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: SwipeMenuBridge, position: Int ->
+        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge, position: Int ->
             menuBridge.closeMenu()
             if(itemMode == SkbMenuMode.ClipBoard){
                 if(menuBridge.position == 0) {
