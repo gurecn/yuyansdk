@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.JustifyContent
-import com.yanzhenjie.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.utils.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.PrefixAdapter

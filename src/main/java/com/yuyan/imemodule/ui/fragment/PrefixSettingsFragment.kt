@@ -10,11 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.yanzhenjie.recyclerview.SwipeMenu
-import com.yanzhenjie.recyclerview.SwipeMenuBridge
-import com.yanzhenjie.recyclerview.SwipeMenuItem
-import com.yanzhenjie.recyclerview.SwipeRecyclerView
-import com.yanzhenjie.recyclerview.touch.OnItemMoveListener
+import com.yuyan.imemodule.utils.recyclerview.SwipeMenu
+import com.yuyan.imemodule.utils.recyclerview.SwipeMenuBridge
+import com.yuyan.imemodule.utils.recyclerview.SwipeMenuItem
+import com.yuyan.imemodule.utils.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.utils.recyclerview.touch.OnItemMoveListener
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixSettingsAdapter
 import com.yuyan.imemodule.application.ImeSdkApplication
@@ -67,7 +67,8 @@ class PrefixSettingsFragment(type:String) : Fragment(){
         }
 
         val adapter = PrefixSettingsAdapter(datas, mType)
-        val mItemMoveListener: OnItemMoveListener = object : OnItemMoveListener {
+        val mItemMoveListener: OnItemMoveListener = object :
+            OnItemMoveListener {
             override fun onItemMove(srcHolder: RecyclerView.ViewHolder, targetHolder: RecyclerView.ViewHolder): Boolean {
                 val fromPosition = srcHolder.bindingAdapterPosition
                 val toPosition = targetHolder.bindingAdapterPosition
@@ -81,7 +82,9 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             }
         }
 
-        val mRVSymbolsView = SwipeRecyclerView(context).apply {
+        val mRVSymbolsView = SwipeRecyclerView(
+            context
+        ).apply {
             layoutManager = LinearLayoutManager(context)
             setLongPressDragEnabled(true)
             setOnItemLongClickListener{ _, _ ->
@@ -90,7 +93,9 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             setOnItemMoveListener(mItemMoveListener)
         }
         mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, _: Int ->
-            val deleteItem = SwipeMenuItem(context).apply {
+            val deleteItem = SwipeMenuItem(
+                context
+            ).apply {
                 setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
