@@ -49,6 +49,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
@@ -740,6 +741,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 发送字符串给编辑框
      */
     private fun commitText(text: String) {
+        LogUtil.d("1111111111111", "3text:${text}111")
         if(isAddPhrases) mEtAddPhrasesContent?.commitText(text)
         else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(text), 1)
     }
@@ -748,6 +750,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 发送成对符号给编辑框
      */
     private fun commitPairSymbol(text: String) {
+        LogUtil.d("1111111111111", "2text:${text}111")
         if(isAddPhrases) {
             mEtAddPhrasesContent?.commitText(text)
         } else {
@@ -763,6 +766,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 发送候选词字符串给编辑框
      */
     private fun commitDecInfoText(resultText: String?) {
+        LogUtil.d("1111111111111", "1resultText:${resultText}111")
         if(resultText == null) return
         if(isAddPhrases){
             mEtAddPhrasesContent?.commitText(resultText)
@@ -779,6 +783,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 移动光标
      */
     private fun moveCursorPosition(keyCode:Int) {
+        LogUtil.d("1111111111111", "moveCursorPosition:${keyCode}111")
         val inputConnection = service.getCurrentInputConnection()
         inputConnection.beginBatchEdit()
         val eventTime = SystemClock.uptimeMillis()

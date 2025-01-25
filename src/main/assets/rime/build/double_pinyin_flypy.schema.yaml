@@ -1,12 +1,12 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1737002195
-    default.custom: 1737002195
+    default: 1738310601
+    default.custom: 1738310601
     double_pinyin.custom: 0
-    double_pinyin.schema: 1737002195
+    double_pinyin.schema: 1738310601
     double_pinyin_flypy.custom: 0
-    double_pinyin_flypy.schema: 1737002195
+    double_pinyin_flypy.schema: 1738310601
 cn_en:
   comment_format:
     - "xform/^.+$//"
