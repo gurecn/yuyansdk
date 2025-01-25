@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.JustifyContent
-import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
 import com.yuyan.imemodule.adapter.PrefixAdapter
@@ -90,19 +89,11 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         this.addView(mRVSymbolsView)
         val ivDelete = getIvDelete()
         this.addView(ivDelete)
-        mCandidatesAdapter = CandidatesAdapter(context)
-        mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            DevicesUtils.tryPlayKeyDown()
-            DevicesUtils.tryVibrate(this)
-            inputView.chooseAndUpdate(position)
-            mRVSymbolsView.scrollToPosition(0)
-        }
         val manager = CustomFlexboxLayoutManager(context)
         manager.flexDirection = FlexDirection.ROW //主轴为水平方向，起点在左端。
         manager.flexWrap = FlexWrap.WRAP //按正常方向换行
         manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
         mRVSymbolsView.setLayoutManager(manager)
-        mRVSymbolsView.setAdapter(mCandidatesAdapter)
         mRVSymbolsView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
@@ -173,7 +164,18 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         if (DecodingInfo.isCandidatesListEmpty || DecodingInfo.isAssociate){
             mRVSymbolsView.removeAllViews()
         } else {
-            mCandidatesAdapter.notifyDataSetChanged()
+            if(DecodingInfo.activeCandidate == 0){
+                mCandidatesAdapter = CandidatesAdapter(context)
+                mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+                    DevicesUtils.tryPlayKeyDown()
+                    DevicesUtils.tryVibrate(this)
+                    inputView.chooseAndUpdate(position)
+                }
+                mRVSymbolsView.setAdapter(mCandidatesAdapter)
+            } else {
+                mCandidatesAdapter.notifyDataSetChanged()
+            }
+            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
             if (InputModeSwitcherManager.isChineseT9) {
                 mRVLeftPrefix.visibility = VISIBLE
                 updatePrefixsView()
@@ -200,7 +202,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             if (isPrefixs) {
                 inputView.selectPrefix(position)
-                if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
             } else {
                 val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
                 val softKey = SoftKey(symbol)
