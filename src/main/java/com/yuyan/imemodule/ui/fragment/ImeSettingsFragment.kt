@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
+import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.ui.utils.addCategory
@@ -34,11 +35,13 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.drawable.ic_menu_language,
                     R.id.action_settingsFragment_to_inputSettingsFragment
                 )
-                addDestinationPreference(
-                    R.string.ime_settings_handwriting,
-                    R.drawable.ic_menu_handwriting,
-                    R.id.action_settingsFragment_to_handwritingSettingsFragment
-                )
+                if(!BuildConfig.offline) {
+                    addDestinationPreference(
+                        R.string.ime_settings_handwriting,
+                        R.drawable.ic_menu_handwriting,
+                        R.id.action_settingsFragment_to_handwritingSettingsFragment
+                    )
+                }
             }
             addCategory(R.string.keyboard) {
                 isIconSpaceReserved = false
