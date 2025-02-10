@@ -23,4 +23,6 @@ object CustomConstant {
 
     // 花漾字状态
     var flowerTypeface = FlowerTypefaceMode.Disabled
+    // 剪切板/常用语界面锁定
+    var lockClipBoardEnable = false
 }

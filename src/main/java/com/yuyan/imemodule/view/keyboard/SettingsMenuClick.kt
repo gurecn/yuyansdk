@@ -138,6 +138,9 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
             (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
         }
+        SkbMenuMode.LockClipBoard -> {
+            CustomConstant.lockClipBoardEnable = !CustomConstant.lockClipBoardEnable
+        }
         else ->{}
     }
 }

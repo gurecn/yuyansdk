@@ -10,15 +10,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yuyan.imemodule.R
+import com.yuyan.imemodule.adapter.ClipBoardAdapter
+import com.yuyan.imemodule.application.CustomConstant
+import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenu
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
-import com.yuyan.imemodule.R
-import com.yuyan.imemodule.adapter.ClipBoardAdapter
-import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.database.DataBaseKT
-import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
@@ -41,8 +42,7 @@ import kotlin.math.ceil
 @SuppressLint("ViewConstructor")
 class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private val mPaint : Paint = Paint() // 测量字符串长度
-    private val mRVSymbolsView: com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView =
-        com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView(context)
+    private val mRVSymbolsView: SwipeRecyclerView = SwipeRecyclerView(context)
     private var mTVLable: TextView? = null
     private var itemMode:SkbMenuMode? = null
 
@@ -68,6 +68,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showClipBoardView(item: SkbMenuMode) {
+        CustomConstant.lockClipBoardEnable = false
         itemMode = item
         mRVSymbolsView.setHasFixedSize(true)
         val copyContents : MutableList<Clipboard> =
@@ -99,12 +100,11 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         val adapter = ClipBoardAdapter(context, copyContents)
         mRVSymbolsView.setAdapter(null)
         mRVSymbolsView.setOnItemClickListener{ _: View?, position: Int ->
-                inputView.responseLongKeyEvent(Pair(PopupMenuMode.Text, copyContents[position].content))
+            inputView.responseLongKeyEvent(Pair(PopupMenuMode.Text, copyContents[position].content))
+            if(!CustomConstant.lockClipBoardEnable)KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
         }
-        mRVSymbolsView.setSwipeMenuCreator{ _: com.yuyan.imemodule.libs.recyclerview.SwipeMenu, rightMenu: com.yuyan.imemodule.libs.recyclerview.SwipeMenu, position: Int ->
-            val topItem = com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem(
-                mContext
-            ).apply {
+        mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, position: Int ->
+            val topItem = SwipeMenuItem(mContext).apply {
                 setImage(if(itemMode == SkbMenuMode.ClipBoard) {
                     val data: Clipboard = copyContents[position]
                     if(data.isKeep == 1)R.drawable.ic_baseline_untop_circle_32
@@ -113,14 +113,12 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 else R.drawable.ic_menu_edit)
             }
             rightMenu.addMenuItem(topItem)
-            val deleteItem = com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem(
-                mContext
-            ).apply {
+            val deleteItem = SwipeMenuItem(mContext).apply {
                 setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
         }
-        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge, position: Int ->
+        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: SwipeMenuBridge, position: Int ->
             menuBridge.closeMenu()
             if(itemMode == SkbMenuMode.ClipBoard){
                 if(menuBridge.position == 0) {
