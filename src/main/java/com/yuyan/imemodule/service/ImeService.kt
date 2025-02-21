@@ -6,7 +6,6 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
@@ -31,7 +30,6 @@ import kotlinx.coroutines.launch
 class ImeService : InputMethodService() {
     private var isWindowShown = false // 键盘窗口是否已显示
     private lateinit var mInputView: InputView
-    private val clipboardItemTimeout = getInstance().clipboard.clipboardItemTimeout.getValue()
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme() }
     private val clipboardUpdateContent = getInstance().internal.clipboardUpdateContent
     private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
@@ -60,20 +58,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        if(!restarting) {
-            YuyanEmojiCompat.setEditorInfo(editorInfo)
-            mInputView.onStartInputView(editorInfo)
-            if (getInstance().clipboard.clipboardSuggestion.getValue()) {
-                val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
-                if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
-                    val lastClipboardContent = getInstance().internal.clipboardUpdateContent.getValue()
-                    if (lastClipboardContent.isNotBlank()) {
-                        mInputView.showSymbols(arrayOf(lastClipboardContent))
-                        getInstance().internal.clipboardUpdateTime.setValue(0L)
-                    }
-                }
-            }
-        }
+        if (::mInputView.isInitialized)mInputView.onStartInputView(editorInfo, restarting)
     }
 
     override fun onDestroy() {
@@ -141,7 +126,7 @@ class ImeService : InputMethodService() {
 
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
-        if (::mInputView.isInitialized) mInputView.onUpdateSelection(newSelStart, newSelEnd)
+        if (oldSelStart == oldSelEnd && newSelStart == newSelEnd && ::mInputView.isInitialized) mInputView.onUpdateSelection()
     }
 
     override fun onWindowShown() {
