@@ -64,10 +64,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
     override fun updateSkbLayout() {
         if (null == mMajorView) {
             mMajorView = HandwritingKeyboard(context)
-            val params: ViewGroup.LayoutParams = LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            val params: ViewGroup.LayoutParams = LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
             (mMajorView as HandwritingKeyboard).setResponseKeyEvent(inputView)
         }
