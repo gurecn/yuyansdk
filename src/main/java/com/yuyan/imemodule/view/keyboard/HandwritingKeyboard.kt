@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.view.MotionEvent
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
-import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.handwriting.HdManager.Companion.instance
 import com.yuyan.imemodule.handwriting.view.DrawingStrokes
 import com.yuyan.imemodule.handwriting.view.Strokes
@@ -33,15 +32,6 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         val strokes = Strokes()
         mDrawing = DrawingStrokes(this, strokes)
         mHandWritingPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    }
-
-    /**
-     * 设置键盘实体
-     *
-     * @param softSkb 键盘
-     */
-    override fun setSoftKeyboard(softSkb: SoftKeyboard) {
-        super.setSoftKeyboard(softSkb)
         mHandWritingPaint.setColor(mActiveTheme.keyTextColor)
     }
 
@@ -63,7 +53,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     override fun onTouchEvent(me: MotionEvent): Boolean {
         val x = me.x.toInt()
         val y = me.y.toInt()
-        val softKey = onKeyPressHandwriting(x, y)
+        val softKey = getKeyIndices(x, y)
         if (softKey == null && me.actionMasked == MotionEvent.ACTION_DOWN || isHandleHandwriting) {
             handleHandwriting(me)
             return true
@@ -124,18 +114,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         }
         invalidate()
     }
-
-    /**
-     * 手写键盘获取按下按键
-     *
-     * @param x 按下坐标x值
-     * @param y 按下坐标y值
-     * @return 返回按下的按键
-     */
-    private fun onKeyPressHandwriting(x: Int, y: Int): SoftKey? {
-        return mSoftKeyboard!!.mapToKey(x, y)
-    }
-
+    
     private fun recognitionData() {
         instance!!.recognitionData(mSBPoint) {
             item -> mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
