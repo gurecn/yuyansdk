@@ -342,14 +342,13 @@ class KeyboardLoaderUtil private constructor() {
                         keyBean.setKeyDimensions(keyXPos, keyYPos)
                     }
                 }
+                keyBean.setSkbCoreSize(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.skbHeight)
                 lastKeyRight = keyXPos + keyWidth
                 lastKeyTop = keyYPos
                 lastKeyBottom = keyYPos + keyHeight
             }
         }
-        val softKeyboard = SoftKeyboard(rows)
-        softKeyboard.setSkbCoreSize(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.skbHeight)
-        return softKeyboard
+        return SoftKeyboard(rows)
     }
 
     private fun createT9Keys(codes: Array<Int>): Array<SoftKey> {

@@ -34,8 +34,8 @@ class EnvironmentSingleton private constructor() {
     var keyTextSmallSize = 0 // 正常按键中文本的大小,小值
     var candidateTextSize = 0 // 候选词字体大小
     var isLandscape = false //键盘是否横屏
-    var keyXMargin = 0f //键盘按键水平间距
-    var keyYMargin = 0f //键盘按键垂直间距
+    var keyXMargin = 0 //键盘按键水平间距
+    var keyYMargin = 0 //键盘按键垂直间距
     // 按键 + 候选词+拼音总高度，值是相对于竖屏宽度，横屏高度。
     private var keyboardHeightRatio = 0f
 
@@ -71,8 +71,8 @@ class EnvironmentSingleton private constructor() {
         heightForKeyboardMove = (heightForCandidates*0.2f).toInt()
         keyTextSize = (skbHeight * 0.06f).toInt()
         keyTextSmallSize = (skbHeight * 0.04f).toInt()
-        keyXMargin = ThemeManager.prefs.keyXMargin.getValue() / 1000f
-        keyYMargin = ThemeManager.prefs.keyYMargin.getValue() / 1000f
+        keyXMargin = (ThemeManager.prefs.keyXMargin.getValue() / 1000f * skbWidth).toInt()
+        keyYMargin = (ThemeManager.prefs.keyYMargin.getValue() / 1000f * skbHeight).toInt()
         candidateTextSize = (heightForCandidates * (0.3f + AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue()/100f)).toInt()
         inputAreaHeight = skbHeight + heightForCandidates
     }

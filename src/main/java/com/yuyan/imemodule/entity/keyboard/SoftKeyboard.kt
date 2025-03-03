@@ -9,34 +9,10 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
  * The height of the soft keyboard. 键盘的高度
  */
 class SoftKeyboard(var mKeyRows: List<List<SoftKey>>) {
-    var skbCoreWidth: Int = 0
-    var skbCoreHeight: Int = 0
-
-    /**
-     * 设置键盘核心的宽度和高度（不包括padding），并根据新的宽度和高度，调整键盘中各行的top和bottom，调整行中的按键的尺寸。
-     */
-    fun setSkbCoreSize(skbCoreWidth: Int, skbCoreHeight: Int) {
-        if (skbCoreWidth == this.skbCoreWidth && skbCoreHeight == this.skbCoreHeight)return
-        this.skbCoreWidth = skbCoreWidth
-        this.skbCoreHeight = skbCoreHeight
-        for (keyRow in mKeyRows) {
-            for (softKey in keyRow) {
-                softKey.setSkbCoreSize(skbCoreWidth, skbCoreHeight)
-            }
-        }
-    }
-
-    val keyXMargin: Int
-        /**
-         * 按键左右间隔距离
-         */
-        get() = (EnvironmentSingleton.instance.keyXMargin * skbCoreWidth).toInt()
-    val keyYMargin: Int
-        /**
-         * 按键上下间隔距离
-         */
-        get() = (EnvironmentSingleton.instance.keyYMargin * skbCoreHeight).toInt()
-
+    // 按键左右间隔距离
+    val keyXMargin = EnvironmentSingleton.instance.keyXMargin
+    // 按键上下间隔距离
+    val keyYMargin = EnvironmentSingleton.instance.keyYMargin
     /**
      * 根据坐标查找按键，如果坐标在某个按键区域内，就返回这个按键，如果坐标不在所有的按键区域内，返回离它最近的按键。
      * 可以在判断坐标在某个按键区域内的时候，并且加上判断离它最近的按键，这样就只需要一次遍历就行了。
