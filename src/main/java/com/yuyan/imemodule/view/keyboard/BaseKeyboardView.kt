@@ -329,8 +329,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
-    open fun getKeyIndices(x: Int, y: Int): SoftKey? {
-        return null
+    fun getKeyIndices(x: Int, y: Int): SoftKey? {
+        return mSoftKeyboard?.mapToKey(x, y)
     }
 
     open fun setSoftKeyboard(softSkb: SoftKeyboard) {

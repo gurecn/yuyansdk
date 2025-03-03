@@ -8,44 +8,22 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
  * The width of the soft keyboard. 键盘的宽度
  * The height of the soft keyboard. 键盘的高度
  */
-class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
-    private var skbValue = 0
-    /**
-     * Rows in this soft keyboard. Each row has a id. Only matched rows will be
-     * enabled. 按键排列的行的链表，每个元素都是一行。
-     */
-    var mKeyRows = listOf<List<SoftKey>>()
-
-    fun setSkbValue(skbValue: Int) {
-        this.skbValue = skbValue
-    }
-
-
-    fun setSoftKeys(rows: List<List<SoftKey>>) {
-        mKeyRows = rows
-    }
-
-    /**
-     * 设置键盘核心的宽度和高度（不包括padding），并根据新的宽度和高度，调整键盘中各行的top和bottom，调整行中的按键的尺寸。
-     */
-    fun setSkbCoreSize() {
-        for (keyRow in mKeyRows) {
-            for (softKey in keyRow) {
-                softKey.setSkbCoreSize(skbCoreWidth, skbCoreHeight)
-            }
-        }
-    }
+class SoftKeyboard(var mKeyRows: List<List<SoftKey>>) {
+    var skbCoreWidth: Int = 0
+    var skbCoreHeight: Int = 0
 
     /**
      * 设置键盘核心的宽度和高度（不包括padding），并根据新的宽度和高度，调整键盘中各行的top和bottom，调整行中的按键的尺寸。
      */
     fun setSkbCoreSize(skbCoreWidth: Int, skbCoreHeight: Int) {
-        if (skbCoreWidth == this.skbCoreWidth && skbCoreHeight == this.skbCoreHeight) {
-            return
-        }
+        if (skbCoreWidth == this.skbCoreWidth && skbCoreHeight == this.skbCoreHeight)return
         this.skbCoreWidth = skbCoreWidth
         this.skbCoreHeight = skbCoreHeight
-        setSkbCoreSize()
+        for (keyRow in mKeyRows) {
+            for (softKey in keyRow) {
+                softKey.setSkbCoreSize(skbCoreWidth, skbCoreHeight)
+            }
+        }
     }
 
     val keyXMargin: Int
@@ -64,17 +42,9 @@ class SoftKeyboard(var skbCoreWidth: Int, var skbCoreHeight: Int) {
      * 可以在判断坐标在某个按键区域内的时候，并且加上判断离它最近的按键，这样就只需要一次遍历就行了。
      */
     fun mapToKey(x: Int, y: Int): SoftKey? {
-        val rowNum = mKeyRows.size
-        for (row in 0 until rowNum) {
-            val keyRow: List<SoftKey> = mKeyRows[row]
-            for (sKey in keyRow) {
-                val mLeft = sKey.mLeft
-                val mRight = sKey.mRight
-                val mTop = sKey.mTop
-                val mBottom = sKey.mBottom
-                if (mLeft <= x && mTop <= y && mRight > x && mBottom > y) {
-                    return sKey
-                }
+        for (element in mKeyRows) {
+            for (sKey in element) {
+                if (sKey.mLeft <= x && sKey.mTop <= y && sKey.mRight > x && sKey.mBottom > y) return sKey
             }
         }
         return null

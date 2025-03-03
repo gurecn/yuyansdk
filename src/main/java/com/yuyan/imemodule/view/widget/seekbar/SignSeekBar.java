@@ -70,7 +70,6 @@ public class SignSeekBar extends View {
     private int mSignBorderSize; // border size
     private boolean isShowSignBorder; // show sign border
     private int mSignBorderColor;// color of border color
-    private int mUnusableColor;// color of border color
     private int mSignColor;// color of sign
     private int mSignTextSize; // text size of sign-progress
     private int mSignTextColor; // text color of sign-progress
@@ -83,7 +82,6 @@ public class SignSeekBar extends View {
     private float mTrackLength; // pixel length of whole track
     private float mSectionOffset; // pixel length of one section
     private boolean isThumbOnDragging; // is thumb on dragging or not
-    private int mTextSpace; // space between text and track
     private boolean triggerSeekBySection;
 
     private OnProgressChangedListener mProgressListener; // progress changing listener
@@ -108,7 +106,6 @@ public class SignSeekBar extends View {
     private int mSignArrowHeight;   //提示框箭头的高度
     private int mSignArrowWidth;   //提示框箭头的宽度
     private int mSignRound;      //提示框的圆角大小
-    private int barRoundingRadius = 0;
     private final Point point1;
     private final Point point2;
     private final Point point3;
@@ -121,7 +118,6 @@ public class SignSeekBar extends View {
     private boolean mReverse;
     private TextPaint valueTextPaint;  //滑块数值文本
     private NumberFormat mFormat;
-    private OnValueFormatListener mValueFormatListener;
 
     public SignSeekBar(Context context) {
         super(context);
@@ -246,14 +242,14 @@ public class SignSeekBar extends View {
         if (isShowThumbText) {
             mPaint.setTextSize(mThumbTextSize);
             mPaint.getTextBounds("j", 0, 1, mRectText); // “j”是字母和阿拉伯数字中最高的
-            height += mRectText.height() + mTextSpace; // 如果显示实时进度，则原来基础上加上进度文字高度和间隔
+            height += mRectText.height(); // 如果显示实时进度，则原来基础上加上进度文字高度和间隔
         }
         if (isShowSectionText && mSectionTextPosition >= TextPosition.BOTTOM_SIDES) { // 如果Section值在track之下显示，比较取较大值
             //测量节点文字的高度，如果有lable，测量真实的lable高度，如果没有表示显示的进度是数字，就用“j”代替测量高度
             String measuretext = isSidesLabels ? mSidesLabels[0] : "j";
             mPaint.setTextSize(mSectionTextSize);
             mPaint.getTextBounds(measuretext, 0, measuretext.length(), mRectText);
-            height = Math.max(height, mThumbRadiusOnDragging * 2 + mRectText.height() + mTextSpace);
+            height = Math.max(height, mThumbRadiusOnDragging * 2 + mRectText.height());
         }
         height += mSignHeight;//加上提示框的高度
         if (isShowSignBorder) height += mSignBorderSize;//加上提示框边框高度
@@ -268,21 +264,21 @@ public class SignSeekBar extends View {
             if (mSectionTextPosition == TextPosition.SIDES) {
                 String text = getMinText();
                 mPaint.getTextBounds(text, 0, text.length(), mRectText);
-                mLeft += (mRectText.width() + mTextSpace);
+                mLeft += (mRectText.width());
 
                 text = getMaxText();
                 mPaint.getTextBounds(text, 0, text.length(), mRectText);
-                mRight -= (mRectText.width() + mTextSpace);
+                mRight -= (mRectText.width());
             } else if (mSectionTextPosition >= TextPosition.BOTTOM_SIDES) {
                 String text = isSidesLabels ? mSidesLabels[0] : getMinText();
                 mPaint.getTextBounds(text, 0, text.length(), mRectText);
                 float max = Math.max(mThumbRadiusOnDragging, mRectText.width() / 2f);
-                mLeft = getPaddingLeft() + max + mTextSpace;
+                mLeft = getPaddingLeft() + max;
 
                 text = isSidesLabels ? mSidesLabels[mSidesLabels.length - 1] : getMaxText();
                 mPaint.getTextBounds(text, 0, text.length(), mRectText);
                 max = Math.max(mThumbRadiusOnDragging, mRectText.width() / 2f);
-                mRight = getMeasuredWidth() - getPaddingRight() - max - mTextSpace;
+                mRight = getMeasuredWidth() - getPaddingRight() - max;
             }
         } else if (isShowThumbText && mSectionTextPosition == NONE) {
             mPaint.setTextSize(mThumbTextSize);
@@ -290,17 +286,17 @@ public class SignSeekBar extends View {
             String text = getMinText();
             mPaint.getTextBounds(text, 0, text.length(), mRectText);
             float max = Math.max(mThumbRadiusOnDragging, mRectText.width() / 2f);
-            mLeft = getPaddingLeft() + max + mTextSpace;
+            mLeft = getPaddingLeft() + max;
 
             text = getMaxText();
             mPaint.getTextBounds(text, 0, text.length(), mRectText);
             max = Math.max(mThumbRadiusOnDragging, mRectText.width() / 2f);
-            mRight = getMeasuredWidth() - getPaddingRight() - max - mTextSpace;
+            mRight = getMeasuredWidth() - getPaddingRight() - max;
         }
 
         if (isShowSign && !isSignArrowAutofloat) {//提示框 三角指示是否自动移动
-            mLeft = Math.max(mLeft, getPaddingLeft() + mSignWidth / 2 + mSignBorderSize);
-            mRight = Math.min(mRight, getMeasuredWidth() - getPaddingRight() - mSignWidth / 2 - mSignBorderSize);
+            mLeft = Math.max(mLeft, getPaddingLeft() + mSignWidth / 2f + mSignBorderSize);
+            mRight = Math.min(mRight, getMeasuredWidth() - getPaddingRight() - mSignWidth / 2f - mSignBorderSize);
         }
 
         mTrackLength = mRight - mLeft;
@@ -321,13 +317,13 @@ public class SignSeekBar extends View {
             yTop += mSignBorderSize;
         }
         if (isShowSign && !isSignArrowAutofloat) {//是否浮动显示提示框三角指示，默认浮动，否则居中显示
-            xLeft += (mSignWidth / 2 + mSignBorderSize);
-            xRight -= (mSignWidth / 2 + mSignBorderSize);
+            xLeft += (mSignWidth / 2f + mSignBorderSize);
+            xRight -= (mSignWidth / 2f + mSignBorderSize);
         }
         // draw sectionText SIDES or BOTTOM_SIDES
         if (isShowSectionText) {
             mPaint.setTextSize(mSectionTextSize);
-            mPaint.setColor(isEnabled() ? mSectionTextColor : mUnusableColor);
+            if(isEnabled())mPaint.setColor(mSectionTextColor);
 
             if (mSectionTextPosition == TextPosition.SIDES) {
                 float y_ = yTop + mRectText.height() / 2f;
@@ -336,16 +332,16 @@ public class SignSeekBar extends View {
                 String text = isSidesLabels ? mSidesLabels[0] : getMinText();
                 mPaint.getTextBounds(text, 0, text.length(), mRectText);
                 canvas.drawText(text, xLeft + mRectText.width() / 2f, y_, mPaint);
-                xLeft += mRectText.width() + mTextSpace;
+                xLeft += mRectText.width();
 
                 //text = getMaxText();
                 text = isSidesLabels && mSidesLabels.length > 1 ? mSidesLabels[mSidesLabels.length - 1] : getMaxText();
                 mPaint.getTextBounds(text, 0, text.length(), mRectText);
                 canvas.drawText(text, xRight - mRectText.width() / 2f, y_, mPaint);
-                xRight -= (mRectText.width() + mTextSpace);
+                xRight -= (mRectText.width());
 
             } else if (mSectionTextPosition >= TextPosition.BOTTOM_SIDES) {
-                float y_ = yTop + mThumbRadiusOnDragging + mTextSpace;
+                float y_ = yTop + mThumbRadiusOnDragging;
 
                 // String text = getMinText();
                 String text = isSidesLabels ? mSidesLabels[0] : getMinText();
@@ -431,7 +427,7 @@ public class SignSeekBar extends View {
         mPaint.getTextBounds("0123456789", 0, "0123456789".length(), mRectText); // compute solid height
 
         float x_;
-        float y_ = yTop + mRectText.height() + mThumbRadiusOnDragging + mTextSpace;
+        float y_ = yTop + mRectText.height() + mThumbRadiusOnDragging;
 
         for (int i = 0; i <= mSectionCount; i++) {
             x_ = xLeft + i * mSectionOffset;
@@ -443,10 +439,7 @@ public class SignSeekBar extends View {
             if (isShowTextBelowSectionMark) {
                 float m = mMin + mSectionValue * i;
                 //不可用，除了当前节点之外的其它节点用不可用颜色表示
-
-                //Log.i("test",mProgress+"========"+m);
-                //mPaint.setColor(isEnabled()?mSectionTextColor:mUnusableColor);
-                mPaint.setColor(isEnabled() ? mSectionTextColor : Math.abs(mProgress - m) <= 0 ? mSectionTextColor : mUnusableColor);
+                if(isEnabled()) mPaint.setColor(mSectionTextColor);
                 if (mSectionTextInterval > 1) {
                     if (conditionInterval && i % mSectionTextInterval == 0) {
                         if (isSidesLabels) {
@@ -473,7 +466,7 @@ public class SignSeekBar extends View {
         mPaint.setColor(mThumbTextColor);
         mPaint.setTextSize(mThumbTextSize);
         mPaint.getTextBounds("0123456789", 0, "0123456789".length(), mRectText); // compute solid height
-        float y_ = yTop + mRectText.height() + mThumbRadiusOnDragging + mTextSpace;
+        float y_ = yTop + mRectText.height() + mThumbRadiusOnDragging;
 
         if (isFloatType || (isShowProgressInFloat && mSectionTextPosition == TextPosition.BOTTOM_SIDES &&
                 mProgress != mMin && mProgress != mMax)) {
@@ -482,14 +475,13 @@ public class SignSeekBar extends View {
             if (mFormat != null) {
                 value = mFormat.format(progress);
             }
-            if (value != null && unit != null && !unit.isEmpty()) {
+            if (unit != null && !unit.isEmpty()) {
                 if (!mReverse) {
                     value += String.format("%s", unit);
                 } else {
                     value = String.format("%s", unit) + value;
                 }
             }
-            if (mValueFormatListener != null) value = mValueFormatListener.format(progress);
             drawSignText(canvas, value, mThumbCenterX, y_, mPaint);
         } else {
             int progress = getProgress();
@@ -497,14 +489,13 @@ public class SignSeekBar extends View {
             if (mFormat != null) {
                 value = mFormat.format(progress);
             }
-            if (value != null && unit != null && !unit.isEmpty()) {
+            if (unit != null && !unit.isEmpty()) {
                 if (!mReverse) {
                     value += String.format("%s", unit);
                 } else {
                     value = String.format("%s", unit) + value;
                 }
             }
-            if (mValueFormatListener != null) value = mValueFormatListener.format(progress);
             drawSignText(canvas, value, mThumbCenterX, y_, mPaint);
         }
     }
@@ -534,17 +525,15 @@ public class SignSeekBar extends View {
 
         canvas.drawRoundRect(roundRectangleBounds, mSignRound, mSignRound, signPaint);
         if (isShowSignBorder) {
-            roundRectangleBounds.top = roundRectangleBounds.top + mSignBorderSize / 2;
+            roundRectangleBounds.top = roundRectangleBounds.top + mSignBorderSize / 2f;
             canvas.drawRoundRect(roundRectangleBounds, mSignRound, mSignRound, signborderPaint);
         }
-
-        // Draw arrow
-        barRoundingRadius = isThumbOnDragging ? mThumbRadiusOnDragging : mThumbRadius;
+        int barRoundingRadius = isThumbOnDragging ? mThumbRadiusOnDragging : mThumbRadius;
         int difference = 0;
-        if (valueSignCenter - mSignArrowWidth / 2 < barRoundingRadius + getPaddingLeft() + mTextSpace + bordersize) {
-            difference = barRoundingRadius - valueSignCenter + getPaddingLeft() + bordersize + mTextSpace;
-        } else if (valueSignCenter + mSignArrowWidth / 2 > getMeasuredWidth() - barRoundingRadius - getPaddingRight() - mTextSpace - bordersize) {
-            difference = (getMeasuredWidth() - barRoundingRadius) - valueSignCenter - getPaddingRight() - bordersize - mTextSpace;
+        if (valueSignCenter - mSignArrowWidth / 2 < barRoundingRadius + getPaddingLeft() + bordersize) {
+            difference = barRoundingRadius - valueSignCenter + getPaddingLeft() + bordersize;
+        } else if (valueSignCenter + mSignArrowWidth / 2 > getMeasuredWidth() - barRoundingRadius - getPaddingRight() - bordersize) {
+            difference = (getMeasuredWidth() - barRoundingRadius) - valueSignCenter - getPaddingRight() - bordersize;
         }
 
         point1.set(valueSignCenter - mSignArrowWidth / 2 + difference, valueSignSpaceHeight - mSignArrowHeight + getPaddingTop());
@@ -583,7 +572,7 @@ public class SignSeekBar extends View {
         triangleboderPath.moveTo(point1.x, point1.y);
         triangleboderPath.lineTo(point2.x, point2.y);
         paint.setColor(signPaint.getColor());
-        float value = mSignBorderSize / 6;
+        float value = mSignBorderSize / 6f;
         paint.setStrokeWidth(mSignBorderSize + 1f);
         canvas.drawPath(triangleboderPath, paint);
         triangleboderPath.reset();
@@ -605,14 +594,6 @@ public class SignSeekBar extends View {
         requestLayout();
     }
 
-    public void setProgressWithUnit(float progress, String unitHtml) {
-        setProgress(progress);
-        this.unit = unitHtml;
-        createValueTextLayout();
-        invalidate();
-        requestLayout();
-    }
-
     private void createValueTextLayout() {
         String value = "";
         if (isShowProgressInFloat) {
@@ -628,64 +609,23 @@ public class SignSeekBar extends View {
                 value = mFormat.format(progress);
             }
         }
-        if (mValueFormatListener == null) {
-            if (value != null && unit != null && !unit.isEmpty()) {
-                if (!mReverse) {
-                    value += String.format(" <small>%s</small> ", unit);
-                    //value += String.format("%s", unit);
-                } else {
-                    value = String.format(" %s ", unit) + value;
-                }
+        if (unit != null && !unit.isEmpty()) {
+            if (!mReverse) {
+                value += String.format(" <small>%s</small> ", unit);
+                //value += String.format("%s", unit);
+            } else {
+                value = String.format(" %s ", unit) + value;
             }
-        } else {
-            value = mValueFormatListener.format(Float.parseFloat(value));
         }
         Spanned spanned = Html.fromHtml(value);
         valueTextLayout = new StaticLayout(spanned, valueTextPaint, mSignWidth, Layout.Alignment.ALIGN_CENTER, 1, 0, false);
     }
 
-    //draw progress text
-    private void drawProgressText(Canvas canvas) {
-        String value = isShowProgressInFloat ? String.valueOf(getProgressFloat()) : String.valueOf(getProgress());
-        //String text = value != null ? formatter.format(value) : valueSegmentText;
-        if (value != null && unit != null && !unit.isEmpty())
-            value += String.format("%s", unit);
-        float mCircle_r = isThumbOnDragging ? mThumbRadiusOnDragging : mThumbRadius;
-        Paint mPartTextPaint = mPaint;
-        mPartTextPaint.setColor(Color.BLACK);
-        mPartTextPaint.setTextSize(25);
-        //如果想精确的把文字画在圆圈中心，请使用基于Paint.Align.LEFT完整公式计算方法
-        drawCircleText(canvas, mPartTextPaint, mThumbCenterX, getPaddingTop() + mThumbRadiusOnDragging, mCircle_r, value);
-    }
-
-    /**
-     * 精确画圆圈中心文字（通用方法），其中文字的高度是最难计算适配的，采用此方法，可以完美解决
-     *
-     * @param canvas  画板
-     * @param paint   画笔panit
-     * @param centerX 圆圈中心X坐标
-     * @param centerY 圆圈中心Y坐标
-     * @param radius  半径
-     * @param text    显示的文本
-     */
-    private void drawCircleText(Canvas canvas, Paint paint, float centerX, float centerY, float radius, String text) {
-        paint.setTextAlign(Paint.Align.LEFT);
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
-        float baseline = centerY - radius + (2 * radius - fontMetrics.bottom + fontMetrics.top) / 2 - fontMetrics.top;
-        canvas.drawText(text, centerX - radius + radius - bounds.width() / 2, baseline, paint);
-    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        post(new Runnable() {
-            @Override
-            public void run() {
-                requestLayout();
-            }
-        });
+        post(this::requestLayout);
     }
 
     float dx;
@@ -853,16 +793,13 @@ public class SignSeekBar extends View {
                 valueAnim = ValueAnimator.ofFloat(mThumbCenterX, (i + 1) * mSectionOffset + mLeft);
             }
             valueAnim.setInterpolator(new LinearInterpolator());
-            valueAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mThumbCenterX = (float) animation.getAnimatedValue();
-                    mProgress = (mThumbCenterX - mLeft) * mDelta / mTrackLength + mMin;
-                    invalidate();
+            valueAnim.addUpdateListener(animation -> {
+                mThumbCenterX = (float) animation.getAnimatedValue();
+                mProgress = (mThumbCenterX - mLeft) * mDelta / mTrackLength + mMin;
+                invalidate();
 
-                    if (mProgressListener != null) {
-                        mProgressListener.onProgressChanged(SignSeekBar.this, getProgress(), getProgressFloat(), true);
-                    }
+                if (mProgressListener != null) {
+                    mProgressListener.onProgressChanged(SignSeekBar.this, getProgress(), getProgressFloat(), true);
                 }
             });
         }
@@ -948,10 +885,6 @@ public class SignSeekBar extends View {
 
     public void setOnProgressChangedListener(OnProgressChangedListener onProgressChangedListener) {
         mProgressListener = onProgressChangedListener;
-    }
-
-    public void setValueFormatListener(OnValueFormatListener valueFormatListener) {
-        mValueFormatListener = valueFormatListener;
     }
 
     void config(SignConfigBuilder builder) {
@@ -1108,9 +1041,5 @@ public class SignSeekBar extends View {
         void getProgressOnActionUp(SignSeekBar signSeekBar, int progress, float progressFloat);
 
         void getProgressOnFinally(SignSeekBar signSeekBar, int progress, float progressFloat, boolean fromUser);
-    }
-
-    public interface OnValueFormatListener {
-        String format(float progress);
     }
 }

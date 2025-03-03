@@ -257,7 +257,7 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
             }
         }
-        softKeyboard = getSoftKeyboard(skbValue, rows, numberLine)
+        softKeyboard = getSoftKeyboard(rows, numberLine)
         mSoftKeyboardMap[skbValue] = softKeyboard
         return softKeyboard
     }
@@ -321,10 +321,7 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     /** 生成键盘布局，主要用于计算键盘边界 */
-    private fun getSoftKeyboard(skbValue: Int, rows: List<List<SoftKey>>, isNumberRow: Boolean): SoftKeyboard {
-        val skbWidth = EnvironmentSingleton.instance.skbWidth
-        val softKeyboardHeight = EnvironmentSingleton.instance.skbHeight
-        val softKeyboard = SoftKeyboard(skbWidth, softKeyboardHeight)
+    private fun getSoftKeyboard(rows: List<List<SoftKey>>, isNumberRow: Boolean): SoftKeyboard {
         var lastKeyBottom = 0f
         var lastKeyRight: Float
         var lastKeyTop: Float
@@ -350,9 +347,8 @@ class KeyboardLoaderUtil private constructor() {
                 lastKeyBottom = keyYPos + keyHeight
             }
         }
-        softKeyboard.setSoftKeys(rows)
-        softKeyboard.setSkbCoreSize()
-        softKeyboard.setSkbValue(skbValue)
+        val softKeyboard = SoftKeyboard(rows)
+        softKeyboard.setSkbCoreSize(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.skbHeight)
         return softKeyboard
     }
 

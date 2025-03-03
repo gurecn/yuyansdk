@@ -53,10 +53,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         keyboardMnemonic = prefs.keyboardMnemonic.getValue()
     }
 
-    override fun getKeyIndices(x: Int, y: Int): SoftKey? {
-        return mSoftKeyboard?.mapToKey(x, y)
-    }
-
     /**
      * 设置键盘实体
      *
@@ -109,10 +105,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         var measuredWidth = 0
         var measuredHeight = 0
         if (null != mSoftKeyboard) {
-            measuredWidth = mSoftKeyboard!!.skbCoreWidth
-            measuredHeight = mSoftKeyboard!!.skbCoreHeight
-            measuredWidth += paddingLeft + paddingRight
-            measuredHeight += paddingTop + paddingBottom
+            measuredWidth = mSoftKeyboard!!.skbCoreWidth +  paddingLeft + paddingRight
+            measuredHeight = mSoftKeyboard!!.skbCoreHeight + paddingTop + paddingBottom
         }
         setMeasuredDimension(measuredWidth, measuredHeight)
     }
@@ -124,10 +118,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
 
     public override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if (mSoftKeyboard != null) {
-            mSoftKeyboard!!.setSkbCoreSize(w, h)
-        }
-        // Release the buffer, if any and it will be reallocated on the next draw
+        mSoftKeyboard?.setSkbCoreSize(w, h)
         mBuffer = null
     }
 
