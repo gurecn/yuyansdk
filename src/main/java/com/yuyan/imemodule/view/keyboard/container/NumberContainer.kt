@@ -18,6 +18,7 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
@@ -37,7 +38,7 @@ import splitties.views.dsl.core.margin
 class NumberContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
     private val mSideSymbolsNumber:List<SideSymbol>
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
-    private var mRVLeftPrefix : com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
+    private var mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
         layoutParams = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -111,12 +112,10 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
         val prefixLayoutParams = LayoutParams(
             softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
         )
-        prefixLayoutParams.setMargins(
-            softKeyboard.keyXMargin,
-            softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
-            softKeyboard.keyXMargin,
-            softKeyboard.skbCoreHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
-        )
+        prefixLayoutParams.setMargins(softKeyboard.keyXMargin,
+                softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
+                softKeyboard.keyXMargin,
+                EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin)
         return prefixLayoutParams
     }
 }

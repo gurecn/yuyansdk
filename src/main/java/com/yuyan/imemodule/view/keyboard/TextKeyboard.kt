@@ -105,8 +105,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         var measuredWidth = 0
         var measuredHeight = 0
         if (null != mSoftKeyboard) {
-            measuredWidth = mSoftKeyboard!!.skbCoreWidth +  paddingLeft + paddingRight
-            measuredHeight = mSoftKeyboard!!.skbCoreHeight + paddingTop + paddingBottom
+            measuredWidth = instance.skbWidth +  paddingLeft + paddingRight
+            measuredHeight = instance.skbHeight + paddingTop + paddingBottom
         }
         setMeasuredDimension(measuredWidth, measuredHeight)
     }
@@ -118,7 +118,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
 
     public override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        mSoftKeyboard?.setSkbCoreSize(w, h)
         mBuffer = null
     }
 

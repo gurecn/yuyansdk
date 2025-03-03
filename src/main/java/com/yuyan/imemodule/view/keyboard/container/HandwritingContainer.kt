@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -18,6 +17,7 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
@@ -104,7 +104,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
             softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
         )
         prefixLayoutParams.setMargins(softKeyboard.keyXMargin, softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
-            softKeyboard.keyXMargin, softKeyboard.skbCoreHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
+            softKeyboard.keyXMargin, EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
         )
         prefixLayoutParams.addRule(ALIGN_PARENT_RIGHT)
         return prefixLayoutParams

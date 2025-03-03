@@ -20,6 +20,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
@@ -108,7 +109,7 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
             softKeyboard.keyXMargin,
             softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
             softKeyboard.keyXMargin,
-            softKeyboard.skbCoreHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
+            EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
         )
         return prefixLayoutParams
     }
