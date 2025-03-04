@@ -21,7 +21,7 @@ class ComposingView(context: Context) : View(context) {
      * Used to draw composing string. When drawing the active and idle part of
      * the spelling(Pinyin) string, the color may be changed.
      */
-    private val mPaint: Paint // 显示拼音字符串
+    private val mPaint: Paint = Paint() // 显示拼音字符串
 
     /**
      * Used to estimate dimensions to show the string .
@@ -31,12 +31,12 @@ class ComposingView(context: Context) : View(context) {
     private var mComposingDisplay:String = ""  //显示拼音
 
     init {
-        mPaint = Paint()
         mPaint.setColor(ThemeManager.activeTheme.keyTextColor)
         mPaint.isAntiAlias = true
         mPaint.textSize = dp(16).toFloat()
         mFmi = mPaint.getFontMetricsInt()
         measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setPadding(dp(10), 0, dp(10),0)
     }
 
     /**
