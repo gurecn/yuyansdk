@@ -5,12 +5,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.SystemClock
-import android.text.Editable
 import android.text.InputType
-import android.text.TextWatcher
 import android.view.InputDevice
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
@@ -24,7 +21,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -36,7 +32,6 @@ import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
-import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
@@ -52,19 +47,17 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.ComposingView
+import com.yuyan.imemodule.view.EditPhrasesView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
 import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.view.keyboard.container.InputViewParent
 import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.view.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
-import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.core.CandidateListItem
-import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
@@ -82,8 +75,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private val clipboardItemTimeout = getInstance().clipboard.clipboardItemTimeout.getValue()
     private var chinesePrediction = true
     var isAddPhrases = false
-    private var mEtAddPhrasesContent: ImeEditText? = null
-    private var tvAddPhrasesTips:TextView? = null
     private var service: ImeService
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
     private var mChoiceNotifier = ChoiceNotifier()
@@ -93,7 +84,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private lateinit var mHoderLayoutLeft: LinearLayout
     private lateinit var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
-    lateinit var mAddPhrasesLayout: RelativeLayout
+    lateinit var mAddPhrasesLayout: EditPhrasesView
     private lateinit var mLlKeyboardBottomHolder: LinearLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
@@ -113,17 +104,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
             mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
             mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
-            mAddPhrasesLayout = LayoutInflater.from(context).inflate(R.layout.skb_add_phrases_container, mSkbRoot, false) as RelativeLayout
-            addView(mAddPhrasesLayout,  LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                addRule(ABOVE, mSkbRoot.id)
-                addRule(ALIGN_LEFT, mSkbRoot.id)
-            })
-            val mIvcSkbContainer:InputViewParent = mSkbRoot.findViewById(R.id.skb_input_keyboard_view)
-            KeyboardManager.instance.setData(mIvcSkbContainer, this)
+            mAddPhrasesLayout = EditPhrasesView(context)
+            KeyboardManager.instance.setData(mSkbRoot.findViewById(R.id.skb_input_keyboard_view), this)
             mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
             mComposingView = ComposingView(context)
-            mComposingView.setPadding(DevicesUtils.dip2px(10), 0,DevicesUtils.dip2px(10),0)
-
             addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
                 addRule(ABOVE, mSkbRoot.id)
                 addRule(ALIGN_LEFT, mSkbRoot.id)
@@ -139,10 +123,15 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             })
         }
         if(isAddPhrases){
-            mAddPhrasesLayout.visibility = View.VISIBLE
-            handleAddPhrasesView()
+            if(mAddPhrasesLayout.parent == null) {
+                addView(mAddPhrasesLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+                    addRule(ABOVE, mSkbRoot.id)
+                    addRule(ALIGN_LEFT, mSkbRoot.id)
+                })
+                mAddPhrasesLayout.handleAddPhrasesView()
+            }
         } else {
-            mAddPhrasesLayout.visibility = View.GONE
+            removeView(mAddPhrasesLayout)
         }
         mSkbCandidatesBarView.initialize(mChoiceNotifier)
         val oneHandedModSwitch = getInstance().keyboardSetting.oneHandedModSwitch.getValue()
@@ -268,15 +257,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             (mOnehandHoderLayout[1] as ImageButton).drawable?.setTint(keyTextColor)
         }
         mFullDisplayKeyboardBar?.updateTheme(keyTextColor)
-        mAddPhrasesLayout.setBackgroundColor(ThemeManager.activeTheme.barColor)
-        mEtAddPhrasesContent?.background = GradientDrawable().apply {
-            setColor(ThemeManager.activeTheme.keyBackgroundColor)
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = ThemeManager.prefs.keyRadius.getValue().toFloat()
-        }
-        mEtAddPhrasesContent?.setTextColor(keyTextColor)
-        mEtAddPhrasesContent?.setHintTextColor(keyTextColor)
-        tvAddPhrasesTips?.setTextColor(keyTextColor)
+        mAddPhrasesLayout.updateTheme(ThemeManager.activeTheme)
     }
 
     private fun onClick(view: View) {
@@ -349,7 +330,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
             }
             PopupMenuMode.Clear -> {
-                if(isAddPhrases) mEtAddPhrasesContent?.setText("")
+                if(isAddPhrases) mAddPhrasesLayout.clearPhrasesContent()
                 else {
                     val inputConnection = service.getCurrentInputConnection()
                     val clearText = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
@@ -624,38 +605,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 DataBaseKT.instance.phraseDao().deleteByContent(extra)
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 initView(context)
-                mEtAddPhrasesContent?.setText(extra)
-                mEtAddPhrasesContent?.setSelection(extra.length)
+                mAddPhrasesLayout.setExtraData(extra)
             }
             else ->onSettingsMenuClick(this, skbMenuMode)
         }
         mSkbCandidatesBarView.initMenuView()
     }
 
-    private fun handleAddPhrasesView() {
-        mEtAddPhrasesContent =  mAddPhrasesLayout.findViewById(R.id.et_add_phrases_content)
-        mEtAddPhrasesContent?.requestFocus()
-        tvAddPhrasesTips =  mAddPhrasesLayout.findViewById(R.id.tv_add_phrases_tips)
-        val tips = "快捷输入为拼音首字母前4位:"
-        mEtAddPhrasesContent?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                tvAddPhrasesTips?.text = tips.plus(com.yuyan.imemodule.libs.pinyin4j.PinyinHelper.getPinYinHeadChar(editable.toString()))
-            }
-        })
-    }
-
-    private fun addPhrasesHandle() {
-        val content = mEtAddPhrasesContent?.text.toString()
-        if(content.isNotBlank()) {
-            val pinYinHeadChar = com.yuyan.imemodule.libs.pinyin4j.PinyinHelper.getPinYinHeadChar(content)
-            val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
-            val phrase =  Phrase(content = content, t9 = pinYinHeadT9, qwerty = pinYinHeadChar, lx17 = "")
-            DataBaseKT.instance.phraseDao().insert(phrase)
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
-        }
-    }
 
     /**
      * 输入法状态: 空闲，输入，联想
@@ -693,22 +649,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     private fun sendKeyEvent(keyCode: Int) {
         if(isAddPhrases){
+            mAddPhrasesLayout.sendKeyEvent(keyCode)
             when(keyCode){
-                KeyEvent.KEYCODE_DEL ->{
-                    mEtAddPhrasesContent?.onKeyDown(keyCode, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-                    mEtAddPhrasesContent?.onKeyUp(keyCode, KeyEvent(KeyEvent.ACTION_UP, keyCode))
-                }
                 KeyEvent.KEYCODE_ENTER ->{
                     isAddPhrases = false
-                    addPhrasesHandle()
                     initView(context)
                     onSettingsMenuClick(SkbMenuMode.Phrases)
-                }
-                else -> {
-                    val unicodeChar: Char = KeyEvent(KeyEvent.ACTION_DOWN, keyCode).unicodeChar.toChar()
-                    if (unicodeChar != Character.MIN_VALUE) {
-                        mEtAddPhrasesContent?.commitText(unicodeChar.toString())
-                    }
                 }
             }
         } else {
@@ -741,7 +687,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 发送字符串给编辑框
      */
     private fun commitText(text: String) {
-        if(isAddPhrases) mEtAddPhrasesContent?.commitText(text)
+        if(isAddPhrases) mAddPhrasesLayout.commitText(text)
         else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(text), 1)
     }
 
@@ -750,7 +696,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     private fun commitPairSymbol(text: String) {
         if(isAddPhrases) {
-            mEtAddPhrasesContent?.commitText(text)
+            mAddPhrasesLayout.commitText(text)
         } else {
             val ic = service.getCurrentInputConnection()
             if(getInstance().input.symbolPairInput.getValue()) {
@@ -766,7 +712,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private fun commitDecInfoText(resultText: String?) {
         if(resultText == null) return
         if(isAddPhrases){
-            mEtAddPhrasesContent?.commitText(resultText)
+            mAddPhrasesLayout.commitText(resultText)
         } else {
             val inputConnection = service.getCurrentInputConnection()
             inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
@@ -830,7 +776,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun onWindowHidden() {
         if(isAddPhrases){
             isAddPhrases = false
-            addPhrasesHandle()
+            mAddPhrasesLayout.addPhrasesHandle()
             initView(context)
         }
         if(mImeState != ImeState.STATE_IDLE) resetToIdleState()

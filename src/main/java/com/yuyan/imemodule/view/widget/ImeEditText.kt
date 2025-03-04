@@ -1,9 +1,8 @@
 package com.yuyan.imemodule.view.widget
 
 import android.content.Context
-import android.util.AttributeSet
 
-class ImeEditText(context: Context, attr: AttributeSet) : androidx.appcompat.widget.AppCompatEditText(context, attr) {
+class ImeEditText(context: Context) : androidx.appcompat.widget.AppCompatEditText(context) {
     fun commitText(content: String) {
         val start = selectionStart
         val end = selectionEnd
