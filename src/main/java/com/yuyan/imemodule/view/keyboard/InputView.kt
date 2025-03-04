@@ -78,50 +78,48 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private var service: ImeService
     private var mImeState = ImeState.STATE_IDLE // 当前的输入法状态
     private var mChoiceNotifier = ChoiceNotifier()
-    private lateinit var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
-    lateinit var mSkbRoot: RelativeLayout
-    lateinit var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
-    private lateinit var mHoderLayoutLeft: LinearLayout
-    private lateinit var mHoderLayoutRight: LinearLayout
+    private var mComposingView: ComposingView // 组成字符串的View，用于显示输入的拼音。
+    var mSkbRoot: RelativeLayout
+    var mSkbCandidatesBarView: CandidatesBar //候选词栏根View
+    private var mHoderLayoutLeft: LinearLayout
+    private var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
-    lateinit var mAddPhrasesLayout: EditPhrasesView
-    private lateinit var mLlKeyboardBottomHolder: LinearLayout
+    var mAddPhrasesLayout: EditPhrasesView
+    private var mLlKeyboardBottomHolder: LinearLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
     private var mFullDisplayKeyboardBar:FullDisplayKeyboardBar? = null
 
     init {
-        this.service = service
         initNavbarBackground(service)
+        this.service = service
+        mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
+        addView(mSkbRoot)
+        mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
+        mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
+        mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
+        mAddPhrasesLayout = EditPhrasesView(context)
+        KeyboardManager.instance.setData(mSkbRoot.findViewById(R.id.skb_input_keyboard_view), this)
+        mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
+        mComposingView = ComposingView(context)
+        addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+            addRule(ABOVE, mSkbRoot.id)
+            addRule(ALIGN_LEFT, mSkbRoot.id)
+        })
+        val root = PopupComponent.get().root
+        val viewParent = root.parent
+        if (viewParent != null) {
+            (viewParent as ViewGroup).removeView(root)
+        }
+        addView(root, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+            addRule(ALIGN_BOTTOM, mSkbRoot.id)
+            addRule(ALIGN_LEFT, mSkbRoot.id)
+        })
         initView(context)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context) {
-        if (!::mSkbRoot.isInitialized) {
-            mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
-            addView(mSkbRoot)
-            mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
-            mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
-            mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
-            mAddPhrasesLayout = EditPhrasesView(context)
-            KeyboardManager.instance.setData(mSkbRoot.findViewById(R.id.skb_input_keyboard_view), this)
-            mLlKeyboardBottomHolder =  mSkbRoot.findViewById(R.id.iv_keyboard_holder)
-            mComposingView = ComposingView(context)
-            addView(mComposingView,  LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                addRule(ABOVE, mSkbRoot.id)
-                addRule(ALIGN_LEFT, mSkbRoot.id)
-            })
-            val root = PopupComponent.get().root
-            val viewParent = root.parent
-            if (viewParent != null) {
-                (viewParent as ViewGroup).removeView(root)
-            }
-            addView(root, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                addRule(ALIGN_BOTTOM, mSkbRoot.id)
-                addRule(ALIGN_LEFT, mSkbRoot.id)
-            })
-        }
         if(isAddPhrases){
             if(mAddPhrasesLayout.parent == null) {
                 addView(mAddPhrasesLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
