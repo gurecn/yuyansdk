@@ -147,13 +147,10 @@ traditionalize:
   tips: none
 translator:
   always_show_comments: true
-  comment_format:
-    - "xform/^/［/"
-    - "xform/$/］/"
   dictionary: pinyin
   initial_quality: 1.2
+  comment_format:
+    - "xform/ /'/"
   preedit_format:
-    - "xform/([jqxy])v/$1u/"
-    - "xform/([nl])v/$1v/"
-    - "xform/([nl])ue/$1ve/"
+    - "xform/ /'/"
   spelling_hints: 100

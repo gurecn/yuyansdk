@@ -152,9 +152,11 @@ traditionalize:
   tips: none
 translator:
   always_show_comments: true
-  comment_format:
   dictionary: pinyin
   initial_quality: 1.2
+  comment_format:
+    - "xform/ /'/"
   preedit_format:
+    - "xform/ /'/"
   prism: double_pinyin_ls17
   spelling_hints: 100

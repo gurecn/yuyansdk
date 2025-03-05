@@ -314,13 +314,11 @@ traditionalize:
   tips: none
 translator:
   always_show_comments: true
-  comment_format:
-    []
   dictionary: pinyin
   initial_quality: 1.2
+  comment_format:
+    - "xform/ /'/"
   preedit_format:
-    - "xform/([jqxy])v/$1u/"
-    - "xform/([nl])v/$1v/"
-    - "xform/([nl])ue/$1ve/"
+    - "xform/ /'/"
   prism: t9_pinyin
   spelling_hints: 100

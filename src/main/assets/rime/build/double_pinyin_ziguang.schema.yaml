@@ -133,46 +133,11 @@ traditionalize:
   tips: none
 translator:
   always_show_comments: true
-  comment_format:
-    - "xform/^/［/"
-    - "xform/$/］/"
   dictionary: pinyin
   initial_quality: 1.2
+  comment_format:
+    - "xform/ /'/"
   preedit_format:
-    - "xform/o(\\w)/0$1/"
-    - "xform/([jqxy])n/$1ue/"
-    - "xform/([nl])n/$1ve/"
-    - "xform/([dtgkhzcsuai])n/$1ui/"
-    - "xform/([nljqxb])g/$1iang/"
-    - "xform/([gkhuai])g/$1uang/"
-    - "xform/(\\w)w/$1en/"
-    - "xform/(\\w)r/$1an/"
-    - "xform/(\\w)t/$1eng/"
-    - "xform/([jqxylmnbp])y/$1in/"
-    - "xform/([zcsuaigkh])y/$1uai/"
-    - "xform/([dtnlgkhrzcsuai])o/$1uo/"
-    - "xform/(\\w)q/$1ao/"
-    - "xform/(\\w)p/$1ai/"
-    - "xform/(\\w)s/$1ang/"
-    - "xform/(\\w)d/$1ie/"
-    - "xform/(\\w)f/$1ian/"
-    - "xform/([jqx])h/$1iong/"
-    - "xform/([dtnlgkhrzcsuai])h/$1ong/"
-    - "xform/0j/0er/"
-    - "xform/([dnlmjqx])j/$1iu/"
-    - "xform/(\\w)k/$1ei/"
-    - "xform/(\\w)l/$1uan/"
-    - "xform/(\\w)z/$1ou/"
-    - "xform/([jqxl])x/$1ia/"
-    - "xform/([gkhuai])x/$1ua/"
-    - "xform/(\\w);/$1ing/"
-    - "xform/(\\w)b/$1iao/"
-    - "xform/(\\w)m/$1un/"
-    - "xform/(^|[ '])u/$1zh/"
-    - "xform/(^|[ '])a/$1ch/"
-    - "xform/(^|[ '])i/$1sh/"
-    - "xform/0(\\w)/$1/"
-    - "xform/([nljqxy])v/$1ü/"
-    - "xform/ü/v/"
+    - "xform/ /'/"
   prism: double_pinyin_ziguang
   spelling_hints: 100

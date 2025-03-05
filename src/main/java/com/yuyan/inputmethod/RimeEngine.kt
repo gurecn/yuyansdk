@@ -7,9 +7,6 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
-import com.yuyan.inputmethod.util.buildSpannedString
-import com.yuyan.inputmethod.util.isDigitsOnly
-import com.yuyan.inputmethod.util.underline
 import java.util.Locale
 
 object RimeEngine {
@@ -251,48 +248,20 @@ object RimeEngine {
     }
 
     private fun getCurrentComposition(candidates: List<CandidateListItem>): String {
-        val compositionText = Rime.compositionText
+        val composition = Rime.compositionText
         return when {
-            compositionText.isEmpty() -> ""
-            candidates.isEmpty() -> compositionText
-            Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_T9  -> {
-                if(candidates.first().comment.isBlank()){
-                    compositionText
-                } else {
-                    val compositionList: List<String> =
-                        compositionText.filter { it.code <= 0xFF }.split("[ ']".toRegex())
-                    val pinyinList: List<String> = candidates.first().comment.split(" ")
-                    buildSpannedString {
-                        append(compositionText.filter { it.code > 0xFF })
-                        pinyinList.zip(compositionList).forEach { (pinyin, composition) ->
-                            val py = if (composition.length >= pinyin.length) {
-                                pinyin
-                            } else {
-                                pinyin.substring(0, composition.length)
-                            }
-                            if (composition.isDigitsOnly()) {
-                                append(py)
-                            } else {
-                                underline {
-                                    append(py)
-                                }
-                            }
-                            append("'")
-                        }
-                        // 不以分词结束的则去掉拼音末尾的分词符号
-                        if (keyRecordStack.getTop() !is InputKey.Apostrophe && isNotEmpty()) {
-                            delete(length - 1, length)
-                        }
-                    }
-                }
-            }
-            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && !AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()  -> {
-                keyRecordStack.getkeyRecords().joinToString("") {
-                    if(it is InputKey.QwertKey) it.keyChar else "\'"
-                }
+            composition.isEmpty() -> ""
+            candidates.isEmpty() -> composition
+            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) -> {
+                if(!AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()) keyRecordStack.getkeyRecords().joinToString("")
+                else candidates.first().comment
             }
             else -> {
-                compositionText.replace(" ", "'")
+                val comment = candidates.first().comment
+                val compositionLength = composition.length
+                if(comment.isEmpty())composition
+                else if(compositionLength >= comment.length) comment
+                else comment.take(compositionLength)
             }
         }
     }
