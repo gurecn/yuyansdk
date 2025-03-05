@@ -16,14 +16,13 @@ import org.json.JSONObject
 import java.util.Collections
 
 class HandWritingHanwang : HandWritingMonitor {
-    private lateinit var mHanyuPinyinOutputFormat: com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinOutputFormat
+    private lateinit var mHanyuPinyinOutputFormat: HanyuPinyinOutputFormat
     override fun initHdw(): Boolean {
         nativeMethods.nativeHttpInit(ImeSdkApplication.context, 0)
-        mHanyuPinyinOutputFormat =
-            com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinOutputFormat()
-        mHanyuPinyinOutputFormat.caseType = com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinCaseType.LOWERCASE
-        mHanyuPinyinOutputFormat.toneType = com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinToneType.WITH_TONE_MARK
-        mHanyuPinyinOutputFormat.vCharType = com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinVCharType.WITH_U_UNICODE
+        mHanyuPinyinOutputFormat = HanyuPinyinOutputFormat()
+        mHanyuPinyinOutputFormat.caseType = HanyuPinyinCaseType.LOWERCASE
+        mHanyuPinyinOutputFormat.toneType = HanyuPinyinToneType.WITH_TONE_MARK
+        mHanyuPinyinOutputFormat.vCharType = HanyuPinyinVCharType.WITH_U_UNICODE
         return true
     }
     override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
@@ -58,7 +57,7 @@ class HandWritingHanwang : HandWritingMonitor {
                                 sb.append(Integer.parseInt(ca).toChar())
                             }
                             val candidate = sb.toString()
-                            recogResultItems.add(CandidateListItem(com.yuyan.imemodule.libs.pinyin4j.PinyinHelper.toHanYuPinyin(candidate, mHanyuPinyinOutputFormat, "'").ifEmpty { candidate }, candidate))
+                            recogResultItems.add(CandidateListItem(PinyinHelper.toHanYuPinyin(candidate, mHanyuPinyinOutputFormat, "'").ifEmpty { candidate }, candidate))
                         }
                         recogResultData?.onSucess(recogResultItems.toTypedArray())
                     }
