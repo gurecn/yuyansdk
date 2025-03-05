@@ -212,7 +212,7 @@ object RimeEngine {
         customPhraseSize = 0
         showCandidates = when {
             Rime.compositionText.isNotBlank() -> {
-                val phrase = CustomEngine.processPhrase(Rime.compositionText.replace("\\s".toRegex(), ""))
+                val phrase = CustomEngine.processPhrase(Rime.compositionText.replace("\'", ""))
                 customPhraseSize = phrase.size
                 phrase.map { content -> CandidateListItem("📋", content) }.toMutableList().plus(candidates)
             }
@@ -282,8 +282,6 @@ object RimeEngine {
 
     private class KeyRecordStack {
         private val keyRecords = ArrayList<InputKey>(20)
-
-        fun getTop(): InputKey? = keyRecords.lastOrNull()
 
         fun pop(): InputKey? = keyRecords.removeLastOrNull()
 
@@ -423,7 +421,7 @@ object RimeEngine {
             override fun toString(): String = keyChar
         }
 
-        class QwertKey(val keyChar: String, var consumed: Boolean = false) : InputKey {
+        class QwertKey(val keyChar: String) : InputKey {
             constructor(keyCode: Int) : this(String(intArrayOf(keyCode - KeyEvent.KEYCODE_A + 'a'.code), 0, 1))
 
             override fun toString(): String = keyChar
@@ -439,7 +437,7 @@ object RimeEngine {
             fun t9Keys() = t9InputKeys ?: restoreToT9key().joinToString("")
 
             fun restoreToT9key(): List<T9Key> =
-                pinyin.map { T9Key(T9PinYinUtils.pinyin2T9Key(it)) }.also {
+                pinyin.map { T9Key(T9PinYinUtils.pinyin2T9Key(it).toString()) }.also {
                     t9InputKeys = it.joinToString("")
                 }
 
