@@ -35,7 +35,15 @@ import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
 import splitties.dimensions.dp
+import splitties.views.dsl.constraintlayout.bottomOfParent
+import splitties.views.dsl.constraintlayout.endOfParent
+import splitties.views.dsl.constraintlayout.lParams
+import splitties.views.dsl.constraintlayout.leftOfParent
+import splitties.views.dsl.constraintlayout.rightOfParent
+import splitties.views.dsl.core.add
 import splitties.views.dsl.core.margin
+import splitties.views.dsl.core.matchParent
+import splitties.views.dsl.core.wrapContent
 
 /**
  * 候选词键盘容器
@@ -51,9 +59,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
     private var isLoadingMore = false // 正在加载更多
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
-        layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
         gravity = Gravity.CENTER
     }
     init {
@@ -75,20 +81,18 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVSymbolsView = RecyclerView(context)
         mRVSymbolsView.setHasFixedSize(true)
         mRVSymbolsView.setItemAnimator(null)
-        val prefixLayoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
-        mRVLeftPrefix.setLayoutManager(prefixLayoutManager)
-        val skbWidth = instance.skbWidth
-        val skbHeight = instance.skbHeight
-        val prefixLayoutParams = LayoutParams((skbWidth * 0.18).toInt(), LayoutParams.MATCH_PARENT)
-        prefixLayoutParams.setMargins(0, (skbHeight * 0.01).toInt(), 0, (skbHeight * 0.01).toInt())
-        addView(mRVLeftPrefix, prefixLayoutParams)
+        mRVLeftPrefix.setLayoutManager(LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false))
+        val skbHeightMargins = (instance.skbHeight * 0.01).toInt()
+        add(mRVLeftPrefix, lParams(width = (instance.skbWidth * 0.18).toInt(), height = matchParent).apply {
+            setMargins(0, skbHeightMargins, 0, skbHeightMargins)
+            leftOfParent(0)
+        })
         mRVLeftPrefix.visibility = GONE
-        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        layoutParams.addRule(RIGHT_OF, mRVLeftPrefix.id)
-        mRVSymbolsView.setLayoutParams(layoutParams)
-        this.addView(mRVSymbolsView)
-        val ivDelete = getIvDelete()
-        this.addView(ivDelete)
+        add(mRVSymbolsView, lParams(width = 0, height = matchParent).apply {
+            startToEnd = mRVLeftPrefix.id
+            endOfParent(0)
+        })
+        addView(getIvDelete())
         val manager = CustomFlexboxLayoutManager(context)
         manager.flexDirection = FlexDirection.ROW //主轴为水平方向，起点在左端。
         manager.flexWrap = FlexWrap.WRAP //按正常方向换行
@@ -149,11 +153,10 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             }
             true
         }
-        val layoutParams3 = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        layoutParams3.setMargins(paddingBorder, paddingBorder, paddingBorder, paddingBorder)
-        layoutParams3.addRule(ALIGN_PARENT_END, TRUE)
-        layoutParams3.addRule(ALIGN_PARENT_BOTTOM, TRUE)
-        ivDelete.layoutParams = layoutParams3
+        ivDelete.layoutParams = lParams(width =  wrapContent, height = wrapContent).apply {
+            bottomOfParent(paddingBorder)
+            rightOfParent(paddingBorder)
+        }
         return ivDelete
     }
 
@@ -189,28 +192,21 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
             prefixs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()
-            if (mRVLeftPrefix.footerCount <= 0) {
-                mRVLeftPrefix.addFooterView(mLlAddSymbol)
-            }
+            if (mRVLeftPrefix.footerCount <= 0) mRVLeftPrefix.addFooterView(mLlAddSymbol)
         } else{
-            if (mRVLeftPrefix.footerCount > 0) {
-                mRVLeftPrefix.removeFooterView(mLlAddSymbol)
-            }
+            if (mRVLeftPrefix.footerCount > 0) mRVLeftPrefix.removeFooterView(mLlAddSymbol)
         }
-        val adapter = PrefixAdapter(context, prefixs)
         mRVLeftPrefix.setAdapter(null)
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             if (isPrefixs) {
                 inputView.selectPrefix(position)
             } else {
-                val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
-                val softKey = SoftKey(symbol)
-                // 播放按键声音和震动
+                val softKey = SoftKey( mSideSymbolsPinyin.map { it.symbolValue }[position])
                 DevicesUtils.tryPlayKeyDown(softKey)
                 DevicesUtils.tryVibrate(this)
                 inputView.responseKeyEvent(softKey)
             }
         }
-        mRVLeftPrefix.setAdapter(adapter)
+        mRVLeftPrefix.setAdapter(PrefixAdapter(context, prefixs))
     }
 }

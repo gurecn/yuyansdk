@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -23,7 +23,7 @@ import kotlin.math.absoluteValue
  * 所有软键盘（输入、符号、设置等）父容器View。
  */
 @SuppressLint("ViewConstructor")
-open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) : RelativeLayout(mContext) {
+open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) : ConstraintLayout(mContext) {
     //输入法服务
     @JvmField
     protected var inputView: InputView
