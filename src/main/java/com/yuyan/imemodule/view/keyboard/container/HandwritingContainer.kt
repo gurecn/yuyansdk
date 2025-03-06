@@ -23,7 +23,11 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
 import splitties.dimensions.dp
+import splitties.views.dsl.constraintlayout.endOfParent
+import splitties.views.dsl.constraintlayout.lParams
+import splitties.views.dsl.core.add
 import splitties.views.dsl.core.margin
+import splitties.views.dsl.core.matchParent
 
 /**
  * 手写键盘容器
@@ -64,8 +68,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
     override fun updateSkbLayout() {
         if (null == mMajorView) {
             mMajorView = HandwritingKeyboard(context)
-            val params: ViewGroup.LayoutParams = LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            addView(mMajorView, params)
+            addView(mMajorView, LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
             (mMajorView as HandwritingKeyboard).setResponseKeyEvent(inputView)
         }
         val softKeyboard = instance.getSoftKeyboard(InputModeSwitcherManager.MASK_SKB_LAYOUT_HANDWRITING)
@@ -84,7 +87,14 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
         if (mRVRightSymbols.footerCount <= 0) {
             mRVRightSymbols.addFooterView(mLlAddSymbol)
         }
-        addView(mRVRightSymbols, createLayoutParams())
+
+        val softKeyboard = mMajorView?.getSoftKeyboard()
+        val softKeySymbolHolder = softKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12)
+        add(mRVRightSymbols, lParams (width =softKeySymbolHolder!!.width(), height = matchParent).apply{
+            endOfParent(0)
+            setMargins(softKeyboard.keyXMargin, softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
+                    softKeyboard.keyXMargin, EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin)
+        })
         val strs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()
         val adapter = PrefixAdapter(context, strs)
         mRVRightSymbols.setAdapter(null)
@@ -94,19 +104,5 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
             inputView.responseKeyEvent(softKey)
         }
         mRVRightSymbols.setAdapter(adapter)
-    }
-
-    private fun createLayoutParams(): LayoutParams {
-        val softKeyboard = mMajorView?.getSoftKeyboard()
-        val softKeySymbolHolder =
-            softKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12)
-        val prefixLayoutParams = LayoutParams(
-            softKeySymbolHolder!!.width(), LayoutParams.MATCH_PARENT
-        )
-        prefixLayoutParams.setMargins(softKeyboard.keyXMargin, softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
-            softKeyboard.keyXMargin, EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
-        )
-        prefixLayoutParams.addRule(ALIGN_PARENT_RIGHT)
-        return prefixLayoutParams
     }
 }

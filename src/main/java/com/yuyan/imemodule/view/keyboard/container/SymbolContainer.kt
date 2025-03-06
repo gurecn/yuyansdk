@@ -35,6 +35,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.dimensions.dp
+import splitties.views.dsl.constraintlayout.bottomOfParent
+import splitties.views.dsl.constraintlayout.lParams
+import splitties.views.dsl.core.add
+import splitties.views.dsl.core.matchParent
+import splitties.views.dsl.core.wrapContent
 import kotlin.random.Random
 
 
@@ -151,13 +156,12 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             }
             true
         }
-        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        layoutParams.addRule(ALIGN_PARENT_BOTTOM)
-        mLLSymbolType.layoutParams = layoutParams
-        this.addView(mLLSymbolType)
-        val layoutParams2 = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-        layoutParams2.addRule(ABOVE, mLLSymbolType.id)
-        this.addView(mVPSymbolsView, layoutParams2)
+        add(mLLSymbolType, lParams(matchParent, wrapContent){
+            bottomOfParent(0)
+        })
+        add(mVPSymbolsView, lParams(matchParent, matchParent){
+            bottomToTop = mLLSymbolType.id
+        })
     }
 
     private fun onItemClickOperate(value: String) {
