@@ -32,7 +32,6 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         val strokes = Strokes()
         mDrawing = DrawingStrokes(this, strokes)
         mHandWritingPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        mHandWritingPaint.setColor(mActiveTheme.keyTextColor)
     }
 
     /**
