@@ -453,8 +453,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
         val lable = keyChar.toChar().toString()
-        if (keyChar in 'A'.code .. 'Z'.code || keyChar in 'a'.code .. 'z'.code || keyChar in  '0'.code .. '9'.code|| keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
-            DecodingInfo.inputAction(keyCode)
+        if (Character.isLetterOrDigit(keyChar) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
+            DecodingInfo.inputAction(event)
             updateCandidate()
             return true
         } else if (keyCode == KeyEvent.KEYCODE_DEL) {

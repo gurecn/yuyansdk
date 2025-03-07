@@ -179,28 +179,19 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     private fun drawSoftKey(canvas: Canvas, softKey: SoftKey, keyXMargin: Int, keyYMargin: Int) {
         val bg = GradientDrawable()
+        bg.shape = GradientDrawable.RECTANGLE
+        bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
+        bg.setBounds(softKey.mLeft + keyXMargin, softKey.mTop + keyYMargin, softKey.mRight - keyXMargin, softKey.mBottom - keyYMargin)
         if (softKey.pressed) {
             bg.setColor(mActiveTheme.keyPressHighlightColor)
-            bg.shape = GradientDrawable.RECTANGLE
-            bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
-            bg.setBounds(softKey.mLeft + keyXMargin, softKey.mTop + keyYMargin, softKey.mRight - keyXMargin, softKey.mBottom - keyYMargin)
-            bg.draw(canvas)
+             bg.draw(canvas)
         } else if (isKeyBorder) {
             val background = when (softKey.keyCode) {
-                KeyEvent.KEYCODE_ENTER -> {
-                    mActiveTheme.accentKeyBackgroundColor
-                }
-                KeyEvent.KEYCODE_SPACE -> {
-                    mActiveTheme.functionKeyBackgroundColor
-                }
-                else -> {
-                    mActiveTheme.keyBackgroundColor
-                }
+                KeyEvent.KEYCODE_ENTER ->  mActiveTheme.accentKeyBackgroundColor
+                KeyEvent.KEYCODE_SPACE ->  mActiveTheme.functionKeyBackgroundColor
+                else ->  mActiveTheme.keyBackgroundColor
             }
             bg.setColor(background)
-            bg.shape = GradientDrawable.RECTANGLE
-            bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
-            bg.setBounds(softKey.mLeft + keyXMargin, softKey.mTop + keyYMargin, softKey.mRight - keyXMargin, softKey.mBottom - keyYMargin)
             bg.draw(canvas)
         } else if(softKey.keyCode == KeyEvent.KEYCODE_ENTER) {
                bg.setColor(mActiveTheme.accentKeyBackgroundColor)
@@ -216,12 +207,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val keyLabel = if(mService != null && InputModeSwitcherManager.isEnglish) {
             if (InputModeSwitcherManager.isEnglishLower || (InputModeSwitcherManager.isEnglishUpperCase && !DecodingInfo.isCandidatesListEmpty)) {
                 softKey.keyLabel.lowercase()
-            } else {
-                softKey.keyLabel
-            }
-        } else {
-            softKey.keyLabel
-        }
+            } else softKey.keyLabel
+        } else softKey.keyLabel
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         val keyIcon = softKey.keyIcon

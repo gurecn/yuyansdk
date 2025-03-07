@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.service
 
+import android.view.KeyEvent
 import androidx.lifecycle.MutableLiveData
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Kernel
@@ -45,11 +46,11 @@ object DecodingInfo {
         get() = candidatesLiveData.value?:emptyList()
 
     // 增加拼写字符
-    fun inputAction(keycode: Int) {
+    fun inputAction(event: KeyEvent) {
         isReset = false
         activeCandidate = 0
         activeCandidateBar = 0
-        Kernel.inputKeyCode(keycode)
+        Kernel.inputKeyCode(event)
         isAssociate = false
     }
 

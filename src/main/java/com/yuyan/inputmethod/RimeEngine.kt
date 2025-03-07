@@ -10,10 +10,6 @@ import com.yuyan.inputmethod.util.T9PinYinUtils
 import java.util.Locale
 
 object RimeEngine {
-    private const val PINYIN_T9_0 = 41
-    private const val PINYIN_T9_1 = 8
-    private const val PINYIN_T9_9 = 16
-
     private val keyRecordStack = KeyRecordStack()
     private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
@@ -39,22 +35,13 @@ object RimeEngine {
         return showCandidates.isEmpty() && showComposition.isBlank()
     }
 
-    fun onNormalKey(keyCode: Int) {
+    fun onNormalKey(event: KeyEvent) {
+        val keyCode = event.keyCode
         val keyChar = when (keyCode) {
-            in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
-                keyCode - KeyEvent.KEYCODE_A + 'a'.code
-            }
-            in (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON)..(KeyEvent.KEYCODE_Z or KeyEvent.META_SHIFT_RIGHT_ON) -> {
-                keyCode - (KeyEvent.KEYCODE_A or KeyEvent.META_SHIFT_RIGHT_ON) + 'A'.code
-            }
-            KeyEvent.KEYCODE_APOSTROPHE -> if(isFinish() && InputModeSwitcherManager.isChinese) '/'.code else '\''.code
-            KeyEvent.KEYCODE_SEMICOLON -> ';'.code
-            in PINYIN_T9_1..PINYIN_T9_9 -> keyCode + PINYIN_T9_0
-            else -> keyCode
+            KeyEvent.KEYCODE_APOSTROPHE -> if(isFinish()) '/'.code else '\''.code
+            else -> event.unicodeChar
         }
-        if (keyRecordStack.pushKey(keyCode)) {
-            Rime.processKey(keyChar, 0)
-        }
+        if (keyRecordStack.pushKey(keyCode))Rime.processKey(keyChar, event.action)
         updateCandidatesOrCommitText()
     }
 
@@ -316,7 +303,7 @@ object RimeEngine {
                 KeyEvent.KEYCODE_APOSTROPHE -> {
                     keyRecords.add(InputKey.Apostrophe())
                 }
-                in PINYIN_T9_1..PINYIN_T9_9 -> {
+                in KeyEvent.KEYCODE_1..KeyEvent.KEYCODE_9 -> {
                     keyRecords.add(InputKey.T9Key(keyCode))
                 }
                 in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
@@ -416,7 +403,7 @@ object RimeEngine {
         object SelectPinyinAction : InputKey
 
         class T9Key(val keyChar: String, var consumed: Boolean = false) : InputKey {
-            constructor(keyCode: Int) : this(String(intArrayOf(keyCode + PINYIN_T9_0), 0, 1))
+            constructor(keyCode: Int) : this(String(intArrayOf(keyCode - KeyEvent.KEYCODE_0 + '0'.code), 0, 1))
 
             override fun toString(): String = keyChar
         }
