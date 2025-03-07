@@ -19,16 +19,19 @@ object Kernel {
         RimeEngine.onNormalKey(event)
     }
 
-    /**
-     * 是否输入完毕，等待上屏。
-     */
-    val isFinish = RimeEngine.isFinish()
+    // 是否输入完毕，等待上屏。
+    val isFinish: Boolean
+        get() = RimeEngine.isFinish()
 
-    val candidates = RimeEngine.showCandidates
+    val candidates: List<CandidateListItem>
+        get() = RimeEngine.showCandidates
 
-    val nextPageCandidates = RimeEngine.getNextPageCandidates()
+    val nextPageCandidates: Array<CandidateListItem>
+        get() = RimeEngine.getNextPageCandidates()
+
     // 拿到候选词拼音
-    val prefixs = RimeEngine.getPrefixs()
+    val prefixs: Array<String>
+        get() = RimeEngine.getPrefixs()
 
     // 选择某个候选拼音
     fun selectPrefix(index: Int) {
@@ -42,10 +45,12 @@ object Kernel {
     }
 
     // 最上端拼音行
-    val wordsShowPinyin = RimeEngine.showComposition
+    val wordsShowPinyin: String
+        get() = RimeEngine.showComposition
 
-    //得到即将上屏的候选词
-    val commitText = RimeEngine.preCommitText
+    // 得到即将上屏的候选词
+    val commitText: String
+        get() = RimeEngine.preCommitText
 
     // 删除操作
     fun deleteAction() {
