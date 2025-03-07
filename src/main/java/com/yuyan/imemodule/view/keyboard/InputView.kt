@@ -781,7 +781,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     fun onUpdateSelection() {
-        if(chinesePrediction && mImeState != ImeState.STATE_IDLE) {
+        if((chinesePrediction && mImeState != ImeState.STATE_IDLE) || InputModeSwitcherManager.isNumberSkb) {
             val inputConnection = service.getCurrentInputConnection()
             val textBeforeCursor = inputConnection.getTextBeforeCursor(100, 0).toString()
             if (textBeforeCursor.isNotBlank()) {
