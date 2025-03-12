@@ -7,6 +7,7 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.T9PinYinUtils
+import com.yuyan.inputmethod.util.buildSpannedString
 import java.util.Locale
 
 object RimeEngine {
@@ -236,19 +237,23 @@ object RimeEngine {
 
     private fun getCurrentComposition(candidates: List<CandidateListItem>): String {
         val composition = Rime.compositionText
+        if(Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_EN) return composition
+        if(composition.isEmpty()) return ""
+        if(candidates.isEmpty()) return composition
+        val comment = candidates.first().comment
         return when {
-            composition.isEmpty() -> ""
-            candidates.isEmpty() -> composition
-            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) -> {
-                if(!AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()) keyRecordStack.getkeyRecords().joinToString("")
-                else candidates.first().comment
-            }
+            comment.isBlank() || comment.contains("☯") -> composition
+            Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && !AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue() -> composition
             else -> {
-                val comment = candidates.first().comment
-                val compositionLength = composition.length
-                if(comment.isEmpty())composition
-                else if(compositionLength >= comment.length) comment
-                else comment.take(compositionLength)
+                val compositionList = composition.filter { it.code <= 0xFF }.split("'".toRegex())
+                buildSpannedString {
+                    append(composition.filter { it.code > 0xFF })
+                    comment.split("'").zip(compositionList).forEach { (pinyin, composition) ->
+                        append(if (composition.length >= pinyin.length) pinyin else pinyin.substring(0, composition.length))
+                        append("'")
+                    }
+                    if (!composition.endsWith("'")) delete(length - 1, length)
+                }
             }
         }
     }

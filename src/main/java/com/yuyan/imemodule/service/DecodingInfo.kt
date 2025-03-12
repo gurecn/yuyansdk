@@ -87,10 +87,10 @@ object DecodingInfo {
         get() = Kernel.isFinish
 
     val composingStrForDisplay: String   //获取显示的拼音字符串/
-        get() = Kernel.wordsShowPinyin.ifEmpty { if(candidateSize > 0) candidates[0].comment else "" }
+        get() = Kernel.wordsShowPinyin
 
     val composingStrForCommit: String   // 获取输入的拼音字符串
-        get() = Kernel.wordsShowPinyin.replace("'", "").ifEmpty {candidatesLiveData.value!![0].comment}
+        get() = Kernel.wordsShowPinyin
 
     val nextPageCandidates: Int   // 获取下一页的候选词
         get() {
