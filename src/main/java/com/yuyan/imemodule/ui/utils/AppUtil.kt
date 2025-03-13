@@ -1,14 +1,21 @@
 
 package com.yuyan.imemodule.ui.utils
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.annotation.IdRes
+import androidx.core.app.NotificationCompat
 import androidx.navigation.NavDeepLinkBuilder
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.ui.activity.SettingsActivity
+import com.yuyan.imemodule.utils.notificationManager
 import kotlin.system.exitProcess
 
 object AppUtil {
@@ -47,11 +54,8 @@ object AppUtil {
     fun launchSettingsToPrefix(context: Context, arguments: Bundle? = null) =
         launchMainToDest(context, R.id.sidebarSymbolFragment, arguments)
 
-    fun launchMainToThemeList(context: Context) =
-        launchMainToDest(context, R.id.themeFragment)
-
     fun launchMarketforYuyan(context: Context){
-        val packageName = "com.yuyan.pinyin.release"
+        val packageName = ImeSdkApplication.context.packageName
         try {
             val uri = Uri.parse("market://details?id=$packageName")
             val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -67,5 +71,22 @@ object AppUtil {
 
     fun exit() {
         exitProcess(0)
+    }
+
+    fun showRestartNotification(ctx: Context) {
+        val channelId = "app-restart"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, ctx.getText(R.string.restart_channel), NotificationManager.IMPORTANCE_HIGH).apply { description = channelId }
+            ctx.notificationManager.createNotificationChannel(channel)
+        }
+        NotificationCompat.Builder(ctx, channelId)
+            .setSmallIcon(R.drawable.ic_sdk_launcher_transparent)
+            .setContentTitle(ctx.getText(R.string.app_name))
+            .setContentText(ctx.getText(R.string.restart_notify_msg))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(PendingIntent.getActivity(ctx, 0, Intent(ctx, SettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
+            .setAutoCancel(true)
+            .build()
+            .let { ctx.notificationManager.notify(0xdead, it) }
     }
 }
