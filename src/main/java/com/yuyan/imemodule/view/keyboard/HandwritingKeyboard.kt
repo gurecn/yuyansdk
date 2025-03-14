@@ -22,6 +22,7 @@ import kotlin.math.sqrt
  */
 @SuppressLint("ViewConstructor")
 class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
+
     private val mHandWritingPaint: Paint //绘制笔迹的画笔
     private val mDrawing: DrawingStrokes
     private var mLastUpTime: Long = 0 //记录上次手写抬手时间，与本次按下时间对比。

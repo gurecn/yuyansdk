@@ -131,7 +131,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         mBuffer = null
     }
 
-    public override fun onDraw(canvas: Canvas) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (mDrawPending || mBuffer == null || mKeyboardChanged) {
             onBufferDraw(null)

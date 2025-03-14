@@ -25,6 +25,7 @@ import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
+import com.yuyan.imemodule.view.keyboard.handwriting.SignatureView
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -70,7 +71,7 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = TextKeyboard(context)
+            mMajorView = SignatureView(context)
             val params: ViewGroup.LayoutParams = LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
