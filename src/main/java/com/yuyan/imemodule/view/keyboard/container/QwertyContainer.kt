@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
+import com.yuyan.imemodule.view.keyboard.handwriting.SignatureView
 
 
 /**
@@ -27,7 +28,7 @@ class QwertyContainer(context: Context?, inputView: InputView, skbValue: Int = 0
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = TextKeyboard(context)
+            mMajorView = SignatureView(context)
             val params: ViewGroup.LayoutParams = LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

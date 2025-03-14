@@ -65,8 +65,7 @@ class DrawingStrokes(strokeView: View, strokes: Strokes) {
 
     private fun initBitmapStroke() {
         if (bitmapStroke == null) {
-            bitmapStroke =
-                Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
+            bitmapStroke = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
             canvasStroke = Canvas(bitmapStroke!!)
         }
     }
