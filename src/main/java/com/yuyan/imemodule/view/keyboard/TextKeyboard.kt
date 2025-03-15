@@ -23,6 +23,8 @@ import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withSave
 
 /**
  * 软件盘视图
@@ -134,37 +136,38 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             if (mBuffer == null || mBuffer!!.width != width || mBuffer!!.height != height) {
                 val width = max(1.0, width.toDouble()).toInt()
                 val height = max(1.0, height.toDouble()).toInt()
-                mBuffer = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                mBuffer = createBitmap(width, height)
                 mCanvas = Canvas(mBuffer!!)
             }
             invalidateAllKeys()
             mKeyboardChanged = false
         }
         if (mSoftKeyboard == null) return
-        mCanvas!!.save()
-        val canvas = mCanvas
-        canvas?.clipRect(mDirtyRect)
-        val clipRegion = Rect(0, 0, 0, 0)
-        var drawSingleKey = false
-        if (invalidatedKey != null && canvas!!.getClipBounds(clipRegion)) {
-            if (invalidatedKey.mLeft <= clipRegion.left && invalidatedKey.mTop <= clipRegion.top
-                && invalidatedKey.mRight >= clipRegion.right && invalidatedKey.mBottom >= clipRegion.bottom) {
-                drawSingleKey = true
+        mCanvas!!.withSave {
+            val canvas = mCanvas
+            canvas?.clipRect(mDirtyRect)
+            val clipRegion = Rect(0, 0, 0, 0)
+            var drawSingleKey = false
+            if (invalidatedKey != null && canvas!!.getClipBounds(clipRegion)) {
+                if (invalidatedKey.mLeft <= clipRegion.left && invalidatedKey.mTop <= clipRegion.top
+                    && invalidatedKey.mRight >= clipRegion.right && invalidatedKey.mBottom >= clipRegion.bottom) {
+                    drawSingleKey = true
+                }
             }
-        }
-        canvas?.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
-        val env = instance
-        mNormalKeyTextSize = env.keyTextSize
-        mNormalKeyTextSizeSmall = env.keyTextSmallSize
-        val keyXMargin = mSoftKeyboard!!.keyXMargin
-        val keyYMargin = mSoftKeyboard!!.keyYMargin
-        for (softKeys in mSoftKeyboard!!.mKeyRows) {
-            for (softKey in softKeys) {
-                if (drawSingleKey && invalidatedKey !== softKey) continue
-                canvas?.let { drawSoftKey(it, softKey, keyXMargin, keyYMargin) }
+            canvas?.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
+            val env = instance
+            mNormalKeyTextSize = env.keyTextSize
+            mNormalKeyTextSizeSmall = env.keyTextSmallSize
+            val keyXMargin = mSoftKeyboard!!.keyXMargin
+            val keyYMargin = mSoftKeyboard!!.keyYMargin
+            for (softKeys in mSoftKeyboard!!.mKeyRows) {
+                for (softKey in softKeys) {
+                    if (drawSingleKey && invalidatedKey !== softKey) continue
+                    canvas?.let { drawSoftKey(it, softKey, keyXMargin, keyYMargin) }
+                }
             }
+            mCanvas!!
         }
-        mCanvas!!.restore()
         mDrawPending = false
         mDirtyRect.setEmpty()
     }

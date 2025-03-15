@@ -20,9 +20,8 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.imemodule.view.keyboard.handwriting.SignatureView
+import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import splitties.dimensions.dp
 import splitties.views.dsl.constraintlayout.endOfParent
 import splitties.views.dsl.constraintlayout.lParams
@@ -68,13 +67,10 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = SignatureView(context)
-            val params: ViewGroup.LayoutParams = LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            mMajorView = HandwritingKeyboard(context)
+            val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
-            (mMajorView as SignatureView).setResponseKeyEvent(inputView)
+            (mMajorView as HandwritingKeyboard).setResponseKeyEvent(inputView)
         }
         val softKeyboard = instance.getSoftKeyboard(InputModeSwitcherManager.MASK_SKB_LAYOUT_HANDWRITING)
         mMajorView!!.setSoftKeyboard(softKeyboard)

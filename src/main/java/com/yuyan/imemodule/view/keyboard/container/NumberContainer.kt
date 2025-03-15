@@ -24,7 +24,7 @@ import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
-import com.yuyan.imemodule.view.keyboard.handwriting.SignatureView
+import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -41,8 +41,7 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private var mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
-        layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
         gravity = Gravity.CENTER
     }
@@ -66,11 +65,8 @@ class NumberContainer(context: Context?, inputView: InputView) : InputBaseContai
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = SignatureView(context)
-            val params: ViewGroup.LayoutParams = LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            mMajorView = HandwritingKeyboard(context)
+            val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
