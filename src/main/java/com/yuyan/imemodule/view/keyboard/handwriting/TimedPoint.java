@@ -13,7 +13,7 @@ public class TimedPoint {
 
 	public float velocityFrom(TimedPoint start) {
 		float velocity = distanceTo(start) / (this.timestamp - start.timestamp);
-		if (velocity != velocity) return 0f;
+		if (Float.isNaN(velocity)) return 0f;
 		return velocity;
 	}
 
