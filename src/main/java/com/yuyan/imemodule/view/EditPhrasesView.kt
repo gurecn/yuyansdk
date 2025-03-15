@@ -16,7 +16,7 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.libs.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.inputmethod.util.LX17PinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils

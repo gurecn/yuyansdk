@@ -10,7 +10,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.sp2px
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
 import splitties.dimensions.dp
 import splitties.views.dsl.appcompat.switch

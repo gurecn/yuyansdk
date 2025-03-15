@@ -22,7 +22,7 @@ import com.yuyan.imemodule.callback.OnItemSelectedListener
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.KeyboardManager
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams

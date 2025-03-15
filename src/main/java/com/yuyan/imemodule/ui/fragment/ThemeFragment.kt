@@ -18,8 +18,8 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.theme.ThemeListFragment
 import com.yuyan.imemodule.ui.fragment.theme.ThemeSettingsFragment
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.view.keyboard.KeyboardPreviewView
+import com.yuyan.imemodule.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.launch
 import splitties.dimensions.dp
 import splitties.resources.styledColor

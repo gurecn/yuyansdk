@@ -30,11 +30,11 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.view.keyboard.container.CandidatesContainer
-import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.view.keyboard.container.InputBaseContainer
-import com.yuyan.imemodule.view.keyboard.manager.CustomLinearLayoutManager
+import com.yuyan.imemodule.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.container.CandidatesContainer
+import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.InputBaseContainer
+import com.yuyan.imemodule.keyboard.manager.CustomLinearLayoutManager
 import splitties.dimensions.dp
 
 /**

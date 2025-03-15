@@ -19,9 +19,9 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.view.keyboard.KeyboardManager
-import com.yuyan.imemodule.view.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.view.keyboard.container.SymbolContainer
+import com.yuyan.imemodule.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.SymbolContainer
 
 /**
  * 候选词界面适配器

@@ -1,7 +1,7 @@
 package com.yuyan.imemodule.entity.keyboard
 
 import android.graphics.drawable.Drawable
-import com.yuyan.imemodule.view.keyboard.keyIconRecords
+import com.yuyan.imemodule.keyboard.keyIconRecords
 import java.util.Locale
 import java.util.Objects
 

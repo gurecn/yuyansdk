@@ -25,12 +25,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <!--除顶部外的下面其他容器视图，当标点符号视图显示时会遮挡住此视图-->
-        <com.yuyan.imemodule.view.keyboard.container.InputViewParent
+        <com.yuyan.imemodule.keyboard.container.InputViewParent
             android:id="@+id/skb_input_keyboard_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/candidates_bar">
-        </com.yuyan.imemodule.view.keyboard.container.InputViewParent>
+        </com.yuyan.imemodule.keyboard.container.InputViewParent>
     </RelativeLayout>
     <include
         android:id="@+id/ll_skb_holder_layout_right"

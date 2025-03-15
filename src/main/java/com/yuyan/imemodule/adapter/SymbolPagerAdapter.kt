@@ -12,7 +12,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.prefs.behavior.SymbolMode
-import com.yuyan.imemodule.view.keyboard.manager.CustomFlexboxLayoutManager
+import com.yuyan.imemodule.keyboard.manager.CustomFlexboxLayoutManager
 
 /**
  * 表情或符号界面适配器

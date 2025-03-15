@@ -2,7 +2,7 @@ package com.yuyan.imemodule.entity.keyboard
 
 import android.graphics.drawable.Drawable
 import android.view.KeyEvent
-import com.yuyan.imemodule.view.keyboard.keyIconRecords
+import com.yuyan.imemodule.keyboard.keyIconRecords
 import java.util.Objects
 
 /**
@@ -37,7 +37,7 @@ open class SoftKey {
     var mTop = 0
     var mBottom = 0
 
-    /** 键盘布局点击时设置状态，非初始化设置。 See [com.yuyan.imemodule.view.keyboard.TextKeyboard] */
+    /** 键盘布局点击时设置状态，非初始化设置。 See [com.yuyan.imemodule.keyboard.TextKeyboard] */
     var pressed = false
 
     constructor(label: String = "", labelSmall: String = "") {
