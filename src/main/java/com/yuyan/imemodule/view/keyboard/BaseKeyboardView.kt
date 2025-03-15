@@ -253,7 +253,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mLongPressKey = true
                 popupComponent.onGestureEvent(distanceY)
             } else {
-                popupComponent.changeFocus(currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
+                if(downEvent != null) popupComponent.changeFocus(currentEvent.x - downEvent.x, currentEvent.y - downEvent.y)
             }
         }
         return result

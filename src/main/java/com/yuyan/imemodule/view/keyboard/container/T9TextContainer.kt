@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -26,7 +25,7 @@ import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.view.keyboard.InputView
 import com.yuyan.imemodule.view.keyboard.TextKeyboard
-import com.yuyan.imemodule.view.keyboard.handwriting.SignatureView
+import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
@@ -72,11 +71,8 @@ class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContai
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = SignatureView(context)
-            val params: ViewGroup.LayoutParams = LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            mMajorView = HandwritingKeyboard(context)
+            val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }

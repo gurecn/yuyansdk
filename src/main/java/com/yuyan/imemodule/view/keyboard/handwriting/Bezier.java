@@ -21,13 +21,13 @@ public class Bezier {
 		double cx, cy, px = 0, py = 0, xdiff, ydiff;
 
 		for (i = 0; i <= steps; i++) {
-			t = i / steps;
+			t = (float) i / steps;
 			cx = point(t, this.startPoint.x, this.control1.x, this.control2.x, this.endPoint.x);
 			cy = point(t, this.startPoint.y, this.control1.y, this.control2.y, this.endPoint.y);
 			if (i > 0) {
 				xdiff = cx - px;
 				ydiff = cy - py;
-				length += Math.sqrt(xdiff * xdiff + ydiff * ydiff);
+				length += (int) Math.sqrt(xdiff * xdiff + ydiff * ydiff);
 			}
 			px = cx;
 			py = cy;
