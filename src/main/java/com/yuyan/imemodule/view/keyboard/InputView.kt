@@ -350,6 +350,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
+        LogUtil.d("11111111111", " responseHandwritingResultEvent CandidateListItem:${words.size}    ")
         DecodingInfo.isAssociate = false
         DecodingInfo.cacheCandidates(words)
         mImeState = ImeState.STATE_INPUT

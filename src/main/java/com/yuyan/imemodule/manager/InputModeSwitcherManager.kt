@@ -158,6 +158,11 @@ object InputModeSwitcherManager {
     const val MODE_T9_CHINESE = MASK_SKB_LAYOUT_T9_PINYIN or MASK_LANGUAGE_CN
 
     /**
+     * Mode for inputing Chinese with soft keyboard. 手写软键盘、中文模式
+     */
+    const val MODE_HANDWRITING_CHINESE = MASK_SKB_LAYOUT_HANDWRITING or MASK_LANGUAGE_CN
+
+    /**
      * Mode for inputing English lower characters with soft keyboard. 标准软键盘、英文、小写模式
      */
     private const val MODE_SKB_ENGLISH_LOWER =
@@ -329,6 +334,12 @@ object InputModeSwitcherManager {
          * 是否的9宫格中文语言
          */
         get() = mInputMode and (MASK_SKB_LAYOUT or MASK_LANGUAGE) == MODE_T9_CHINESE
+
+    val isChineseHandWriting: Boolean
+        /**
+         * 手写中文语言
+         */
+        get() = mInputMode and (MASK_SKB_LAYOUT or MASK_LANGUAGE) == MODE_HANDWRITING_CHINESE
     val isEnglish: Boolean
         /**
          * 是否是软件盘英语模式
