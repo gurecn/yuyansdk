@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.view.keyboard.handwriting;
+package com.yuyan.imemodule.entity.handwriting;
 
 public class ControlTimedPoints {
 

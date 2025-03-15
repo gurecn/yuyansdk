@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.view.keyboard.manager
+package com.yuyan.imemodule.keyboard.manager
 
 import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager

@@ -1,10 +1,11 @@
-package com.yuyan.imemodule.view.keyboard.manager
+package com.yuyan.imemodule.keyboard.manager
 
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomLinearLayoutManager(context:Context , orientation:Int, reverseLayout:Boolean):LinearLayoutManager(context, orientation, reverseLayout) {
+class CustomLinearLayoutManager(context:Context , orientation:Int, reverseLayout:Boolean):
+    LinearLayoutManager(context, orientation, reverseLayout) {
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
         try {
             super.onLayoutChildren(recycler, state)

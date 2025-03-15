@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.handwriting
+package com.yuyan.inputmethod.handwriting
 
 import android.util.Base64
 import com.yuyan.imemodule.application.ImeSdkApplication

@@ -1,4 +1,4 @@
-package com.yuyan.imemodule.view.keyboard.container
+package com.yuyan.imemodule.keyboard.container
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,9 +22,9 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.view.keyboard.InputView
-import com.yuyan.imemodule.view.keyboard.TextKeyboard
-import com.yuyan.imemodule.view.keyboard.HandwritingKeyboard
+import com.yuyan.imemodule.keyboard.InputView
+import com.yuyan.imemodule.keyboard.TextKeyboard
+import com.yuyan.imemodule.keyboard.HandwritingKeyboard
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
 
