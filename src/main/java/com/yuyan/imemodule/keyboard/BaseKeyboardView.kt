@@ -307,7 +307,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if (mCurrentKey != null) {
             mCurrentKey!!.onReleased()
             if(mService == null) return
-            if (InputModeSwitcherManager.isEnglish && (DecodingInfo.composingStrForDisplay.isBlank() ||  DecodingInfo.composingStrForDisplay.length == 1)) {
+            if (InputModeSwitcherManager.isEnglish && (DecodingInfo.composingStrForCommit.isBlank() || DecodingInfo.composingStrForCommit.length == 1)) {
                 invalidateAllKeys()
             } else {
                 invalidateKey(mCurrentKey)

@@ -90,7 +90,7 @@ object DecodingInfo {
         get() = Kernel.wordsShowPinyin
 
     val composingStrForCommit: String   // 获取输入的拼音字符串
-        get() = Kernel.wordsShowPinyin
+        get() = Kernel.wordsShowPinyin.replace("'", "").ifEmpty { getCandidate(0)?.text?:""}
 
     val nextPageCandidates: Int   // 获取下一页的候选词
         get() {

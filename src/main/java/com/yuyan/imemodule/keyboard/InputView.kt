@@ -313,8 +313,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if(InputModeSwitcherManager.isChinese) {
                 chooseAndUpdate()
             } else if(InputModeSwitcherManager.isEnglish){
-                val displayStr = DecodingInfo.composingStrForCommit // 把输入的拼音字符串发送给EditText
-                commitDecInfoText(displayStr)
+                commitDecInfoText(DecodingInfo.composingStrForCommit)
             }
         }
         when(result.first){
@@ -520,7 +519,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
             } else {  // 不上屏，继续选择
                 if (!DecodingInfo.isFinish) {
-                    if (InputModeSwitcherManager.isEnglish) setComposingText(DecodingInfo.composingStrForDisplay)
+                    if (InputModeSwitcherManager.isEnglish) setComposingText(DecodingInfo.composingStrForCommit)
                     updateCandidateBar()
                     (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 } else {
@@ -541,7 +540,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
         }
-        if (InputModeSwitcherManager.isEnglish)setComposingText(DecodingInfo.composingStrForDisplay)
+        if (InputModeSwitcherManager.isEnglish)setComposingText(DecodingInfo.composingStrForCommit)
     }
 
     /**

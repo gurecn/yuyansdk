@@ -237,7 +237,7 @@ object RimeEngine {
 
     private fun getCurrentComposition(candidates: List<CandidateListItem>): String {
         val composition = Rime.compositionText
-        if(Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_EN) return composition
+        if(Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_EN) return ""
         if(composition.isEmpty()) return ""
         if(candidates.isEmpty()) return composition
         val comment = candidates.first().comment
