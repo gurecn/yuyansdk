@@ -75,19 +75,19 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(me: MotionEvent): Boolean {
         if(!isEnabled || !InputModeSwitcherManager.isChineseHandWriting) {
-            return super.onTouchEvent(event)
+            return super.onTouchEvent(me)
         }
-        val eventX = event.x
-        val eventY = event.y
+        val eventX = me.x
+        val eventY = me.y
         val softKey = onKeyPressHandwriting(eventX.toInt(), eventY.toInt())
         if (softKey != null) {
-            return super.onTouchEvent(event)
+            return super.onTouchEvent(me)
         }
-        mSBPoint.add(event.x.toInt().toShort())
-        mSBPoint.add(event.y.toInt().toShort())
-        when (event.action) {
+        mSBPoint.add(me.x.toInt().toShort())
+        mSBPoint.add(me.y.toInt().toShort())
+        when (me.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
                 mPoints!!.clear()
@@ -205,7 +205,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     private fun strokeWidth(velocity: Float): Float {
-        return max((mMaxWidth / (velocity + 1)).toDouble(), mMinWidth.toDouble()).toFloat()
+        return if(velocity < 0.2f) velocity else max((mMaxWidth / (velocity + 1f)), mMinWidth.toFloat())
     }
 
     /**
@@ -254,7 +254,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     private fun recognitionData() {
-        HdManager.Companion.instance!!.recognitionData(mSBPoint) {
+        HdManager.instance!!.recognitionData(mSBPoint) {
                 item -> mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
         }
     }
