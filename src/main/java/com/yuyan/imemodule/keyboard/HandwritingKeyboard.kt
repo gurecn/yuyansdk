@@ -12,12 +12,12 @@ import android.view.MotionEvent
 import androidx.core.graphics.createBitmap
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.entity.keyboard.SoftKey
-import com.yuyan.inputmethod.handwriting.HdManager
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.entity.handwriting.Bezier
 import com.yuyan.imemodule.entity.handwriting.ControlTimedPoints
 import com.yuyan.imemodule.entity.handwriting.TimedPoint
+import com.yuyan.inputmethod.core.HandWriting
 import java.util.LinkedList
 import kotlin.math.floor
 import kotlin.math.max
@@ -254,7 +254,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     private fun recognitionData() {
-        HdManager.instance!!.recognitionData(mSBPoint) {
+        HandWriting.recognitionData(mSBPoint) {
                 item -> mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
         }
     }

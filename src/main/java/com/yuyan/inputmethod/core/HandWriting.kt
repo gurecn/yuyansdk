@@ -1,35 +1,38 @@
-package com.yuyan.inputmethod.handwriting
+package com.yuyan.inputmethod.core
 
 import android.util.Base64
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.callback.IHandWritingCallBack
-import com.yuyan.imemodule.network.NativeMethods
 import com.yuyan.imemodule.libs.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinCaseType
 import com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinOutputFormat
 import com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinToneType
 import com.yuyan.imemodule.libs.pinyin4j.format.HanyuPinyinVCharType
+import com.yuyan.imemodule.network.NativeMethods
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
-import com.yuyan.inputmethod.core.CandidateListItem
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Collections
 
-class HandWritingHanwang : HandWritingMonitor {
+object HandWriting {
+    private var isRecognitionState = false
+    private val nativeMethods = NativeMethods()
+    private var  nextDatas  =  Collections.synchronizedList(mutableListOf<Pair<MutableList<Short?>, IHandWritingCallBack>?>())
     private lateinit var mHanyuPinyinOutputFormat: HanyuPinyinOutputFormat
-    override fun initHdw(): Boolean {
-        nativeMethods.nativeHttpInit(ImeSdkApplication.context, 0)
+
+    init {
+        nativeMethods.nativeHttpInit(ImeSdkApplication.Companion.context, 0)
         mHanyuPinyinOutputFormat = HanyuPinyinOutputFormat()
         mHanyuPinyinOutputFormat.caseType = HanyuPinyinCaseType.LOWERCASE
         mHanyuPinyinOutputFormat.toneType = HanyuPinyinToneType.WITH_TONE_MARK
         mHanyuPinyinOutputFormat.vCharType = HanyuPinyinVCharType.WITH_U_UNICODE
-        return true
     }
-    override fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
+
+    fun recognitionData(strokes: MutableList<Short?>, recogResult: IHandWritingCallBack){
         nextDatas.add(Pair(strokes, recogResult))
         if(isRecognitionState) return
         isRecognitionState = true
-        ThreadPoolUtils.executeSingleton {
+        ThreadPoolUtils.Companion.executeSingleton {
             while (true) {
                 if(nextDatas.isEmpty()) break
                 val data = nextDatas.removeAt(0)
@@ -65,11 +68,5 @@ class HandWritingHanwang : HandWritingMonitor {
             }
             isRecognitionState = false
         }
-    }
-
-    companion object {
-        private var isRecognitionState = false
-        private val nativeMethods = NativeMethods()
-        private var  nextDatas  =  Collections.synchronizedList(mutableListOf<Pair<MutableList<Short?>, IHandWritingCallBack>?>())
     }
 }
