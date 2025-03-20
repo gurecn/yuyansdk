@@ -22,6 +22,7 @@ import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.TimeUtils
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import java.util.LinkedList
@@ -107,11 +108,13 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if(mCurrentKey != null) {
             val softKey = mCurrentKey!!
             val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-            if (keyboardSymbol && softKey.getkeyLabel().isNotBlank()) {
+            if (softKey.getkeyLabel().isNotBlank()) {
                 val keyLabel = if (InputModeSwitcherManager.isEnglishLower || (InputModeSwitcherManager.isEnglishUpperCase && !DecodingInfo.isCandidatesListEmpty))
                     softKey.keyLabel.lowercase()  else softKey.keyLabel
+                val designPreset = setOf("，", "。", ",", ".")
+                val smallLabel = if(designPreset.any { it == keyLabel } || !keyboardSymbol) "" else softKey.getmKeyLabelSmall()
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
-                popupComponent.showKeyboard(keyLabel, softKey.getmKeyLabelSmall(), bounds)
+                popupComponent.showKeyboard(keyLabel, smallLabel, bounds)
                 mLongPressKey = true
             } else if (softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2 ||
                     softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 ||
