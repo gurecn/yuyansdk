@@ -7,7 +7,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.entity.PrivacyPolicy
-import com.yuyan.imemodule.ui.utils.addPreference
+import com.yuyan.imemodule.utils.addPreference
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 

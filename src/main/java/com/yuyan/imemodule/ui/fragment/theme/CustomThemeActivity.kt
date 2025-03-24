@@ -42,7 +42,7 @@ import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeFilesManager
 import com.yuyan.imemodule.data.theme.ThemePreset
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.ui.utils.DarkenColorFilter
+import com.yuyan.imemodule.utils.DarkenColorFilter
 import com.yuyan.imemodule.keyboard.KeyboardPreviewView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

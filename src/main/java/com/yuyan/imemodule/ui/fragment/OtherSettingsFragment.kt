@@ -18,10 +18,10 @@ import com.yuyan.imemodule.manager.UserDataManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.ui.activity.LauncherActivity
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
-import com.yuyan.imemodule.ui.utils.AppUtil
-import com.yuyan.imemodule.ui.utils.addPreference
-import com.yuyan.imemodule.ui.utils.importErrorDialog
-import com.yuyan.imemodule.ui.utils.queryFileName
+import com.yuyan.imemodule.utils.AppUtil
+import com.yuyan.imemodule.utils.addPreference
+import com.yuyan.imemodule.utils.importErrorDialog
+import com.yuyan.imemodule.utils.queryFileName
 import com.yuyan.imemodule.utils.TimeUtils
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.withLoadingDialog

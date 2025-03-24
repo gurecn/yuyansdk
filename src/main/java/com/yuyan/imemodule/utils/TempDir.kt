@@ -1,6 +1,4 @@
-
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import com.yuyan.imemodule.application.ImeSdkApplication
 import java.io.File

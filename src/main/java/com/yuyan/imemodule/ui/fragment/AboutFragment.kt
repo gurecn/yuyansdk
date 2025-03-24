@@ -8,8 +8,8 @@ import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
-import com.yuyan.imemodule.ui.utils.addCategory
-import com.yuyan.imemodule.ui.utils.addPreference
+import com.yuyan.imemodule.utils.addCategory
+import com.yuyan.imemodule.utils.addPreference
 
 class AboutFragment : PreferenceFragmentCompat() {
 

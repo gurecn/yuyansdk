@@ -1,5 +1,4 @@
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor

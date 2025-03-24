@@ -4,7 +4,7 @@ package com.yuyan.imemodule.ui.setup
 import android.content.Context
 import androidx.core.text.HtmlCompat
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.ui.utils.InputMethodUtil
+import com.yuyan.imemodule.utils.InputMethodUtil
 
 enum class SetupPage {
     Enable, Select;

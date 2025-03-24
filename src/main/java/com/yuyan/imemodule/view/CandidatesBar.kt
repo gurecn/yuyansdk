@@ -34,7 +34,7 @@ import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
-import com.yuyan.imemodule.keyboard.manager.CustomLinearLayoutManager
+import com.yuyan.imemodule.manager.layout.CustomLinearLayoutManager
 import splitties.dimensions.dp
 
 /**

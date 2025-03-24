@@ -1,5 +1,4 @@
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -15,7 +14,6 @@ import androidx.navigation.NavDeepLinkBuilder
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.ui.activity.SettingsActivity
-import com.yuyan.imemodule.utils.notificationManager
 import kotlin.system.exitProcess
 
 object AppUtil {

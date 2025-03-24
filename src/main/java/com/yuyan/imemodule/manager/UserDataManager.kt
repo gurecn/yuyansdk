@@ -3,9 +3,9 @@ package com.yuyan.imemodule.manager
 import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.ui.utils.errorRuntime
-import com.yuyan.imemodule.ui.utils.extract
-import com.yuyan.imemodule.ui.utils.withTempDir
+import com.yuyan.imemodule.utils.errorRuntime
+import com.yuyan.imemodule.utils.extract
+import com.yuyan.imemodule.utils.withTempDir
 import com.yuyan.imemodule.utils.versionCodeCompat
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

@@ -27,13 +27,13 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.ui.utils.AppUtil
+import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
-import com.yuyan.imemodule.keyboard.manager.CustomFlexboxLayoutManager
+import com.yuyan.imemodule.manager.layout.CustomFlexboxLayoutManager
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import splitties.dimensions.dp
 import splitties.views.dsl.constraintlayout.bottomOfParent

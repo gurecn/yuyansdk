@@ -9,8 +9,8 @@ import android.graphics.drawable.Drawable
 import android.os.Parcelable
 import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.application.ImeSdkApplication
-import com.yuyan.imemodule.ui.utils.DarkenColorFilter
-import com.yuyan.imemodule.ui.utils.RectSerializer
+import com.yuyan.imemodule.utils.DarkenColorFilter
+import com.yuyan.imemodule.utils.RectSerializer
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.io.File

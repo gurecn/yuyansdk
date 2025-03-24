@@ -24,7 +24,7 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.databinding.ActivitySetupBinding
 import com.yuyan.imemodule.ui.setup.SetupPage.Companion.firstUndonePage
 import com.yuyan.imemodule.ui.setup.SetupPage.Companion.isLastPage
-import com.yuyan.imemodule.ui.utils.InputMethodUtil
+import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.notificationManager
 
 class SetupActivity : FragmentActivity() {

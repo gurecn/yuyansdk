@@ -1,6 +1,6 @@
+package com.yuyan.imemodule.utils
 
-package com.yuyan.imemodule.ui.utils
-
+import android.R
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.preference.Preference
@@ -37,7 +37,7 @@ fun PreferenceGroup.addPreference(
             isIconSpaceReserved = false
         } else {
             setIcon(context.drawable(icon)?.apply {
-                setTint(context.styledColor(android.R.attr.colorControlNormal))
+                setTint(context.styledColor(R.attr.colorControlNormal))
             })
         }
         onClick?.also {

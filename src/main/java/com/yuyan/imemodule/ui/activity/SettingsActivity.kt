@@ -19,8 +19,8 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.databinding.ActivitySettingsBinding
 import com.yuyan.imemodule.ui.setup.SetupActivity
-import com.yuyan.imemodule.ui.utils.AppUtil
-import com.yuyan.imemodule.ui.utils.startActivity
+import com.yuyan.imemodule.utils.AppUtil
+import com.yuyan.imemodule.utils.startActivity
 import com.yuyan.imemodule.utils.TimeUtils
 import splitties.dimensions.dp
 import splitties.views.topPadding

@@ -1,16 +1,12 @@
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.view.inputmethod.InputMethodSubtype
 import com.yuyan.imemodule.application.ImeSdkApplication
 import com.yuyan.imemodule.service.ImeService
-import com.yuyan.imemodule.utils.getSecureSettings
-import com.yuyan.imemodule.utils.inputMethodManager
 
 object InputMethodUtil {
 
@@ -43,26 +39,4 @@ object InputMethodUtil {
         })
 
     fun showPicker() = ImeSdkApplication.context.inputMethodManager.showInputMethodPicker()
-
-    fun firstVoiceInput(): Pair<String, InputMethodSubtype>? =
-        ImeSdkApplication.context.inputMethodManager
-            .shortcutInputMethodsAndSubtypes
-            .firstNotNullOfOrNull {
-                it.value.find { subType -> subType.mode.lowercase() == "voice" }
-                    ?.let { subType -> it.key.id to subType }
-            }
-
-    fun switchInputMethod(
-        service: ImeService,
-        id: String,
-        subtype: InputMethodSubtype
-    ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            service.switchInputMethod(id, subtype)
-        } else {
-            @Suppress("DEPRECATION")
-            ImeSdkApplication.context.inputMethodManager
-                .setInputMethodAndSubtype(service.window.window!!.attributes.token, id, subtype)
-        }
-    }
 }

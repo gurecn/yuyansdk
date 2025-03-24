@@ -1,6 +1,4 @@
-
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import java.io.File
 import java.util.zip.ZipInputStream

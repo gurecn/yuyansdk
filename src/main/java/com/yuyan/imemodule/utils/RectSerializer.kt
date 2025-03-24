@@ -1,5 +1,4 @@
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import android.graphics.Rect
 import kotlinx.serialization.KSerializer

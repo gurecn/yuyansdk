@@ -12,7 +12,7 @@ import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.ui.utils.rippleDrawable
+import com.yuyan.imemodule.utils.rippleDrawable
 import splitties.dimensions.dp
 import splitties.views.dsl.constraintlayout.bottomOfParent
 import splitties.views.dsl.constraintlayout.centerHorizontally

@@ -1,6 +1,4 @@
-
-
-package com.yuyan.imemodule.ui.utils
+package com.yuyan.imemodule.utils
 
 import android.content.Context
 import androidx.annotation.StringRes

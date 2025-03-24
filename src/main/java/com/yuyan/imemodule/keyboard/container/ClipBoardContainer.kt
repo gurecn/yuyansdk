@@ -29,7 +29,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
-import com.yuyan.imemodule.keyboard.manager.CustomGridLayoutManager
+import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
 import splitties.dimensions.dp
 import splitties.views.textResource
 import kotlin.math.ceil

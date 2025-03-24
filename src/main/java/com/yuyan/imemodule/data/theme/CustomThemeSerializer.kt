@@ -1,7 +1,7 @@
 
 package com.yuyan.imemodule.data.theme
 
-import com.yuyan.imemodule.ui.utils.NostalgicSerializer
+import com.yuyan.imemodule.utils.NostalgicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
