@@ -1,44 +1,37 @@
-package com.yuyan.imemodule.entity.handwriting;
+package com.yuyan.imemodule.entity.handwriting
 
-public class Bezier {
+import kotlin.math.sqrt
 
-	public TimedPoint startPoint;
-	public TimedPoint control1;
-	public TimedPoint control2;
-	public TimedPoint endPoint;
+class Bezier(var startPoint: TimedPoint, var control1: TimedPoint, var control2: TimedPoint, var endPoint: TimedPoint) {
+    fun length(): Float {
+        val steps = 10
+        var length = 0f
+        var t: Float
+        var cx: Double
+        var cy: Double
+        var px = 0.0
+        var py = 0.0
+        var xdiff: Double
+        var ydiff: Double
 
-	public Bezier(TimedPoint startPoint, TimedPoint control1, TimedPoint control2, TimedPoint endPoint) {
-		this.startPoint = startPoint;
-		this.control1 = control1;
-		this.control2 = control2;
-		this.endPoint = endPoint;
-	}
+        var step = 0
+        while (step <= steps) {
+            t = step.toFloat() / steps
+            cx = point(t, this.startPoint.x, this.control1.x, this.control2.x, this.endPoint.x)
+            cy = point(t, this.startPoint.y, this.control1.y, this.control2.y, this.endPoint.y)
+            if (step > 0) {
+                xdiff = cx - px
+                ydiff = cy - py
+                length += sqrt(xdiff * xdiff + ydiff * ydiff).toInt()
+            }
+            px = cx
+            py = cy
+            step++
+        }
+        return length.toFloat()
+    }
 
-	public float length() {
-		int steps = 10, length = 0;
-		int i;
-		float t;
-		double cx, cy, px = 0, py = 0, xdiff, ydiff;
-
-		for (i = 0; i <= steps; i++) {
-			t = (float) i / steps;
-			cx = point(t, this.startPoint.x, this.control1.x, this.control2.x, this.endPoint.x);
-			cy = point(t, this.startPoint.y, this.control1.y, this.control2.y, this.endPoint.y);
-			if (i > 0) {
-				xdiff = cx - px;
-				ydiff = cy - py;
-				length += (int) Math.sqrt(xdiff * xdiff + ydiff * ydiff);
-			}
-			px = cx;
-			py = cy;
-		}
-		return length;
-
-	}
-
-	public double point(float t, float start, float c1, float c2, float end) {
-		return start * (1.0 - t) * (1.0 - t) * (1.0 - t) + 3.0 * c1 * (1.0 - t) * (1.0 - t) * t + 3.0 * c2 * (1.0 - t)
-				* t * t + end * t * t * t;
-	}
-
+    fun point(t: Float, start: Float, c1: Float, c2: Float, end: Float): Double {
+        return start * (1.0 - t) * (1.0 - t) * (1.0 - t) + 3.0 * c1 * (1.0 - t) * (1.0 - t) * t + (3.0 * c2 * (1.0 - t) * t * t) + end * t * t * t
+    }
 }

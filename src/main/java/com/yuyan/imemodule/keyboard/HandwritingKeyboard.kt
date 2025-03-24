@@ -29,7 +29,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
 
     private var mLastUpTime: Long = 0 //记录上次手写抬手时间，与本次按下时间对比。
     private val mSBPoint: MutableList<Short?> = LinkedList()
-    private var mPoints: MutableList<TimedPoint?>? = null
+    private var mPoints: MutableList<TimedPoint> =  ArrayList<TimedPoint>()
     private var mLastTouchX = 0f
     private var mLastTouchY = 0f
     private var mLastVelocity = 0f
@@ -63,7 +63,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
 
 
     fun clear() {
-        mPoints = ArrayList<TimedPoint?>()
+        mPoints.clear()
         mLastVelocity = 0f
         mLastWidth = ((mMinWidth + mMaxWidth) / 2).toFloat()
         mPath.reset()
@@ -90,7 +90,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         when (me.action) {
             MotionEvent.ACTION_DOWN -> {
                 parent.requestDisallowInterceptTouchEvent(true)
-                mPoints!!.clear()
+                mPoints.clear()
                 mPath.moveTo(eventX, eventY)
                 mLastTouchX = eventX
                 mLastTouchY = eventY
@@ -135,15 +135,15 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
         }
     }
 
-    private fun addPoint(newPoint: TimedPoint?) {
-        mPoints!!.add(newPoint)
-        if (mPoints!!.size > 2) {
-            if (mPoints!!.size == 3) mPoints!!.add(0, mPoints!![0])
-            var tmp = calculateCurveControlPoints(mPoints!![0]!!, mPoints!![1]!!, mPoints!![2]!!)
+    private fun addPoint(newPoint: TimedPoint) {
+        mPoints.add(newPoint)
+        if (mPoints.size > 2) {
+            if (mPoints.size == 3) mPoints.add(0, mPoints[0])
+            var tmp = calculateCurveControlPoints(mPoints[0], mPoints[1], mPoints[2])
             val c2 = tmp.c2
-            tmp = calculateCurveControlPoints(mPoints!![1]!!, mPoints!![2]!!, mPoints!![3]!!)
+            tmp = calculateCurveControlPoints(mPoints[1], mPoints[2], mPoints[3])
             val c3 = tmp.c1
-            val curve = Bezier(mPoints!![1], c2, c3, mPoints!![2])
+            val curve = Bezier(mPoints[1], c2, c3, mPoints[2])
             val startPoint = curve.startPoint
             val endPoint = curve.endPoint
             var velocity = endPoint.velocityFrom(startPoint)
@@ -153,7 +153,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
             addBezier(curve, mLastWidth, newWidth)
             mLastVelocity = velocity
             mLastWidth = newWidth
-            mPoints!!.removeAt(0)
+            mPoints.removeAt(0)
         }
     }
 

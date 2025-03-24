@@ -1,23 +1,20 @@
-package com.yuyan.imemodule.entity.handwriting;
+package com.yuyan.imemodule.entity.handwriting
 
-public class TimedPoint {
-	public final float x;
-	public final float y;
-	public final long timestamp;
+import kotlin.math.pow
+import kotlin.math.sqrt
 
-	public TimedPoint(float x, float y) {
-		this.x = x;
-		this.y = y;
-		this.timestamp = System.currentTimeMillis();
-	}
+class TimedPoint(val x: Float, val y: Float) {
+    val timestamp = System.currentTimeMillis()
 
-	public float velocityFrom(TimedPoint start) {
-		float velocity = distanceTo(start) / (this.timestamp - start.timestamp);
-		if (Float.isNaN(velocity)) return 0f;
-		return velocity;
-	}
+    fun velocityFrom(start: TimedPoint): Float {
+        val velocity = distanceTo(start) / (this.timestamp - start.timestamp)
+        if (velocity.isNaN()) return 0f
+        return velocity
+    }
 
-	public float distanceTo(TimedPoint point) {
-		return (float) Math.sqrt(Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2));
-	}
+    fun distanceTo(point: TimedPoint): kotlin.Float {
+        return sqrt(
+            (point.x - this.x).toDouble().pow(2.0) + (point.y - this.y).toDouble().pow(2.0)
+        ).toFloat()
+    }
 }
