@@ -261,3 +261,16 @@ val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
     InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 to arrayOf("返回"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
 )
+
+val textEditKeyPreset: Map<Int, Array<String>> = hashMapOf(
+    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_LEFT to arrayOf("左移"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_UP to arrayOf("上移"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_RIGHT to arrayOf("右移"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_DOWN to arrayOf("下移"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_START to arrayOf("开始"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_END to arrayOf("结束"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL to arrayOf("全选"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE to arrayOf("选择"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_COPY to arrayOf("复制"),
+    InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE to arrayOf("粘贴"),
+)

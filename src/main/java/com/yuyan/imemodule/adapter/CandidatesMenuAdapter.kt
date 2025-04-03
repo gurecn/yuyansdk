@@ -22,6 +22,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
+import com.yuyan.imemodule.manager.InputModeSwitcherManager
 
 /**
  * 候选词界面适配器
@@ -55,13 +56,13 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CandidatesMenuAdapter.SymbolHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
         return SymbolHolder(inflater.inflate(R.layout.sdk_item_recyclerview_candidates_menu, parent, false))
     }
 
     override fun getItemCount(): Int = items.size
 
-    override fun onBindViewHolder(holder: CandidatesMenuAdapter.SymbolHolder, position: Int) {
+    override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val item = items[position]
         holder.entranceIconImageView?.setImageResource(item.funImgRecource)
         val color = if (isSettingsMenuSelect(item)) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor
@@ -107,6 +108,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             SkbMenuMode.Pinyin26Double -> rimeValue.startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && rimeValue != CustomConstant.SCHEMA_ZH_DOUBLE_LX17
             SkbMenuMode.PinyinStroke -> rimeValue == CustomConstant.SCHEMA_ZH_STROKE
             SkbMenuMode.LockClipBoard -> CustomConstant.lockClipBoardEnable
+            SkbMenuMode.TextEdit -> InputModeSwitcherManager.isNumberSkb
             else -> false
         }
         return result

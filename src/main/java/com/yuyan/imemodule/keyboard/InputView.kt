@@ -696,6 +696,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mAddPhrasesLayout.commitText(text)
         } else {
             val ic = service.getCurrentInputConnection()
+            ic.performContextMenuAction(android.R.id.selectAll)
             if(getInstance().input.symbolPairInput.getValue()) {
                 ic?.commitText(text + SymbolPreset[text]!!, 1)
                 moveCursorPosition(KeyEvent.KEYCODE_DPAD_LEFT)

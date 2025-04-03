@@ -43,9 +43,9 @@ object InputModeSwitcherManager {
     const val USER_DEF_KEYCODE_RETURN_6 = -6
 
     /**
-     * User defined key code, used by soft keyboard. 语言键的code,光标控制键。
+     * User defined key code, used by soft keyboard. 语言键的code,编辑键盘。
      */
-    const val USER_DEF_KEYCODE_CURSOR_7 = -7
+    const val USER_DEF_KEYCODE_TEXTEDIT_7 = -7
 
     /**
      * User defined key code, used by soft keyboard. 语言键的code,九宫格、手写符号侧栏占位符。
@@ -65,6 +65,21 @@ object InputModeSwitcherManager {
      */
     const val USER_DEF_KEYCODE_STAR_17 = -17
 
+    /**
+     * User defined key code, used by soft keyboard. 编辑键盘方向
+     */
+    const val USER_DEF_KEYCODE_MOVE_LEFT = -18
+    const val USER_DEF_KEYCODE_MOVE_RIGHT = -19
+    const val USER_DEF_KEYCODE_MOVE_UP = -20
+    const val USER_DEF_KEYCODE_MOVE_DOWN = -21
+    const val USER_DEF_KEYCODE_SELECT_MODE = -22
+    const val USER_DEF_KEYCODE_SELECT_ALL = -23
+    const val USER_DEF_KEYCODE_CUT = -24
+    const val USER_DEF_KEYCODE_COPY = -25
+    const val USER_DEF_KEYCODE_PASTE = -26
+    const val USER_DEF_KEYCODE_MOVE_START = -27
+    const val USER_DEF_KEYCODE_MOVE_END = -28
+
 
     /**
      * Bits used to indicate soft keyboard layout. If none bit is set, the
@@ -75,45 +90,51 @@ object InputModeSwitcherManager {
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,拼音，十进制：4096
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,拼音
      */
     const val MASK_SKB_LAYOUT_QWERTY_PINYIN = 0x1000
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明九宫格软键盘，拼音，十进制：8192
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明九宫格软键盘，拼音
      */
     const val MASK_SKB_LAYOUT_T9_PINYIN = 0x2000
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明手写键，十进制：12288
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明手写键
      */
     const val MASK_SKB_LAYOUT_HANDWRITING = 0x3000
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘,英语，十进制：16384
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明标准的传统键盘
      */
     const val MASK_SKB_LAYOUT_QWERTY_ABC = 0x4000
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明数字键，十进制：20480
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明数字键
      */
     const val MASK_SKB_LAYOUT_NUMBER = 0x5000
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明乱序17，十进制：20480
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明乱序17
      */
     const val MASK_SKB_LAYOUT_LX17 = 0x6000
 
     /**
      * A kind of soft keyboard layout. An input mode should be anded with
-     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明乱序17，十进制：20480
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明乱序17
      */
     const val MASK_SKB_LAYOUT_STROKE= 0x7000
+
+    /**
+     * A kind of soft keyboard layout. An input mode should be anded with
+     * [.MASK_SKB_LAYOUT] to get its soft keyboard layout. 指明文本编辑键盘
+     */
+    const val MASK_SKB_LAYOUT_TEXTEDIT= 0x8000
 
     /**
      * 第6位指明语言。
@@ -266,6 +287,8 @@ object InputModeSwitcherManager {
             }
         } else if (USER_DEF_KEYCODE_NUMBER_5 == userKey) {
             newInputMode = MASK_SKB_LAYOUT_NUMBER
+        } else if (USER_DEF_KEYCODE_TEXTEDIT_7 == userKey) {
+            newInputMode = MASK_SKB_LAYOUT_TEXTEDIT
         } else if (USER_DEF_KEYCODE_RETURN_6 == userKey) {
             newInputMode = if (mRecentLauageInputMode != 0) mRecentLauageInputMode else getInstance().internal.inputMethodPinyinMode.getValue()
         }
@@ -324,6 +347,10 @@ object InputModeSwitcherManager {
          * 是否是数字盘输入法模式
          */
         get() = mInputMode and MASK_SKB_LAYOUT == MASK_SKB_LAYOUT_NUMBER
+
+    val isTextEditSkb: Boolean
+        get() = mInputMode and MASK_SKB_LAYOUT == MASK_SKB_LAYOUT_TEXTEDIT
+
     val isChinese: Boolean
         /**
          * 是否是中文语言。

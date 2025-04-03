@@ -27,6 +27,7 @@ import com.yuyan.imemodule.keyboard.qwertyPYKeyPreset
 import com.yuyan.imemodule.keyboard.strokeKeyPreset
 import com.yuyan.imemodule.keyboard.t9NumberKeyPreset
 import com.yuyan.imemodule.keyboard.t9PYKeyPreset
+import com.yuyan.imemodule.keyboard.textEditKeyPreset
 import java.util.LinkedList
 
 /**
@@ -256,6 +257,39 @@ class KeyboardLoaderUtil private constructor() {
                 keyBeans = lastRows(skbValue)
                 rows.add(keyBeans)
             }
+            0x8000 -> {     // 6000 文本编辑键盘
+                var keyBeans: MutableList<SoftKey> = LinkedList()
+                val keys = arrayListOf(
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_LEFT, InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_UP, InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_RIGHT, InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL),
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE, InputModeSwitcherManager.USER_DEF_KEYCODE_COPY),
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_DOWN, InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE),
+                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_START, InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_END, KeyEvent.KEYCODE_DEL),)
+                var editKeys = createTextEditKeys(keys[0])
+                editKeys[0].heightF = 0.75f
+                editKeys[2].heightF = 0.75f
+                keyBeans.addAll(editKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                editKeys = createTextEditKeys(keys[1])
+                editKeys[0].mLeftF = 0.25f
+                editKeys[1].mLeftF = 0.75f
+                keyBeans.addAll(editKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                editKeys = createTextEditKeys(keys[2])
+                editKeys[0].mLeftF = 0.25f
+                editKeys[1].mLeftF = 0.75f
+                keyBeans.addAll(editKeys)
+                rows.add(keyBeans)
+                keyBeans = LinkedList()
+                editKeys = createTextEditKeys(keys[3])
+                editKeys[0].widthF = 0.375f
+                editKeys[1].widthF = 0.375f
+                keyBeans.addAll(editKeys)
+                rows.add(keyBeans)
+                keyBeans = lastRows(skbValue)
+                rows.add(keyBeans)
+            }
         }
         softKeyboard = getSoftKeyboard(rows, numberLine)
         mSoftKeyboardMap[skbValue] = softKeyboard
@@ -433,6 +467,18 @@ class KeyboardLoaderUtil private constructor() {
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "", labels?.getOrNull(1) ?: "", lx17MnemonicPreset[code] ?: "").apply {
                 widthF = 0.165f
+            })
+        }
+        return softKeys.toTypedArray()
+    }
+
+    private fun createTextEditKeys(codes: Array<Int>): Array<SoftKey> {
+        val softKeys = mutableListOf<SoftKey>()
+        val keyPreset = textEditKeyPreset
+        for(code in codes){
+            val labels = keyPreset[code]
+            softKeys.add(SoftKey(code, labels?.getOrNull(0) ?: "").apply {
+                widthF = 0.25f
             })
         }
         return softKeys.toTypedArray()

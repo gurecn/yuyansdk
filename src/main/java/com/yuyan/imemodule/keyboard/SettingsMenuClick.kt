@@ -141,6 +141,9 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         SkbMenuMode.LockClipBoard -> {
             CustomConstant.lockClipBoardEnable = !CustomConstant.lockClipBoardEnable
         }
+        SkbMenuMode.TextEdit -> {
+            InputModeSwitcherManager.switchModeForUserKey(InputModeSwitcherManager.USER_DEF_KEYCODE_TEXTEDIT_7)
+        }
         else ->{}
     }
 }

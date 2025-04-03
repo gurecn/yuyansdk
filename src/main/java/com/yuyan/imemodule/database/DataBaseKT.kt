@@ -41,10 +41,18 @@ abstract class DataBaseKT : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("INSERT INTO skbfun (name, isKeep, position) VALUES ('TextEdit', 0, 15)")
+                db.execSQL("INSERT INTO skbfun (name, isKeep, position) VALUES ('TextEdit', 1, 0)")
+            }
+        }
+
         val instance = Room.databaseBuilder(ImeSdkApplication.context, DataBaseKT::class.java, "ime_db")
             .allowMainThreadQueries()
             .addMigrations(MIGRATION_1_2)
             .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_3_4)
             .addCallback(object :Callback(){
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
@@ -87,7 +95,7 @@ abstract class DataBaseKT : RoomDatabase() {
                 val skbFuns = listOf(
                     SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1),
                     SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1),
-
+                    SkbFun(name = SkbMenuMode.TextEdit.name, isKeep = 1),
                     SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 0, position = 0),
                     SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 0, position = 1),
                     SkbFun(name = SkbMenuMode.KeyboardHeight.name, isKeep = 0, position = 2),
@@ -103,6 +111,7 @@ abstract class DataBaseKT : RoomDatabase() {
                     SkbFun(name = SkbMenuMode.FlowerTypeface.name, isKeep = 0, position = 12),
                     SkbFun(name = SkbMenuMode.Custom.name, isKeep = 0, position = 13),
                     SkbFun(name = SkbMenuMode.Settings.name, isKeep = 0, position = 14),
+                    SkbFun(name = SkbMenuMode.TextEdit.name, isKeep = 0, position = 15),
                 )
                 instance.skbFunDao().insertAll(skbFuns)
             }
