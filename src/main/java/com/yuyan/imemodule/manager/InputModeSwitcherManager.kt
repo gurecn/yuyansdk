@@ -68,17 +68,13 @@ object InputModeSwitcherManager {
     /**
      * User defined key code, used by soft keyboard. 编辑键盘方向
      */
-    const val USER_DEF_KEYCODE_MOVE_LEFT = -18
-    const val USER_DEF_KEYCODE_MOVE_RIGHT = -19
-    const val USER_DEF_KEYCODE_MOVE_UP = -20
-    const val USER_DEF_KEYCODE_MOVE_DOWN = -21
-    const val USER_DEF_KEYCODE_SELECT_MODE = -22
-    const val USER_DEF_KEYCODE_SELECT_ALL = -23
-    const val USER_DEF_KEYCODE_CUT = -24
-    const val USER_DEF_KEYCODE_COPY = -25
-    const val USER_DEF_KEYCODE_PASTE = -26
-    const val USER_DEF_KEYCODE_MOVE_START = -27
-    const val USER_DEF_KEYCODE_MOVE_END = -28
+    const val USER_DEF_KEYCODE_SELECT_MODE = -18
+    const val USER_DEF_KEYCODE_SELECT_ALL = -19
+    const val USER_DEF_KEYCODE_CUT = -20
+    const val USER_DEF_KEYCODE_COPY = -21
+    const val USER_DEF_KEYCODE_PASTE = -22
+    const val USER_DEF_KEYCODE_MOVE_START = -23
+    const val USER_DEF_KEYCODE_MOVE_END = -24
 
 
     /**
@@ -259,7 +255,7 @@ object InputModeSwitcherManager {
         /**
          * 更加软键盘 LAYOUT 获取软键盘布局文件资源ID
          */
-        get() = mInputMode and MASK_SKB_LAYOUT
+        get() = mRecentLauageInputMode and MASK_SKB_LAYOUT
 
     // 记录SHIFT点击时间，作为双击判断
     private var lsatClickTime = 0L
@@ -295,7 +291,7 @@ object InputModeSwitcherManager {
         if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
             // 保存新的输入法模式
             saveInputMode(newInputMode)
-            KeyboardManager.instance.switchKeyboard(skbLayout)
+            KeyboardManager.instance.switchKeyboard(newInputMode and MASK_SKB_LAYOUT)
         }
     }
 

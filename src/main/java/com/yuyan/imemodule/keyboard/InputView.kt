@@ -2,13 +2,11 @@ package com.yuyan.imemodule.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.SystemClock
 import android.text.InputType
-import android.view.InputDevice
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -62,6 +60,8 @@ import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
 import kotlin.math.absoluteValue
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.scale
 
 /**
  * 输入法主界面。
@@ -247,7 +247,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         setBackgroundResource(android.R.color.transparent)
         val keyTextColor = ThemeManager.activeTheme.keyTextColor
         val backgrounde = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
-        mSkbRoot.background = if(backgrounde is BitmapDrawable) BitmapDrawable(context.resources, Bitmap.createScaledBitmap(backgrounde.bitmap, EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight, true)) else backgrounde
+        mSkbRoot.background = if(backgrounde is BitmapDrawable) backgrounde.bitmap.scale(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight).toDrawable(context.resources) else backgrounde
         mComposingView.updateTheme(ThemeManager.activeTheme)
         mSkbCandidatesBarView.updateTheme(keyTextColor)
         if(::mOnehandHoderLayout.isInitialized) {
@@ -271,6 +271,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
+    private var hasSelection = false   // 编辑键盘选择模式
     /**
      * 响应软键盘按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
@@ -278,9 +279,13 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     override fun responseKeyEvent(sKey: SoftKey) {
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
-            mImeState = ImeState.STATE_INPUT
-            val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
-            processKey(keyEvent)
+            if(hasSelection && keyCode in KeyEvent.KEYCODE_DPAD_UP .. KeyEvent.KEYCODE_DPAD_RIGHT){
+                sendCombinationKeyEvents(keyCode, shift = hasSelection)
+            } else {
+                mImeState = ImeState.STATE_INPUT
+                val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
+                processKey(keyEvent)
+            }
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
                 if(InputModeSwitcherManager.isChinese)   chooseAndUpdate()
@@ -293,7 +298,15 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 onSettingsMenuClick(SkbMenuMode.Emojicon)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 InputModeSwitcherManager.switchModeForUserKey(keyCode)
-            }else if(sKey.keyLabel.isNotBlank()){
+            } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE .. InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL) {
+                commitTestEditMenu(textEditMenuPreset[keyCode])
+            } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_START) {
+                service.currentInputConnection.setSelection(0, 0)
+            } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_END) {
+                sendKeyEvent(KeyEvent.KEYCODE_MOVE_END)
+            } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE) {
+                hasSelection = !hasSelection
+            } else if(sKey.keyLabel.isNotBlank()){
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
             }
@@ -432,7 +445,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if(event.flags != KeyEvent.FLAG_SOFT_KEYBOARD && !DecodingInfo.isCandidatesListEmpty) {
                 mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
             } else if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
-                moveCursorPosition(keyCode)
+                sendCombinationKeyEvents(keyCode)
             } else {
                 chooseAndUpdate()
             }
@@ -673,6 +686,20 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
+    private fun sendDownKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
+        service.currentInputConnection?.sendKeyEvent(
+            KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyEventCode, 0, metaState,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+        )
+    }
+
+    private fun sendUpKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
+        service.currentInputConnection?.sendKeyEvent(
+            KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+        )
+    }
+
     /**
      * 向输入框提交预选词
      */
@@ -696,12 +723,35 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mAddPhrasesLayout.commitText(text)
         } else {
             val ic = service.getCurrentInputConnection()
-            ic.performContextMenuAction(android.R.id.selectAll)
             if(getInstance().input.symbolPairInput.getValue()) {
                 ic?.commitText(text + SymbolPreset[text]!!, 1)
-                moveCursorPosition(KeyEvent.KEYCODE_DPAD_LEFT)
+                sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
             } else ic?.commitText(text, 1)
         }
+    }
+
+    /**
+     * 发送成对符号给编辑框
+     */
+    private fun commitTestEditMenu(id:Int?) {
+        val ic = service.getCurrentInputConnection()
+        if(id != null) ic.performContextMenuAction(id)
+    }
+
+    fun sendCombinationKeyEvents(keyEventCode: Int, alt: Boolean = false, ctrl: Boolean = false, shift: Boolean = false) {
+        var metaState = 0
+        if (alt) metaState = KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON
+        if (ctrl) metaState = metaState or KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+        if (shift) metaState = metaState or KeyEvent.META_SHIFT_ON or KeyEvent.META_SHIFT_LEFT_ON
+        val eventTime = SystemClock.uptimeMillis()
+        if (alt) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
+        if (ctrl) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
+        if (shift) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
+        sendDownKeyEvent(eventTime, keyEventCode, metaState)
+        sendUpKeyEvent(eventTime, keyEventCode, metaState)
+        if (shift) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
+        if (ctrl) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
+        if (alt) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
     }
 
     /**
@@ -718,18 +768,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 inputConnection.commitText(" ", 1)
             }
         }
-    }
-
-    /**
-     * 移动光标
-     */
-    private fun moveCursorPosition(keyCode:Int) {
-        val inputConnection = service.getCurrentInputConnection()
-        inputConnection.beginBatchEdit()
-        val eventTime = SystemClock.uptimeMillis()
-        inputConnection.sendKeyEvent(KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE, InputDevice.SOURCE_KEYBOARD))
-        inputConnection.sendKeyEvent(KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyCode, 0, 0, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE, InputDevice.SOURCE_KEYBOARD))
-        inputConnection.endBatchEdit()
     }
 
     private fun initNavbarBackground(service: ImeService) {

@@ -260,9 +260,9 @@ class KeyboardLoaderUtil private constructor() {
             0x8000 -> {     // 6000 文本编辑键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 val keys = arrayListOf(
-                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_LEFT, InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_UP, InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_RIGHT, InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL),
+                    arrayOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_RIGHT, InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL),
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE, InputModeSwitcherManager.USER_DEF_KEYCODE_COPY),
-                    arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_DOWN, InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE),
+                    arrayOf(KeyEvent.KEYCODE_DPAD_DOWN, InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE),
                     arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_START, InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_END, KeyEvent.KEYCODE_DEL),)
                 var editKeys = createTextEditKeys(keys[0])
                 editKeys[0].heightF = 0.75f

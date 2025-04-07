@@ -1,5 +1,6 @@
 package com.yuyan.imemodule.keyboard
 
+import android.view.KeyEvent
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 
 val qwertyKeyPreset: Map<Int, Array<String>> = hashMapOf(
@@ -263,14 +264,22 @@ val t9NumberKeyPreset: Map<Int, Array<String>> = hashMapOf(
 )
 
 val textEditKeyPreset: Map<Int, Array<String>> = hashMapOf(
-    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_LEFT to arrayOf("左移"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_UP to arrayOf("上移"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_RIGHT to arrayOf("右移"),
-    InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_DOWN to arrayOf("下移"),
+    KeyEvent.KEYCODE_DPAD_LEFT to arrayOf("左移"),
+    KeyEvent.KEYCODE_DPAD_UP to arrayOf("上移"),
+    KeyEvent.KEYCODE_DPAD_RIGHT to arrayOf("右移"),
+    KeyEvent.KEYCODE_DPAD_DOWN to arrayOf("下移"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_START to arrayOf("开始"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_END to arrayOf("结束"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL to arrayOf("全选"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE to arrayOf("选择"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_COPY to arrayOf("复制"),
     InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE to arrayOf("粘贴"),
+)
+
+val textEditMenuPreset: Map<Int, Int> = hashMapOf(
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL to android.R.id.selectAll,
+    InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE to android.R.id.edit,
+    InputModeSwitcherManager.USER_DEF_KEYCODE_COPY to android.R.id.copy,
+    InputModeSwitcherManager.USER_DEF_KEYCODE_CUT to android.R.id.cut,
+    InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE to android.R.id.paste,
 )
