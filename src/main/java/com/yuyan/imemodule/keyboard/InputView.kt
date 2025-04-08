@@ -444,7 +444,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if(event.flags != KeyEvent.FLAG_SOFT_KEYBOARD && !DecodingInfo.isCandidatesListEmpty) {
                 mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
             } else if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
-                sendCombinationKeyEvents(keyCode)
+                sendKeyEvent(keyCode)
             } else {
                 chooseAndUpdate()
             }
@@ -819,7 +819,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     fun onUpdateSelection() {
-        if((chinesePrediction && mImeState != ImeState.STATE_IDLE) || InputModeSwitcherManager.isNumberSkb) {
+        if((chinesePrediction && InputModeSwitcherManager.isChinese) || InputModeSwitcherManager.isNumberSkb) {
             val inputConnection = service.getCurrentInputConnection()
             val textBeforeCursor = inputConnection.getTextBeforeCursor(100, 0).toString()
             if (textBeforeCursor.isNotBlank()) {

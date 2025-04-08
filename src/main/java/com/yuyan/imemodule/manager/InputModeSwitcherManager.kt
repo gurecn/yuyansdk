@@ -303,7 +303,7 @@ object InputModeSwitcherManager {
         mInputTypePassword = false
         when (editorInfo.inputType and EditorInfo.TYPE_MASK_CLASS) {
             EditorInfo.TYPE_CLASS_NUMBER, EditorInfo.TYPE_CLASS_PHONE, EditorInfo.TYPE_CLASS_DATETIME -> newInputMode = MASK_SKB_LAYOUT_NUMBER
-            EditorInfo.TYPE_CLASS_TEXT -> {
+            else -> {
                 val v = editorInfo.inputType and EditorInfo.TYPE_MASK_VARIATION
                 newInputMode = if (v == EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                     || v == EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
