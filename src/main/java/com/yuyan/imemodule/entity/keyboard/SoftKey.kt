@@ -121,7 +121,7 @@ open class SoftKey {
      * 是否有重复按下功能，即连长按这个按键是否执行重复的操作。
      */
     fun repeatable(): Boolean {
-        return keyCode == KeyEvent.KEYCODE_DEL
+        return keyCode == KeyEvent.KEYCODE_DEL || keyCode in KeyEvent.KEYCODE_DPAD_UP .. KeyEvent.KEYCODE_DPAD_RIGHT
     }
 
     fun width(): Int {
@@ -130,9 +130,5 @@ open class SoftKey {
 
     fun height(): Int {
         return mBottom - mTop
-    }
-
-    override fun toString(): String {
-        return "keyCode: " + keyCode + "  keyLabel: " + keyLabel
     }
 }

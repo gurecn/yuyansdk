@@ -185,9 +185,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         bg.shape = GradientDrawable.RECTANGLE
         bg.cornerRadius = keyRadius.toFloat() // 设置圆角半径
         bg.setBounds(softKey.mLeft + keyXMargin, softKey.mTop + keyYMargin, softKey.mRight - keyXMargin, softKey.mBottom - keyYMargin)
-        if (softKey.pressed) {
+        if (softKey.pressed || (mService?.hasSelection == true && softKey.keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE)) {
             bg.setColor(mActiveTheme.keyPressHighlightColor)
-             bg.draw(canvas)
+            bg.draw(canvas)
         } else if (isKeyBorder) {
             val background = when (softKey.keyCode) {
                 KeyEvent.KEYCODE_ENTER ->  mActiveTheme.accentKeyBackgroundColor

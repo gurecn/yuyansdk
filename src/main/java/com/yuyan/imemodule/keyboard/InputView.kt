@@ -89,6 +89,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
     private var mFullDisplayKeyboardBar:FullDisplayKeyboardBar? = null
+    var hasSelection = false   // 编辑键盘选择模式
 
     init {
         initNavbarBackground(service)
@@ -271,7 +272,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
     }
 
-    private var hasSelection = false   // 编辑键盘选择模式
     /**
      * 响应软键盘按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
@@ -279,13 +279,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     override fun responseKeyEvent(sKey: SoftKey) {
         val keyCode = sKey.keyCode
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
-            if(hasSelection && keyCode in KeyEvent.KEYCODE_DPAD_UP .. KeyEvent.KEYCODE_DPAD_RIGHT){
-                sendCombinationKeyEvents(keyCode, shift = hasSelection)
-            } else {
-                mImeState = ImeState.STATE_INPUT
-                val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
-                processKey(keyEvent)
-            }
+            mImeState = ImeState.STATE_INPUT
+            val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
+            processKey(keyEvent)
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
                 if(InputModeSwitcherManager.isChinese)   chooseAndUpdate()
@@ -306,6 +302,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 sendKeyEvent(KeyEvent.KEYCODE_MOVE_END)
             } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE) {
                 hasSelection = !hasSelection
+                if(!hasSelection){
+                    sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
+                }
             } else if(sKey.keyLabel.isNotBlank()){
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
@@ -669,7 +668,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
         } else {
             if (keyCode != KeyEvent.KEYCODE_ENTER) {
-                service.sendDownUpKeyEvents(keyCode)
+                if(keyCode in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT) sendCombinationKeyEvents(keyCode, shift = hasSelection)
+                else service.sendDownUpKeyEvents(keyCode)
             } else {
                 val inputConnection = service.getCurrentInputConnection()
                 YuyanEmojiCompat.mEditorInfo?.run {
