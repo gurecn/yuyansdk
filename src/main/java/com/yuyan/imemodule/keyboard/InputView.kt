@@ -5,16 +5,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.os.SystemClock
-import android.text.InputType
-import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputConnection
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -56,7 +52,6 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.core.CandidateListItem
-import splitties.bitflags.hasFlag
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
 import kotlin.math.absoluteValue
@@ -90,6 +85,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
     private var mFullDisplayKeyboardBar:FullDisplayKeyboardBar? = null
     var hasSelection = false   // 编辑键盘选择模式
+    var hasSelectionAll = false   // 编辑键盘选择模式
 
     init {
         initNavbarBackground(service)
@@ -294,18 +290,21 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 onSettingsMenuClick(SkbMenuMode.Emojicon)
             } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 .. InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1) {
                 InputModeSwitcherManager.switchModeForUserKey(keyCode)
-            } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE .. InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL) {
+            } else if ( keyCode in InputModeSwitcherManager.USER_DEF_KEYCODE_PASTE .. InputModeSwitcherManager.USER_DEF_KEYCODE_CUT) {
                 commitTestEditMenu(textEditMenuPreset[keyCode])
             } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_START) {
                 service.currentInputConnection.setSelection(0, 0)
             } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_MOVE_END) {
-                sendKeyEvent(KeyEvent.KEYCODE_MOVE_END)
+                commitTestEditMenu(textEditMenuPreset[InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL])
+                service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
             } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_MODE) {
                 hasSelection = !hasSelection
-                if(!hasSelection){
-                    sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
-                }
-            } else if(sKey.keyLabel.isNotBlank()){
+                if(!hasSelection)service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
+            } else if ( keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_SELECT_ALL) {
+                hasSelectionAll = !hasSelectionAll
+                if(!hasSelectionAll) service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
+                else commitTestEditMenu(textEditMenuPreset[keyCode])
+            }else if(sKey.keyLabel.isNotBlank()){
                 if(SymbolPreset.containsKey(sKey.keyLabel))commitPairSymbol(sKey.keyLabel)
                 else commitText(sKey.keyLabel)
             }
@@ -341,11 +340,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             PopupMenuMode.Clear -> {
                 if(isAddPhrases) mAddPhrasesLayout.clearPhrasesContent()
                 else {
-                    val inputConnection = service.getCurrentInputConnection()
-                    val clearText = inputConnection.getTextBeforeCursor(1000, InputConnection.GET_TEXT_WITH_STYLES).toString()
+                    val clearText = service.getTextBeforeCursor(1).toString()
                     if(clearText.isNotEmpty()){
                         textBeforeCursor = clearText
-                        inputConnection.deleteSurroundingText(1000, 0)
+                        service.deleteSurroundingText(1000)
                     }
                 }
             }
@@ -501,6 +499,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     fun resetToIdleState() {
         resetCandidateWindow()
         mComposingView.setDecodingInfo()
+        if(hasSelectionAll) hasSelectionAll = false
         mImeState = ImeState.STATE_IDLE
     }
 
@@ -666,45 +665,21 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                     onSettingsMenuClick(SkbMenuMode.Phrases)
                 }
             }
+        } else if(keyCode == KeyEvent.KEYCODE_ENTER) {
+            service.sendEnterKeyEvent()
+        } else if(keyCode in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT) {
+            service.sendCombinationKeyEvents(keyCode, shift = hasSelection)
+            if(hasSelectionAll) hasSelectionAll = false
         } else {
-            if (keyCode != KeyEvent.KEYCODE_ENTER) {
-                if(keyCode in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT) sendCombinationKeyEvents(keyCode, shift = hasSelection)
-                else service.sendDownUpKeyEvents(keyCode)
-            } else {
-                val inputConnection = service.getCurrentInputConnection()
-                YuyanEmojiCompat.mEditorInfo?.run {
-                    if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
-                        service.sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
-                    } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
-                        inputConnection.performEditorAction(actionId)
-                    } else when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
-                        EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> service.sendDownUpKeyEvents(keyCode)
-                        else -> inputConnection.performEditorAction(action)
-                    }
-                }
-            }
+            service.sendCombinationKeyEvents(keyCode)
         }
-    }
-
-    private fun sendDownKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
-        service.currentInputConnection?.sendKeyEvent(
-            KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyEventCode, 0, metaState,
-                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
-        )
-    }
-
-    private fun sendUpKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
-        service.currentInputConnection?.sendKeyEvent(
-            KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
-                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
-        )
     }
 
     /**
      * 向输入框提交预选词
      */
     private fun setComposingText(text: CharSequence) {
-        if(!isAddPhrases)service.getCurrentInputConnection()?.setComposingText(text, 1)
+        if(!isAddPhrases)service.setComposingText(text)
     }
 
     /**
@@ -712,7 +687,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     private fun commitText(text: String) {
         if(isAddPhrases) mAddPhrasesLayout.commitText(text)
-        else service.getCurrentInputConnection()?.commitText(StringUtils.converted2FlowerTypeface(text), 1)
+        else service.commitText(StringUtils.converted2FlowerTypeface(text))
     }
 
     /**
@@ -722,11 +697,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if(isAddPhrases) {
             mAddPhrasesLayout.commitText(text)
         } else {
-            val ic = service.getCurrentInputConnection()
             if(getInstance().input.symbolPairInput.getValue()) {
-                ic?.commitText(text + SymbolPreset[text]!!, 1)
-                sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
-            } else ic?.commitText(text, 1)
+                service.commitText(text + SymbolPreset[text]!!)
+                service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
+            } else service.commitText(text)
         }
     }
 
@@ -734,25 +708,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 发送成对符号给编辑框
      */
     private fun commitTestEditMenu(id:Int?) {
-        val ic = service.getCurrentInputConnection()
-        if(id != null) ic.performContextMenuAction(id)
+        if(id != null)service.commitTestEditMenu(id)
     }
 
-    fun sendCombinationKeyEvents(keyEventCode: Int, alt: Boolean = false, ctrl: Boolean = false, shift: Boolean = false) {
-        var metaState = 0
-        if (alt) metaState = KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON
-        if (ctrl) metaState = metaState or KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
-        if (shift) metaState = metaState or KeyEvent.META_SHIFT_ON or KeyEvent.META_SHIFT_LEFT_ON
-        val eventTime = SystemClock.uptimeMillis()
-        if (alt) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
-        if (ctrl) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
-        if (shift) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
-        sendDownKeyEvent(eventTime, keyEventCode, metaState)
-        sendUpKeyEvent(eventTime, keyEventCode, metaState)
-        if (shift) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
-        if (ctrl) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
-        if (alt) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
-    }
 
     /**
      * 发送候选词字符串给编辑框
@@ -762,10 +720,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         if(isAddPhrases){
             mAddPhrasesLayout.commitText(resultText)
         } else {
-            val inputConnection = service.getCurrentInputConnection()
-            inputConnection.commitText(StringUtils.converted2FlowerTypeface(resultText), 1)
+            service.commitText(StringUtils.converted2FlowerTypeface(resultText))
             if (InputModeSwitcherManager.isEnglish && DecodingInfo.isEngineFinish && getInstance().input.abcSpaceAuto.getValue() && StringUtils.isEnglishWord(resultText)) {
-                inputConnection.commitText(" ", 1)
+                service.commitText(" ")
             }
         }
     }
@@ -820,8 +777,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     fun onUpdateSelection() {
         if((chinesePrediction && InputModeSwitcherManager.isChinese) || InputModeSwitcherManager.isNumberSkb) {
-            val inputConnection = service.getCurrentInputConnection()
-            val textBeforeCursor = inputConnection.getTextBeforeCursor(100, 0).toString()
+            val textBeforeCursor = service.getTextBeforeCursor(100)
             if (textBeforeCursor.isNotBlank()) {
                 val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
                 if(!expressionEnd.isNullOrBlank()) {

@@ -2,10 +2,14 @@ package com.yuyan.imemodule.service
 
 import android.content.res.Configuration
 import android.inputmethodservice.InputMethodService
+import android.os.SystemClock
+import android.text.InputType
+import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
@@ -18,11 +22,13 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import splitties.bitflags.hasFlag
 
 /**
  * Main class of the Pinyin input method. 输入法服务
@@ -140,5 +146,78 @@ class ImeService : InputMethodService() {
         isWindowShown = false
         if(::mInputView.isInitialized) mInputView.onWindowHidden()
         super.onWindowHidden()
+    }
+
+    /**
+     * 模拟Enter按键点击
+     */
+    fun sendEnterKeyEvent() {
+        val inputConnection = getCurrentInputConnection()
+        YuyanEmojiCompat.mEditorInfo?.run {
+            if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+            } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+                inputConnection.performEditorAction(actionId)
+            } else when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
+                EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                else -> inputConnection.performEditorAction(action)
+            }
+        }
+    }
+
+    fun sendCombinationKeyEvents(keyEventCode: Int, alt: Boolean = false, ctrl: Boolean = false, shift: Boolean = false) {
+        var metaState = 0
+        if (alt) metaState = KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON
+        if (ctrl) metaState = metaState or KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+        if (shift) metaState = metaState or KeyEvent.META_SHIFT_ON or KeyEvent.META_SHIFT_LEFT_ON
+        val eventTime = SystemClock.uptimeMillis()
+        if (alt) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
+        if (ctrl) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
+        if (shift) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
+        sendDownKeyEvent(eventTime, keyEventCode, metaState)
+        sendUpKeyEvent(eventTime, keyEventCode, metaState)
+        if (shift) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
+        if (ctrl) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
+        if (alt) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
+    }
+
+    fun sendDownKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
+        currentInputConnection?.sendKeyEvent(
+            KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyEventCode, 0, metaState,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+        )
+    }
+
+    fun sendUpKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
+        currentInputConnection.sendKeyEvent(
+            KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+        )
+    }
+
+    /**
+     * 向输入框提交预选词
+     */
+    fun setComposingText(text: CharSequence) {
+        currentInputConnection.setComposingText(text, 1)
+    }
+
+    /**
+     * 发送字符串给编辑框
+     */
+    fun commitText(text: String) {
+        currentInputConnection.commitText(StringUtils.converted2FlowerTypeface(text), 1)
+    }
+
+    fun getTextBeforeCursor(length:Int) : String {
+        return currentInputConnection.getTextBeforeCursor(length, 0).toString()
+    }
+
+    fun commitTestEditMenu(id:Int) {
+        currentInputConnection.performContextMenuAction(id)
+    }
+
+    fun deleteSurroundingText(length:Int) {
+        currentInputConnection.deleteSurroundingText(length, 0)
     }
 }
