@@ -94,7 +94,6 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
                 mPath.moveTo(eventX, eventY)
                 mLastTouchX = eventX
                 mLastTouchY = eventY
-                addPoint(TimedPoint(eventX, eventY))
                 resetDirtyRect(eventX, eventY)
                 addPoint(TimedPoint(eventX, eventY))
                 if (mLastUpTime != 0L && System.currentTimeMillis() - mLastUpTime > times) {
