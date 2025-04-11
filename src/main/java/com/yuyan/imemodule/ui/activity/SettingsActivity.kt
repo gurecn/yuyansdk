@@ -85,7 +85,7 @@ open class SettingsActivity : AppCompatActivity() {
             startActivity<SetupActivity>()
         } else {
             val buildDiffDays = TimeUtils.getBuildDiffDays()
-            if(buildDiffDays >= 30){
+            if(buildDiffDays >= 60){
                 AlertDialog.Builder(this)
                     .setTitle(R.string.dialog_tips_title)
                     .setMessage(getString(if(buildDiffDays >= 60) R.string.app_build_timeout_60 else R.string.app_build_timeout_30))
