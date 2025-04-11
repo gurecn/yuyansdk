@@ -1,13 +1,11 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1738310601
-    default.custom: 1738310601
+    default: 1744370669
+    default.custom: 1744370670
     pinyin.custom: 0
-    pinyin.schema: 1738310601
+    pinyin.schema: 1744370670
 cn_en:
-  comment_format:
-    - "xform/^.+$//"
   db_class: stabledb
   dictionary: ""
   enable_completion: true
@@ -46,8 +44,6 @@ engine:
     - "table_translator@english"
     - "table_translator@cn_en"
 english:
-  comment_format:
-    - "xform/.*//"
   dictionary: english
   enable_sentence: false
   enable_user_dict: false
@@ -92,45 +88,8 @@ speller:
     - "derive/^([jqxy])u/$1v/"
     - "derive/^([nl])ue$/$1ve/"
     - "derive/^([jqxy])v/$1u/"
-    - "derive/([zcs])h(a|e|i|u|ai|ei|an|en|ou|uo|ua|un|ui|uan|uai|uang|ang|eng|ong)$/h$1$2/"
-    - "derive/([zcs])h([aeiu])$/$1$2h/"
-    - "derive/^([wghk])ai$/$1ia/"
-    - "derive/([wfghkz])ei$/$1ie/"
-    - "derive/([jqx])ie$/$1ei/"
-    - "derive/([rtypsdghklzcbnm])ao$/$1oa/"
-    - "derive/([ypfm])ou$/$1uo/"
-    - "derive/([wrtypsdfghklzcbnm])ang$/$1nag/"
-    - "derive/([wrtypsdfghklzcbnm])ang$/$1agn/"
-    - "derive/([wrtpsdfghklzcbnm])eng$/$1neg/"
-    - "derive/([wrtpsdfghklzcbnm])eng$/$1egn/"
-    - "derive/([qtypdjlxbnm])ing$/$1nig/"
-    - "derive/([qtypdjlxbnm])ing$/$1ign/"
-    - "derive/([rtysdghklzcn])ong$/$1nog/"
-    - "derive/([rtysdghklzcn])ong$/$1ogn/"
-    - "derive/([qtpdjlxbnm])iao$/$1ioa/"
-    - "derive/([qtpdjlxbnm])iao$/$1oia/"
-    - "derive/([rtsghkzc])ui$/$1iu/"
-    - "derive/([qjlxnm])iu$/$1ui/"
-    - "derive/([qjlxn])iang$/$1aing/"
-    - "derive/([qjlxn])iang$/$1inag/"
-    - "derive/([g|k|h|zh|sh])ua$/$1au/"
-    - "derive/([g|h|k|zh|ch|sh])uai$/$1aui/"
-    - "derive/([qrtysdghjklzxcn])uan$/$1aun/"
-    - "derive/([nlyjqx])ue$/$1eu/"
-    - "derive/([g|h|k|zh|ch|sh])uang$/$1aung/"
-    - "derive/([g|h|k|zh|ch|sh])uang$/$1uagn/"
-    - "derive/([g|h|k|zh|ch|sh])uang$/$1unag/"
-    - "derive/([g|h|k|zh|ch|sh])uang$/$1augn/"
-    - "derive/([jqx])iong$/$1inog/"
-    - "derive/([jqx])iong$/$1oing/"
-    - "derive/([jqx])iong$/$1iogn/"
-    - "derive/([jqx])iong$/$1oign/"
-    - "derive/([rtsdghkzc])o(u|ng)$/$1o/"
-    - "derive/(.+)ong$/$1on/"
-    - "derive/([tl])eng$/$1en/"
-    - "derive/([qwrtypsdfghjklzxcbnm])([aeio])ng$/$1ng/"
   alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA`/"
-  delimiter: " '"
+  delimiter: "''"
   initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA
 switches:
   - name: traditionalization
@@ -149,8 +108,4 @@ translator:
   always_show_comments: true
   dictionary: pinyin
   initial_quality: 1.2
-  comment_format:
-    - "xform/ /'/"
-  preedit_format:
-    - "xform/ /'/"
   spelling_hints: 100

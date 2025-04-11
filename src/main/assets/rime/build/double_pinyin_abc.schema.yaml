@@ -1,15 +1,13 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1738310601
-    default.custom: 1738310601
+    default: 1744370669
+    default.custom: 1744370670
     double_pinyin.custom: 0
-    double_pinyin.schema: 1738310601
+    double_pinyin.schema: 1744370669
     double_pinyin_abc.custom: 0
-    double_pinyin_abc.schema: 1738310601
+    double_pinyin_abc.schema: 1744370669
 cn_en:
-  comment_format:
-    - "xform/^.+$//"
   db_class: stabledb
   dictionary: ""
   enable_completion: true
@@ -48,8 +46,6 @@ engine:
     - "table_translator@english"
     - "table_translator@cn_en"
 english:
-  comment_format:
-    - "xform/.*//"
   dictionary: english
   enable_sentence: false
   enable_user_dict: false
@@ -79,7 +75,7 @@ schema:
   dependencies:
     - english
   description: |
-    白霜拼音 - 智能 ABC 双拼
+    白霜拼音:语燕输入法-智能 ABC 双拼
     https://github.com/gaboolic/rime-frost
 
   name: "智能ABC双拼"
@@ -115,7 +111,7 @@ speller:
     - "xform/[uv]e$|ui$/Ⓜ/"
     - "xlit/ⓆⓌⒺⓇⓉⓎⓄⓅⒶⓈⒹⒻⒼⒽⒿⓀⓁⓏⓍⒸⓋⒷⓃⓂ/qwertyopasdfghjklzxcvbnm/"
   alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA`/"
-  delimiter: " '"
+  delimiter: "''"
   initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA
 switches:
   - name: traditionalization
@@ -134,9 +130,42 @@ translator:
   always_show_comments: true
   dictionary: pinyin
   initial_quality: 1.2
-  comment_format:
-    - "xform/ /'/"
   preedit_format:
-    - "xform/ /'/"
+    - "xform/o(\\w)/0$1/"
+    - "xform/(\\w)q/$1ei/"
+    - "xform/(\\w)n/$1un/"
+    - "xform/(\\w)g/$1eng/"
+    - "xform/(\\w)w/$1ian/"
+    - "xform/([dtnljqx])r/$1iu/"
+    - "xform/0r/0er/"
+    - "xform/([nljqxb])t/$1iang/"
+    - "xform/(\\w)t/$1uang/"
+    - "xform/(\\w)y/$1ing/"
+    - "xform/([dtnlgkhaevrzcs])o/$1uo/"
+    - "xform/(\\w)p/$1uan/"
+    - "xform/([jqx])s/$1iong/"
+    - "xform/(\\w)s/$1ong/"
+    - "xform/([gkhaevrzcs])d/$1ua/"
+    - "xform/(\\w)d/$1ia/"
+    - "xform/(\\w)f/$1en/"
+    - "xform/(\\w)h/$1ang/"
+    - "xform/(\\w)j/$1an/"
+    - "xform/(\\w)k/$1ao/"
+    - "xform/(\\w)l/$1ai/"
+    - "xform/(\\w)z/$1iao/"
+    - "xform/(\\w)x/$1ie/"
+    - "xform/([gkhaev])c/$1uai/"
+    - "xform/(\\w)c/$1in/"
+    - "xform/(\\w)b/$1ou/"
+    - "xform/([nl])m/$1ve/"
+    - "xform/([jqxy])m/$1ue/"
+    - "xform/(\\w)m/$1ui/"
+    - "xform/(^|[ '])a/$1zh/"
+    - "xform/(^|[ '])e/$1ch/"
+    - "xform/(^|[ '])v/$1sh/"
+    - "xform/0(\\w)/$1/"
+    - "xform/([nl])v/$1ü/"
+    - "xform/([jqxy])v/$1u/"
+    - "xform/ü/v/"
   prism: double_pinyin_abc
   spelling_hints: 100

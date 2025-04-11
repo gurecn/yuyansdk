@@ -1,10 +1,10 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1738310601
-    default.custom: 1738310601
+    default: 1744370669
+    default.custom: 1744370670
     t9_pinyin.custom: 0
-    t9_pinyin.schema: 1738310601
+    t9_pinyin.schema: 1744370670
 corrector: "{comment}"
 emoji:
   inherit_comment: false
@@ -297,7 +297,7 @@ speller:
     - "derive/zui/984/"
     - "derive/[xyz]un|zuo/986/"
   alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321`/"
-  delimiter: " '"
+  delimiter: "''"
   initials: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321
 switches:
   - name: traditionalization
@@ -316,9 +316,5 @@ translator:
   always_show_comments: true
   dictionary: pinyin
   initial_quality: 1.2
-  comment_format:
-    - "xform/ /'/"
-  preedit_format:
-    - "xform/ /'/"
   prism: t9_pinyin
   spelling_hints: 100
