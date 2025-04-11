@@ -776,7 +776,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     fun onUpdateSelection() {
-        if((chinesePrediction && InputModeSwitcherManager.isChinese) || InputModeSwitcherManager.isNumberSkb) {
+        if((chinesePrediction && InputModeSwitcherManager.isChinese && mImeState != ImeState.STATE_IDLE)
+            || InputModeSwitcherManager.isNumberSkb) {
             val textBeforeCursor = service.getTextBeforeCursor(100)
             if (textBeforeCursor.isNotBlank()) {
                 val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
