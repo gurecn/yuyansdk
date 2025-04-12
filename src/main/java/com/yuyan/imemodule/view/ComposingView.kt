@@ -87,9 +87,7 @@ class ComposingView(context: Context) : View(context) {
     private fun drawForPinyin(canvas: Canvas) {
         val x: Float = (paddingLeft + LEFT_RIGHT_MARGIN).toFloat()
         val y: Float = (paddingTop - mFmi.top).toFloat()
-        if (mComposingDisplay.isBlank()) {
-            return
-        } else if (mComposingDisplay.length > COMPOSING_STR_LENGTH) {
+        if (mComposingDisplay.length > COMPOSING_STR_LENGTH) {
             mComposingDisplay = mComposingDisplay.substring(mComposingDisplay.length - COMPOSING_STR_LENGTH + 3)
             canvas.drawText(SUSPENSION_POINTS + mComposingDisplay, 0, (SUSPENSION_POINTS + mComposingDisplay).length, x, y, mPaint)
         } else if (!TextUtils.isEmpty(mComposingDisplay)){

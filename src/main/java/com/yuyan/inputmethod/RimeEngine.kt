@@ -243,7 +243,7 @@ object RimeEngine {
         if(candidates.isEmpty()) return composition
         val comment = candidates.first().comment
         return when {
-            comment.isBlank() || comment.contains("☯") -> composition
+            comment.isBlank() || comment.contains("☯") || comment.startsWith("~")-> composition
             Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) ->  {
                 if(!AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()) composition
                 else {
