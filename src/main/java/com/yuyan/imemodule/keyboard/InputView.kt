@@ -265,7 +265,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         EnvironmentSingleton.instance.initData()
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+        KeyboardManager.instance.switchKeyboard()
     }
 
     /**
@@ -335,7 +335,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             PopupMenuMode.SwitchIME -> InputMethodUtil.showPicker()
             PopupMenuMode.EnglishCell -> {
                 getInstance().input.abcSearchEnglishCell.setValue(!getInstance().input.abcSearchEnglishCell.getValue())
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                KeyboardManager.instance.switchKeyboard()
             }
             PopupMenuMode.Clear -> {
                 if(isAddPhrases) mAddPhrasesLayout.clearPhrasesContent()
@@ -525,7 +525,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
             if (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
             } else {  // 不上屏，继续选择
@@ -586,7 +586,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             if (level == 0) {
                 onSettingsMenuClick(SkbMenuMode.CandidatesMore)
             } else {
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
             }
         }
@@ -597,7 +597,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
         override fun onClickClearCandidate() {
             if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
         }
 
         override fun onClickClearClipBoard() {
@@ -611,7 +611,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
                 DataBaseKT.instance.phraseDao().deleteByContent(extra)
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
                 initView(context)
                 mAddPhrasesLayout.setExtraData(extra)
             }
@@ -746,7 +746,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         InputModeSwitcherManager.requestInputWithSkb(editorInfo)
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+        KeyboardManager.instance.switchKeyboard()
         if(!restarting) {
             YuyanEmojiCompat.setEditorInfo(editorInfo)
             if (getInstance().clipboard.clipboardSuggestion.getValue()) {

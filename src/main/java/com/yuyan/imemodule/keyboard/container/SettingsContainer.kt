@@ -228,6 +228,6 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         KeyboardManager.instance.clearKeyboard()
         InputModeSwitcherManager.saveInputMode(inputMode)
         inputView.resetToIdleState()
-        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
     }
 }

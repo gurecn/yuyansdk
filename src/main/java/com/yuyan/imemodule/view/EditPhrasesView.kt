@@ -91,7 +91,7 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
             val pinYinHeadLX17 = pinYinHeadChar.map { LX17PinYinUtils.pinyin2Lx17Key(it)}.joinToString("")
             val phrase =  Phrase(content = content, t9 = pinYinHeadT9, qwerty = pinYinHeadChar, lx17 = pinYinHeadLX17)
             DataBaseKT.instance.phraseDao().insert(phrase)
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
         }
     }
 

@@ -251,11 +251,17 @@ object InputModeSwitcherManager {
         mInputMode = getInstance().internal.inputDefaultMode.getValue()
     }
 
-    val skbLayout: Int
+    val skbImeLayout: Int
         /**
-         * 更加软键盘 LAYOUT 获取软键盘布局文件资源ID
+         * 更加软键盘：切换为语言键盘
          */
         get() = mRecentLauageInputMode and MASK_SKB_LAYOUT
+
+    val skbLayout: Int
+        /**
+         * 更加软键盘 LAYOUT，切换回上次键盘
+         */
+        get() = mInputMode and MASK_SKB_LAYOUT
 
     // 记录SHIFT点击时间，作为双击判断
     private var lsatClickTime = 0L
@@ -291,7 +297,7 @@ object InputModeSwitcherManager {
         if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
             // 保存新的输入法模式
             saveInputMode(newInputMode)
-            KeyboardManager.instance.switchKeyboard(newInputMode and MASK_SKB_LAYOUT)
+            KeyboardManager.instance.switchKeyboard()
         }
     }
 

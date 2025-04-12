@@ -128,7 +128,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
                     DevicesUtils.tryVibrate(this)
                 }
                 MotionEvent.ACTION_UP -> {
-                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
                 }
             }
             true
@@ -171,7 +171,7 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         DevicesUtils.tryVibrate(this)
         if (mShowType == SymbolMode.Symbol) {  // 非表情键盘
             DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
-            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            if(!isLockSymbol) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
             inputView.responseKeyEvent(softKey)
         } else {  //表情、颜文字
             if(!YuyanEmojiCompat.isWeChatInput || mVPSymbolsView.currentItem != 1 ) {

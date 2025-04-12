@@ -22,7 +22,7 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         SkbMenuMode.Emojicon, SkbMenuMode.Emoticon -> {
             val symbolType = if(skbMenuMode == SkbMenuMode.Emoticon) SymbolMode.Emoticon else SymbolMode.Emojicon
             if((KeyboardManager.instance.currentContainer as? SymbolContainer)?.getMenuMode() == symbolType){
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                KeyboardManager.instance.switchKeyboard()
             } else {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SYMBOL)
                 inputView.mSkbCandidatesBarView.showEmoji()
@@ -34,14 +34,14 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSkbSelelctModeView()
         }
         SkbMenuMode.KeyboardHeight -> {
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
             KeyboardManager.instance.currentContainer!!.setKeyboardHeight()
         }
         SkbMenuMode.DarkTheme -> {
             val theme = (if (ThemeManager.activeTheme.isDark) ThemeManager.prefs.lightModeTheme else ThemeManager.prefs.darkModeTheme).getValue()
             ThemeManager.setNormalModeTheme(theme)
             KeyboardManager.instance.clearKeyboard()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.Feedback -> {
             AppUtil.launchSettingsToKeyboard(ImeSdkApplication.context)
@@ -52,37 +52,37 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             //更换键盘模式后 重亲加载键盘
             KeyboardLoaderUtil.instance.changeSKBNumberRow()
             KeyboardManager.instance.clearKeyboard()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.JianFan -> {
             val chineseFanTi = AppPrefs.getInstance().input.chineseFanTi.getValue()
             AppPrefs.getInstance().input.chineseFanTi.setValue(!chineseFanTi)
             Kernel.nativeUpdateImeOption()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.LockEnglish -> {
             val keyboardLockEnglish = AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.getValue()
             AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.setValue(!keyboardLockEnglish)
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.SymbolShow -> {
             val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
             ThemeManager.prefs.keyboardSymbol.setValue(!keyboardSymbol)
             KeyboardManager.instance.clearKeyboard()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.Mnemonic -> {
             val keyboardMnemonic = ThemeManager.prefs.keyboardMnemonic.getValue()
             ThemeManager.prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.EmojiInput -> {
             val emojiInput = AppPrefs.getInstance().input.emojiInput.getValue()
             AppPrefs.getInstance().input.emojiInput.setValue(!emojiInput)
             Kernel.nativeUpdateImeOption()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.Handwriting -> AppUtil.launchSettingsToHandwriting(ImeSdkApplication.context)
         SkbMenuMode.Settings -> AppUtil.launchSettings(ImeSdkApplication.context)
@@ -91,12 +91,12 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.FlowerTypeface -> {
             CustomConstant.flowerTypeface = if(CustomConstant.flowerTypeface == FlowerTypefaceMode.Disabled) FlowerTypefaceMode.Mars else FlowerTypefaceMode.Disabled
             inputView.mSkbCandidatesBarView.showFlowerTypeface()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.FloatKeyboard -> {
             val keyboardModeFloat = EnvironmentSingleton.instance.keyboardModeFloat
@@ -104,13 +104,12 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.ClipBoard, SkbMenuMode.Phrases -> {
             val currentContainer = KeyboardManager.instance.currentContainer as? ClipBoardContainer
             if(currentContainer != null){
-                if(currentContainer.getMenuMode() == skbMenuMode) KeyboardManager.instance.switchKeyboard(
-                    InputModeSwitcherManager.skbLayout)
+                if(currentContainer.getMenuMode() == skbMenuMode) KeyboardManager.instance.switchKeyboard()
                 else currentContainer.showClipBoardView(skbMenuMode)
             } else {
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
@@ -131,7 +130,7 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
                 (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSettingsView()
                 inputView.updateCandidateBar()
             } else {
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                KeyboardManager.instance.switchKeyboard()
             }
         }
         SkbMenuMode.CandidatesMore -> {

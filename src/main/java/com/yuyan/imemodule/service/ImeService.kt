@@ -84,7 +84,7 @@ class ImeService : InputMethodService() {
             EnvironmentSingleton.instance.initData()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
-            if (::mInputView.isInitialized) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            if (::mInputView.isInitialized) KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
         }
     }
 

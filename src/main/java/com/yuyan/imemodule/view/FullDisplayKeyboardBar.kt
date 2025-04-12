@@ -84,7 +84,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
             FullDisplayKeyMode.SwitchLanguage -> InputModeSwitcherManager.switchModeForUserKey(InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)
             FullDisplayKeyMode.Clipboard, FullDisplayKeyMode.Phrases -> {
                 if(KeyboardManager.instance.currentContainer is ClipBoardContainer){
-                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
                 } else {
                     KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.ClipBoard)
                     (KeyboardManager.instance.currentContainer as ClipBoardContainer?)?.showClipBoardView(

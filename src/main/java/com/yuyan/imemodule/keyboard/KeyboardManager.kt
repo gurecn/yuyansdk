@@ -39,7 +39,7 @@ class KeyboardManager {
         if (::mInputView.isInitialized) mInputView.initView(mInputView.context)
     }
 
-    fun switchKeyboard(layout: Int) {
+    fun switchKeyboard(layout: Int = InputModeSwitcherManager.skbLayout) {
         val keyboardName = when (layout) {
             0x1000 -> KeyboardType.QWERTY
             0x4000 -> KeyboardType.QWERTYABC

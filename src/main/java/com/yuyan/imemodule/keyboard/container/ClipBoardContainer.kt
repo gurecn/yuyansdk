@@ -101,7 +101,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         mRVSymbolsView.setAdapter(null)
         mRVSymbolsView.setOnItemClickListener{ _: View?, position: Int ->
             inputView.responseLongKeyEvent(Pair(PopupMenuMode.Text, copyContents[position].content))
-            if(!CustomConstant.lockClipBoardEnable)KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
+            if(!CustomConstant.lockClipBoardEnable)KeyboardManager.instance.switchKeyboard()
         }
         mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, position: Int ->
             val topItem = SwipeMenuItem(mContext).apply {
@@ -135,7 +135,6 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 val content = copyContents[position].content
                 if(menuBridge.position == 0) {
                     inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, content)
-                    KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 } else if(menuBridge.position == 1){
                     DataBaseKT.instance.phraseDao().deleteByContent(content)
                     showClipBoardView(SkbMenuMode.Phrases)
