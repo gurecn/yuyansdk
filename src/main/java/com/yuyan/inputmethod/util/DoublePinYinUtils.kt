@@ -11,6 +11,11 @@ object DoublePinYinUtils {
         'a' to "ch",
         'i' to "sh",
     )
+    val double_pinyin_ls17 = mapOf(
+        'z' to "zh",
+        'c' to "ch",
+        'h' to "sh",
+    )
     val double_pinyin = mapOf(
         'v' to "zh",
         'i' to "ch",

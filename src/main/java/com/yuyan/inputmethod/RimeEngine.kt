@@ -255,8 +255,9 @@ object RimeEngine {
                                  when(Rime.getCurrentRimeSchema()){
                                     "double_pinyin_abc" ->DoublePinYinUtils.double_pinyin_abc
                                     "double_pinyin_ziguang" ->DoublePinYinUtils.double_pinyin_ziguang
+                                    "double_pinyin_ls17" ->DoublePinYinUtils.double_pinyin_ls17
                                     else ->DoublePinYinUtils.double_pinyin
-                                }.getOrElse(composition[0]){composition}
+                                }.getOrElse(composition[0]){pinyin.first().toString()}
                             })
                             append("'")
                         }
