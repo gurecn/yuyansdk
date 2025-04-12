@@ -48,7 +48,7 @@ object CustomEngine {
         return associations
     }
 
-    fun processPhrase(text: String):List<String> {
+    fun processPhrase(text: String):MutableList<String> {
         val phrases = mutableListOf<String>()
         phrases.addAll(DataBaseKT.instance.phraseDao().query(text).map { it.content })
         val suffixesDate = setOf("rq", "riqi", "7474", "77")

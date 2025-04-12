@@ -4,6 +4,7 @@ import android.view.KeyEvent
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.DoublePinYinUtils
@@ -65,7 +66,7 @@ object RimeEngine {
            val candidates = Rime.getRimeContext()!!.candidates
             if (InputModeSwitcherManager.isEnglishUpperCase) {
                 for (item in candidates) {
-                    item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                    item.text = item.text.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
                 }
             } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
                 for (item in candidates) {
@@ -153,7 +154,7 @@ object RimeEngine {
             keyRecordStack.clear()
             preCommitText = rimeCommit.commitText
             preCommitText = if (InputModeSwitcherManager.isEnglishUpperCase) {
-                preCommitText.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                preCommitText.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
                 preCommitText.uppercase()
             } else {
@@ -164,24 +165,32 @@ object RimeEngine {
             return preCommitText
         }
         val candidates = Rime.getRimeContext()?.candidates?.asList() ?: emptyList()
+        customPhraseSize = 0
+        val compositionText = Rime.compositionText
+        showCandidates = when {
+            compositionText.isNotBlank() -> {
+                val phrase = CustomEngine.processPhrase(compositionText.replace("\'", ""))
+                if(InputModeSwitcherManager.isEnglish && StringUtils.isLetter(compositionText) &&
+                    !compositionText.equals(candidates.first().text, ignoreCase = true) ){
+                    phrase.add(0, compositionText)
+                }
+                customPhraseSize = phrase.size
+                phrase.map { content -> CandidateListItem("📋", content) }.toMutableList().plus(candidates)
+            }
+            else -> candidates
+        }
         var composition = getCurrentComposition(candidates)
         if (InputModeSwitcherManager.isEnglishUpperCase) {
-            for (item in candidates) {
-                item.text = item.text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            }
-            composition = composition.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            for (item in showCandidates) item.text = item.text.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            composition = composition.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         } else if (InputModeSwitcherManager.isEnglishUpperLockCase) {
-            for (item in candidates) {
-                item.text = item.text.uppercase()
-            }
+            for (item in showCandidates) item.text = item.text.uppercase()
             composition = composition.uppercase()
         } else {
-            for (item in candidates) {
-                item.text = item.text.lowercase()
-            }
+            for (item in showCandidates) item.text = item.text.lowercase()
             composition = composition.lowercase()
         }
-        var count = Rime.compositionText.count { it in '1'..'9' }
+        var count = compositionText.count { it in '1'..'9' }
         pinyins =
             if (count > 0) {
                 val remainT9Keys = ArrayList<InputKey>(count)
@@ -198,15 +207,6 @@ object RimeEngine {
             } else {
                 emptyArray()
             }
-        customPhraseSize = 0
-        showCandidates = when {
-            Rime.compositionText.isNotBlank() -> {
-                val phrase = CustomEngine.processPhrase(Rime.compositionText.replace("\'", ""))
-                customPhraseSize = phrase.size
-                phrase.map { content -> CandidateListItem("📋", content) }.toMutableList().plus(candidates)
-            }
-            else -> candidates
-        }
         showComposition = composition
         preCommitText = ""
         return null
