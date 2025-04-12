@@ -6,6 +6,7 @@ import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
+import com.yuyan.inputmethod.util.DoublePinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import com.yuyan.inputmethod.util.buildSpannedString
 import java.util.Locale
@@ -245,7 +246,23 @@ object RimeEngine {
             comment.isBlank() || comment.contains("☯") -> composition
             Rime.getCurrentRimeSchema().startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) ->  {
                 if(!AppPrefs.getInstance().keyboardSetting.keyboardDoubleInputKey.getValue()) composition
-                else comment
+                else {
+                    val compositionList = composition.filter { it.code <= 0xFF }.split("'".toRegex())
+                    buildSpannedString {
+                        append(composition.filter { it.code > 0xFF })
+                        comment.split("'").zip(compositionList).forEach { (pinyin, composition) ->
+                            append(if (composition.length >= 2) pinyin else {
+                                 when(Rime.getCurrentRimeSchema()){
+                                    "double_pinyin_abc" ->DoublePinYinUtils.double_pinyin_abc
+                                    "double_pinyin_ziguang" ->DoublePinYinUtils.double_pinyin_ziguang
+                                    else ->DoublePinYinUtils.double_pinyin
+                                }.getOrElse(composition[0]){composition}
+                            })
+                            append("'")
+                        }
+                        if (!composition.endsWith("'")) delete(length - 1, length)
+                    }
+                }
             }
             else -> {
                 val compositionList = composition.filter { it.code <= 0xFF }.split("'".toRegex())

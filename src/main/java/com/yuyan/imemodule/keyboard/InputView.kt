@@ -525,7 +525,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
             if (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate) {  // 选择的候选词上屏
                 commitDecInfoText(choice)
-                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
+                KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
             } else {  // 不上屏，继续选择
