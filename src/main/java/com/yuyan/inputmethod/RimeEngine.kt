@@ -267,13 +267,30 @@ object RimeEngine {
             }
             else -> {
                 val compositionList = composition.filter { it.code <= 0xFF }.split("'".toRegex())
+                var pos = 0
                 buildSpannedString {
                     append(composition.filter { it.code > 0xFF })
                     comment.split("'").zip(compositionList).forEach { (pinyin, composition) ->
-                        append(if (composition.length >= pinyin.length) pinyin else pinyin.substring(0, composition.length))
+                        if (composition.length >= pinyin.length) {
+                            pos += pinyin.length
+                            append(pinyin)
+                        }
+                        else {
+                            val temp = pinyin.substring(0, composition.length)
+                            pos += composition.length
+                            append(temp)
+                        }
                         append("'")
+                        pos += 1
                     }
-                    if (!composition.endsWith("'")) delete(length - 1, length)
+                    if (!composition.endsWith("'")) {
+                        pos -= 1
+                        delete(length - 1, length)
+                    }
+                    if (pos < composition.length) {
+                        append("'")
+                        append(composition.substring(pos, composition.length))
+                    }
                 }
             }
         }
