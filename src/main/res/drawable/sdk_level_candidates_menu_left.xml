@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@drawable/ic_sdk_launcher_transparent"
+        android:drawable="@drawable/round_apps_24"
         android:maxLevel="0" />
     <item
         android:drawable="@drawable/ic_menu_arrow_up"
