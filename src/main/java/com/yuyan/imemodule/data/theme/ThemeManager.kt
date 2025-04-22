@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import androidx.annotation.Keep
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.WeakHashSet
-import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 object ThemeManager {
@@ -125,7 +124,7 @@ object ThemeManager {
     }
 
     fun init(configuration: Configuration) {
-        isDarkMode = configuration.isDarkMode()
+        isDarkMode = true
         // fire all `OnThemeChangedListener`s on theme preferences change
         prefs.managedPreferences.values.forEach {
             it.registerOnChangeListener(onThemePrefsChange)
