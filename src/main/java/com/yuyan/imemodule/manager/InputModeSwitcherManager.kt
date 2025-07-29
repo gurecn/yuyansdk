@@ -294,11 +294,9 @@ object InputModeSwitcherManager {
         } else if (USER_DEF_KEYCODE_RETURN_6 == userKey) {
             newInputMode = if (mRecentLauageInputMode != 0) mRecentLauageInputMode else getInstance().internal.inputMethodPinyinMode.getValue()
         }
-        if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
-            // 保存新的输入法模式
-            saveInputMode(newInputMode)
-            KeyboardManager.instance.switchKeyboard()
-        }
+        // 保存新的输入法模式
+        saveInputMode(newInputMode)
+        KeyboardManager.instance.switchKeyboard()
     }
 
     /**
