@@ -59,7 +59,7 @@ object ThemeManager {
             fireChange()
         }
 
-    private var isDarkMode = false
+    private var isDarkMode = true
 
     private val onChangeListeners = WeakHashSet<OnThemeChangeListener>()
 

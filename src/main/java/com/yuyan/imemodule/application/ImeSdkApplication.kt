@@ -12,7 +12,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.ClipboardHelper
-import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.utils.AssetUtils.copyFileOrDir
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.inputmethod.core.Kernel
@@ -26,7 +25,7 @@ open class ImeSdkApplication : Application() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        onSystemDarkModeChange(newConfig.isDarkMode())
+        onSystemDarkModeChange(true)
     }
 
     private fun initData() {
