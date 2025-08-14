@@ -1,0 +1,51 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Reply Preference -->
+    <attr name="useSimpleSummaryProvider" format="boolean" tools:ignore="PrivateResource" />
+    <declare-styleable name="DialogSeekBarPreference">
+        <attr name="min" format="integer" />
+        <attr name="max" format="integer" />
+        <attr name="step" format="integer" />
+        <attr name="unit" format="string" />
+        <attr name="useSimpleSummaryProvider" />
+    </declare-styleable>
+
+    <string-array name="FlowerTypeface">
+        <item>"焱暒妏"</item>
+        <item>"ζั͡花ั藤ั͡✾"</item>
+        <item>"҉҉҉凌҉҉҉乱҉҉҉字҉҉҉"</item>
+        <item>"ོ发ོ芽ོ"</item>
+        <item>"҈҈҈҈雾҈҈҈҈霾҈҈҈҈字҈҈҈҈"</item>
+        <item>"禁⃠止⃠"</item>
+        <item>"҈长҉҉҈草҉҉҈字҉"</item>
+        <item>"͟=͟͟起=͟风͟͞͞͞"</item>
+        <item>"关闭"</item>
+    </string-array>
+
+    <string-array name="vibrate_labels">
+        <item>系统</item>
+        <item>无</item>
+        <item>较弱</item>
+        <item>适中</item>
+        <item>较强</item>
+    </string-array>
+
+    <string-array name="sound_labels">
+        <item>系统</item>
+        <item>无</item>
+        <item>较小</item>
+        <item>适中</item>
+        <item>较大</item>
+    </string-array>
+
+    <string-array name="FullDisplayKeyMode">
+        <item>"切换输入法"</item>
+        <item>"切换语言"</item>
+        <item>"剪贴板"</item>
+        <item>"常用语"</item>
+        <item>"无功能"</item>
+    </string-array>
+    <string-array name="FullDisplayCenterKeyMode">
+        <item>"快速移动光标"</item>
+        <item>"无功能"</item>
+    </string-array>
+</resources>

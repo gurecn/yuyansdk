@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentEnd="true">
+    <!--候选词视图，即 键盘顶部分的视图，分情况显示候选词，或者显示顶部操作栏-->
+    <com.yuyan.imemodule.view.CandidatesBar
+        android:id="@+id/candidates_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <!--除顶部外的下面其他容器视图，当标点符号视图显示时会遮挡住此视图-->
+    <com.yuyan.imemodule.keyboard.container.InputViewParent
+        android:id="@+id/skb_input_keyboard_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/candidates_bar">
+    </com.yuyan.imemodule.keyboard.container.InputViewParent>
+</RelativeLayout>

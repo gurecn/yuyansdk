@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@drawable/sdk_shape_keyboard_shadow_bg">
+    <ImageView
+        android:id="@+id/iv_keyboard_height_Top"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_menu_menu"
+        android:tint="@color/skb_elevation_color"
+        tools:ignore="UseAppTint"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="50dp">
+
+        <LinearLayout
+            android:id="@+id/ll_keyboard_height_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1">
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_menu_reset"
+                android:tint="@color/skb_elevation_color"
+                tools:ignore="UseAppTint" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/skb_elevation_color"
+                android:text="@string/setting_ime_keyboard_height_reset"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_keyboard_height_sure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1">
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:padding="5dp"
+                android:src="@drawable/ic_menu_done"
+                android:tint="@color/skb_elevation_color"
+                tools:ignore="UseAppTint"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/skb_elevation_color"
+                android:text="@string/setting_ime_keyboard_height_sure"/>
+        </LinearLayout>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/iv_keyboard_move"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_menu_move"
+        android:tint="@color/skb_elevation_color"
+        tools:ignore="ContentDescription, UseAppTint" />
+</RelativeLayout>

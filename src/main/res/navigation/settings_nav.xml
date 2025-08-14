@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.ImeSettingsFragment"
+        android:label="@string/input_methods">
+        <action
+            android:id="@+id/action_settingsFragment_to_inputSettingsFragment"
+            app:destination="@id/inputSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_handwritingSettingsFragment"
+            app:destination="@id/handwritingSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_voiceSettingsFragment"
+            app:destination="@id/voiceSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_themeSettingsFragment"
+            app:destination="@id/themeFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_keyboardFeedbackFragment"
+            app:destination="@id/keyboardFeedbackFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_keyboardSettingFragment"
+            app:destination="@id/keyboardSettingFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_clipboardSettingsFragment"
+            app:destination="@id/clipboardSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_sidebarSymbolFragment"
+            app:destination="@id/sidebarSymbolFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_fullDisplayKeyboardFragment"
+            app:destination="@id/fullDisplayKeyboardFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_otherSettingsFragment"
+            app:destination="@id/otherSettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sidebarSymbolFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.SidebarSymbolFragment"
+        android:label="@string/setting_ime_prefixs" />
+    <fragment
+        android:id="@+id/inputSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.InputSettingsFragment"
+        android:label="@string/setting_ime_input" />
+    <fragment
+        android:id="@+id/handwritingSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.HandwritingSettingsFragment"
+        android:label="@string/ime_settings_handwriting" />
+    <fragment
+        android:id="@+id/voiceSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.VoiceSettingsFragment"
+        android:label="@string/ime_settings_voice" />
+    <fragment
+        android:id="@+id/keyboardFeedbackFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.KeyboardFeedbacksFragment"
+        android:label="@string/keyboard_feedback" />
+    <fragment
+        android:id="@+id/themeFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.ThemeFragment"
+        android:label="@string/theme" />
+    <fragment
+        android:id="@+id/clipboardSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.ClipboardSettingsFragment"
+        android:label="@string/clipboard" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.AboutFragment"
+        android:label="@string/about" >
+        <action
+            android:id="@+id/action_aboutFragment_to_privacyPolicyFragment"
+            app:destination="@id/privacyPolicyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/privacyPolicyFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.PrivacyPolicyFragment"
+        android:label="@string/privacy_policy" />
+    <fragment
+        android:id="@+id/keyboardSettingFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.KeyboardSettingFragment"
+        android:label="@string/setting_ime_keyboard" />
+    <fragment
+        android:id="@+id/fullDisplayKeyboardFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.FullDisplayKeyboardFragment"
+        android:label="@string/full_display_keyboard" />
+    <fragment
+        android:id="@+id/otherSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.OtherSettingsFragment"
+        android:label="@string/setting_ime_other" />
+</navigation>

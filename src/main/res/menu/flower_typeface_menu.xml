@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/flower_type_mars"
+        android:title="焱暒妏"/>
+    <item android:id="@+id/flower_type_flowervine"
+        android:title="ζั͡花ั藤ั͡✾"/>
+    <item android:id="@+id/flower_type_messy"
+        android:title="҉҉҉凌҉҉҉乱҉҉҉字҉҉҉"/>
+    <item android:id="@+id/flower_type_grminate"
+        android:title="ོ发ོ芽ོ"/>
+    <item android:id="@+id/flower_type_fog"
+        android:title="҈҈҈҈雾҈҈҈҈霾҈҈҈҈字҈҈҈҈"/>
+    <item android:id="@+id/flower_type_prohibitaccess"
+        android:title="禁⃠止⃠"/>
+    <item android:id="@+id/flower_type_grass"
+        android:title="҈长҉҉҈草҉҉҈字҉"/>
+    <item android:id="@+id/flower_type_wind"
+        android:title="͟=͟͟起=͟风͟͞͞͞"/>
+    <item android:id="@+id/flower_type_disabled"
+        android:title="关闭"/>
+</menu>

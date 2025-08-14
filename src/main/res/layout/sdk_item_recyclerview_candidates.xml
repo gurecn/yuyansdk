@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.emoji2.widget.EmojiTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:theme="@style/Theme.AppTheme"
+    android:id="@+id/gv_candidates_item"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="20sp"
+    android:ellipsize="none"
+    android:singleLine="true"
+    android:layout_centerInParent="true"
+    android:gravity="center"
+    android:padding="10dp"/>

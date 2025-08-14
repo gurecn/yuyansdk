@@ -1,0 +1,49 @@
+__build_info:
+  rime_version: 1.11.2
+  timestamps:
+    default: 1744370669
+    default.custom: 1744370670
+    english.custom: 0
+    english.schema: 1744370670
+engine:
+  filters:
+    - uniquifier
+  processors:
+    - ascii_composer
+    - key_binder
+    - speller
+    - recognizer
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - matcher
+    - ascii_segmentor
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - table_translator
+    - punct_translator
+    - echo_translator
+menu:
+  page_size: 50
+punctuator:
+  symbols:
+    "/": ["@", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
+schema:
+  description: |
+    英语输入
+  name: "英语输入"
+  schema_id: english
+speller:
+  alphabet: zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA
+  delimiter: " '"
+translator:
+  always_show_comments: true
+  comment_format:
+    - "xform/ //"
+  dictionary: english
+  preedit_format:
+    - "xform/ //"
+  spelling_hints: 100

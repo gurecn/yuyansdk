@@ -1,0 +1,18 @@
+__build_info:
+  rime_version: 1.11.2
+  timestamps:
+    default: 1744370669
+    default.custom: 1744370670
+config_version: "2025-06-06"
+schema_list:
+  - schema: t9_pinyin
+  - schema: pinyin
+  - schema: double_pinyin_natural
+  - schema: double_pinyin_mspy
+  - schema: double_pinyin_sogou
+  - schema: double_pinyin_flypy
+  - schema: double_pinyin_abc
+  - schema: double_pinyin_ziguang
+  - schema: double_pinyin_ls17
+  - schema: stroke
+  - schema: english

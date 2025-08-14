@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT"/>
+            <category android:name="android.intent.category.OPENABLE"/>
+            <data android:mimeType="*/*"/>
+        </intent>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE"/>
+        </intent>
+    </queries>
+    <application
+        android:supportsRtl="true">
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ui.activity.LauncherActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.setup.SetupActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".ui.fragment.theme.CustomThemeActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:label="@string/edit_theme" />
+        <activity
+            android:name=".libs.cropper.CropImageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CropActivityTheme"/>
+        <provider
+            android:name=".libs.cropper.CropFileProvider"
+            android:authorities="${applicationId}.cropper.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/cropper_library_file_paths"/>
+        </provider>
+    </application>
+
+</manifest>

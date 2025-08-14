@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yuyan.imemodule.libs.recyclerview.SwipeMenuLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentViewId="@+id/swipe_content"
+    app:leftViewId="@+id/swipe_left"
+    app:rightViewId="@+id/swipe_right">
+    <com.yuyan.imemodule.libs.recyclerview.SwipeMenuView
+        android:id="@+id/swipe_left"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+    <FrameLayout
+        android:id="@+id/swipe_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <com.yuyan.imemodule.libs.recyclerview.SwipeMenuView
+        android:id="@+id/swipe_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+</com.yuyan.imemodule.libs.recyclerview.SwipeMenuLayout>

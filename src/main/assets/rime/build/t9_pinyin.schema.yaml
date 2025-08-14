@@ -1,0 +1,56 @@
+__build_info:
+  rime_version: 1.11.2
+  timestamps:
+    default: 1744370669
+    default.custom: 1744370670
+    t9_pinyin.custom: 0
+    t9_pinyin.schema: 1744370670
+emoji:
+  inherit_comment: false
+  opencc_config: emoji.json
+  option_name: emoji
+engine:
+  filters:
+    - "simplifier@emoji"
+    - "simplifier@traditionalize"
+    - uniquifier
+  processors:
+    - ascii_composer
+    - recognizer
+    - speller
+    - punctuator
+    - selector
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - echo_translator
+    - script_translator
+menu:
+  page_size: 50
+punctuator:
+  symbols:
+    "/": ["@", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
+recognizer:
+  patterns:
+    punct: "^/([0-9]|10|[A-Za-z]*?)$"
+schema:
+  name: "九键拼音"
+  schema_id: t9_pinyin
+speller:
+  alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321`/"
+  delimiter: "''"
+traditionalize:
+  opencc_config: s2t.json
+  option_name: traditionalization
+translator:
+  always_show_comments: true
+  dictionary: pinyin
+  initial_quality: 1.2
+  prism: t9_pinyin
+  spelling_hints: 100

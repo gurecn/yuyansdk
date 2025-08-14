@@ -1,0 +1,49 @@
+__build_info:
+  rime_version: 1.11.2
+  timestamps:
+    default: 1744370669
+    default.custom: 1744370670
+    stroke.custom: 0
+    stroke.schema: 1744370670
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - echo_translator
+    - table_translator
+menu:
+  page_size: 9
+punctuator:
+  import_preset: default
+  symbols:
+    "/": ["@", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
+recognizer:
+  patterns:
+    punct: "^/([0-9]|10|[A-Za-z]*?)$"
+schema:
+  name: "笔画输入"
+  schema_id: stroke
+speller:
+  alphabet: abcdefghijklmnopqrstuvwxyz
+  delimiter: " '"
+translator:
+  comment_format:
+    - "xform/~//"
+    - "xlit/hspnz/⼀⼁⼃⼂⼄/"
+  dictionary: stroke
+  preedit_format:
+    - "xlit/hspnz/⼀⼁⼃⼂⼄/"
