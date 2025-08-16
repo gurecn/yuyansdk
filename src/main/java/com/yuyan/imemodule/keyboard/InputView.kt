@@ -164,7 +164,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mIvKeyboardMove.setOnTouchListener { _, event -> onMoveKeyboardEvent(event) }
         } else {
             val fullDisplayKeyboardEnable = getInstance().internal.fullDisplayKeyboardEnable.getValue()
-            if(fullDisplayKeyboardEnable){
+            if(fullDisplayKeyboardEnable && !EnvironmentSingleton.instance.isLandscape){
                 mFullDisplayKeyboardBar = FullDisplayKeyboardBar(context, this)
                 mLlKeyboardBottomHolder.addView(mFullDisplayKeyboardBar)
                 mLlKeyboardBottomHolder.minimumHeight = EnvironmentSingleton.instance.heightForFullDisplayBar + EnvironmentSingleton.instance.systemNavbarWindowsBottom
