@@ -143,6 +143,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
 
+        val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
+
         val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
 
         // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式

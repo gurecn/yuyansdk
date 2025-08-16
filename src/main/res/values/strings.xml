@@ -13,7 +13,7 @@
     <string name="setting_ime_keyboard_height">键盘调节</string>
     <string name="ime_settings_voice">语音识别</string>
     <string name="ime_settings_handwriting">手写设置</string>
-    <string name="keypopup_input_settings">按键气泡提示</string>
+    <string name="keypopup_input_settings">按键气泡</string>
     <string name="long_press_timeout">按键长按灵敏度</string>
     <string name="keyboard_mnemonic_show">双拼提示</string>
     <string name="keyboard_double_input_key">双拼显示完整拼音</string>

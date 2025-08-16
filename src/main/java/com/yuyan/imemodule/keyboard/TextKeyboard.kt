@@ -57,7 +57,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         mFmi = mPaint.fontMetricsInt
         keyboardFontBold = prefs.keyboardFontBold.getValue()
         keyboardSymbol = prefs.keyboardSymbol.getValue()
-        keyboardMnemonic = prefs.keyboardMnemonic.getValue()
+        keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
     }
 
     /**

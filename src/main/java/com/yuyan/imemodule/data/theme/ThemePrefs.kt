@@ -123,11 +123,6 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         keyboardSymbol.getValue()
     }
 
-    val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
-
-    val deleteLocationTop =
-        switch(R.string.keyboard_delete_location_top, "keyboard_delete_location_top", true)
-
     val keyBorder = switch(R.string.key_border, "key_border", true)
 
     val keyXMargin: ManagedPreference.PInt

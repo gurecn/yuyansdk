@@ -72,8 +72,8 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.Mnemonic -> {
-            val keyboardMnemonic = ThemeManager.prefs.keyboardMnemonic.getValue()
-            ThemeManager.prefs.keyboardMnemonic.setValue(!keyboardMnemonic)
+            val keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
+            AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.setValue(!keyboardMnemonic)
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
             KeyboardManager.instance.switchKeyboard()

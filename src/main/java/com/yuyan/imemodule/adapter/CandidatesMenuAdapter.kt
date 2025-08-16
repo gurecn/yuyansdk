@@ -90,7 +90,7 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             SkbMenuMode.JianFan -> AppPrefs.getInstance().input.chineseFanTi.getValue()
             SkbMenuMode.LockEnglish -> AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.getValue()
             SkbMenuMode.SymbolShow -> ThemeManager.prefs.keyboardSymbol.getValue()
-            SkbMenuMode.Mnemonic -> ThemeManager.prefs.keyboardMnemonic.getValue()
+            SkbMenuMode.Mnemonic ->  AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
             SkbMenuMode.EmojiInput -> AppPrefs.getInstance().input.emojiInput.getValue()
             SkbMenuMode.OneHanded -> AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
             SkbMenuMode.FlowerTypeface -> CustomConstant.flowerTypeface != FlowerTypefaceMode.Disabled
