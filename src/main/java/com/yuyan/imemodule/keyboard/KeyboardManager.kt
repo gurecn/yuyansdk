@@ -65,10 +65,10 @@ class KeyboardManager {
                 KeyboardType.SETTINGS -> SettingsContainer(Launcher.instance.context, mInputView)
                 KeyboardType.SYMBOL -> SymbolContainer(Launcher.instance.context, mInputView)
                 KeyboardType.QWERTYABC -> QwertyContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC)
-                KeyboardType.LX17 -> QwertyContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_LX17)
+                KeyboardType.LX17 -> T9TextContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_LX17)
                 KeyboardType.ClipBoard -> ClipBoardContainer(Launcher.instance.context, mInputView)
                 KeyboardType.TEXTEDIT -> QwertyContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_TEXTEDIT)
-                else ->  T9TextContainer(Launcher.instance.context, mInputView)
+                else ->  T9TextContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_T9_PINYIN)
             }
             container.updateSkbLayout()
             keyboards[keyboardName] = container

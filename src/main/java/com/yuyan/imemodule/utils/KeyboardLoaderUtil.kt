@@ -209,14 +209,21 @@ class KeyboardLoaderUtil private constructor() {
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 val keys =  KeyboardData.layoutLX17Cn[skbStyleMode]!!
                 var lX17Keys = createLX17Keys(keys[0])
+                lX17Keys.first().apply {
+                    widthF = 0.1457f
+                    heightF = 0.75f
+                }
+                lX17Keys[1].mLeftF = 0.1457f
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
                 lX17Keys = createLX17Keys(keys[1])
+                lX17Keys.first().mLeftF = 0.1457f
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = LinkedList()
                 lX17Keys = createLX17Keys(keys[2])
+                lX17Keys.first().mLeftF = 0.1457f
                 keyBeans.addAll(lX17Keys)
                 rows.add(keyBeans)
                 keyBeans = lastRows(skbValue)
@@ -533,7 +540,7 @@ class KeyboardLoaderUtil private constructor() {
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "", keyMnemonic= lx17MnemonicPreset[code] ?: "").apply {
-                widthF = 0.165f
+                widthF = 0.142f
             })
         }
         return softKeys.toTypedArray()

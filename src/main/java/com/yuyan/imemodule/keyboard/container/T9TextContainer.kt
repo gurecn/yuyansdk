@@ -17,7 +17,6 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.AppUtil
@@ -43,7 +42,8 @@ import splitties.views.dsl.core.margin
  * 与数字键盘容器[NumberContainer]类似。
  */
 @SuppressLint("ViewConstructor")
-open class T9TextContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
+open class T9TextContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
+    private var mSkbValue: Int = 0
     private val mSideSymbolsPinyin:List<SideSymbol>
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private val mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
@@ -53,6 +53,7 @@ open class T9TextContainer(context: Context?, inputView: InputView) : InputBaseC
     }
 
     init {
+        mSkbValue = skbValue
         val ivAddSymbol = ImageView(context).apply {
             setPadding(dp(5))
             setImageResource(R.drawable.ic_menu_setting)
@@ -77,7 +78,7 @@ open class T9TextContainer(context: Context?, inputView: InputView) : InputBaseC
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)
         }
-        val softKeyboard = instance.getSoftKeyboard(AppPrefs.getInstance().internal.inputDefaultMode.getValue() and InputModeSwitcherManager.MASK_SKB_LAYOUT)
+        val softKeyboard = instance.getSoftKeyboard(mSkbValue)
         mMajorView!!.setSoftKeyboard(softKeyboard)
         updateKeyboardView()
         mMajorView!!.invalidate()
