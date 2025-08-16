@@ -147,6 +147,15 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
 
+        val spaceSwipeMoveCursorSpeed = int(
+            R.string.swipe_move_cursor_speed,
+            "swipe_move_cursor_speed",
+            10,
+            1,
+            50,
+            "px"
+        )
+
         // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
         val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
 

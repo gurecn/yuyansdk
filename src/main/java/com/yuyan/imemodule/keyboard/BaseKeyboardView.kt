@@ -219,7 +219,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val symbolSlideUp = EnvironmentSingleton.instance.heightForCandidatesArea / when(ThemeManager.prefs.symbolSlideUpMod.getValue()){
             KeyboardSymbolSlideUpMod.SHORT -> 3;KeyboardSymbolSlideUpMod.MEDIUM -> 2;else -> 1
         }
-        if (!isVertical && relDiffX > 10) {  // 左右滑动
+        val spaceSwipeMoveCursorSpeed = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursorSpeed.getValue()
+        if (!isVertical && relDiffX > spaceSwipeMoveCursorSpeed) {  // 左右滑动
             val isSwipeKey = mCurrentKey?.code == KeyEvent.KEYCODE_SPACE || mCurrentKey?.code == KeyEvent.KEYCODE_0
             if(mCurrentKey?.code == KeyEvent.KEYCODE_DEL && distanceX > 20){// 左滑删除
                 removeMessages()

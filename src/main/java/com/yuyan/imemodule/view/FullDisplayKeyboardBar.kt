@@ -107,7 +107,8 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
             result = true
         } else {
             val relDiffX = abs(currentX - lastEventX)
-            if (relDiffX > 10 && mCenterModeMove) {  // 左右滑动
+            val spaceSwipeMoveCursorSpeed = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursorSpeed.getValue()
+            if (relDiffX > spaceSwipeMoveCursorSpeed && mCenterModeMove) {  // 左右滑动
                 val key = SoftKey()
                 key.code = if (currentX < lastEventX) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
                 mInputView.responseKeyEvent(key)

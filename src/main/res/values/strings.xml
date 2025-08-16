@@ -161,7 +161,7 @@
     <string name="keyboard_name_pinyin_lx_17">乱序17</string>
     <string name="keyboard_iv_menu_close">关闭键盘</string>
     <string name="space_swipe_move_cursor">滑动空格键移动光标</string>
-    <string name="keyboard_delete_location_top">九宫格删除键位置居顶</string>
+    <string name="swipe_move_cursor_speed">触发移动光标所需距离</string>
     <string name="keyboard_menu_float">悬浮键盘</string>
 
     <string name="emoticons">颜文字</string>
