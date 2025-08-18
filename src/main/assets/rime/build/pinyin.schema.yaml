@@ -45,8 +45,6 @@ english:
   enable_sentence: false
   enable_user_dict: false
   initial_quality: 1.1
-menu:
-  page_size: 50
 punctuator:
   symbols:
     "/": ["@", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]

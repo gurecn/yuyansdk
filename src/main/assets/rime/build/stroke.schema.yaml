@@ -25,8 +25,6 @@ engine:
     - punct_translator
     - echo_translator
     - table_translator
-menu:
-  page_size: 9
 punctuator:
   import_preset: default
   symbols:
