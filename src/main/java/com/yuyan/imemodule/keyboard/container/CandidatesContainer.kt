@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.CandidatesAdapter
@@ -55,7 +56,7 @@ import splitties.views.dsl.core.wrapContent
 @SuppressLint("ViewConstructor")
 class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private val mSideSymbolsPinyin:List<SideSymbol>
-    private lateinit var mRVSymbolsView: RecyclerView
+    private lateinit var mRVSymbolsView: SwipeRecyclerView
     private lateinit var mCandidatesAdapter: CandidatesAdapter
     private var mRVLeftPrefix = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private var isLoadingMore = false // 正在加载更多
@@ -79,7 +80,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     }
 
     private fun initView(context: Context) {
-        mRVSymbolsView = RecyclerView(context)
+        mRVSymbolsView = SwipeRecyclerView(context)
         mRVSymbolsView.setHasFixedSize(true)
         mRVSymbolsView.setItemAnimator(null)
         mRVLeftPrefix.setLayoutManager(LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false))
@@ -115,6 +116,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                     }
                 }
             }
+        })
+        mRVSymbolsView.addFooterView(View(context).apply {
+            layoutParams = FlexboxLayoutManager.LayoutParams(FlexboxLayoutManager.LayoutParams.MATCH_PARENT, dp(50))
         })
     }
 
