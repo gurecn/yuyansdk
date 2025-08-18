@@ -20,8 +20,8 @@ static def getAppBuildTime() {
 
 
 android {
-    compileSdk 35
-
+    compileSdk 36
+    namespace 'com.yuyan.imemodule'
     defaultConfig {
         minSdk 23
         targetSdk 35
@@ -91,7 +91,6 @@ android {
         sourceCompatibility 17
         targetCompatibility 17
     }
-    namespace 'com.yuyan.imemodule'
 }
 
 dependencies {
