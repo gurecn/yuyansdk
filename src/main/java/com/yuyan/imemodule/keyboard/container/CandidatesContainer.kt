@@ -108,7 +108,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                             isLoadingMore = true
                             val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
                             DecodingInfo.activeCandidate = lastItem
-                            if (DecodingInfo.candidateSize - lastItem <= 20) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
+                            if (DecodingInfo.candidateSize - lastItem <= 5) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
                                 DecodingInfo.nextPageCandidates
                             }
                             isLoadingMore = false
@@ -183,7 +183,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             } else {
                 mCandidatesAdapter.notifyDataSetChanged()
             }
-            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
+//            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
             if (InputModeSwitcherManager.isChineseT9) {
                 mRVLeftPrefix.visibility = VISIBLE
                 updatePrefixsView()
