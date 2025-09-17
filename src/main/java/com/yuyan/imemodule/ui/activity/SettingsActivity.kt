@@ -70,11 +70,6 @@ open class SettingsActivity : AppCompatActivity() {
                 else -> viewModel.enableToolbarShadow()
             }
         }
-
-    }
-
-    override fun onStart() {
-        super.onStart()
         if (SetupActivity.shouldShowUp()) {
             startActivity<SetupActivity>()
         }

@@ -15,6 +15,7 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.utils.addCategory
 import com.yuyan.imemodule.utils.addPreference
 import androidx.core.net.toUri
+import com.yuyan.imemodule.ui.setup.SetupActivity
 
 class ImeSettingsFragment : PreferenceFragmentCompat() {
 
@@ -31,6 +32,14 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
             addCategory(R.string.input_methods) {
                 isIconSpaceReserved = false
+
+                if (SetupActivity.shouldShowUp()) {
+                    addDestinationPreference(
+                        R.string.enable_ime,
+                        R.drawable.ic_menu_language,
+                        R.id.action_settingsFragment_to_setupActivity
+                    )
+                }
                 addDestinationPreference(
                     R.string.setting_ime_input,
                     R.drawable.ic_menu_language,

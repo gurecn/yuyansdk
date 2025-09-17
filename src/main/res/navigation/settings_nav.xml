@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     app:startDestination="@id/settingsFragment">
 
     <fragment
@@ -40,6 +40,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         <action
             android:id="@+id/action_settingsFragment_to_otherSettingsFragment"
             app:destination="@id/otherSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_setupActivity"
+            app:destination="@id/setupActivity" />
     </fragment>
     <fragment
         android:id="@+id/sidebarSymbolFragment"
@@ -93,4 +96,8 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/otherSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.OtherSettingsFragment"
         android:label="@string/setting_ime_other" />
+    <activity
+        android:id="@+id/setupActivity"
+        android:name="com.yuyan.imemodule.ui.setup.SetupActivity"
+        android:label="activity_setup"/>
 </navigation>
