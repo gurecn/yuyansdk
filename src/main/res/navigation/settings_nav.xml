@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_setupActivity"
             app:destination="@id/setupActivity" />
+        <action
+            android:id="@+id/action_settingsFragment_to_privacyPolicyFragment"
+            app:destination="@id/privacyPolicyFragment" />
     </fragment>
     <fragment
         android:id="@+id/sidebarSymbolFragment"

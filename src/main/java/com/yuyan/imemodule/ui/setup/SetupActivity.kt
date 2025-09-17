@@ -22,10 +22,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.databinding.ActivitySetupBinding
+import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.ui.activity.SettingsActivity
 import com.yuyan.imemodule.ui.setup.SetupPage.Companion.firstUndonePage
 import com.yuyan.imemodule.ui.setup.SetupPage.Companion.isLastPage
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.notificationManager
+import com.yuyan.imemodule.utils.startActivity
 
 class SetupActivity : FragmentActivity() {
 
@@ -82,7 +85,11 @@ class SetupActivity : FragmentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if(InputMethodUtil.isSelected()){
+        if(!AppPrefs.getInstance().internal.privacyPolicySure.getValue()){
+            startActivity<SettingsActivity>()
+            finish()
+            return
+        }else if(InputMethodUtil.isSelected()){
             finish()
         } else if(InputMethodUtil.isEnabled()){
             viewPager.currentItem = SetupPage.entries.size - 1

@@ -86,6 +86,8 @@
     <string name="clipboard_suggestion_timeout">剪贴板提示超时</string>
     <string name="source_code">源代码</string>
     <string name="privacy_policy">隐私政策</string>
+    <string name="privacy_policy_sure">同意</string>
+    <string name="privacy_policy_cancel">拒绝</string>
     <string name="license">开放许可</string>
     <string name="github_repo">GitHub 仓库</string>
     <string name="reset">重置</string>

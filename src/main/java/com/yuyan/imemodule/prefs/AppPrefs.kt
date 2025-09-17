@@ -47,6 +47,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val soundOnKeyPress = int("key_press_vibration_amplitude",0)     //按键音量
         val vibrationAmplitude = int("key_press_sound_volume", 0)     //触感强度
+
+        val privacyPolicySure = bool("privacy_policy_sure", false) //是否同意隐私政策
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
