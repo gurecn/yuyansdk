@@ -22,17 +22,17 @@ object KeyboardData {
 
     val layoutT9Cn: Map<SkbStyleMode, ArrayList<Array<Int>>> = linkedMapOf(
         SkbStyleMode.Google to  arrayListOf(
-            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_DEL),
-            arrayOf(11, 12, 13, InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9),
-            arrayOf(14, 15, 16, InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1)),
+            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_DEL),
+            arrayOf(KeyEvent.KEYCODE_G, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_M, InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9),
+            arrayOf(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_W, InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1)),
         SkbStyleMode.Samsung to arrayListOf(
-            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_DEL),
-            arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR),
-            arrayOf(14, 15, 16, 7)),
+            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_DEL),
+            arrayOf(KeyEvent.KEYCODE_G, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_M, KeyEvent.KEYCODE_CLEAR),
+            arrayOf(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_0)),
         SkbStyleMode.Yuyan to arrayListOf(
-            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 75, 9, 10, KeyEvent.KEYCODE_DEL),
-            arrayOf(11, 12, 13, KeyEvent.KEYCODE_CLEAR),
-            arrayOf(14, 15, 16, KeyEvent.KEYCODE_AT)),
+            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_DEL),
+            arrayOf(KeyEvent.KEYCODE_G, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_M, KeyEvent.KEYCODE_CLEAR),
+            arrayOf(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_AT)),
     )
 
     val layoutHandwritingCn: Map<SkbStyleMode, ArrayList<Array<Int>>> = linkedMapOf(

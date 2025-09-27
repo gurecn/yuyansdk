@@ -8,8 +8,6 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.entity.keyboard.ToggleState
 import com.yuyan.imemodule.keyboard.KeyPreset
-import com.yuyan.imemodule.keyboard.KeyPresetGoogle
-import com.yuyan.imemodule.keyboard.KeyPresetSamsung
 import com.yuyan.imemodule.keyboard.KeyboardData
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -574,10 +572,6 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     fun getKeyPreset(key:String):Map<Int, Array<String>>{
-        return  when(skbStyleMode){
-           SkbStyleMode.Samsung ->  KeyPresetSamsung.getKeyPreset(key)
-           SkbStyleMode.Google ->  KeyPresetGoogle.getKeyPreset(key)
-           else -> KeyPreset.getKeyPreset(key)
-       }
+        return KeyPreset.getKeyPreset(key)
     }
 }

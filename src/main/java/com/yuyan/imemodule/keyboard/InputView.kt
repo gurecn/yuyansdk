@@ -17,10 +17,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.scale
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
+import androidx.core.view.postDelayed
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
@@ -28,6 +31,10 @@ import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.keyboard.container.CandidatesContainer
+import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.SymbolContainer
+import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -36,17 +43,13 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.EditPhrasesView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
-import com.yuyan.imemodule.keyboard.container.CandidatesContainer
-import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.keyboard.container.SymbolContainer
-import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
@@ -55,9 +58,6 @@ import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
 import kotlin.math.absoluteValue
-import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.scale
-import androidx.core.view.postDelayed
 
 /**
  * 输入法主界面。
@@ -273,7 +273,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyCode = sKey.code
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
             mImeState = ImeState.STATE_INPUT
-            val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
+            val metaState = KeyEvent.META_CAPS_LOCK_ON
+            val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, metaState, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {

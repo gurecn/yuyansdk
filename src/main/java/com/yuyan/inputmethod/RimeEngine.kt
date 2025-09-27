@@ -5,7 +5,6 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
@@ -48,9 +47,8 @@ object RimeEngine {
     fun onNormalKey(event: KeyEvent) {
         val keyCode = event.keyCode
         val keyChar = if(keyCode == KeyEvent.KEYCODE_APOSTROPHE) if(isFinish()) '/'.code else '\''.code
-            else if(getCurrentRimeSchema() == CustomConstant.SCHEMA_ZH_DOUBLE_LX17) keyCode - KeyEvent.KEYCODE_A + 'A'.code
             else event.unicodeChar
-        if (keyRecordStack.pushKey(keyCode))Rime.processKey(keyChar, event.action)
+        if (keyRecordStack.pushKey(event))Rime.processKey(keyChar, event.action)
         updateCandidatesOrCommitText()
     }
 
@@ -89,7 +87,7 @@ object RimeEngine {
 
     fun selectPinyin(index: Int) {
         val pinyinKey = keyRecordStack.pushPinyinSelectAction(pinyins[index]) ?: return
-        Rime.replaceKey(0, pinyinKey.pinyinLength, pinyinKey.inputKeys())
+        Rime.replaceKey(pinyinKey.posInInput, pinyinKey.t9Keys().length, pinyinKey.pinyin())
         updateCandidatesOrCommitText()
     }
 
@@ -149,8 +147,8 @@ object RimeEngine {
          * 可能存在引擎操作栈与记录的操作栈不一样的问题
          * 临时方案，尝试不同长度的替换，至少保证可以把拼音回退成9键
          */
-        if (!Rime.replaceKey(0, pinyinKey.inputKeyLength, pinyinKey.t9Keys())) {
-            Rime.replaceKey(0, pinyinKey.pinyinLength, pinyinKey.t9Keys())
+        if (!Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.t9Keys())) {
+            Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.t9Keys())
         }
     }
 
@@ -205,17 +203,10 @@ object RimeEngine {
         val rimeSchema = Rime.getCurrentRimeSchema()
         pinyins = when (rimeSchema) {
             CustomConstant.SCHEMA_ZH_T9 -> {
-                val count = compositionText.count { it in '1'..'9' }
-                val remainT9Keys = ArrayList<InputKey>(count)
-                keyRecordStack.forEachReversed { inputKey ->
-                    if (inputKey is InputKey.T9Key) {
-                        remainT9Keys.add(inputKey)
-                    }
-                }
-                T9PinYinUtils.t9KeyToPinyin(remainT9Keys.joinToString("").reversed())
+                T9PinYinUtils.t9KeyToPinyin(compositionText.filter { it.isUpperCase() })
             }
             CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
-                LX17PinYinUtils.lx17KeyToPinyin(compositionText.lowercase())
+                LX17PinYinUtils.lx17KeyToPinyin(compositionText.filter { it.isUpperCase() })
             }
             else -> {
                 emptyArray()

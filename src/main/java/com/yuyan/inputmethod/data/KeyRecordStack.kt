@@ -1,8 +1,13 @@
 package com.yuyan.inputmethod.data
 
 import android.view.KeyEvent
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.inputmethod.RimeEngine.processDelAction
+import com.yuyan.inputmethod.core.Rime
+import com.yuyan.inputmethod.data.InputKey.QwertKey
+import com.yuyan.inputmethod.util.LX17PinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils
+import java.util.LinkedList
 
 class KeyRecordStack {
     private val keyRecords = ArrayList<InputKey>(20)
@@ -11,13 +16,9 @@ class KeyRecordStack {
 
     fun clear() = keyRecords.clear()
 
-    fun forEachReversed(action: (InputKey) -> Unit) {
-        for (i in keyRecords.indices.reversed()) {
-            action(keyRecords[i])
-        }
-    }
-
-    fun pushKey(keyCode: Int): Boolean {
+    fun pushKey(event: KeyEvent): Boolean {
+        val keyCode = event.keyCode
+        val keyChar = event.unicodeChar
         val lastKey = keyRecords.lastOrNull()
         if (lastKey is InputKey.Apostrophe && keyRecords.size == 1) {
             processDelAction()
@@ -38,13 +39,13 @@ class KeyRecordStack {
             KeyEvent.KEYCODE_APOSTROPHE -> {
                 keyRecords.add(InputKey.Apostrophe())
             }
-            in KeyEvent.KEYCODE_1..KeyEvent.KEYCODE_9 -> {
-                keyRecords.add(InputKey.T9Key(keyCode))
-            }
             in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z -> {
-                keyRecords.add(InputKey.QwertKey(keyCode))
-            }
-            else -> {
+                if('A'.code <= keyChar && 'Z'.code >= keyChar){
+                    keyRecords.add(InputKey.T9Key(keyChar))
+                } else {
+                    keyRecords.add(InputKey.QwertKey(keyChar))
+                }
+            } else -> {
                 keyRecords.add(InputKey.DefaultAction)
             }
         }
@@ -53,47 +54,36 @@ class KeyRecordStack {
 
     fun pushPinyinSelectAction(pinyin: String?): InputKey.PinyinKey? {
         pinyin ?: return null
-        // 第一个T9Key替换为PinyinKey，并把其后 pinyin.length-1 个T9Key删除
-        val records = ArrayList<InputKey?>(keyRecords.size)
-        var firstT9KeyPos = -1
-        var accLen = 0
-        keyRecords.mapIndexedTo(records) { i, inputKey ->
-            if (firstT9KeyPos < 0 && inputKey is InputKey.T9Key && !inputKey.consumed) {
-                firstT9KeyPos = i
+        val keys = LinkedList<QwertKey>()
+        val rimeSchema = Rime.getCurrentRimeSchema()
+        when (rimeSchema) {
+            CustomConstant.SCHEMA_ZH_T9 -> {
+                T9PinYinUtils.pinyin2Key(pinyin).forEach {
+                    keys.add(QwertKey(it))
+                }
             }
-            when {
-                firstT9KeyPos < 0 -> inputKey
-                firstT9KeyPos == i -> {
-                    accLen = 1
-                    InputKey.PinyinKey(pinyin)
+            CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
+                LX17PinYinUtils.pinyin2Key(pinyin).forEach {
+                    keys.add(QwertKey(it))
                 }
-                accLen > 0 && accLen < pinyin.length -> {
-                    if (inputKey is InputKey.T9Key) {
-                        ++accLen
-                        null
-                    } else {
-                        inputKey
-                    }
-                }
-                inputKey == InputKey.SelectPinyinAction -> null
-                else -> inputKey
             }
         }
-        keyRecords.clear()
-        keyRecords.addAll(records.filterNotNull())
-        keyRecords.add(InputKey.SelectPinyinAction)
-        val index = keyRecords.indexOfLast { it is InputKey.PinyinKey }
-        if (index >= 0) {
-            val posInInput = keyRecords.subList(0, index).fold(0) { acc, inputKey ->
-                acc + when (inputKey) {
-                    is InputKey.T9Key -> 1
-                    is InputKey.PinyinKey -> inputKey.inputKeyLength
-                    else -> 0
-                }
-            }
-            keyRecords[index] = (keyRecords[index] as InputKey.PinyinKey).copy(posInInput)
+        val index1 = (0..keyRecords.size - keys.size).indexOfFirst { start ->
+            keys.indices.all { j -> keyRecords[start + j].toString() == keys[j].toString() }
         }
-        return keyRecords.getOrNull(index) as? InputKey.PinyinKey
+        repeat(keys.size) {
+            keyRecords.removeAt(index1)
+        }
+        keyRecords.add(index1, InputKey.PinyinKey(pinyin))
+        val posInInput = keyRecords.subList(0, index1).fold(0) { acc, inputKey ->
+            acc + when (inputKey) {
+                is InputKey.T9Key -> 1
+                is InputKey.PinyinKey -> inputKey.pinyinLength + 1 // 多一个分词
+                else -> 0
+            }
+        }
+        keyRecords[index1] = (keyRecords[index1] as InputKey.PinyinKey).copy(posInInput)
+        return keyRecords.getOrNull(index1) as? InputKey.PinyinKey
     }
 
     fun pushCandidateSelectAction() {
@@ -136,33 +126,56 @@ interface InputKey {
     object DefaultAction : InputKey
 
     object SelectPinyinAction : InputKey
-    class T9Key(private val keyChar: String, var consumed: Boolean = false) : InputKey {
-        constructor(keyCode: Int) : this(String(intArrayOf(keyCode - KeyEvent.KEYCODE_0 + '0'.code), 0, 1))
+    class T9Key(private val keyChar: Char, var consumed: Boolean = false) : InputKey {
+        constructor(keyCode: Int) : this(keyCode.toChar())
 
-        override fun toString(): String = keyChar
+        override fun toString(): String = keyChar.toString()
     }
 
-    class QwertKey(private val keyChar: String) : InputKey {
-        constructor(keyCode: Int) : this(String(intArrayOf(keyCode - KeyEvent.KEYCODE_A + 'a'.code), 0, 1))
+    class QwertKey(private val keyChar: Char) : InputKey {
+        constructor(keyCode: Int) : this(keyCode.toChar())
 
-        override fun toString(): String = keyChar
+        override fun toString(): String = keyChar.toString()
     }
 
     class PinyinKey(private val pinyin: String, val posInInput: Int = 0) : InputKey {
-        private var t9InputKeys: String? = null
-
         val pinyinLength: Int = pinyin.length
-        val inputKeyLength: Int = pinyinLength + 1
 
-        fun t9Keys() = t9InputKeys ?: restoreToT9key().joinToString("")
-
-        fun restoreToT9key(): List<T9Key> =
-            pinyin.map { T9Key(T9PinYinUtils.pinyin2T9Key(it).toString()) }.also {
-                t9InputKeys = it.joinToString("")
+        fun t9Keys(): String {
+            val rimeSchema = Rime.getCurrentRimeSchema()
+            return when (rimeSchema) {
+                CustomConstant.SCHEMA_ZH_T9 -> {
+                    T9PinYinUtils.pinyin2Key(pinyin)
+                }
+                CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
+                    LX17PinYinUtils.pinyin2Key(pinyin)
+                }
+                else -> ""
             }
+        }
+
+        fun restoreToT9key(): List<QwertKey> {
+            val keys = LinkedList<QwertKey>()
+            val rimeSchema = Rime.getCurrentRimeSchema()
+            when (rimeSchema) {
+                CustomConstant.SCHEMA_ZH_T9 -> {
+                    T9PinYinUtils.pinyin2Key(pinyin).forEach {
+                        keys.add(QwertKey(it))
+                    }
+                }
+                CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
+                    LX17PinYinUtils.pinyin2Key(pinyin).forEach {
+                        keys.add(QwertKey(it))
+                    }
+                }
+                else -> pinyin
+            }
+
+            return keys
+        }
 
         fun copy(posInInput: Int) = PinyinKey(pinyin, posInInput)
 
-        fun inputKeys() = "${pinyin.lowercase()}'"
+        fun pinyin() = "${pinyin.lowercase()}'"
     }
 }

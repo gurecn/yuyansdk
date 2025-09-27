@@ -206,14 +206,14 @@ object KeyPreset {
 
     val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
         KeyEvent.KEYCODE_0 to arrayOf("0"),  // 数字键盘使用
-        KeyEvent.KEYCODE_2 to arrayOf("ABC", "2"),
-        KeyEvent.KEYCODE_3 to arrayOf("DEF", "3"),
-        KeyEvent.KEYCODE_4 to arrayOf("GHI", "4"),
-        KeyEvent.KEYCODE_5 to arrayOf("JKL", "5"),
-        KeyEvent.KEYCODE_6 to arrayOf("MNO", "6"),
-        KeyEvent.KEYCODE_7 to arrayOf("PQRS", "7"),
-        KeyEvent.KEYCODE_8 to arrayOf("TUV", "8"),
-        KeyEvent.KEYCODE_9 to arrayOf("WXYZ", "9"),
+        KeyEvent.KEYCODE_A to arrayOf("ABC", "2"),
+        KeyEvent.KEYCODE_D to arrayOf("DEF", "3"),
+        KeyEvent.KEYCODE_G to arrayOf("GHI", "4"),
+        KeyEvent.KEYCODE_J to arrayOf("JKL", "5"),
+        KeyEvent.KEYCODE_M to arrayOf("MNO", "6"),
+        KeyEvent.KEYCODE_P to arrayOf("PQRS", "7"),
+        KeyEvent.KEYCODE_T to arrayOf("TUV", "8"),
+        KeyEvent.KEYCODE_W to arrayOf("WXYZ", "9"),
         KeyEvent.KEYCODE_CLEAR to arrayOf("重输"),
         KeyEvent.KEYCODE_APOSTROPHE to arrayOf("分词", "1"),
         KeyEvent.KEYCODE_AT to arrayOf("@"),
