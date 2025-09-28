@@ -41,6 +41,7 @@ object DoublePinYinUtils {
                 if(compo.isEmpty()) ""
                 else if (compo.length == 1) append(doublePinyinMap.getOrElse(rimeSchema){double_pinyin}.getOrElse(compo[0]) { pinyin.first().toString() })
                 else if (compo.length == 2) append(pinyin)
+                else if (compo.all { it.isLowerCase() }) append(pinyin)
                 else {
                     append(pinyin)
                     compo.drop(2).forEach{  char -> append(doublePinyinMap.getOrElse(rimeSchema){double_pinyin}.getOrElse(char) {char.toString()}) }
