@@ -147,7 +147,7 @@ object RimeEngine {
          * 可能存在引擎操作栈与记录的操作栈不一样的问题
          * 临时方案，尝试不同长度的替换，至少保证可以把拼音回退成9键
          */
-        if (!Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.t9Keys())) {
+        if (!Rime.replaceKey(pinyinKey.posInInput, pinyinKey.inputKeyLength, pinyinKey.t9Keys())) {
             Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.t9Keys())
         }
     }

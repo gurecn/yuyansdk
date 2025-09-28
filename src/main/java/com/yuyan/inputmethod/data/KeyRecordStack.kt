@@ -78,7 +78,7 @@ class KeyRecordStack {
         val posInInput = keyRecords.subList(0, index1).fold(0) { acc, inputKey ->
             acc + when (inputKey) {
                 is InputKey.T9Key -> 1
-                is InputKey.PinyinKey -> inputKey.pinyinLength + 1 // 多一个分词
+                is InputKey.PinyinKey -> inputKey.inputKeyLength
                 else -> 0
             }
         }
@@ -140,7 +140,7 @@ interface InputKey {
 
     class PinyinKey(private val pinyin: String, val posInInput: Int = 0) : InputKey {
         val pinyinLength: Int = pinyin.length
-
+        val inputKeyLength: Int = pinyinLength + 1
         fun t9Keys(): String {
             val rimeSchema = Rime.getCurrentRimeSchema()
             return when (rimeSchema) {
