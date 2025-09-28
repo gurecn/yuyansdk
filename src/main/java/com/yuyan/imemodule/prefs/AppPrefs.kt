@@ -143,6 +143,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val abcNumberLine = switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
 
+        val lx17WithLeftPrefix = switch(R.string.lx17_with_left_prefix, "lx17_with_left_prefix_enable", true)
+
         val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
 
         val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
