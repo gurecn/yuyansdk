@@ -22,7 +22,7 @@
         android:layout_below="@+id/entrance_image"
         android:layout_marginTop="5dp"
         android:singleLine="true"
-        android:textSize="12sp"/>
+        android:textSize="12dp"/>
     <ImageView
         android:id="@+id/entrance_option"
         android:layout_width="19dp"

@@ -2,6 +2,7 @@ package com.yuyan.imemodule.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -136,7 +137,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             candidatesData.addView(mRVCandidates, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, candidatesHeight, 1f))
             candidatesData.addView(mRightArrowBtn)
         }
-        mComposingView.textSize = instance.composingTextSize
+        mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.composingTextSize)
         mCandidatesAdapter.notifyChanged()
     }
 

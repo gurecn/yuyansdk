@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.adapter
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +38,7 @@ class CandidatesBarAdapter(context: Context?) :
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         if(DecodingInfo.isCandidatesListEmpty) return
         holder.textView.text = DecodingInfo.candidates[position].text
-        holder.textView.textSize = instance.candidateTextSize
+        holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
         holder.textView.setTextColor(if(mActiveCandNo-1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor)
         if (mOnItemClickListener != null) {
             holder.textView.setOnClickListener { view: View? ->

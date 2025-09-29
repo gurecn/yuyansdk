@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.adapter
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,7 +46,7 @@ class CandidatesAdapter(context: Context?) :
 
         init {
             textView.setTextColor(textColor)
-            textView.textSize = instance.candidateTextSize
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
         }
     }
 }

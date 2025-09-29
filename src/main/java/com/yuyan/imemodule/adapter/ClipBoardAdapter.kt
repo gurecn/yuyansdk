@@ -3,6 +3,7 @@ package com.yuyan.imemodule.adapter
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -101,7 +102,7 @@ class ClipBoardAdapter(context: Context, datas: MutableList<Clipboard>) :
         var ivTopTips: ImageView
         init {
             textView.setTextColor(textColor)
-            textView.textSize = instance.candidateTextSize
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
             ivTopTips = view.findViewById(R.id.clipboard_adapter_top_tips)
         }
     }

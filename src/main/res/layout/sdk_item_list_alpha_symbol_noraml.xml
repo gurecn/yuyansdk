@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/text1"
     android:layout_width="match_parent"
-    android:layout_height="45dp"
-    android:textSize="16sp"
+    android:layout_height="wrap_content"
+    android:textSize="12dp"
+    android:padding="8dp"
     android:layout_gravity="center"
     android:gravity="center"/>

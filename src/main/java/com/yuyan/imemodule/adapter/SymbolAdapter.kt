@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.adapter
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,7 +62,7 @@ class SymbolAdapter(context: Context?, val viewType: SymbolMode, private val pag
         var tVSdb: TextView
         init {
             textView.setTextColor(activeTheme.keyTextColor)
-            textView.textSize = instance.candidateTextSize * if(viewType != SymbolMode.Emojicon)1f else 0.9f
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize * if(viewType != SymbolMode.Emojicon)1f else 0.9f)
             tVSdb = view.findViewById(R.id.tv_sdb_symbols_item)
             tVSdb.setTextColor(activeTheme.keyTextColor)
             if(viewType == SymbolMode.Emojicon && pagerIndex == 1 && YuyanEmojiCompat.isWeChatInput){

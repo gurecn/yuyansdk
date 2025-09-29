@@ -15,7 +15,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
 import com.yuyan.imemodule.data.theme.ThemeManager.removeOnChangedListener
-import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -23,7 +22,6 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
