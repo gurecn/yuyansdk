@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
 import androidx.core.view.postDelayed
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
@@ -55,6 +56,7 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.core.CandidateListItem
+import com.yuyan.inputmethod.core.Kernel
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
 import kotlin.math.absoluteValue
@@ -273,7 +275,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val keyCode = sKey.code
         if (sKey.isKeyCodeKey) {  // 系统的keycode,单独处理
             mImeState = ImeState.STATE_INPUT
-            val metaState = KeyEvent.META_CAPS_LOCK_ON
+            val rimeSchema = Kernel.getCurrentRimeSchema()
+            val metaState = if(rimeSchema in  listOf(CustomConstant.SCHEMA_ZH_T9, CustomConstant.SCHEMA_ZH_STROKE,
+                    CustomConstant.SCHEMA_ZH_DOUBLE_LX17))KeyEvent.META_CAPS_LOCK_ON else 0
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, metaState, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode

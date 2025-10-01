@@ -36,12 +36,9 @@ schema:
   name: "笔画输入"
   schema_id: stroke
 speller:
-  alphabet: abcdefghijklmnopqrstuvwxyz
+  alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA`/"
   delimiter: " '"
 translator:
-  comment_format:
-    - "xform/~//"
-    - "xlit/hspnz/⼀⼁⼃⼂⼄/"
   dictionary: stroke
   preedit_format:
-    - "xlit/hspnz/⼀⼁⼃⼂⼄/"
+    - "xlit/HSPNZ/⼀⼁⼃⼂⼄/"

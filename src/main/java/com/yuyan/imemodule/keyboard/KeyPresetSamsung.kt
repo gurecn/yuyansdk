@@ -205,25 +205,26 @@ object KeyPresetSamsung{
     )
 
     val t9PYKeyPreset: Map<Int, Array<String>> = hashMapOf(
-        7 to arrayOf("0"),  // 数字键盘使用
-        9 to arrayOf("abc", "2"),
-        10 to arrayOf("def", "3"),
-        11 to arrayOf("ghi", "4"),
-        12 to arrayOf("jkl", "5"),
-        13 to arrayOf("mno", "6"),
-        14 to arrayOf("pqrs", "7"),
-        15 to arrayOf("tuv", "8"),
-        16 to arrayOf("wxyz", "9"),
-        28 to arrayOf("重输"),
-        75 to arrayOf("分词", "1"),
-        77 to arrayOf("@"),
+        KeyEvent.KEYCODE_0 to arrayOf("0"),  // 数字键盘使用
+        KeyEvent.KEYCODE_A to arrayOf("abc", "2"),
+        KeyEvent.KEYCODE_D to arrayOf("def", "3"),
+        KeyEvent.KEYCODE_G to arrayOf("ghi", "4"),
+        KeyEvent.KEYCODE_J to arrayOf("jkl", "5"),
+        KeyEvent.KEYCODE_M to arrayOf("mno", "6"),
+        KeyEvent.KEYCODE_P to arrayOf("pqrs", "7"),
+        KeyEvent.KEYCODE_T to arrayOf("tuv", "8"),
+        KeyEvent.KEYCODE_W to arrayOf("wxyz", "9"),
+        KeyEvent.KEYCODE_CLEAR to arrayOf("重输"),
+        KeyEvent.KEYCODE_APOSTROPHE to arrayOf("分词", "1"),
+        KeyEvent.KEYCODE_AT to arrayOf("@"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13 to arrayOf("，"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14 to arrayOf("。"),
-        62 to arrayOf("空格"),
-        InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符"),
+        KeyEvent.KEYCODE_SPACE to arrayOf("空格"),
+        InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 to arrayOf("符号"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 to arrayOf("返回"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
+
     )
 
     val strokeKeyPreset: Map<Int, Array<String>> = hashMapOf(

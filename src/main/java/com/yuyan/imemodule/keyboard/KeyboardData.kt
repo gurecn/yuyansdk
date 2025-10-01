@@ -49,17 +49,17 @@ object KeyboardData {
 
     val layoutStrokeCn: Map<SkbStyleMode, ArrayList<Array<Int>>> = linkedMapOf(
         SkbStyleMode.Google to arrayListOf(
-            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 36, 47, 44, KeyEvent.KEYCODE_DEL),
-            arrayOf(42, 54, 17, KeyEvent.KEYCODE_CLEAR),
-            arrayOf(69, 75, 70, KeyEvent.KEYCODE_AT)),
+            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_DEL),
+            arrayOf(KeyEvent.KEYCODE_N, KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_STAR, KeyEvent.KEYCODE_CLEAR),
+            arrayOf(KeyEvent.KEYCODE_MINUS, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_EQUALS, KeyEvent.KEYCODE_AT)),
         SkbStyleMode.Samsung to arrayListOf(
-            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 36, 47, 44, KeyEvent.KEYCODE_DEL),
-            arrayOf(42, 54, 17, KeyEvent.KEYCODE_CLEAR),
-            arrayOf(69, 75, 70, KeyEvent.KEYCODE_AT)),
+            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_DEL),
+            arrayOf(KeyEvent.KEYCODE_N, KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_STAR, KeyEvent.KEYCODE_CLEAR),
+            arrayOf(KeyEvent.KEYCODE_MINUS, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_EQUALS, KeyEvent.KEYCODE_AT)),
         SkbStyleMode.Yuyan to arrayListOf(
-            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, 36, 47, 44, KeyEvent.KEYCODE_DEL),
-            arrayOf(42, 54, 17, KeyEvent.KEYCODE_CLEAR),
-            arrayOf(69, 75, 70, KeyEvent.KEYCODE_AT)),
+            arrayOf(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_DEL),
+            arrayOf(KeyEvent.KEYCODE_N, KeyEvent.KEYCODE_Z, KeyEvent.KEYCODE_STAR, KeyEvent.KEYCODE_CLEAR),
+            arrayOf(KeyEvent.KEYCODE_MINUS, KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_EQUALS, KeyEvent.KEYCODE_AT)),
     )
 
     val layoutLX17Cn: Map<SkbStyleMode, ArrayList<Array<Int>>> = linkedMapOf(
