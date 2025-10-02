@@ -255,7 +255,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         if (keyboardMnemonic && !TextUtils.isEmpty(keyMnemonic)) {  //助记符位于中下方
             mPaint.color = textColor
             mPaint.typeface = Typeface.DEFAULT
-            mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
+            mPaint.textSize = mNormalKeyTextSizeSmall.toFloat() * 0.7f
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyMnemonic)) / 2.0f
             val y = softKey.mTop + weightHeigth * 3 + weightHeigth / 2.0f
             canvas.drawText(keyMnemonic, x, y, mPaint)
