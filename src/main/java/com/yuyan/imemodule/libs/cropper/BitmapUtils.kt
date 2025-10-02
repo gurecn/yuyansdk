@@ -11,7 +11,6 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
-import android.util.Log
 import android.util.Pair
 import androidx.exifinterface.media.ExifInterface
 import com.yuyan.imemodule.libs.cropper.CropImageView.RequestSizeOptions
@@ -417,11 +416,6 @@ internal object BitmapUtils {
         customOutputUri = customOutputUri,
       )
     } catch (e: Exception) {
-      Log.w(
-        "AIC",
-        "Failed to write bitmap to temp file for image-cropper save instance state",
-        e,
-      )
       null
     }
 
@@ -500,7 +494,6 @@ internal object BitmapUtils {
         }
       }
     } catch (e: Exception) {
-      Log.w("AIC", "Failed to resize cropped image, return bitmap before resize", e)
     }
     return bitmap!!
   }

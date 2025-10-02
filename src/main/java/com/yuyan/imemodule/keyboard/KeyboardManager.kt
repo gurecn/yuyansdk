@@ -14,7 +14,6 @@ import com.yuyan.imemodule.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.utils.LogUtil
 
 /**
  * 键盘显示管理类
@@ -42,7 +41,6 @@ class KeyboardManager {
     }
 
     fun switchKeyboard(layout: Int = InputModeSwitcherManager.skbLayout) {
-        LogUtil.d("111111111111", "switchKeyboard  layout:$layout")
         val keyboardName = when (layout) {
             0x1000 -> KeyboardType.QWERTY
             0x4000 -> KeyboardType.QWERTYABC

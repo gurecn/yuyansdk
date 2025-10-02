@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -252,7 +251,6 @@ open class CropImageActivity : AppCompatActivity(), OnSetImageUriCompleteListene
         menu.findItem(R.id.crop_image_menu_crop).icon = cropIcon
       }
     } catch (e: Exception) {
-      Log.w("AIC", "Failed to read menu crop drawable", e)
     }
 
     if (cropImageOptions.activityMenuIconColor != 0) {
@@ -441,7 +439,6 @@ open class CropImageActivity : AppCompatActivity(), OnSetImageUriCompleteListene
           }
           menuItem.icon = menuItemIcon
         } catch (e: Exception) {
-          Log.w("AIC", "Failed to update menu item color", e)
         }
       }
     }
@@ -464,7 +461,6 @@ open class CropImageActivity : AppCompatActivity(), OnSetImageUriCompleteListene
         )
         menuItem.title = spannableTitle
       } catch (e: Exception) {
-        Log.w("AIC", "Failed to update menu item color", e)
       }
     }
   }

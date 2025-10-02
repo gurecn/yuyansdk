@@ -52,11 +52,10 @@ class KeyboardLoaderUtil private constructor() {
         val softKeyboard: SoftKeyboard?
         numberLine = AppPrefs.getInstance().keyboardSetting.abcNumberLine.getValue()
         val rows: MutableList<List<SoftKey>> = LinkedList()
-        if (numberLine && skbStyleMode == SkbStyleMode.Yuyan) {
+        if (numberLine) {
             val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
             rows.add(qwertyKeys.asList())
         }
-        LogUtil.d("1111111111", "skbValue:$skbValue")
         when(skbValue){
             InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN -> {  // 1000  拼音全键
                 rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()
@@ -71,10 +70,6 @@ class KeyboardLoaderUtil private constructor() {
                     else -> {
                         KeyboardData.layoutQwertyCn[skbStyleMode]!!
                     }
-                }
-                if (numberLine && skbStyleMode == SkbStyleMode.Samsung) {
-                    val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
-                    rows.add(qwertyKeys.asList())
                 }
                 var qwertyKeys = createQwertyPYKeys(keys[0])
                 keyBeans.addAll(qwertyKeys)
@@ -100,7 +95,6 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
             }
             InputModeSwitcherManager.MASK_SKB_LAYOUT_T9_PINYIN -> {  // 2000  T9键键
-                LogUtil.d("11111111", " MASK_SKB_LAYOUT_T9_PINYIN")
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 val keys = KeyboardData.layoutT9Cn[skbStyleMode]!!
                 var t9Key = createT9Keys(keys[0])
@@ -149,10 +143,6 @@ class KeyboardLoaderUtil private constructor() {
             InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_ABC -> {// 4000 英文全键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 val keys = KeyboardData.layoutQwertyEn[skbStyleMode]!!
-                if (numberLine && skbStyleMode == SkbStyleMode.Samsung) {
-                    val qwertyKeys = createNumberLineKeys(arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 0))
-                    rows.add(qwertyKeys.asList())
-                }
                 var qwertyKeys = createQwertyKeys(keys[0])
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
@@ -247,7 +237,6 @@ class KeyboardLoaderUtil private constructor() {
                 }
             }
             InputModeSwitcherManager.MASK_SKB_LAYOUT_STROKE -> {  // 7000  笔画键盘
-                LogUtil.d("11111111", " MASK_SKB_LAYOUT_STROKE ")
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 val keys =  KeyboardData.layoutStrokeCn[skbStyleMode]!!
                 var t9Key = createT9Keys(keys[0])
@@ -437,7 +426,6 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     fun getSoftKeyboard(skbValue: Int): SoftKeyboard {
-        LogUtil.d("111111111111", "getSoftKeyboard  skbValue:$skbValue")
         var softKeyboard = mSoftKeyboardMap[skbValue]
         if (softKeyboard == null) {
             softKeyboard = loadBaseSkb(skbValue)
