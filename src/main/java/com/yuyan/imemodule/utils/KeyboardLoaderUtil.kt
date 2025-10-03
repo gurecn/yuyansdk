@@ -293,7 +293,7 @@ class KeyboardLoaderUtil private constructor() {
         }
         val numberLineSkb = when(skbStyleMode){
             SkbStyleMode.Yuyan -> numberLine
-            SkbStyleMode.Samsung -> numberLine && (0x4000 == skbValue || 0x1000 == skbValue)
+            SkbStyleMode.Samsung -> numberLine
             SkbStyleMode.Google -> numberLine
         }
         softKeyboard = getSoftKeyboard(rows, numberLineSkb)
