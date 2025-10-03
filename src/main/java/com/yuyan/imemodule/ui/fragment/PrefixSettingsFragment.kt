@@ -17,6 +17,11 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.keyboard.KeyboardManager
+import com.yuyan.imemodule.libs.recyclerview.SwipeMenu
+import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
+import com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem
+import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
+import com.yuyan.imemodule.libs.recyclerview.touch.OnItemMoveListener
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams
@@ -61,8 +66,8 @@ class PrefixSettingsFragment(type:String) : Fragment(){
         }
 
         val adapter = PrefixSettingsAdapter(datas, mType)
-        val mItemMoveListener: com.yuyan.imemodule.libs.recyclerview.touch.OnItemMoveListener = object :
-            com.yuyan.imemodule.libs.recyclerview.touch.OnItemMoveListener {
+        val mItemMoveListener: OnItemMoveListener = object :
+            OnItemMoveListener {
             override fun onItemMove(srcHolder: RecyclerView.ViewHolder, targetHolder: RecyclerView.ViewHolder): Boolean {
                 val fromPosition = srcHolder.bindingAdapterPosition
                 val toPosition = targetHolder.bindingAdapterPosition
@@ -76,9 +81,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             }
         }
 
-        val mRVSymbolsView = com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView(
-            context
-        ).apply {
+        val mRVSymbolsView = SwipeRecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             setLongPressDragEnabled(true)
             setOnItemLongClickListener{ _, _ ->
@@ -86,17 +89,15 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             }
             setOnItemMoveListener(mItemMoveListener)
         }
-        mRVSymbolsView.setSwipeMenuCreator{ _: com.yuyan.imemodule.libs.recyclerview.SwipeMenu, rightMenu: com.yuyan.imemodule.libs.recyclerview.SwipeMenu, _: Int ->
-            val deleteItem = com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem(
-                context
-            ).apply {
+        mRVSymbolsView.setSwipeMenuCreator{ _: SwipeMenu, rightMenu: SwipeMenu, _: Int ->
+            val deleteItem = SwipeMenuItem(context).apply {
                 setImage(R.drawable.ic_menu_delete)
             }
             rightMenu.addMenuItem(deleteItem)
         }
-        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge, position: Int ->
+        mRVSymbolsView.setOnItemMenuClickListener { menuBridge: SwipeMenuBridge, position: Int ->
             menuBridge.closeMenu()
-            if(menuBridge.position == 0) {
+            if(menuBridge.position == 0 && position < datas.size) {
                 datas.removeAt(position)
                 adapter.notifyItemRemoved(position)
             }

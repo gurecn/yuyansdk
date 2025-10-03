@@ -10,6 +10,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.Launcher
+import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.entry.SideSymbol
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
@@ -28,17 +29,20 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             setPadding(0, dp(5), 0, dp(5))
             add(editText {
                 gravity = Gravity.CENTER
+                setTextColor(activeTheme.keyTextColor)
                 id = R.id.et_prefix_setting_key
             }, lParams(width = 0, weight = 1f, height = matchParent){
                 setMargins(dp(20), 0, dp(20), 0)
             })
             add(editText {
                 gravity = Gravity.CENTER
+                setTextColor(activeTheme.keyTextColor)
                 id = R.id.et_prefix_setting_value
             }, lParams(width = 0, weight = 2f))
 
             add(ImageView(context).apply {
                 setImageResource(R.drawable.ic_menu_menu)
+                drawable.setTint(activeTheme.keyTextColor)
             }, lParams(width = 0, weight = 1f, gravity = Gravity.CENTER))
         }
         return PrefixSettingsHolder(content)
