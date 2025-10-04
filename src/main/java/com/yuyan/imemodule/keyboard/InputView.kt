@@ -47,6 +47,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.EditPhrasesView
@@ -336,7 +337,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 软键盘集装箱SkbContainer的responseKeyEvent（）在自身类中调用。
      */
     override fun responseLongKeyEvent(result:Pair<PopupMenuMode, String>) {
-        if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
+        if (result.first != PopupMenuMode.None && !DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
             if(InputModeSwitcherManager.isChinese) {
                 chooseAndUpdate()
             } else if(InputModeSwitcherManager.isEnglish){
