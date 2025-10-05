@@ -132,7 +132,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             } else {
                 val content = copyContents[position].content
                 if(menuBridge.position == 0) {
-                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, content)
+                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, DataBaseKT.instance.phraseDao().queryByContent(content))
                 } else if(menuBridge.position == 1){
                     DataBaseKT.instance.phraseDao().deleteByContent(content)
                     showClipBoardView(SkbMenuMode.Phrases)
@@ -145,7 +145,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
     private fun calculateColumn(data : MutableList<Clipboard>) {
         mHashMapSymbols.clear()
-        val itemWidth = EnvironmentSingleton.instance.skbWidth/6 - dp(10)
+        val itemWidth = instance.skbWidth/6 - dp(10)
         var mCurrentColumn = 0
         val contents = data.map { it.content }
         contents.forEachIndexed { position, candidate ->

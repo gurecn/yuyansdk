@@ -72,9 +72,11 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                val pinYinHeadChar  = PinyinHelper.getPinYinHeadChar(editable.toString())
-                mEtPhrasesQuickCode.setText(pinYinHeadChar)
-                mEtPhrasesQuickCode.setSelection(pinYinHeadChar.length)
+                val pinYinHeadChar  = PinyinHelper.getPinYinHeadChar(editable.toString().take(4))
+                if(pinYinHeadChar.isNotBlank()) {
+                    mEtPhrasesQuickCode.setText(pinYinHeadChar)
+                    mEtPhrasesQuickCode.setSelection(pinYinHeadChar.length)
+                }
             }
         })
     }
@@ -95,9 +97,13 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
         }
     }
 
-    fun setExtraData(extra:String) {
-        mEtPhrases.setText(extra)
-        mEtPhrases.setSelection(extra.length)
+    fun setExtraData(extra:Phrase) {
+        val content = extra.content
+        val qwerty = extra.qwerty
+        mEtPhrases.setText(content)
+        mEtPhrases.setSelection(content.length)
+        mEtPhrasesQuickCode.setText(qwerty)
+        mEtPhrasesQuickCode.setSelection(qwerty.length)
     }
 
     fun commitText(text:String) {

@@ -31,6 +31,7 @@ import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
@@ -619,14 +620,16 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
     }
 
-    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:String = "") {
+    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra:Phrase? = null) {
         when (skbMenuMode) {
             SkbMenuMode.AddPhrases -> {
                 isAddPhrases = true
-                DataBaseKT.instance.phraseDao().deleteByContent(extra)
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbImeLayout)
                 initView(context)
-                mAddPhrasesLayout.setExtraData(extra)
+                if(extra != null) {
+                    DataBaseKT.instance.phraseDao().deleteByContent(extra.content)
+                    mAddPhrasesLayout.setExtraData(extra)
+                }
             }
             else ->onSettingsMenuClick(this, skbMenuMode)
         }

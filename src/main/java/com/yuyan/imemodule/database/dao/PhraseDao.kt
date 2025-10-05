@@ -17,6 +17,9 @@ interface PhraseDao : BaseDao<Phrase> {
     @Query("delete from phrase where content = :content")
     fun deleteByContent(content: String)
 
+    @Query("select * from phrase where content = :content")
+    fun queryByContent(content: String): Phrase
+
     @Query("delete from phrase")
     fun deleteAll()
 }
