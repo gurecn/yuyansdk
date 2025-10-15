@@ -1,0 +1,9 @@
+{
+  "sentence":
+  {
+    "sentenceMaxNum": 3,
+	"sentenceMaxScoreGap": 1000,
+	"sentenceMaxLstmScoreGap": 200,
+	"sentenceScoreAdjust": 0.5
+  }
+}

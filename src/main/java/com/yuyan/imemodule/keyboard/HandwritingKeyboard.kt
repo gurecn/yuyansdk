@@ -14,7 +14,7 @@ import com.yuyan.imemodule.entity.handwriting.TimedPoint
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
-import com.yuyan.inputmethod.core.HandWriting
+import com.yuyan.inputmethod.HWEngine
 import java.util.LinkedList
 import kotlin.math.ceil
 import kotlin.math.max
@@ -232,7 +232,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     private fun recognitionData() {
-        HandWriting.recognitionData(mSBPoint) {
+        HWEngine.recognitionData(mSBPoint) {
                 item -> mService?.postDelayed({ mService!!.responseHandwritingResultEvent(item) }, 20)
         }
     }
