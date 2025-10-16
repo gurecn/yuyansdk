@@ -40,13 +40,6 @@ engine:
     - punct_translator
     - echo_translator
     - script_translator
-    - "table_translator@english"
-    - "table_translator@cn_en"
-english:
-  dictionary: english
-  enable_sentence: false
-  enable_user_dict: false
-  initial_quality: 1.1
 punctuator:
   symbols:
     "/": ["＠", "＃", "＊", "＋", "……", "〜", "（", "）", "、", "/"]
