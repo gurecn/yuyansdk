@@ -1,6 +1,7 @@
 package com.yuyan.inputmethod.core
 
 import android.content.Context
+import androidx.annotation.Keep
 
 object HandWriting {
 
@@ -30,6 +31,7 @@ object HandWriting {
         return getCandidates()
     }
 
+    @Keep
     external fun getPackageName(): String?
 
     external fun activeMode(mode: Int): Boolean
