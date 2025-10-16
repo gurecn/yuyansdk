@@ -217,7 +217,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
             mPaint.color = textColor
-            mPaint.setTypeface(if(skbStyleMode == SkbStyleMode.Google)Typeface.DEFAULT_BOLD else Typeface.DEFAULT)
+            mPaint.setTypeface(Typeface.DEFAULT)
             if(skbStyleMode == SkbStyleMode.Samsung)mPaint.alpha = 128
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
             val x = when(prefs.skbStyleMode.getValue()){
