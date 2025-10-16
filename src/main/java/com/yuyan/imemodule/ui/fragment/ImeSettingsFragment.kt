@@ -45,13 +45,11 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.drawable.ic_menu_language,
                     R.id.action_settingsFragment_to_inputSettingsFragment
                 )
-                if(!BuildConfig.offline) {
-                    addDestinationPreference(
-                        R.string.ime_settings_handwriting,
-                        R.drawable.ic_menu_handwriting,
-                        R.id.action_settingsFragment_to_handwritingSettingsFragment
-                    )
-                }
+                addDestinationPreference(
+                    R.string.ime_settings_handwriting,
+                    R.drawable.ic_menu_handwriting,
+                    R.id.action_settingsFragment_to_handwritingSettingsFragment
+                )
             }
             addCategory(R.string.keyboard) {
                 isIconSpaceReserved = false

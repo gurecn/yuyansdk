@@ -38,10 +38,10 @@ class AboutFragment : PreferenceFragmentCompat() {
                 addPreference(R.string.build_time, BuildConfig.AppBuildTime)
 
             }
-            addCategory(R.string.sdk_version) {
-                isIconSpaceReserved = false
-                addPreference(R.string.build_type, if(BuildConfig.offline)R.string.build_type_offline else R.string.build_type_online )
-            }
+//            addCategory(R.string.sdk_version) {
+//                isIconSpaceReserved = false
+//                addPreference(R.string.build_type, if(BuildConfig.offline)R.string.build_type_offline else R.string.build_type_online )
+//            }
         }
 
 

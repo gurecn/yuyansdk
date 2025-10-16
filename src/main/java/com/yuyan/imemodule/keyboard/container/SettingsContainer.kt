@@ -146,15 +146,13 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 SkbMenuMode.Pinyin26Jian
             )
         )
-        if(!BuildConfig.offline) {
-            funItems.add(
-                SkbFunItem(
-                    mContext.getString(R.string.keyboard_name_hand),
-                    R.drawable.selece_input_mode_handwriting,
-                    SkbMenuMode.PinyinHandWriting
-                )
+        funItems.add(
+            SkbFunItem(
+                mContext.getString(R.string.keyboard_name_hand),
+                R.drawable.selece_input_mode_handwriting,
+                SkbMenuMode.PinyinHandWriting
             )
-        }
+        )
         val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
         val doublePinyinSchemaName = when (doublePYSchemaMode) {
             DoublePinyinSchemaMode.flypy -> R.string.double_pinyin_flypy_plus
