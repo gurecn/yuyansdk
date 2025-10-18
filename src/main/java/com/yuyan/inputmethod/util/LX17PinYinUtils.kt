@@ -55,7 +55,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("T", "t")
 
         lx17PinyinMap.put("HH", "ha,hua,pa")
-        lx17PinyinMap.put("HS", "hen,pen")
+        lx17PinyinMap.put("HS", "hen,pen,pin")
         lx17PinyinMap.put("HZ", "hang,pang,piao")
         lx17PinyinMap.put("HB", "hao,pao")
         lx17PinyinMap.put("HX", "huai,huan,po")
@@ -163,7 +163,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("LX", "luan")
         lx17PinyinMap.put("LM", "lie,luo")
         lx17PinyinMap.put("LL", "lai,lue")
-        lx17PinyinMap.put("LD", "lu")
+        lx17PinyinMap.put("LD", "lu,lv")
         lx17PinyinMap.put("LY", "leng,ling")
         lx17PinyinMap.put("LW", "le")
         lx17PinyinMap.put("LJ", "li")
