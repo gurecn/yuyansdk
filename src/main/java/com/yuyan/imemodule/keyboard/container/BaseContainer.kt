@@ -115,6 +115,8 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
     private var initialTouchY = 0f
     private var rightPaddingValue = 0  // 右侧边距
     private var bottomPaddingValue = 0  // 底部边距
+    private var mSkbRootHeight = 0  // 键盘高度
+    private var mSkbRootWidth = 0  // 键盘宽度
     private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -122,6 +124,8 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
                 rightPaddingValue = mRightPaddingKey.getValue()
                 initialTouchX = event.rawX
                 initialTouchY = event.rawY
+                mSkbRootHeight = inputView.mSkbRoot.height
+                mSkbRootWidth = inputView.mSkbRoot.width
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -130,8 +134,8 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
                 if(dx.absoluteValue > 10) {
                     rightPaddingValue -= dx.toInt()
                     rightPaddingValue = if(rightPaddingValue < 0) 0
-                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - inputView.mSkbRoot.width) {
-                        EnvironmentSingleton.instance.mScreenWidth - inputView.mSkbRoot.width
+                    else if(rightPaddingValue > inputView.width - mSkbRootWidth) {
+                        inputView.width - mSkbRootWidth
                     } else rightPaddingValue
                     initialTouchX = event.rawX
                     if(EnvironmentSingleton.instance.keyboardModeFloat) {
@@ -143,8 +147,8 @@ open class BaseContainer(@JvmField var mContext: Context, inputView: InputView) 
                 if(dy.absoluteValue > 10 ) {
                     bottomPaddingValue -= dy.toInt()
                     bottomPaddingValue = if(bottomPaddingValue < 0) 0
-                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - inputView.mSkbRoot.height) {
-                        EnvironmentSingleton.instance.mScreenHeight - inputView.mSkbRoot.height
+                    else if(bottomPaddingValue > inputView.height - mSkbRootHeight) {
+                        inputView.height - mSkbRootHeight
                     } else bottomPaddingValue
                     initialTouchY = event.rawY
                     if(EnvironmentSingleton.instance.keyboardModeFloat) {

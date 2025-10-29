@@ -48,7 +48,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.EditPhrasesView
@@ -193,6 +192,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     private var initialTouchY = 0f
     private var rightPaddingValue = 0  // 右侧边距
     private var bottomPaddingValue = 0  // 底部边距
+    private var mSkbRootHeight = 0  // 键盘高度
+    private var mSkbRootWidth = 0  // 键盘宽度
     private fun onMoveKeyboardEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -200,6 +201,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 rightPaddingValue = mRightPaddingKey.getValue()
                 initialTouchX = event.rawX
                 initialTouchY = event.rawY
+                mSkbRootHeight = mSkbRoot.height
+                mSkbRootWidth = mSkbRoot.width
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -208,8 +211,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(dx.absoluteValue > 10) {
                     rightPaddingValue -= dx.toInt()
                     rightPaddingValue = if(rightPaddingValue < 0) 0
-                    else if(rightPaddingValue > EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width) {
-                        EnvironmentSingleton.instance.mScreenWidth - mSkbRoot.width
+                    else if(rightPaddingValue > this.width - mSkbRootWidth) {
+                        this.width - mSkbRootWidth
                     } else rightPaddingValue
                     initialTouchX = event.rawX
                     if(EnvironmentSingleton.instance.keyboardModeFloat) {
@@ -221,8 +224,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(dy.absoluteValue > 10 ) {
                     bottomPaddingValue -= dy.toInt()
                     bottomPaddingValue = if(bottomPaddingValue < 0) 0
-                    else if(bottomPaddingValue > EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height) {
-                        EnvironmentSingleton.instance.mScreenHeight - mSkbRoot.height
+                    else if(bottomPaddingValue > this.height - mSkbRootHeight) {
+                        this.height - mSkbRootHeight
                     } else bottomPaddingValue
                     initialTouchY = event.rawY
                     if(EnvironmentSingleton.instance.keyboardModeFloat) {
