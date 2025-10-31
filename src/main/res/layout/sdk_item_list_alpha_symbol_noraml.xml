@@ -4,7 +4,7 @@
     android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="12dp"
-    android:padding="8dp"
+    android:textSize="16dp"
+    android:padding="12dp"
     android:layout_gravity="center"
     android:gravity="center"/>
