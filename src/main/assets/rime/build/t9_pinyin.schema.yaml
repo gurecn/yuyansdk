@@ -41,7 +41,7 @@ schema:
   name: "九键拼音"
   schema_id: t9_pinyin
 speller:
-  alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA987654321`/"
+  alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA`/"
   delimiter: "''"
 traditionalize:
   opencc_config: s2t.json
