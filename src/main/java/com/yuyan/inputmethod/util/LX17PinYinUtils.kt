@@ -231,7 +231,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("JX", "kuai,juan,kuan")
         lx17PinyinMap.put("JM", "jie,kuo")
         lx17PinyinMap.put("JL", "kai,jue")
-        lx17PinyinMap.put("JD", "ju, ku")
+        lx17PinyinMap.put("JD", "ju,ku")
         lx17PinyinMap.put("JY", "keng,jing")
         lx17PinyinMap.put("JW", "ke")
         lx17PinyinMap.put("JJ", "ji")
