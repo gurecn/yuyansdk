@@ -231,6 +231,7 @@ object KeyPreset {
         InputModeSwitcherManager.USER_DEF_KEYCODE_NUMBER_5 to arrayOf("123"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_RETURN_6 to arrayOf("返回"),
         InputModeSwitcherManager.USER_DEF_KEYCODE_EMOJI_4 to arrayOf("表情"),
+        InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9 to arrayOf("清除"),
     )
 
     val strokeKeyPreset: Map<Int, Array<String>> = hashMapOf(

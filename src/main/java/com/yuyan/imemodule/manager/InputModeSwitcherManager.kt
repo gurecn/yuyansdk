@@ -53,7 +53,7 @@ object InputModeSwitcherManager {
     const val USER_DEF_KEYCODE_EMOJI_8 = -8
 
     /**
-     * User defined key code, used by soft keyboard. 方向控制。
+     * User defined key code, used by soft keyboard. 方向控制。或谷歌键盘的重输按钮
      */
     const val USER_DEF_KEYCODE_CURSOR_DIRECTION_9 = -9
 

@@ -286,6 +286,10 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             val keyEvent = KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, metaState, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD)
             processKey(keyEvent)
         } else if (sKey.isUserDefKey || sKey.isUniStrKey) { // 是用户定义的keycode
+            if (keyCode == InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9) {
+                if (mImeState != ImeState.STATE_IDLE) resetToIdleState()
+                return
+            }
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
                 if(InputModeSwitcherManager.isChinese)   chooseAndUpdate()
                 else if(InputModeSwitcherManager.isEnglish)  commitDecInfoText(DecodingInfo.composingStrForCommit)  // 把输入的拼音字符串发送给EditText

@@ -212,7 +212,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         } else softKey.keyLabel
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
-        val keyIcon = if(skbStyleMode == SkbStyleMode.Google && softKey.code == 62) null else softKey.keyIcon
+        val keyIcon = if(skbStyleMode == SkbStyleMode.Google && softKey.code == KeyEvent.KEYCODE_SPACE) null
+            else if(skbStyleMode == SkbStyleMode.Google && softKey.code == InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9 && !DecodingInfo.isCandidatesListEmpty) null
+            else softKey.keyIcon
         val weightHeigth = softKey.height() / 4f
         val textColor = mActiveTheme.keyTextColor
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
