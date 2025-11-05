@@ -108,7 +108,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("ZT", "zhong")
 
         lx17PinyinMap.put("BH", "ba")
-        lx17PinyinMap.put("BS", "ben")
+        lx17PinyinMap.put("BS", "ben,bin")
         lx17PinyinMap.put("BZ", "bang,biao")
         lx17PinyinMap.put("BB", "bao")
         lx17PinyinMap.put("BX", "bo")
