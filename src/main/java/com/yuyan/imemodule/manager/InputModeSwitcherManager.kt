@@ -347,6 +347,7 @@ object InputModeSwitcherManager {
         mToggleStates.mStateEnter = enterState
         if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
             saveInputMode(newInputMode)
+            KeyboardManager.instance.switchKeyboard()
         }
     }
 

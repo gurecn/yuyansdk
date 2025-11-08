@@ -64,9 +64,14 @@ class ImeService : InputMethodService() {
         return mInputView
     }
 
+    override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
+        YuyanEmojiCompat.setEditorInfo(attribute)
+        super.onStartInput(attribute, restarting)
+    }
+
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        YuyanEmojiCompat.setEditorInfo(editorInfo)
         if (::mInputView.isInitialized)mInputView.onStartInputView(editorInfo, restarting)
+        super.onStartInputView(editorInfo, restarting)
     }
 
     override fun onDestroy() {

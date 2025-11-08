@@ -35,6 +35,7 @@ import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.manager.InputModeSwitcherManager
@@ -782,9 +783,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     @SuppressLint("SimpleDateFormat")
     fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         InputModeSwitcherManager.requestInputWithSkb(editorInfo)
-        KeyboardManager.instance.switchKeyboard()
-        resetToIdleState()
+        (KeyboardManager.instance.currentContainer as? InputBaseContainer)?.updateStates()
         if(!restarting) {
+            resetToIdleState()
             if (getInstance().clipboard.clipboardSuggestion.getValue()) {
                 val lastClipboardTime = getInstance().internal.clipboardUpdateTime.getValue()
                 if (System.currentTimeMillis() - lastClipboardTime <= clipboardItemTimeout * 1000) {
