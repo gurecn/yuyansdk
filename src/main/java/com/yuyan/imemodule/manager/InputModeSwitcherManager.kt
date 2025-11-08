@@ -252,10 +252,6 @@ object InputModeSwitcherManager {
 		var mStateEnter = 0
     }
 
-    init {
-        mInputMode = getInstance().internal.inputDefaultMode.getValue()
-    }
-
     val skbImeLayout: Int
         /**
          * 更加软键盘：切换为语言键盘
@@ -313,7 +309,7 @@ object InputModeSwitcherManager {
      * 根据编辑框的 EditorInfo 信息获取软键盘的输入法模式。
      */
     fun requestInputWithSkb(editorInfo: EditorInfo) {
-        var newInputMode = MODE_UNSET
+        var newInputMode: Int
         when (editorInfo.inputType and EditorInfo.TYPE_MASK_CLASS) {
             EditorInfo.TYPE_CLASS_NUMBER, EditorInfo.TYPE_CLASS_PHONE, EditorInfo.TYPE_CLASS_DATETIME -> newInputMode = MASK_SKB_LAYOUT_NUMBER
             else -> {
