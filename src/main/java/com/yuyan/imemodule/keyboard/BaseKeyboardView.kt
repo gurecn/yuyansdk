@@ -166,9 +166,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun onModifiedTouchEvent(me: MotionEvent): Boolean {
-        mCurrentKey = getKeyIndices(me.x.toInt(), me.y.toInt())
         when (me.action) {
             MotionEvent.ACTION_DOWN -> {
+                mCurrentKey = getKeyIndices(me.x.toInt(), me.y.toInt())
                 mAbortKey = false
                 mLongPressKey = false
                 if(mCurrentKey != null){
