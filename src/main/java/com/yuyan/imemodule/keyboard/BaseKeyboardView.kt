@@ -181,6 +181,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 }
             }
             MotionEvent.ACTION_UP -> {
+                mCurrentKey?.onReleased()
+                mCurrentKey = getKeyIndices(me.x.toInt(), me.y.toInt())
                 removeMessages()
                 if (!mAbortKey && !mLongPressKey && mCurrentKey != null) {
                     mService?.responseKeyEvent(mCurrentKey!!)
