@@ -94,6 +94,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
     init {
         initNavbarBackground(service)
+        InputModeSwitcherManager.reset()
         this.service = service
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
         addView(mSkbRoot)

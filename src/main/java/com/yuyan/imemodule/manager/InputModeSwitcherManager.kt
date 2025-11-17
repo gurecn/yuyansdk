@@ -420,4 +420,13 @@ object InputModeSwitcherManager {
         }
     }
 
+    /**
+     * 重置输入法模式
+     */
+    fun reset( ) {
+        mInputMode = MODE_UNSET
+        mRecentLauageInputMode = MODE_UNSET
+    }
+
+
 }
