@@ -1,8 +1,8 @@
 __build_info:
   rime_version: 1.11.2
   timestamps:
-    default: 1744370669
-    default.custom: 1744370670
+    default: 1763028188
+    default.custom: 1763028188
     stroke.custom: 0
     stroke.schema: 1744370670
 engine:
@@ -41,4 +41,4 @@ speller:
 translator:
   dictionary: stroke
   preedit_format:
-    - "xlit/HSPNZ/⼀⼁⼃⼂⼄/"
+    - "xlit/HSPNZX/⼀⼁⼃⼂⼄*/"
