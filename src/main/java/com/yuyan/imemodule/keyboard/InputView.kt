@@ -32,6 +32,7 @@ import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Phrase
+import com.yuyan.imemodule.entity.StringQueue
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
@@ -340,7 +341,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
 
-    private var textBeforeCursor:String = ""
+    private var textBeforeCursors = StringQueue(10)
 
     /**
      * 响应软键盘长按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
@@ -370,16 +371,16 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             PopupMenuMode.Clear -> {
                 if(isAddPhrases) mAddPhrasesLayout.clearPhrasesContent()
                 else {
-                    val clearText = service.getTextBeforeCursor(1).toString()
+                    val clearText = service.getTextBeforeCursor(1000)
                     if(clearText.isNotEmpty()){
-                        textBeforeCursor = clearText
+                        textBeforeCursors.push(clearText)
                         service.deleteSurroundingText(1000)
                     }
                 }
             }
             PopupMenuMode.Revertl -> {
-                commitText(textBeforeCursor)
-                textBeforeCursor = ""
+                val lastTest = textBeforeCursors.popInReverseOrder()
+                if(lastTest?.isNotEmpty() == true) commitText(lastTest)
             }
             PopupMenuMode.Enter ->  commitText("\n") // 长按回车键
             else -> {}
