@@ -38,8 +38,6 @@ import splitties.views.dsl.core.margin
  *  输入键盘占据全部空间，左上角由拼音选择栏占位按键[InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_SYMBOL_12]站位。
  *
  *  拼音选择栏（无拼音时显示中文符号）位于键盘左上角，拼音选择栏占位按键正上方。
- *
- * 与数字键盘容器[NumberContainer]类似。
  */
 @SuppressLint("ViewConstructor")
 open class T9TextContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
@@ -48,7 +46,8 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private val mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
     private val mLlAddSymbol : LinearLayout = LinearLayout(context).apply{
-        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
+        layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT).apply { margin = (dp(20)) }
         gravity = Gravity.CENTER
     }
 
@@ -61,11 +60,12 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
         }
         ivAddSymbol.setOnClickListener { _:View ->
             val arguments = Bundle()
-            arguments.putInt("type", 0)
+            arguments.putInt("type", if(skbValue == InputModeSwitcherManager.MASK_SKB_LAYOUT_NUMBER) 1 else 0)
             AppUtil.launchSettingsToPrefix(context!!, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
-        mSideSymbolsPinyin = DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()
+        mSideSymbolsPinyin =  if(skbValue == InputModeSwitcherManager.MASK_SKB_LAYOUT_NUMBER) DataBaseKT.instance.sideSymbolDao().getAllSideSymbolNumber()
+                else DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()
     }
 
     /**

@@ -8,7 +8,6 @@ import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.HandwritingContainer
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.keyboard.container.InputViewParent
-import com.yuyan.imemodule.keyboard.container.NumberContainer
 import com.yuyan.imemodule.keyboard.container.QwertyContainer
 import com.yuyan.imemodule.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
@@ -61,7 +60,7 @@ class KeyboardManager {
             container = when (keyboardName) {
                 KeyboardType.CANDIDATES ->  CandidatesContainer(Launcher.instance.context, mInputView)
                 KeyboardType.HANDWRITING -> HandwritingContainer(Launcher.instance.context, mInputView)
-                KeyboardType.NUMBER -> NumberContainer(Launcher.instance.context, mInputView)
+                KeyboardType.NUMBER -> T9TextContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_NUMBER)
                 KeyboardType.QWERTY -> QwertyContainer(Launcher.instance.context, mInputView, InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN)
                 KeyboardType.SETTINGS -> SettingsContainer(Launcher.instance.context, mInputView)
                 KeyboardType.SYMBOL -> SymbolContainer(Launcher.instance.context, mInputView)

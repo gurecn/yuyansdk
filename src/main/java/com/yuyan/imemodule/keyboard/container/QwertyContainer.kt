@@ -13,7 +13,7 @@ import com.yuyan.imemodule.keyboard.HandwritingKeyboard
  *
  * 包含输入键盘[TextKeyboard]。
  *
- * 与九宫格键盘容器[T9TextContainer]、数字键键盘容器[NumberContainer]相比，全键盘不包含拼音选择栏。
+ * 与九宫格键盘容器[T9TextContainer]相比，全键盘不包含拼音选择栏。
  */
 @SuppressLint("ViewConstructor")
 class QwertyContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
