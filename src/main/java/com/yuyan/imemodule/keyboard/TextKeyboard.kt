@@ -88,11 +88,39 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             if(isEnglishCell&& stateId in 0..2) stateId += 3
             else if(!isEnglishCell && stateId in 3..5)stateId -= 3
             softKey.enableToggleState(stateId)
+            mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13)?.apply {
+                label = ","
+            }
+            mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14)?.apply {
+                label = "."
+            }
             invalidateView()
         } else {
             val softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as SoftKeyToggle??: return
             if (softKey.enableToggleState(if(mService!!.isAddPhrases)4 else InputModeSwitcherManager.mToggleStates.mStateEnter)) {
                 invalidateKey()
+            }
+            // Japanese punctuation: use 、 and 。
+            if (InputModeSwitcherManager.isJapanese) {
+                mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_COMMA_13)?.apply {
+                    label = "、"
+                }
+                mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LEFT_PERIOD_14)?.apply {
+                    label = "。"
+                }
+                invalidateView()
+            }
+        }
+        // Language key icon state: CN=0, EN=1, JP=2
+        val langState = when {
+            InputModeSwitcherManager.isChinese -> 0
+            InputModeSwitcherManager.isEnglish -> 1
+            else -> 2
+        }
+        mSoftKeyboard?.getKeyByCode(InputModeSwitcherManager.USER_DEF_KEYCODE_LANG_2)?.let { key ->
+            if (key.stateId != langState) {
+                key.stateId = langState
+                invalidateView()
             }
         }
     }

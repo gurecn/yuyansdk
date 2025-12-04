@@ -16,3 +16,4 @@ schema_list:
   - schema: double_pinyin_ls17
   - schema: stroke
   - schema: english
+  - schema: japanese
