@@ -1,0 +1,45 @@
+__build_info:
+  rime_version: 1.11.2
+  timestamps:
+    default: 0
+    japanese.custom: 0
+    japanese.schema: 1764570940
+engine:
+  filters:
+    - uniquifier
+  processors:
+    - ascii_composer
+    - recognizer
+    - speller
+    - punctuator
+    - selector
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - script_translator
+schema:
+  author:
+    - "ensigma96 <ensigma96@gmail.com>"
+  name: "日本語"
+  schema_id: japanese
+  version: v0.2
+speller:
+  algebra:
+    - "derive/_/x/"
+    - "derive/-/q/"
+    - "derive/i_e/ye/"
+  alphabet: "zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_"
+  delimiter: " '"
+translator:
+  comment_format:
+    - "xlit|q|ー|"
+  dictionary: japanese
+  preedit_format:
+    - "xlit|q|ー|"
+  spelling_hints: 100

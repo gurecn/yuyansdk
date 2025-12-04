@@ -293,7 +293,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 return
             }
             if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-                if(InputModeSwitcherManager.isChinese)   chooseAndUpdate()
+                if(InputModeSwitcherManager.isChinese || InputModeSwitcherManager.isJapanese)   chooseAndUpdate()
                 else if(InputModeSwitcherManager.isEnglish)  commitDecInfoText(DecodingInfo.composingStrForCommit)  // 把输入的拼音字符串发送给EditText
             }
             if (InputModeSwitcherManager.USER_DEF_KEYCODE_SYMBOL_3 == keyCode) {  // 点击标点按钮
@@ -348,7 +348,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      */
     override fun responseLongKeyEvent(result:Pair<PopupMenuMode, String>) {
         if (result.first != PopupMenuMode.None && !DecodingInfo.isAssociate && !DecodingInfo.isCandidatesListEmpty) {
-            if(InputModeSwitcherManager.isChinese) {
+            if(InputModeSwitcherManager.isChinese || InputModeSwitcherManager.isJapanese) {
                 chooseAndUpdate()
             } else if(InputModeSwitcherManager.isEnglish){
                 commitDecInfoText(DecodingInfo.composingStrForCommit)
@@ -404,7 +404,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val englishCellDisable = InputModeSwitcherManager.isEnglish && !getInstance().input.abcSearchEnglishCell.getValue()
         val result = if(englishCellDisable){
             processEnglishKey(event)
-        } else if (InputModeSwitcherManager.isEnglish || InputModeSwitcherManager.isChinese) { // 中文、英语输入模式
+        } else if (InputModeSwitcherManager.isEnglish || InputModeSwitcherManager.isChinese || InputModeSwitcherManager.isJapanese) { // 中文、英语输入模式
             processInput(event)
         } else { // 数字、符号处理
             processEnglishKey(event)
