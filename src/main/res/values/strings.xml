@@ -97,6 +97,7 @@
     <string name="sidebar_symbol_pinyin">拼音侧边栏</string>
     <string name="sidebar_symbol_number">数字侧边栏</string>
     <string name="more">更多</string>
+    <string name="add">新增</string>
     <string name="clipboard_suggestion">显示剪贴板提示</string>
     <string name="system_default">系统默认</string>
     <string name="num_50">50条</string>

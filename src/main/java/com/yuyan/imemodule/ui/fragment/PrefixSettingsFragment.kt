@@ -3,6 +3,9 @@ package com.yuyan.imemodule.ui.fragment
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -23,6 +26,7 @@ import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.libs.recyclerview.touch.OnItemMoveListener
+import com.yuyan.imemodule.utils.LogUtil
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams
@@ -34,10 +38,35 @@ import java.util.Collections
 class PrefixSettingsFragment(type:String) : Fragment(){
     private var  mType = "pinyin"
     private var  datas:MutableList<SideSymbol>
+    private var mAdapter:PrefixSettingsAdapter
     init {
         mType = type
         datas = if(type == "pinyin")DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin().toMutableList() else DataBaseKT.instance.sideSymbolDao().getAllSideSymbolNumber().toMutableList()
+        mAdapter = PrefixSettingsAdapter(datas, mType)
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.add_prefix_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.add_prefix_menu -> {
+                datas.add(SideSymbol("", "", type = mType))
+                mAdapter.notifyItemInserted(mAdapter.itemCount)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.setting_ime_prefixs)
@@ -69,7 +98,6 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             }, lParams(width = 0, weight = 1f))
         }
 
-        val adapter = PrefixSettingsAdapter(datas, mType)
         val mItemMoveListener: OnItemMoveListener = object :
             OnItemMoveListener {
             override fun onItemMove(srcHolder: RecyclerView.ViewHolder, targetHolder: RecyclerView.ViewHolder): Boolean {
@@ -78,7 +106,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
                 if(fromPosition < 0 || fromPosition >= datas.size) return false
                 if(toPosition < 0 || toPosition >= datas.size) return false
                 Collections.swap(datas, fromPosition, toPosition)
-                adapter.notifyItemMoved(fromPosition, toPosition)
+                mAdapter.notifyItemMoved(fromPosition, toPosition)
                 return true
             }
             override fun onItemDismiss(srcHolder: RecyclerView.ViewHolder?) {
@@ -103,10 +131,10 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             menuBridge.closeMenu()
             if(menuBridge.position == 0 && position < datas.size) {
                 datas.removeAt(position)
-                adapter.notifyItemRemoved(position)
+                mAdapter.notifyItemRemoved(position)
             }
         }
-        mRVSymbolsView.setAdapter(adapter)
+        mRVSymbolsView.setAdapter(mAdapter)
         LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             fitsSystemWindows = true
@@ -120,6 +148,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
     override fun onPause() {
         super.onPause()
         DataBaseKT.instance.sideSymbolDao().deleteAll(mType)
+        LogUtil.d("11111111", "onPause  datas：${datas.lastOrNull()?.symbolKey} ")
         DataBaseKT.instance.sideSymbolDao().insertAll(datas.filter { it.symbolKey.isNotBlank()})
         KeyboardManager.instance.clearKeyboard()
     }

@@ -59,15 +59,6 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             if(bindPos < mDatas.size) {
                 val data = mDatas[bindPos]
                 data.symbolKey = key
-                if(data.symbolKey == "" && data.symbolValue == ""){
-                    mDatas.removeAt(bindPos)
-                    notifyItemRemoved(bindPos)
-                }
-            }
-            else {
-                mDatas.add(SideSymbol(symbolKey = key, symbolValue = key, type = mType))
-                holder.etPrefixValue.setText(key)
-                notifyDataSetChanged()
             }
         }
         holder.etPrefixValue.doOnTextChanged { s, _, _, _ ->
@@ -76,21 +67,12 @@ class PrefixSettingsAdapter ( private val mDatas: MutableList<SideSymbol>, type:
             if(bindPos < mDatas.size) {
                 val data = mDatas[bindPos]
                 data.symbolValue = value
-                if(data.symbolKey == "" && data.symbolValue == ""){
-                    mDatas.removeAt(bindPos)
-                    notifyItemRemoved(bindPos)
-                }
-            }
-            else {
-                mDatas.add(SideSymbol(symbolKey = value, symbolValue = value, type = mType))
-                holder.etPrefixKey.setText(value)
-                notifyDataSetChanged()
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return mDatas.size + 1
+        return mDatas.size
     }
 
     inner class PrefixSettingsHolder(view: View) : RecyclerView.ViewHolder(view) {
