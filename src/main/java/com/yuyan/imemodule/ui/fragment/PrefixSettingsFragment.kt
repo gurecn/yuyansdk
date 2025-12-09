@@ -10,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
@@ -26,7 +28,6 @@ import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.libs.recyclerview.touch.OnItemMoveListener
-import com.yuyan.imemodule.utils.LogUtil
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams
@@ -45,32 +46,31 @@ class PrefixSettingsFragment(type:String) : Fragment(){
         mAdapter = PrefixSettingsAdapter(datas, mType)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.add_prefix_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.add_prefix_menu -> {
-                datas.add(SideSymbol("", "", type = mType))
-                mAdapter.notifyItemInserted(mAdapter.itemCount)
-                true
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val menuProvider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.add_prefix_menu, menu)
             }
-            else -> super.onOptionsItemSelected(item)
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.add_prefix_menu -> {
+                        datas.add(SideSymbol("", "", type = mType))
+                        mAdapter.notifyItemInserted(mAdapter.itemCount)
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.setting_ime_prefixs)
     }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
         val header = LinearLayout(Launcher.instance.context).apply {
             gravity = Gravity.CENTER_VERTICAL
@@ -148,7 +148,6 @@ class PrefixSettingsFragment(type:String) : Fragment(){
     override fun onPause() {
         super.onPause()
         DataBaseKT.instance.sideSymbolDao().deleteAll(mType)
-        LogUtil.d("11111111", "onPause  datas：${datas.lastOrNull()?.symbolKey} ")
         DataBaseKT.instance.sideSymbolDao().insertAll(datas.filter { it.symbolKey.isNotBlank()})
         KeyboardManager.instance.clearKeyboard()
     }
