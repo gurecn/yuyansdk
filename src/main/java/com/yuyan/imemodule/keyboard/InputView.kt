@@ -385,7 +385,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             PopupMenuMode.Enter ->  commitText("\n") // 长按回车键
             else -> {}
         }
-        if(result.first == PopupMenuMode.Text && mImeState != ImeState.STATE_PREDICT) resetToPredictState()
+        if(result.first == PopupMenuMode.Text && mImeState != ImeState.STATE_PREDICT) mImeState = ImeState.STATE_PREDICT
         else if(result.first != PopupMenuMode.None && mImeState != ImeState.STATE_IDLE) resetToIdleState()
     }
 
@@ -530,29 +530,21 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
     }
 
     /**
-     * 切换到联想状态
-     */
-    private fun resetToPredictState() {
-        resetCandidateWindow()
-        mImeState = ImeState.STATE_PREDICT
-    }
-
-    /**
      * 选择候选词，并根据条件是否进行下一步的预报。
      * @param candId 选择索引
      */
     fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
         val candidate = DecodingInfo.getCandidate(candId)
         if(candidate?.comment == "📋"){  // 处理剪贴板或常用语
+            mImeState = ImeState.STATE_PREDICT
             commitDecInfoText(candidate.text)
-            if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
         } else {
             val choice = DecodingInfo.chooseDecodingCandidate(candId)
             if (DecodingInfo.isEngineFinish || DecodingInfo.isAssociate) {  // 选择的候选词上屏
-                commitDecInfoText(choice)
                 KeyboardManager.instance.switchKeyboard(InputModeSwitcherManager.skbLayout)
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-                if(mImeState != ImeState.STATE_PREDICT)resetToPredictState()
+                mImeState = ImeState.STATE_PREDICT
+                commitDecInfoText(choice)
             } else {  // 不上屏，继续选择
                 if (!DecodingInfo.isFinish) {
                     if (InputModeSwitcherManager.isEnglish) setComposingText(DecodingInfo.composingStrForCommit)
@@ -658,7 +650,6 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
      * 选择拼音
      */
     fun selectPrefix(position: Int) {
-        // 播放按键声音和震动
         DevicesUtils.tryPlayKeyDown()
         DevicesUtils.tryVibrate(this)
         DecodingInfo.selectPrefix(position)
@@ -821,26 +812,27 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         selStart = newSelStart; selEnd = newSelEnd
         if(oldCandidatesEnd == candidatesEnd && InputModeSwitcherManager.isEnglish && !DecodingInfo.isCandidatesListEmpty && !DecodingInfo.isAssociate){
             service.finishComposingText()
-            resetToPredictState()
+            mImeState = ImeState.STATE_PREDICT
         }
         if(oldSelStart != oldSelEnd || newSelStart != newSelEnd)return
         oldCandidatesEnd = candidatesEnd
-        if ((chinesePrediction && InputModeSwitcherManager.isChinese && mImeState != ImeState.STATE_IDLE) || InputModeSwitcherManager.isNumberSkb) {
-            val textBeforeCursor = service.getTextBeforeCursor(100)
-            if (textBeforeCursor.isNotBlank()) {
-                val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
-                if(!expressionEnd.isNullOrBlank()) {
-                    if(expressionEnd.length < 100) {
-                        val result = CustomEngine.expressionCalculator(textBeforeCursor, expressionEnd)
-                        if (result.isNotEmpty()) showSymbols(result)
-                    }
-                } else if (StringUtils.isChineseEnd(textBeforeCursor)) {
-                    DecodingInfo.isAssociate = true
-                    DecodingInfo.getAssociateWord(if (textBeforeCursor.length > 10)textBeforeCursor.substring(textBeforeCursor.length - 10) else textBeforeCursor)
-                    updateCandidate()
-                    updateCandidateBar()
+        val textBeforeCursor = service.getTextBeforeCursor(100)
+        if(textBeforeCursor.isBlank()) return
+        if(InputModeSwitcherManager.isNumberSkb){
+            val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
+            if(!expressionEnd.isNullOrBlank()) {
+                if(expressionEnd.length < 100) {
+                    val result = CustomEngine.expressionCalculator(textBeforeCursor, expressionEnd)
+                    if (result.isNotEmpty()) showSymbols(result)
                 }
             }
+        } else if (chinesePrediction && InputModeSwitcherManager.isChinese && mImeState != ImeState.STATE_IDLE && StringUtils.isChineseEnd(textBeforeCursor)) {
+            DecodingInfo.isAssociate = true
+            DecodingInfo.getAssociateWord(if (textBeforeCursor.length > 10)textBeforeCursor.substring(textBeforeCursor.length - 10) else textBeforeCursor)
+            updateCandidate()
+            updateCandidateBar()
+        } else {
+            resetCandidateWindow()
         }
     }
 }
