@@ -816,23 +816,25 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
         if(oldSelStart != oldSelEnd || newSelStart != newSelEnd)return
         oldCandidatesEnd = candidatesEnd
-        val textBeforeCursor = service.getTextBeforeCursor(100)
-        if(textBeforeCursor.isBlank()) return
-        if(InputModeSwitcherManager.isNumberSkb){
-            val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
-            if(!expressionEnd.isNullOrBlank()) {
-                if(expressionEnd.length < 100) {
-                    val result = CustomEngine.expressionCalculator(textBeforeCursor, expressionEnd)
-                    if (result.isNotEmpty()) showSymbols(result)
+        if(mImeState == ImeState.STATE_PREDICT) {
+            val textBeforeCursor = service.getTextBeforeCursor(100)
+            if(textBeforeCursor.isBlank()) return
+            if(InputModeSwitcherManager.isNumberSkb){
+                val expressionEnd = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
+                if(!expressionEnd.isNullOrBlank()) {
+                    if(expressionEnd.length < 100) {
+                        val result = CustomEngine.expressionCalculator(textBeforeCursor, expressionEnd)
+                        if (result.isNotEmpty()) showSymbols(result)
+                    }
                 }
+            } else if (chinesePrediction && InputModeSwitcherManager.isChinese && StringUtils.isChineseEnd(textBeforeCursor)) {
+                DecodingInfo.isAssociate = true
+                DecodingInfo.getAssociateWord(if (textBeforeCursor.length > 10)textBeforeCursor.substring(textBeforeCursor.length - 10) else textBeforeCursor)
+                updateCandidate()
+                updateCandidateBar()
+            } else {
+                resetCandidateWindow()
             }
-        } else if (chinesePrediction && InputModeSwitcherManager.isChinese && mImeState != ImeState.STATE_IDLE && StringUtils.isChineseEnd(textBeforeCursor)) {
-            DecodingInfo.isAssociate = true
-            DecodingInfo.getAssociateWord(if (textBeforeCursor.length > 10)textBeforeCursor.substring(textBeforeCursor.length - 10) else textBeforeCursor)
-            updateCandidate()
-            updateCandidateBar()
-        } else {
-            resetCandidateWindow()
         }
     }
 }
