@@ -802,6 +802,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             mAddPhrasesLayout.addPhrasesHandle()
             initView(context)
         }
+        KeyboardManager.instance.switchKeyboard()
         if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
     }
 
