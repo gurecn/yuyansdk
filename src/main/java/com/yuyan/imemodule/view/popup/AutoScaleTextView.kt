@@ -16,11 +16,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @SuppressLint("AppCompatCustomView")
-class AutoScaleTextView @JvmOverloads constructor(
-    context: Context?,
-    attributeSet: AttributeSet? = null
-) : TextView(context, attributeSet) {
-
+class AutoScaleTextView @JvmOverloads constructor(context: Context?, attributeSet: AttributeSet? = null) : TextView(context, attributeSet) {
     enum class Mode {
         /**
          * do not scale or ellipse text, overflow when cannot fit width

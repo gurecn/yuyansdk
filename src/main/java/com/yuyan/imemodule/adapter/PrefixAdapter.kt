@@ -4,11 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.utils.StringUtils.sbc2dbcCase
+import com.yuyan.imemodule.view.popup.AutoScaleTextView
 
 /**
  * 拼音选择
@@ -24,7 +24,7 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     }
 
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
-        holder.tvSymbolType.text = sbc2dbcCase(mDatas[position])
+        holder.tvSymbolType.setText(sbc2dbcCase(mDatas[position]))
     }
 
     override fun getItemCount(): Int {
@@ -32,9 +32,9 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
     }
 
     inner class SymbolTypeHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var tvSymbolType: EmojiTextView = view.findViewById(android.R.id.text1)
+        var tvSymbolType: AutoScaleTextView = view.findViewById(android.R.id.text1)
         init {
-            tvSymbolType = view.findViewById(android.R.id.text1)
+            tvSymbolType.scaleMode = AutoScaleTextView.Mode.Proportional
             tvSymbolType.setTextColor(textColor)
         }
     }
