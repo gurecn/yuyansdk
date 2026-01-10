@@ -61,7 +61,7 @@
 git clone git@github.com:gurecn/yuyansdk.git
 ```
 ### 2. 导入Android Studio
-建议使用最新、稳定版本，本人使用`Android Studio Iguana | 2023.2.1 Patch 1`版本。
+建议使用最新、稳定版本，本人使用`Android Studio Narwhal Feature Drop | 2025.1.2`版本。
 ### 3 运行
 #### 3.1 独立 Module 运行
 导入项目后，执行`build.gradle`中task`makeaar`,待编译出对应的依赖资源后，放置到其他项目内进行依赖使用，具体调用方式参考[语燕输入法](https://github.com/gurecn/YuyanIme)
