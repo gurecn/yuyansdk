@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.view.MotionEvent
 import androidx.core.graphics.createBitmap
 import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.handwriting.Bezier
 import com.yuyan.imemodule.entity.handwriting.ControlTimedPoints
 import com.yuyan.imemodule.entity.handwriting.TimedPoint
@@ -39,7 +40,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     private val times = 1200L - getInstance().handwriting.handWritingSpeed.getValue()  // 默认1.3s
 
     init {
-        this.mPaint.setColor(MEASURED_STATE_MASK)
+        this.mPaint.setColor(ThemeManager.activeTheme.keyTextColor)
         mPaint.setAntiAlias(true)
         mPaint.setStyle(Paint.Style.STROKE)
         mPaint.setStrokeCap(Paint.Cap.ROUND)
