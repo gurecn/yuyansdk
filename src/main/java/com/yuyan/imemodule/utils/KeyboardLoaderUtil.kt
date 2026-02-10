@@ -466,7 +466,7 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun createT9Keys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
-        val keyPreset =  if(mSkbValue == 0x7000) getKeyPreset("strokeKeyPreset") else getKeyPreset("t9PYKeyPreset")
+        val keyPreset =  if(mSkbValue == 0x7000) KeyPreset.strokeKeyPreset else KeyPreset.t9PYKeyPreset
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1)?: "").apply {
@@ -478,7 +478,7 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun createT9NumberKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
-        val keyPreset = getKeyPreset("t9NumberKeyPreset")
+        val keyPreset = KeyPreset.t9NumberKeyPreset
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "").apply {
@@ -499,7 +499,7 @@ class KeyboardLoaderUtil private constructor() {
             else -> emptyMap()
         }
         val softKeys = mutableListOf<SoftKey>()
-        val keyPreset = if(numberLine)getKeyPreset("qwertyPYKeyPreset") else getKeyPreset("qwertyPYKeyNumberPreset")
+        val keyPreset = if(numberLine)KeyPreset.qwertyPYKeyPreset else KeyPreset.qwertyPYKeyNumberPreset
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "", keyMnemonic = keyMnemonicPreset[code] ?: "").apply {
@@ -511,7 +511,7 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun createQwertyKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
-        val keyPreset = if(numberLine)getKeyPreset("qwertyKeyPreset") else getKeyPreset("qwertyKeyNumberPreset")
+        val keyPreset = if(numberLine)KeyPreset.qwertyKeyPreset else KeyPreset.qwertyKeyNumberPreset
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "", keyMnemonic = labels?.getOrNull(2) ?: "").apply {
@@ -522,7 +522,7 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     private fun createHandwritingKey(code: Int): SoftKey {
-        val keyPreset = if(numberLine)getKeyPreset("qwertyPYKeyPreset") else getKeyPreset("qwertyPYKeyNumberPreset")
+        val keyPreset = if(numberLine)KeyPreset.qwertyPYKeyPreset else KeyPreset.qwertyPYKeyNumberPreset
         val labels = keyPreset[code]
         return SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "").apply {
             widthF = 0.18f
@@ -543,7 +543,7 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun createLX17Keys(codes: Array<Int>, width: Float = 0.142f): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
-        val keyPreset = if(numberLine)getKeyPreset("lx17PYKeyPreset") else getKeyPreset("lx17PYKeyNumberPreset")
+        val keyPreset = if(numberLine)KeyPreset.lx17PYKeyPreset else KeyPreset.lx17PYKeyNumberPreset
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "", keyMnemonic= lx17MnemonicPreset[code] ?: "").apply {
@@ -555,7 +555,7 @@ class KeyboardLoaderUtil private constructor() {
 
     private fun createTextEditKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()
-        val keyPreset = getKeyPreset("textEditKeyPreset")
+        val keyPreset = KeyPreset.textEditKeyPreset
         for(code in codes){
             val labels = keyPreset[code]
             softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "").apply {
@@ -578,9 +578,5 @@ class KeyboardLoaderUtil private constructor() {
                 if (null == mInstance) mInstance = KeyboardLoaderUtil()
                 return mInstance!!
             }
-    }
-
-    fun getKeyPreset(key:String):Map<Int, Array<String>>{
-        return KeyPreset.getKeyPreset(key)
     }
 }

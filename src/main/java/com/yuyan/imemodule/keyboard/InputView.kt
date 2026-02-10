@@ -687,6 +687,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else if(keyCode in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT) {
             service.sendCombinationKeyEvents(keyCode, shift = hasSelection)
             if(hasSelectionAll) hasSelectionAll = false
+//        } else if(keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+//            if(selStart > 0) service.sendCombinationKeyEvents(keyCode, shift = hasSelection)
+//            if(hasSelectionAll) hasSelectionAll = false
+//        } else if(keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ){
+//            service.sendCombinationKeyEvents(keyCode, shift = hasSelection)
+//            if(hasSelectionAll) hasSelectionAll = false
         } else {
             service.sendCombinationKeyEvents(keyCode)
         }
