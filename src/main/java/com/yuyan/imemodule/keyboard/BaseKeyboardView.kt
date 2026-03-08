@@ -39,7 +39,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     protected var mSoftKeyboard: SoftKeyboard? = null
     private var mCurrentKey: SoftKey? = null
     private var mGestureDetector: GestureDetector? = null
-    private var mLongPressKey = false
+    protected var mLongPressKey = false
     private var mAbortKey = false
     private var mHandler: Handler? = null
     protected var mDrawPending = false
