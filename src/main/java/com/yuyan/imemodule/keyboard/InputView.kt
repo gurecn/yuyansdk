@@ -722,7 +722,9 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         } else {
             if(getInstance().input.symbolPairInput.getValue()) {
                 service.commitText(text + SymbolPreset[text]!!)
-                service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
+                this.postDelayed(300) {
+                    service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
+                }
             } else service.commitText(text)
         }
     }
