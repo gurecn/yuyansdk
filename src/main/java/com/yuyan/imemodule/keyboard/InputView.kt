@@ -252,7 +252,14 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         setBackgroundResource(android.R.color.transparent)
         val keyTextColor = ThemeManager.activeTheme.keyTextColor
         val backgrounde = ThemeManager.activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
-        mSkbRoot.background = if(backgrounde is BitmapDrawable) backgrounde.bitmap.scale(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight).toDrawable(context.resources) else backgrounde
+        if (backgrounde is BitmapDrawable) {
+            val scaledBitmap = backgrounde.bitmap.scale(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
+            val newDrawable = scaledBitmap.toDrawable(context.resources)
+            newDrawable.colorFilter = backgrounde.colorFilter
+            mSkbRoot.background = newDrawable
+        } else {
+            mSkbRoot.background = backgrounde
+        }
         mSkbCandidatesBarView.updateTheme(keyTextColor)
         if(::mOnehandHoderLayout.isInitialized) {
             (mOnehandHoderLayout[0] as ImageButton).drawable?.setTint(keyTextColor)
