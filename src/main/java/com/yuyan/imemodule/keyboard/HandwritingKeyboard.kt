@@ -66,7 +66,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(me: MotionEvent): Boolean {
-        if(!isEnabled || !InputModeSwitcherManager.isChineseHandWriting) {
+        if(!isEnabled || !InputModeSwitcherManager.isChineseHandWriting || mLongPressKey) {
             return super.onTouchEvent(me)
         }
         val eventX = me.x
