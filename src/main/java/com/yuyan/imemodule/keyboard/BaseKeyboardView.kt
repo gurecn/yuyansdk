@@ -262,14 +262,27 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     private fun repeatKey(): Boolean {
         if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
-            mService?.responseKeyEvent(
-                if(mCurrentKey!!.code == InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9){
-                    SoftKey(if(currentDistanceX.absoluteValue >= currentDistanceY.absoluteValue){
-                        if(currentDistanceX > 0)  KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-                    } else{
-                        if(currentDistanceY < 0)  KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
-                    })
-                } else mCurrentKey!!)
+            if(mCurrentKey!!.code == KeyEvent.KEYCODE_DEL && mLongPressKey) {
+                    if (currentDistanceX.absoluteValue >= currentDistanceY.absoluteValue ) {
+                        if (currentDistanceX >= 0) mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                        else if (currentDistanceX < 0)mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl,  "🔄 下滑还原"))
+                    } else {
+                        if (currentDistanceY > 0) mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                        else if (currentDistanceY < 0) mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl,  "🔄 下滑还原"))
+                    }
+            } else {
+                mService?.responseKeyEvent(
+                    if (mCurrentKey!!.code == InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9) {
+                        SoftKey(
+                            if (currentDistanceX.absoluteValue >= currentDistanceY.absoluteValue) {
+                                if (currentDistanceX > 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
+                            } else {
+                                if (currentDistanceY < 0) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
+                            }
+                        )
+                    } else mCurrentKey!!
+                )
+            }
         }
         return true
     }

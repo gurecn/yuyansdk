@@ -21,4 +21,8 @@ class StringQueue(private val maxSize: Int = 10) {
     }
     fun size(): Int = items.size
     fun isEmpty(): Boolean = items.isEmpty()
+
+    fun clear() {
+        items.clear()
+    }
 }

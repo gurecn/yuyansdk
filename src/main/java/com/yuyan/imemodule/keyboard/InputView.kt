@@ -349,7 +349,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
 
 
     // 记录删除内容
-    private var textBeforeCursors = StringQueue(10)
+    private var textBeforeCursors = StringQueue(50)
 
     /**
      * 响应软键盘长按键的处理函数。在软键盘集装箱SkbContainer中responseKeyEvent（）的调用。
@@ -429,10 +429,12 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         var keyChar = event.unicodeChar
         val lable = keyChar.toChar().toString()
         if (keyCode == KeyEvent.KEYCODE_DEL) {
+            service.getTextBeforeCursor(1).takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
             sendKeyEvent(keyCode)
             if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             return true
         } else if(keyCode in (KeyEvent.KEYCODE_A .. KeyEvent.KEYCODE_Z) ){
+            textBeforeCursors.clear()
             if (!InputModeSwitcherManager.isEnglishLower) keyChar = keyChar - 'a'.code + 'A'.code
             commitText(keyChar.toChar().toString())
             return true
@@ -499,6 +501,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         val lable = keyChar.toChar().toString()
         if (keyCode == KeyEvent.KEYCODE_DEL) {
             if (DecodingInfo.isFinish || DecodingInfo.isAssociate) {
+                service.getTextBeforeCursor(1).takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
                 sendKeyEvent(keyCode)
                 if(mImeState != ImeState.STATE_IDLE) resetToIdleState()
             } else {
@@ -507,6 +510,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
             }
             return true
         } else if ((Character.isLetterOrDigit(keyChar) && keyCode != KeyEvent.KEYCODE_0) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON){
+            textBeforeCursors.clear()
             DecodingInfo.inputAction(event)
             updateCandidate()
             return true
