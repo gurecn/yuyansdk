@@ -187,9 +187,13 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 if (!mAbortKey && !mLongPressKey && mCurrentKey != null) {
                     mService?.responseKeyEvent(mCurrentKey!!)
                 }
+                currentDistanceX = 0F
+                currentDistanceY = 0F
             }
             MotionEvent.ACTION_CANCEL -> {
                 removeMessages()
+                currentDistanceX = 0F
+                currentDistanceY = 0F
             }
         }
         return true
@@ -264,11 +268,17 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         if (mCurrentKey != null && mCurrentKey!!.repeatable()) {
             if(mCurrentKey!!.code == KeyEvent.KEYCODE_DEL && mLongPressKey) {
                     if (currentDistanceX.absoluteValue >= currentDistanceY.absoluteValue ) {
-                        if (currentDistanceX >= 0) mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                        else if (currentDistanceX < 0)mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl,  "🔄 下滑还原"))
+                        if (currentDistanceX >= -2) {
+                            mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                        } else {
+                            mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl,  ""))
+                        }
                     } else {
-                        if (currentDistanceY > 0) mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                        else if (currentDistanceY < 0) mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl,  "🔄 下滑还原"))
+                        if (currentDistanceY > 0) {
+                            mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                        } else if (currentDistanceY < 0) {
+                            mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl,  ""))
+                        }
                     }
             } else {
                 mService?.responseKeyEvent(

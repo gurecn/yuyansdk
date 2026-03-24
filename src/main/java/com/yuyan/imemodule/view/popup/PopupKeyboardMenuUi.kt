@@ -131,25 +131,8 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
         }
     }
 
-    override fun onGestureEvent(distanceX: Float) {
-        if(popupMenuPair.first == PopupMenuMode.Clear){
-            isSelect = distanceX > 0
-            if(popupMenuMode == PopupMenuMode.None){
-                if(isSelect){
-                    popupMenuMode = PopupMenuMode.Clear
-                } else {
-                    popupMenuMode = PopupMenuMode.Revertl
-                    popupMenuPair = Pair(PopupMenuMode.Revertl,  "🔄 下滑还原")
-                    keys = arrayOf(popupMenuPair.second)
-                    keyUis.getOrNull(0)?.apply {
-                        textView.text = popupMenuPair.second
-                    }
-                    isSelect = true
-                }
-            }
-        }else if(popupMenuPair.first == PopupMenuMode.Revertl){
-            isSelect = distanceX < 0
-        }
+    override fun onGestureEvent(distance: Float) {
+        isSelect = distance > 5
         if(isSelect)markFocus(0) else markInactive()
     }
     override fun onChangeFocus(x: Float, y: Float): Boolean {

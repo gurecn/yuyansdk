@@ -84,9 +84,7 @@ class PopupComponent private constructor(){
             InputModeSwitcherManager.USER_DEF_KEYCODE_SHIFT_1 -> {
                 Pair(PopupMenuMode.EnglishCell, if(AppPrefs.getInstance().input.abcSearchEnglishCell.getValue()) "直输模式" else "拼写模式")
             }
-            KeyEvent.KEYCODE_DEL -> {
-                if(distanceY < 0)  Pair(PopupMenuMode.Revertl,  "🔄 下滑还原") else Pair(PopupMenuMode.Clear,  "🔙 上滑清空")
-            }
+            KeyEvent.KEYCODE_DEL -> Pair(PopupMenuMode.Clear,  "🔙 上滑清空")
             InputModeSwitcherManager.USER_DEF_KEYCODE_CURSOR_DIRECTION_9 -> Pair(PopupMenuMode.Move,  "")
             else ->  Pair(PopupMenuMode.Enter,  "↩️ 换行")
         }
@@ -94,8 +92,8 @@ class PopupComponent private constructor(){
         reallyMenuKeyboard(key, bounds, mCurrentKey.code != KeyEvent.KEYCODE_DEL)
     }
 
-    fun onGestureEvent(distanceX: Float) {
-        showingContainerUi?.onGestureEvent(distanceX)
+    fun onGestureEvent(distance: Float) {
+        showingContainerUi?.onGestureEvent(distance)
     }
 
     private fun reallyMenuKeyboard(key: Pair<PopupMenuMode, String>, bounds: Rect, isSelect: Boolean,) {

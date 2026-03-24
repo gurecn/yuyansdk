@@ -59,7 +59,7 @@ abstract class PopupContainerUi(override val ctx: Context, val bounds: Rect, val
 
     abstract fun onChangeFocus(x: Float, y: Float): Boolean
 
-    abstract fun onGestureEvent(distanceX: Float)
+    abstract fun onGestureEvent(distance: Float)
 
     abstract fun onTrigger(): Pair<PopupMenuMode, String>
 
