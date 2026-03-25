@@ -188,7 +188,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("DN", "dan")
         lx17PinyinMap.put("DC", "dui")
         lx17PinyinMap.put("DQ", "duang,dian")
-        lx17PinyinMap.put("DG", "dun")
+        lx17PinyinMap.put("DG", "dun,dei")
         lx17PinyinMap.put("DF", "diu,dou")
         lx17PinyinMap.put("DT", "dong")
 
@@ -344,7 +344,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("TN", "tan")
         lx17PinyinMap.put("TC", "tui")
         lx17PinyinMap.put("TQ", "tian")
-        lx17PinyinMap.put("TG", "tun")
+        lx17PinyinMap.put("TG", "tun,tei")
         lx17PinyinMap.put("TF", "tou")
         lx17PinyinMap.put("TT", "tong")
     }
