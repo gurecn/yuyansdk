@@ -16,6 +16,12 @@ class KeyRecordStack {
 
     fun clear() = keyRecords.clear()
 
+    fun forEachReversed(action: (InputKey) -> Unit) {
+        for (i in keyRecords.indices.reversed()) {
+            action(keyRecords[i])
+        }
+    }
+
     fun pushKey(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
         val keyChar = event.unicodeChar
@@ -69,11 +75,15 @@ class KeyRecordStack {
             }
         }
         val index1 = (0..keyRecords.size - keys.size).indexOfFirst { start ->
-            keys.indices.all { j -> keyRecords[start + j].toString() == keys[j].toString() }
+            keys.indices.all { j ->
+                val record = keyRecords[start + j]
+                record.toString() == keys[j].toString() && record is InputKey.T9Key && !record.consumed
+            }
         }
         repeat(keys.size) {
             keyRecords.removeAt(index1)
         }
+        keyRecords.add(InputKey.SelectPinyinAction)
         keyRecords.add(index1, InputKey.PinyinKey(pinyin))
         val posInInput = keyRecords.subList(0, index1).fold(0) { acc, inputKey ->
             acc + when (inputKey) {

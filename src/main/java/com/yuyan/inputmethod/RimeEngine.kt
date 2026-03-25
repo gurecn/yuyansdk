@@ -185,6 +185,12 @@ object RimeEngine {
             }
             else -> candidates
         }
+        var count = Rime.compositionText.count { it in 'A'..'Z' }
+        if (count > 0) {
+            keyRecordStack.forEachReversed { inputKey ->
+                if (inputKey is InputKey.T9Key) inputKey.consumed = count-- <= 0
+            }
+        }
         var composition = getCurrentComposition(candidates)
         if(Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_EN) {
             if (InputModeSwitcherManager.isEnglishUpperCase) {

@@ -278,7 +278,7 @@ object T9PinYinUtils {
 
 
     /**
-     * 获取拼音拼音对应的键码
+     * 获取拼音对应的键码
      */
     fun pinyin2Key(sequence: String?): String {
         if (sequence.isNullOrEmpty()) return ""
