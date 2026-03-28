@@ -22,4 +22,7 @@ interface ClipboardDao : BaseDao<Clipboard> {
 
     @Query("DELETE FROM clipboard WHERE content IN ( SELECT content FROM clipboard ORDER BY time ASC LIMIT :overflow)")
     fun deleteOldest(overflow: Int)
+
+    @Query("DELETE FROM clipboard WHERE isKeep = 0")
+    fun deleteAllExceptKeep()
 }

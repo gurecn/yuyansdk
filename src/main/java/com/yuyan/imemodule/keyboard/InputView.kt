@@ -629,7 +629,7 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
         }
 
         override fun onClickClearClipBoard() {
-            DataBaseKT.instance.clipboardDao().deleteAll()
+            DataBaseKT.instance.clipboardDao().deleteAllExceptKeep()
             (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
     }
