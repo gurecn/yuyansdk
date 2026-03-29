@@ -83,6 +83,7 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
 
     fun clearPhrasesContent() {
         mEtPhrases.setText("")
+        mEtPhrasesQuickCode.setText("")
     }
 
     fun addPhrasesHandle() {

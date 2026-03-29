@@ -643,7 +643,8 @@ class InputView(context: Context, service: ImeService) : LifecycleRelativeLayout
                 if(extra != null) {
                     DataBaseKT.instance.phraseDao().deleteByContent(extra.content)
                     mAddPhrasesLayout.setExtraData(extra)
-                }
+                } else mAddPhrasesLayout.clearPhrasesContent()
+
             }
             else ->onSettingsMenuClick(this, skbMenuMode)
         }
