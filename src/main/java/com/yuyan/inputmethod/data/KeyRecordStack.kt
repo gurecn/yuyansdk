@@ -2,6 +2,7 @@ package com.yuyan.inputmethod.data
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.application.CustomConstant
+import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.inputmethod.RimeEngine.processDelAction
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.LX17PinYinUtils
@@ -59,6 +60,7 @@ class KeyRecordStack {
 
     fun pushPinyinSelectAction(pinyin: String?): InputKey.PinyinKey? {
         pinyin ?: return null
+        LogUtil.d("111111111111", "pushPinyinSelectAction   pinyin:${pinyin}")
         val keys = LinkedList<InputKey.T9Key>()
         val rimeSchema = Rime.getCurrentRimeSchema()
         when (rimeSchema) {
@@ -73,12 +75,21 @@ class KeyRecordStack {
                 }
             }
         }
+
+
+        LogUtil.d("111111111111", "pushPinyinSelectAction   keys       :${keys.joinToString(",")}")
+        LogUtil.d("111111111111", "pushPinyinSelectAction   keyRecords :${keyRecords.joinToString(",")}")
+
+
         val index = (0..keyRecords.size - keys.size).indexOfFirst { start ->
             keys.indices.all { j ->
                 val record = keyRecords[start + j]
                 record.toString() == keys[j].toString() && record is InputKey.T9Key && !record.consumed
             }
         }
+        LogUtil.d("1111111111111", "pushPinyinSelectAction   index:$index")
+
+
         repeat(keys.size) {
             keyRecords.removeAt(index)
         }

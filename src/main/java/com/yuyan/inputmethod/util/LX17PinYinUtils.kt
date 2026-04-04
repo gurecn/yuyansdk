@@ -282,7 +282,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("QS", "qin,en")
         lx17PinyinMap.put("QZ", "qiao,ang")
         lx17PinyinMap.put("QB", "qiong,ao")
-        lx17PinyinMap.put("QX", "quan,qu,o")
+        lx17PinyinMap.put("QX", "quan,o")
         lx17PinyinMap.put("QM", "qie")
         lx17PinyinMap.put("QL", "que,ai")
         lx17PinyinMap.put("QD", "qu")
