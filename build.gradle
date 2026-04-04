@@ -46,15 +46,9 @@ android {
     //多渠道打包: app中多渠道配置要一致
     flavorDimensions = ["default"]
     productFlavors {
-        online {
-            dimension "default"
-            buildConfigField "Boolean", "offline", "false"
-            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
-        }
         offline {
             dimension "default"
             buildConfigField "Boolean", "offline", "true"
-            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
         }
     }
 
@@ -68,21 +62,17 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             resValue("string", "app_name", "@string/ime_yuyan_name")
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher")
         }
         debug {
             resValue("string", "app_name", "@string/ime_yuyan_name_debug")
+            resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
         }
     }
     sourceSets {
-        // offline 离线版本
         offline {
             jniLibs.srcDirs = ['libs', "src/offline/libs"]
             manifest.srcFile('src/offline/AndroidManifest.xml')
-        }
-        // online 在线版本
-        online {
-            jniLibs.srcDirs = ['libs', "src/online/libs"]
-            manifest.srcFile('src/online/AndroidManifest.xml')
         }
     }
 
