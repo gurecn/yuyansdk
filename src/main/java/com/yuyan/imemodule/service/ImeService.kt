@@ -25,7 +25,6 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
@@ -45,6 +44,7 @@ class ImeService : InputMethodService() {
     private lateinit var mCandidateView: CandidateView
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (isHardwareKeyboard) mCandidateView.updateTheme() else mInputView.updateTheme()}
     private val clipboardUpdateContent = getInstance().internal.clipboardUpdateContent
+    private val showVirtualKeyboardOnPhysicalKeyboard = getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard
     private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
         if(isSoftKeyboard && getInstance().clipboard.clipboardSuggestion.getValue()){
             if(value.isNotBlank()) {
@@ -57,9 +57,13 @@ class ImeService : InputMethodService() {
             }
         }
     }
+    private val showVirtualKeyboardOnPhysicalKeyboardListener = ManagedPreference.OnChangeListener<Boolean> { _, value ->
+        updateInputViewShown()
+    }
     override fun onCreate() {
         super.onCreate()
         addOnChangedListener(onThemeChangeListener)
+        showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
     }
 
@@ -74,7 +78,8 @@ class ImeService : InputMethodService() {
     }
 
     override fun onEvaluateInputViewShown(): Boolean {
-        return if(getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.getValue()) true else super.onEvaluateInputViewShown()
+        super.onEvaluateInputViewShown()
+        return if(getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.getValue()) true else isSoftKeyboard
     }
 
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
