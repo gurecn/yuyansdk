@@ -41,6 +41,10 @@ object DecodingInfo {
         // 候选词列表是否为空
         get() = candidatesLiveData.value?:emptyList()
 
+    fun getCurrentRimeSchema(): String {
+        return Kernel.getCurrentRimeSchema()
+    }
+
     // 增加拼写字符
     fun inputAction(event: KeyEvent) {
         activeCandidate = 0

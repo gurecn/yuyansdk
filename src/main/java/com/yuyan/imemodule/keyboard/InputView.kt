@@ -59,7 +59,6 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.core.CandidateListItem
-import com.yuyan.inputmethod.core.Kernel
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
 import kotlin.math.absoluteValue
@@ -320,7 +319,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
                 if (SymbolPreset.containsKey(it)) commitPairSymbol(it) else commitText(it)
             }
         } else {
-            val metaState = when(Kernel.getCurrentRimeSchema()) {
+            val metaState = when(DecodingInfo.getCurrentRimeSchema()) {
                 CustomConstant.SCHEMA_ZH_T9, CustomConstant.SCHEMA_ZH_STROKE, CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> KeyEvent.META_CAPS_LOCK_ON
                 else -> InputModeSwitcher.mToggleStates.modifiers
             }
