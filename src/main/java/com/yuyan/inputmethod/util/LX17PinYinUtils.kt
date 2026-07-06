@@ -196,7 +196,7 @@ object LX17PinYinUtils {
         lx17PinyinMap.put("YS", "yin")
         lx17PinyinMap.put("YZ", "yang")
         lx17PinyinMap.put("YB", "yao")
-        lx17PinyinMap.put("YX", "yuan")
+        lx17PinyinMap.put("YX", "yuan,yo")
         lx17PinyinMap.put("YL", "yue")
         lx17PinyinMap.put("YD", "yu")
         lx17PinyinMap.put("YY", "ying")
