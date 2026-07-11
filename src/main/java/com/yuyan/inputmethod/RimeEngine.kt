@@ -56,7 +56,7 @@ object RimeEngine {
     }
 
     fun onDeleteKey() {
-        processDelAction()
+        keyRecordStack.processDelAction()
         updateCandidatesOrCommitText()
     }
 
@@ -69,7 +69,7 @@ object RimeEngine {
 
     fun getNextPageCandidates(): Array<CandidateListItem> {
         return if (Rime.hasRight()) {
-            Rime.processKey(getRimeKeycodeByName("Page_Down"), 0)
+            Rime.processKey(keyRecordStack.getRimeKeycodeByName("Page_Down"), 0)
            val candidates = Rime.getRimeContext()!!.candidates
             when (charCase) {
                 KeyEvent.META_SHIFT_ON -> {
@@ -131,38 +131,6 @@ object RimeEngine {
     }
 
     fun destroy() = Rime.destroy()
-
-    fun processDelAction() {
-        when (val lastKey = keyRecordStack.pop()) {
-            is InputKey.PinyinKey -> {
-                val pinyinKey = keyRecordStack.restorePinyinToT9Key(lastKey) ?: return
-                replacePinyinWithT9Keys(pinyinKey)
-            }
-            InputKey.SelectPinyinAction -> {
-                val pinyinKey = keyRecordStack.restorePinyinToT9Key() ?: return
-                replacePinyinWithT9Keys(pinyinKey)
-            }
-            is InputKey.Apostrophe -> {
-                if (!lastKey.dummy) {
-                    Rime.processKey(getRimeKeycodeByName("BackSpace"), 0)
-                }
-            }
-            else -> {
-                Rime.processKey(getRimeKeycodeByName("BackSpace"), 0)
-            }
-        }
-    }
-
-    private fun replacePinyinWithT9Keys(pinyinKey: InputKey.PinyinKey) {
-        /**
-         * 当前输入状态是“你h”时，引擎默认删除行为是“ni”（删除h并且删除“你”的选中状态）
-         * 可能存在引擎操作栈与记录的操作栈不一样的问题
-         * 临时方案，尝试不同长度的替换，至少保证可以把拼音回退成9键
-         */
-        if (!Rime.replaceKey(pinyinKey.posInInput, pinyinKey.inputKeyLength, pinyinKey.t9Keys())) {
-            Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.t9Keys())
-        }
-    }
 
     private fun updateCandidatesOrCommitText(): String? {
         val rimeCommit = Rime.getRimeCommit()
@@ -268,13 +236,6 @@ object RimeEngine {
      */
     fun setImeOption(option: String, value: Boolean) {
         Rime.setOption(option, value)
-    }
-
-    /**
-     * 获取Rime定义键值
-     */
-    private fun getRimeKeycodeByName(name: String) : Int {
-        return Rime.getRimeKeycodeByName(name)
     }
 
     fun setCharCase(charCase: Int) {

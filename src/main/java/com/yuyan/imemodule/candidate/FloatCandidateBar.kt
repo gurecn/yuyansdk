@@ -20,7 +20,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.manager.layout.CustomLinearLayoutManager
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import splitties.dimensions.dp
 
@@ -72,11 +72,11 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                        DecodingInfo.activeCandidateBar =
+                        DictDecoder.activeCandidateBar =
                             layoutManager.findLastVisibleItemPosition()
                         val itemCount = recyclerView.adapter?.itemCount
-                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && DecodingInfo.activeCandidateBar >= itemCount - 1) {
-                            DecodingInfo.nextPageCandidates
+                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && DictDecoder.activeCandidateBar >= itemCount - 1) {
+                            DictDecoder.nextPageCandidates
                         }
                     }
                 }
@@ -99,11 +99,11 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
      * 显示候选词
      */
     fun showCandidates() {
-        mComposingView.text = DecodingInfo.composingStrForDisplay
-        if (DecodingInfo.isCandidatesEmpty) {
+        mComposingView.text = DictDecoder.composingStrForDisplay
+        if (DictDecoder.isCandidatesEmpty) {
             this.visibility = GONE
         } else {
-            if (DecodingInfo.candidateSize > DecodingInfo.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DecodingInfo.activeCandidateBar)
+            if (DictDecoder.candidateSize > DictDecoder.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DictDecoder.activeCandidateBar)
             this.visibility = VISIBLE
         }
         activeCandNo = 0
@@ -115,13 +115,13 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
      * 更新激活的候选词
      */
     fun updateActiveCandidateNo(keyCode: Int) {
-        if (!DecodingInfo.isCandidatesEmpty) {
+        if (!DictDecoder.isCandidatesEmpty) {
             when(keyCode){
                 KeyEvent.KEYCODE_DPAD_LEFT -> {
                     if(--activeCandNo <= 0) activeCandNo = 0
                 }
                 KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if(++activeCandNo > DecodingInfo.candidateSize) activeCandNo = DecodingInfo.candidateSize
+                    if(++activeCandNo > DictDecoder.candidateSize) activeCandNo = DictDecoder.candidateSize
                 }
             }
             mCandidatesAdapter.activeCandidates(activeCandNo)

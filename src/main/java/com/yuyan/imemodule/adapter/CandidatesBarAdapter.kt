@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 
 /**
@@ -36,8 +36,8 @@ class CandidatesBarAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        if(DecodingInfo.isCandidatesEmpty) return
-        holder.textView.text = DecodingInfo.candidates[position].text
+        if(DictDecoder.isCandidatesEmpty) return
+        holder.textView.text = DictDecoder.candidates[position].text
         holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
         holder.textView.setTextColor(if(mActiveCandNo-1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor)
         if (mOnItemClickListener != null) {
@@ -48,7 +48,7 @@ class CandidatesBarAdapter(context: Context?) :
     }
 
     override fun getItemCount(): Int {
-        return DecodingInfo.candidateSize
+        return DictDecoder.candidateSize
     }
 
     fun activeCandidates(activeCandNo:Int) {

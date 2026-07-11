@@ -17,7 +17,7 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -107,7 +107,7 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
 
     //更新符号显示,九宫格左侧符号栏
     fun updateSymbolListView() {
-        var prefixs = DecodingInfo.prefixs
+        var prefixs = DictDecoder.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
             prefixs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()

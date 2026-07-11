@@ -26,7 +26,7 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -107,9 +107,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                         if (!isLoadingMore) {
                             isLoadingMore = true
                             val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
-                            DecodingInfo.activeCandidate = lastItem
-                            if (DecodingInfo.candidateSize - lastItem <= 5) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
-                                DecodingInfo.nextPageCandidates
+                            DictDecoder.activeCandidate = lastItem
+                            if (DictDecoder.candidateSize - lastItem <= 5) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
+                                DictDecoder.nextPageCandidates
                             }
                             isLoadingMore = false
                         }
@@ -150,7 +150,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 MotionEvent.ACTION_MOVE -> { }
                 MotionEvent.ACTION_UP -> {
                     inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                    if(DecodingInfo.isCandidatesEmpty) {
+                    if(DictDecoder.isCandidatesEmpty) {
                         KeyboardManager.instance.switchKeyboard()
                         (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                     }
@@ -169,10 +169,10 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
      * 显示候选词界面 , 点击候选词时执行
      */
     fun showCandidatesView() {
-        if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate){
+        if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate){
             mRVSymbolsView.removeAllViews()
         } else {
-            if(DecodingInfo.activeCandidate == 0){
+            if(DictDecoder.activeCandidate == 0){
                 mCandidatesAdapter = CandidatesAdapter(context)
                 mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
                     DevicesUtils.tryPlayKeyDown()
@@ -193,7 +193,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
 
     //更新左侧拼音显示
     private fun updatePrefixsView() {
-        var prefixs =DecodingInfo.prefixs
+        var prefixs =DictDecoder.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
             prefixs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()

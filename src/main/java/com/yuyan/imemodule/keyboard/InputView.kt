@@ -43,8 +43,9 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.service.ImeService
+import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
@@ -110,7 +111,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
                 addRule(ALIGN_LEFT, mSkbRoot.id)
             })
         }
-        DecodingInfo.candidatesLiveData.observe(this) {
+        DictDecoder.candidatesLiveData.observe(this) {
             updateCandidateBar()
             (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
         }
@@ -279,7 +280,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
 
     override fun responseLongKeyEvent(result: Pair<PopupMenuMode, String>) {
         val (mode, value) = result
-        if (mode != PopupMenuMode.None && !DecodingInfo.isAssociate && !DecodingInfo.isCandidatesEmpty) {
+        if (mode != PopupMenuMode.None && !DictDecoder.isAssociate && !DictDecoder.isCandidatesEmpty) {
             if (InputModeSwitcher.isChinese || InputModeSwitcher.isEnglish) chooseAndUpdate()
         }
 
@@ -307,19 +308,19 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
     }
 
     override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
-        DecodingInfo.cacheCandidates(words)
+        DictDecoder.cacheCandidates(words)
     }
 
     override fun responseKeyEvent(sKey: SoftKey) {
         val keyCode = sKey.code
         if(sKey.isUserDefKey)processUserDefKey(keyCode, sKey.keyLabel)
         else if(sKey.isUniStrKey){
-            if (!DecodingInfo.isAssociate && !DecodingInfo.isCandidatesEmpty) chooseAndUpdate()
+            if (!DictDecoder.isAssociate && !DictDecoder.isCandidatesEmpty) chooseAndUpdate()
             sKey.label.takeIf(String::isNotEmpty)?.let {
                 if (SymbolPreset.containsKey(it)) commitPairSymbol(it) else commitText(it)
             }
         } else {
-            val metaState = when(DecodingInfo.getCurrentRimeSchema()) {
+            val metaState = when(InputDispatcher.getCurrentRimeSchema()) {
                 CustomConstant.SCHEMA_ZH_T9, CustomConstant.SCHEMA_ZH_STROKE, CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> KeyEvent.META_CAPS_LOCK_ON
                 else -> InputModeSwitcher.mToggleStates.modifiers
             }
@@ -396,7 +397,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
     private fun processFunctionKey(event: KeyEvent) {
         when (val keyCode = event.keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
-                if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) {
+                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
                     sendKeyEvent(keyCode)
                     resetToIdleState()
                 }
@@ -404,12 +405,12 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
             }
             KeyEvent.KEYCODE_CLEAR -> resetToIdleState()
             KeyEvent.KEYCODE_ENTER -> {
-                if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) sendKeyEvent(keyCode)
-                else commitDecInfoText(DecodingInfo.composingStrForCommit)
+                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) sendKeyEvent(keyCode)
+                else commitDecInfoText(DictDecoder.composingStrForCommit)
                 resetToIdleState()
             }
             KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT -> {
-                if(InputModeSwitcher.isChinese && !DecodingInfo.isEngineFinish) processInput(KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_APOSTROPHE, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD))
+                if(InputModeSwitcher.isChinese && !DictDecoder.isEngineFinish) processInput(KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_APOSTROPHE, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD))
                 else InputModeSwitcher.processShiftKey(keyCode)
             }
         }
@@ -422,7 +423,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
                 resetToIdleState()
                 return
             }
-            !DecodingInfo.isAssociate && !DecodingInfo.isCandidatesEmpty -> {
+            !DictDecoder.isAssociate && !DictDecoder.isCandidatesEmpty -> {
                 if (InputModeSwitcher.isChinese || InputModeSwitcher.isEnglish) chooseAndUpdate()
             }
         }
@@ -470,29 +471,29 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
 
         return when {
             keyCode == KeyEvent.KEYCODE_DEL -> {
-                if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) {
+                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
                     service.getTextBeforeCursor(1).takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
                     sendKeyEvent(keyCode)
                 } else {
-                    DecodingInfo.deleteAction()
+                    InputDispatcher.deleteAction()
                     updateCandidate()
                 }
                 true
             }
             (Character.isLetterOrDigit(keyChar) && keyCode != KeyEvent.KEYCODE_0) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON -> {
                 textBeforeCursors.clear()
-                DecodingInfo.inputAction(event)
+                InputDispatcher.inputKeyCode(event)
                 updateCandidate()
                 true
             }
             keyCode != 0 -> {
-                if (!DecodingInfo.isCandidatesEmpty && !DecodingInfo.isAssociate) chooseAndUpdate()
+                if (!DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate) chooseAndUpdate()
                 sendKeyEvent(keyCode)
                 resetToIdleState()
                 true
             }
             label.isNotEmpty() -> {
-                if (!DecodingInfo.isCandidatesEmpty && !DecodingInfo.isAssociate) chooseAndUpdate()
+                if (!DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate) chooseAndUpdate()
                 if (SymbolPreset.containsKey(label)) commitPairSymbol(label) else commitText(label)
                 true
             }
@@ -506,19 +507,19 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
     }
 
     fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
-        val candidate = DecodingInfo.getCandidate(candId)
+        val candidate = DictDecoder.getCandidate(candId)
         if (candidate?.comment == "📋") {
             commitDecInfoText(candidate.text)
         } else {
-            val choice = DecodingInfo.chooseDecodingCandidate(candId)
-            if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) {
+            val choice = DictDecoder.chooseDecodingCandidate(candId)
+            if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
                 KeyboardManager.instance.switchKeyboard()
                 (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
                 commitDecInfoText(choice)
             } else {
-                if (!DecodingInfo.isCandidatesEmpty) {
+                if (!DictDecoder.isCandidatesEmpty) {
                     (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
-                    if (InputModeSwitcher.isEnglish) setComposingText(DecodingInfo.composingStrForCommit)
+                    if (InputModeSwitcher.isEnglish) setComposingText(DictDecoder.composingStrForCommit)
                 } else {
                     resetToIdleState()
                 }
@@ -527,19 +528,20 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
     }
 
     private fun updateCandidate() {
-        DecodingInfo.updateDecodingCandidate()
-        if (!DecodingInfo.isCandidatesEmpty) {
+        DictDecoder.updateDecodingCandidate()
+        if (!DictDecoder.isCandidatesEmpty) {
             (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
         } else {
             resetToIdleState()
         }
-        if (InputModeSwitcher.isEnglish) setComposingText(DecodingInfo.composingStrForCommit)
+        if (InputModeSwitcher.isEnglish) setComposingText(DictDecoder.composingStrForCommit)
     }
 
     fun updateCandidateBar() = mSkbCandidatesBarView.scheduleShowCandidates()
 
     private fun resetCandidateWindow() {
-        DecodingInfo.reset()
+        DictDecoder.reset()
+        InputDispatcher.reset()
         (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
     }
 
@@ -592,13 +594,13 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
     fun selectPrefix(position: Int) {
         DevicesUtils.tryPlayKeyDown()
         DevicesUtils.tryVibrate(this)
-        DecodingInfo.selectPrefix(position)
+        InputDispatcher.selectPrefix(position)
         updateCandidate()
     }
 
     fun showSymbols(symbols: Array<String>) {
         val list = symbols.map { CandidateListItem("📋", it) }.toTypedArray()
-        DecodingInfo.cacheCandidates(list, true)
+        DictDecoder.cacheCandidates(list, true)
     }
 
     fun requestHideSelf() = service.requestHideSelf(0)
@@ -752,7 +754,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
                 val textBeforeCursor = service.getTextBeforeCursor(10)
                 if (textBeforeCursor.isBlank()) resetCandidateWindow()
                 else {
-                    DecodingInfo.getAssociateWord(textBeforeCursor)
+                    InputDispatcher.getAssociateWord(textBeforeCursor)
                     updateCandidate()
                 }
             }

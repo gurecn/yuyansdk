@@ -15,7 +15,7 @@ import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
-import com.yuyan.inputmethod.core.Kernel
+import com.yuyan.imemodule.service.InputDispatcher
 
 fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
     when (skbMenuMode) {
@@ -57,7 +57,7 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         SkbMenuMode.JianFan -> {
             val chineseFanTi = AppPrefs.getInstance().input.chineseFanTi.getValue()
             AppPrefs.getInstance().input.chineseFanTi.setValue(!chineseFanTi)
-            Kernel.nativeUpdateImeOption()
+            InputDispatcher.nativeUpdateImeOption()
             KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.LockEnglish -> {
@@ -81,7 +81,7 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         SkbMenuMode.EmojiInput -> {
             val emojiInput = AppPrefs.getInstance().input.emojiInput.getValue()
             AppPrefs.getInstance().input.emojiInput.setValue(!emojiInput)
-            Kernel.nativeUpdateImeOption()
+            InputDispatcher.nativeUpdateImeOption()
             KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.Handwriting -> AppUtil.launchSettingsToHandwriting(Launcher.instance.context)

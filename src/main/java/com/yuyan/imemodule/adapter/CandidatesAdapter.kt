@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 
 /**
@@ -31,14 +31,14 @@ class CandidatesAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        holder.textView.text = DecodingInfo.candidates[position].text
+        holder.textView.text = DictDecoder.candidates[position].text
         holder.textView.setOnClickListener { view: View? ->
             mOnItemClickListener?.onItemClick(this@CandidatesAdapter, view, position)
         }
     }
 
     override fun getItemCount(): Int {
-        return DecodingInfo.candidateSize
+        return DictDecoder.candidateSize
     }
 
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {

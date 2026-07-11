@@ -1,11 +1,10 @@
-package com.yuyan.inputmethod.core
+package com.yuyan.imemodule.service
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.service.DecodingInfo
 import com.yuyan.inputmethod.RimeEngine
 
-object Kernel {
+object InputDispatcher {
 
     // 初始化输入法
     @Synchronized
@@ -20,6 +19,7 @@ object Kernel {
 
     // 传入一个键码
     fun inputKeyCode(event: KeyEvent) {
+        DictDecoder.inputAction()
         RimeEngine.onNormalKey(event)
     }
 
@@ -27,42 +27,27 @@ object Kernel {
     val isFinish: Boolean
         get() = RimeEngine.isFinish()
 
-    val candidates: List<CandidateListItem>
-        get() = RimeEngine.showCandidates
-
-    val nextPageCandidates: Array<CandidateListItem>
-        get() = RimeEngine.getNextPageCandidates()
-
-    // 拿到候选词拼音
-    val prefixs: Array<String>
-        get() = RimeEngine.getPrefixs()
-
     // 选择某个候选拼音
     fun selectPrefix(index: Int) {
+        DictDecoder.selectPrefix(index)
         RimeEngine.selectPinyin(index)
     }
 
     // 执行选择动作，选择了index指向的词语
     fun getWordSelectedWord(index: Int) {
-        if (DecodingInfo.isAssociate) RimeEngine.selectAssociation(index)
+        if (DictDecoder.isAssociate) RimeEngine.selectAssociation(index)
         else if(!isFinish)RimeEngine.selectCandidate(index)
     }
 
-    // 最上端拼音行
-    val wordsShowPinyin: String
-        get() = RimeEngine.showComposition
-
-    // 得到即将上屏的候选词
-    val commitText: String
-        get() = RimeEngine.preCommitText
-
     // 删除操作
     fun deleteAction() {
+        DictDecoder.deleteAction()
         RimeEngine.onDeleteKey()
     }
 
     // 重置输入状态
     fun reset() {
+        DictDecoder.reset()
         RimeEngine.reset()
     }
 
@@ -74,6 +59,7 @@ object Kernel {
 
     // 根据输入的字符查询候选词
     fun getAssociateWord(words: String) {
+        DictDecoder.getAssociateWord(words)
         RimeEngine.predictAssociationWords(words)
     }
 

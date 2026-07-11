@@ -2,7 +2,6 @@ package com.yuyan.inputmethod.data
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.application.CustomConstant
-import com.yuyan.inputmethod.RimeEngine.processDelAction
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.util.LX17PinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -57,6 +56,41 @@ class KeyRecordStack {
             }
         }
         return true
+    }
+
+
+    fun processDelAction() {
+        when (val lastKey = pop()) {
+            is InputKey.PinyinKey -> {
+                val pinyinKey = restorePinyinToT9Key(lastKey) ?: return
+                replacePinyinWithT9Keys(pinyinKey)
+            }
+            InputKey.SelectPinyinAction -> {
+                val pinyinKey = restorePinyinToT9Key() ?: return
+                replacePinyinWithT9Keys(pinyinKey)
+            }
+            is InputKey.Apostrophe -> {
+                if (!lastKey.dummy) {
+                    Rime.processKey(getRimeKeycodeByName("BackSpace"), 0)
+                }
+            }
+            else -> {
+                Rime.processKey(getRimeKeycodeByName("BackSpace"), 0)
+            }
+        }
+    }
+
+    private fun replacePinyinWithT9Keys(pinyinKey: InputKey.PinyinKey) {
+        if (!Rime.replaceKey(pinyinKey.posInInput, pinyinKey.inputKeyLength, pinyinKey.t9Keys())) {
+            Rime.replaceKey(pinyinKey.posInInput, pinyinKey.pinyinLength, pinyinKey.t9Keys())
+        }
+    }
+
+    /**
+     * 获取Rime定义键值
+     */
+    fun getRimeKeycodeByName(name: String) : Int {
+        return Rime.getRimeKeycodeByName(name)
     }
 
     fun pushPinyinSelectAction(pinyin: String?): InputKey.PinyinKey? {

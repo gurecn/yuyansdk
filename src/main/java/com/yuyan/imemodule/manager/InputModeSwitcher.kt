@@ -6,8 +6,8 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
+import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.inputmethod.core.Kernel
 
 /**
  * 输入法模式转换器。设置输入法的软键盘。
@@ -282,7 +282,7 @@ object InputModeSwitcher {
         } else {
             MASK_CASE_LOWER
         }
-        Kernel.setCharCase(mToggleStates.modifiers)
+        InputDispatcher.setCharCase(mToggleStates.modifiers)
         lsatClickTime = System.currentTimeMillis()
         (KeyboardManager.instance.currentContainer as? InputBaseContainer)?.updateStates()
     }
@@ -332,15 +332,15 @@ object InputModeSwitcher {
     fun saveInputMode(newInputMode: Int) {
         mInputMode = newInputMode // 设置新的输入法模式为当前的输入法模式
         if (isEnglish) {
-            Kernel.initImeSchema(CustomConstant.SCHEMA_EN)
+            InputDispatcher.initImeSchema(CustomConstant.SCHEMA_EN)
         } else {
-            Kernel.initImeSchema(getInstance().internal.pinyinModeRime.getValue())
+            InputDispatcher.initImeSchema(getInstance().internal.pinyinModeRime.getValue())
         }
         if (isChinese || isEnglish) {
             mRecentLauageInputMode = mInputMode
             getInstance().internal.inputDefaultMode.setValue(mInputMode)
         }
-        mToggleStates.modifiers = when(Kernel.getCurrentRimeSchema()) {
+        mToggleStates.modifiers = when(InputDispatcher.getCurrentRimeSchema()) {
             CustomConstant.SCHEMA_ZH_T9, CustomConstant.SCHEMA_ZH_STROKE, CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> KeyEvent.META_CAPS_LOCK_ON
             else -> MASK_CASE_LOWER
         }

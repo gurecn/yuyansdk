@@ -19,8 +19,9 @@ import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-import com.yuyan.imemodule.service.DecodingInfo
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.service.ImeService
+import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.StringUtils
@@ -51,7 +52,7 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_candidate_container, this, false) as RelativeLayout
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
-        DecodingInfo.candidatesLiveData.observe(this) {
+        DictDecoder.candidatesLiveData.observe(this) {
             mSkbCandidatesBarView.showCandidates()
         }
         initView()
@@ -122,7 +123,7 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
     private fun processFunctionKeys(event: KeyEvent): Boolean {
         return when (val keyCode = event.keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
-                if (DecodingInfo.isCandidatesEmpty || (DecodingInfo.isAssociate && !mSkbCandidatesBarView.isActiveCand())) {
+                if (DictDecoder.isCandidatesEmpty || (DictDecoder.isAssociate && !mSkbCandidatesBarView.isActiveCand())) {
                     sendKeyEvent(keyCode)
                     resetToIdleState()
                 } else {
@@ -140,13 +141,13 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
                 true
             }
             KeyEvent.KEYCODE_ENTER -> {
-                if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) sendKeyEvent(keyCode)
-                else commitDecInfoText(DecodingInfo.composingStrForCommit)
+                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) sendKeyEvent(keyCode)
+                else commitDecInfoText(DictDecoder.composingStrForCommit)
                 resetToIdleState()
                 true
             }
             KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                if (!DecodingInfo.isCandidatesEmpty) {
+                if (!DictDecoder.isCandidatesEmpty) {
                     mSkbCandidatesBarView.updateActiveCandidateNo(keyCode)
                 } else {
                     sendKeyEvent(keyCode)
@@ -163,10 +164,14 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
         val label = keyChar.toChar().toString()
         return when {
             keyCode == KeyEvent.KEYCODE_DEL -> {
-                if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) {
+                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
                     sendKeyEvent(keyCode)
                 } else {
-                    DecodingInfo.deleteAction()
+                    if(!DictDecoder.isEngineFinish){
+                        InputDispatcher.deleteAction()
+                    } else {
+                        InputDispatcher.reset()
+                    }
                     updateCandidate()
                 }
                 true
@@ -176,32 +181,33 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
                 true
             }
             Character.isLetter(keyChar) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON -> {
-                DecodingInfo.inputAction(event)
+                InputDispatcher.inputKeyCode(event)
                 updateCandidate()
                 true
             }
             else -> {
-                if (!DecodingInfo.isCandidatesEmpty && !DecodingInfo.isAssociate) chooseAndUpdate()
+                if (!DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate) chooseAndUpdate()
                 false
             }
         }
     }
 
     fun resetToIdleState() {
-        DecodingInfo.reset()
+        DictDecoder.reset()
+        InputDispatcher.reset()
     }
 
     fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
-        val choice = DecodingInfo.chooseDecodingCandidate(candId)
-        if (DecodingInfo.isCandidatesEmpty || DecodingInfo.isAssociate) {
+        val choice = DictDecoder.chooseDecodingCandidate(candId)
+        if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
             commitDecInfoText(choice)
             resetToIdleState()
         }
     }
 
     private fun updateCandidate() {
-        DecodingInfo.updateDecodingCandidate()
-        if (DecodingInfo.isCandidatesEmpty) resetToIdleState()
+        DictDecoder.updateDecodingCandidate()
+        if (DictDecoder.isCandidatesEmpty) resetToIdleState()
     }
 
     inner class ChoiceNotifier internal constructor() : CandidateViewListener {
