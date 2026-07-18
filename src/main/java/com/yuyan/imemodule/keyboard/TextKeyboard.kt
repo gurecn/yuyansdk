@@ -26,6 +26,7 @@ import kotlin.math.min
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
 import com.yuyan.imemodule.prefs.behavior.SkbStyleMode
+import com.yuyan.imemodule.service.InputDispatcher
 
 /**
  * 软件盘视图
@@ -205,7 +206,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             else softKey.keyIcon
         val weightHeigth = softKey.height() / 4f
         val textColor = mActiveTheme.keyTextColor
-        if(softKey.code == KeyEvent.KEYCODE_SHIFT_LEFT && InputModeSwitcher.isChinese && !DictDecoder.isEngineFinish){
+        if(softKey.code == KeyEvent.KEYCODE_SHIFT_LEFT && InputModeSwitcher.isChinese && !InputDispatcher.isFinish){
             keyLabel = "分词"
             keyIcon = null
         }

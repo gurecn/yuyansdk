@@ -410,7 +410,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
                 resetToIdleState()
             }
             KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT -> {
-                if(InputModeSwitcher.isChinese && !DictDecoder.isEngineFinish) processInput(KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_APOSTROPHE, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD))
+                if(InputModeSwitcher.isChinese && !InputDispatcher.isFinish) processInput(KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_APOSTROPHE, 0, 0, 0, 0, KeyEvent.FLAG_SOFT_KEYBOARD))
                 else InputModeSwitcher.processShiftKey(keyCode)
             }
         }
@@ -754,7 +754,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
                 val textBeforeCursor = service.getTextBeforeCursor(10)
                 if (textBeforeCursor.isBlank()) resetCandidateWindow()
                 else {
-                    InputDispatcher.getAssociateWord(textBeforeCursor)
+                    InputDispatcher.predictAssociationWords(textBeforeCursor)
                     updateCandidate()
                 }
             }

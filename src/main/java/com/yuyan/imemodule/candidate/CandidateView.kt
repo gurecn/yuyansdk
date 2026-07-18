@@ -167,7 +167,7 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
                 if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
                     sendKeyEvent(keyCode)
                 } else {
-                    if(!DictDecoder.isEngineFinish){
+                    if(!InputDispatcher.isFinish){
                         InputDispatcher.deleteAction()
                     } else {
                         InputDispatcher.reset()

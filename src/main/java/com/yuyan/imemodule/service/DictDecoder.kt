@@ -67,10 +67,6 @@ object DictDecoder {
         activeCandidateBar = 0
     }
 
-
-    val isEngineFinish: Boolean
-        get() = RimeEngine.isFinish()
-
     val composingStrForDisplay: String   //获取显示的拼音字符串/
         get() = RimeEngine.showComposition
 
@@ -94,7 +90,7 @@ object DictDecoder {
         activeCandidate = 0
         activeCandidateBar = 0
         var candidate: String
-        if(!isEngineFinish || isAssociate) { // Rime和联想
+        if(!InputDispatcher.isFinish || isAssociate) { // Rime和联想
             if (candId >= 0) InputDispatcher.getWordSelectedWord(candId)
             val newCandidates = RimeEngine.showCandidates
             candidate = if (newCandidates.isNotEmpty()) RimeEngine.preCommitText
