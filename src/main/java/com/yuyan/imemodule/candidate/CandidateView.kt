@@ -2,6 +2,7 @@ package com.yuyan.imemodule.candidate
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.CandidateViewListener
+import com.yuyan.imemodule.callback.IKeyboardView
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.InputModeSwitcher
@@ -36,7 +38,7 @@ import kotlin.math.max
  * 包含拼音显示、候选词栏、键盘界面等。
  */
 @SuppressLint("ViewConstructor")
-class CandidateView(context: Context, private val service: ImeService) : LifecycleRelativeLayout(context) {
+class CandidateView(context: Context, private val service: ImeService) : IKeyboardView(context) {
 
     private var mHorizontalCutoutWidth: Int = 0
     private var mFloatCandidateBarWidth: Int = 0
@@ -81,14 +83,14 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
         updateTheme()
     }
 
-    fun updateTheme() {
+    override fun updateTheme() {
         setBackgroundResource(android.R.color.transparent)
         val activeTheme = ThemeManager.activeTheme
         val keyTextColor = activeTheme.keyTextColor
         mSkbCandidatesBarView.updateTheme(keyTextColor)
     }
 
-    fun updatePosition(anchor: FloatArray) {
+    override fun updatePosition(anchor: FloatArray) {
         val bottom = instance.mScreenHeight - anchor[1].toInt()
         val diffHight = (instance.heightForCandidatesArea * 1.5).toInt()
         leftPadding = if(!instance.isLandscape) 0
@@ -97,7 +99,7 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
         bottomPadding = if(bottom > diffHight) bottom - diffHight else bottom + instance.heightForCandidatesArea
     }
 
-    fun processKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    override fun processKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if(InputModeSwitcher.isEnglish) return false
         // 字母、数字、符号、空格
         if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) return true
@@ -113,7 +115,7 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
         return false
     }
 
-    fun processKeyUp(event: KeyEvent): Boolean {
+    override fun processKeyUp(event: KeyEvent): Boolean {
         InputModeSwitcher.resetCharCase()
         return if (processFunctionKeys(event)) true
         else if (InputModeSwitcher.isChinese) processInput(event)
@@ -248,9 +250,30 @@ class CandidateView(context: Context, private val service: ImeService) : Lifecyc
         }
     }
 
-    fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
+    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
         if(editorInfo != null)InputModeSwitcher.requestInputWithSkb(editorInfo)
         if (!restarting) resetToIdleState()
     }
 
+    override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {}
+
+    override fun getLocationInWindow(): IntArray {
+        return intArrayOf(0, 0).also {mSkbRoot.getLocationInWindow(it) }
+    }
+
+    override fun getKeyboardWidth(): Int = 0
+
+    override fun getKeyboardHeight(): Int = 0
+
+    override fun showSymbols(symbols: Array<String>) {}
+
+    override fun setConfiguration(newConfig: Configuration) {
+        initView()
+    }
+
+    override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesEnd: Int) {}
+
+    override fun onWindowShown() {}
+
+    override fun onWindowHidden() {}
 }

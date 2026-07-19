@@ -2,6 +2,7 @@ package com.yuyan.imemodule.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -27,6 +28,7 @@ import androidx.core.view.postDelayed
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.callback.CandidateViewListener
+import com.yuyan.imemodule.callback.IKeyboardView
 import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -57,7 +59,6 @@ import com.yuyan.imemodule.view.EditPhrasesView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
-import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
@@ -69,7 +70,7 @@ import kotlin.math.absoluteValue
  * 包含拼音显示、候选词栏、键盘界面等。
  */
 @SuppressLint("ViewConstructor")
-class InputView(context: Context, private val service: ImeService) : LifecycleRelativeLayout(context), IResponseKeyEvent {
+class InputView(context: Context, private val service: ImeService) : IKeyboardView(context), IResponseKeyEvent {
     private val appPrefs = getInstance()
     private val clipboardItemTimeout = appPrefs.clipboard.clipboardItemTimeout.getValue()
     private var chinesePrediction = true
@@ -120,7 +121,6 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
 
     @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context) {
-        LogUtil.d("1111111111111", "InputView initView")
         if (isAddPhrases) {
             if (mAddPhrasesLayout.parent == null) {
                 addView(mAddPhrasesLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
@@ -237,7 +237,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         return false
     }
 
-    fun updateTheme() {
+    override fun updateTheme() {
         LogUtil.d("1111111111111", "InputView updateTheme")
         setBackgroundResource(android.R.color.transparent)
         val activeTheme = ThemeManager.activeTheme
@@ -329,7 +329,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
     }
 
 
-    fun processKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    override fun processKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) return true
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
@@ -340,7 +340,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         return false
     }
 
-    fun processKeyUp(event: KeyEvent): Boolean {
+    override fun processKeyUp(event: KeyEvent): Boolean {
         if(event.isSystem) return processSystemKeys(event)
         else if(isFunctionKey(event.keyCode)){
             processFunctionKey(event)
@@ -598,7 +598,7 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         updateCandidate()
     }
 
-    fun showSymbols(symbols: Array<String>) {
+    override fun showSymbols(symbols: Array<String>) {
         val list = symbols.map { CandidateListItem("📋", it) }.toTypedArray()
         DictDecoder.cacheCandidates(list, true)
     }
@@ -695,8 +695,11 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         }
     }
 
-    fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        InputModeSwitcher.requestInputWithSkb(editorInfo)
+    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
+        if(editorInfo != null)InputModeSwitcher.requestInputWithSkb(editorInfo)
+    }
+
+    override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         if (!restarting) {
             resetToIdleState()
             val clipboard = appPrefs.clipboard
@@ -714,11 +717,11 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         }
     }
 
-    fun onWindowShown() {
+    override fun onWindowShown() {
         chinesePrediction = appPrefs.input.chinesePrediction.getValue()
     }
 
-    fun onWindowHidden() {
+    override fun onWindowHidden() {
         if (isAddPhrases) {
             isAddPhrases = false
             mAddPhrasesLayout.addPhrasesHandle()
@@ -728,11 +731,27 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         resetToIdleState()
     }
 
+    override fun updatePosition(anchor: FloatArray) {}
+
+    override fun getLocationInWindow(): IntArray {
+       return intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
+    }
+
+    override fun getKeyboardWidth(): Int {
+        return mSkbRoot.width
+    }
+
+    override fun getKeyboardHeight(): Int {
+        return mSkbRoot.height
+    }
+
+    override fun setConfiguration(newConfig: Configuration) {}
+
     private var selStart = 0
     private var selEnd = 0
     private var oldCandidatesEnd = 0
 
-    fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesEnd: Int) {
+    override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesEnd: Int) {
         selStart = newSelStart
         selEnd = newSelEnd
         if (InputModeSwitcher.isEnglish ) {

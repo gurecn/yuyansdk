@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.CursorAnchorInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import com.yuyan.imemodule.callback.IKeyboardView
 import com.yuyan.imemodule.candidate.CandidateView
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.Theme
@@ -40,8 +41,8 @@ import splitties.bitflags.hasFlag
 class ImeService : InputMethodService() {
     private var isHardwareKeyboard = false
     private var isSoftKeyboard = false
-    private lateinit var mInputView: InputView
-    private lateinit var mCandidateView: CandidateView
+    private lateinit var mInputView: IKeyboardView
+    private lateinit var mCandidateView: IKeyboardView
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (isHardwareKeyboard) mCandidateView.updateTheme() else mInputView.updateTheme()}
     private val clipboardUpdateContent = getInstance().internal.clipboardUpdateContent
     private val showVirtualKeyboardOnPhysicalKeyboard = getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard
@@ -114,7 +115,7 @@ class ImeService : InputMethodService() {
                 KeyboardManager.instance.clearKeyboard()
                 KeyboardManager.instance.switchKeyboard()
             } else if(isHardwareKeyboard){
-                mCandidateView.initView()
+                mCandidateView.setConfiguration(newConfig)
             }
         }
         onSystemDarkModeChange(newConfig.isDarkMode())
@@ -150,16 +151,14 @@ class ImeService : InputMethodService() {
 
 
     override fun onComputeInsets(outInsets: Insets) {
-        val (x, y) = if (isSoftKeyboard && ::mInputView.isInitialized) intArrayOf(0, 0).also {if(mInputView.isAddPhrases) mInputView.mAddPhrasesLayout.getLocationInWindow(it) else mInputView.mSkbRoot.getLocationInWindow(it) }
-        else if (isHardwareKeyboard && ::mCandidateView.isInitialized) intArrayOf(0, 0).also {mCandidateView.mSkbRoot.getLocationInWindow(it) }
-        else intArrayOf(0, 0)
+        val (x, y) = if (isSoftKeyboard && ::mInputView.isInitialized) mInputView.getLocationInWindow() else intArrayOf(0, 0)
         outInsets.apply {
             if(isSoftKeyboard || !isHardwareKeyboard){
                 if(EnvironmentSingleton.instance.keyboardModeFloat) {
                     contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
                     visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
                     touchableInsets = Insets.TOUCHABLE_INSETS_REGION
-                    touchableRegion.set(x, y, x + mInputView.mSkbRoot.width, y + mInputView.mSkbRoot.height)
+                    touchableRegion.set(x, y, x + mInputView.getKeyboardWidth(), y + mInputView.getKeyboardHeight())
                 } else {
                     contentTopInsets = y
                     touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
@@ -170,7 +169,7 @@ class ImeService : InputMethodService() {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
                 touchableInsets = Insets.TOUCHABLE_INSETS_REGION
-                touchableRegion.set(x, y, x + mCandidateView.mSkbRoot.width, y + mCandidateView.mSkbRoot.height)
+                touchableRegion.set(x, y, x + mCandidateView.getKeyboardWidth(), y + mCandidateView.getKeyboardHeight())
             }
         }
     }
