@@ -7,7 +7,6 @@ import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 
 abstract class IKeyboardView(context: Context) : LifecycleRelativeLayout(context){
-    abstract fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean)
     abstract fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean)
     abstract fun processKeyDown(keyCode: Int, event: KeyEvent): Boolean
     abstract fun processKeyUp(event: KeyEvent): Boolean
@@ -15,9 +14,9 @@ abstract class IKeyboardView(context: Context) : LifecycleRelativeLayout(context
     abstract  fun onWindowShown()
     abstract fun onWindowHidden()
     abstract fun updatePosition(anchor: FloatArray)
-    abstract fun getLocationInWindow():IntArray
-    abstract fun getKeyboardWidth():Int
-    abstract fun getKeyboardHeight():Int
+    abstract fun getKeyboardRect():IntArray
+//    abstract fun getKeyboardWidth():Int
+//    abstract fun getKeyboardHeight():Int
     abstract fun updateTheme()
     abstract fun showSymbols(symbols: Array<String>)
     abstract fun setConfiguration(newConfig: android.content.res.Configuration)

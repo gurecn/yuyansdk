@@ -250,20 +250,12 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         }
     }
 
-    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
-        if(editorInfo != null)InputModeSwitcher.requestInputWithSkb(editorInfo)
-        if (!restarting) resetToIdleState()
-    }
-
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {}
 
-    override fun getLocationInWindow(): IntArray {
-        return intArrayOf(0, 0).also {mSkbRoot.getLocationInWindow(it) }
+    override fun getKeyboardRect(): IntArray {
+        val location = intArrayOf(0, 0).also { mSkbRoot.getLocationInWindow(it) }
+        return intArrayOf(location[0], location[1], mSkbRoot.width, mSkbRoot.height)
     }
-
-    override fun getKeyboardWidth(): Int = 0
-
-    override fun getKeyboardHeight(): Int = 0
 
     override fun showSymbols(symbols: Array<String>) {}
 

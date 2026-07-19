@@ -695,10 +695,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
     }
 
-    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
-        if(editorInfo != null)InputModeSwitcher.requestInputWithSkb(editorInfo)
-    }
-
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         if (!restarting) {
             resetToIdleState()
@@ -732,17 +728,24 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     override fun updatePosition(anchor: FloatArray) {}
+//
+//    override fun getLocationInWindow(): IntArray {
+//       return intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
+//    }
+//
+//    override fun getKeyboardWidth(): Int {
+//        return mSkbRoot.width
+//    }
+//
+//    override fun getKeyboardHeight(): Int {
+//        return mSkbRoot.height
+//    }
 
-    override fun getLocationInWindow(): IntArray {
-       return intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
-    }
+    override fun getKeyboardRect(): IntArray {
+        val location = intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
 
-    override fun getKeyboardWidth(): Int {
-        return mSkbRoot.width
-    }
-
-    override fun getKeyboardHeight(): Int {
-        return mSkbRoot.height
+        LogUtil.d("111111111111", "InputView   getKeyboardRect")
+        return intArrayOf(location[0], location[1], mSkbRoot.width, mSkbRoot.height)
     }
 
     override fun setConfiguration(newConfig: Configuration) {}
