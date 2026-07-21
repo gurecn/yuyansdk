@@ -29,7 +29,6 @@ class KeyboardManager {
         private set
 
     fun setData(keyboardRootView: InputViewParent, inputView: InputView) {
-        keyboards.clear() // TODO 清空缓存界面，发现调用 PinyinService.onCreateInputView时，原输入界面全部会失效。
         mKeyboardRootView = keyboardRootView
         mInputView = inputView
     }

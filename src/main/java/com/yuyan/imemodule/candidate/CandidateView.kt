@@ -27,7 +27,6 @@ import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.StringUtils
-import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import splitties.dimensions.dp
 import splitties.views.bottomPadding
 import splitties.views.leftPadding
@@ -46,6 +45,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     private val mChoiceNotifier = ChoiceNotifier()
     var mSkbRoot: RelativeLayout
     var mSkbCandidatesBarView: FloatCandidateBar
+    var isCandidatesViewShown = false
 
     init {
         InputModeSwitcher.reset()
@@ -55,6 +55,11 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
         DictDecoder.candidatesLiveData.observe(this) {
+            val shown = !DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate
+            if(isCandidatesViewShown != shown) {
+                service.updateCandidatesViewShown(shown)
+                isCandidatesViewShown = shown
+            }
             mSkbCandidatesBarView.showCandidates()
         }
         initView()
@@ -250,20 +255,12 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         }
     }
 
-    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
-        if(editorInfo != null)InputModeSwitcher.requestInputWithSkb(editorInfo)
-        if (!restarting) resetToIdleState()
-    }
-
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {}
 
-    override fun getLocationInWindow(): IntArray {
-        return intArrayOf(0, 0).also {mSkbRoot.getLocationInWindow(it) }
+    override fun getKeyboardRect(): IntArray {
+        val location = intArrayOf(0, 0).also { mSkbRoot.getLocationInWindow(it) }
+        return intArrayOf(location[0], location[1], mFloatCandidateBarWidth, (instance.heightForCandidatesArea * 1.2.toInt()))
     }
-
-    override fun getKeyboardWidth(): Int = 0
-
-    override fun getKeyboardHeight(): Int = 0
 
     override fun showSymbols(symbols: Array<String>) {}
 
