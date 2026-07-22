@@ -92,11 +92,12 @@ class ImeService : InputMethodService() {
 
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
         LogUtil.d("111111111111", "ImwService   onStartInput")
-        YuyanEmojiCompat.setEditorInfo(editorInfo)
-        handleHardwareKeyboard()
-        if(editorInfo != null)InputModeSwitcher.requestInputWithSkb(editorInfo)
-//        mInputView.onStartInput(editorInfo, restarting)
         super.onStartInput(editorInfo, restarting)
+        if(editorInfo != null) {
+            YuyanEmojiCompat.setEditorInfo(editorInfo)
+            handleHardwareKeyboard()
+            InputModeSwitcher.requestInputWithSkb(editorInfo)
+        }
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
@@ -328,7 +329,7 @@ class ImeService : InputMethodService() {
         isSoftKeyboard = !hardwareKeyboard
         isHardwareKeyboard = hardwareKeyboard
         LogUtil.d("111111111111", "ImwService   handleHardwareKeyboard isHardwareKeyboard：$isHardwareKeyboard")
-//        setCandidatesViewShown(isHardwareKeyboard)
+        setCandidatesViewShown(isHardwareKeyboard)
         currentInputConnection.requestCursorUpdates(if(isHardwareKeyboard)InputConnection.CURSOR_UPDATE_MONITOR else 0)
     }
 
