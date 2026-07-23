@@ -59,6 +59,7 @@ class ImeService : InputMethodService() {
     }
     private val showVirtualKeyboardOnPhysicalKeyboardListener = ManagedPreference.OnChangeListener<Boolean> { _, value ->
         showVirtualKeyboardOnPhysicalKeyboard = value
+        handleHardwareKeyboard()
         updateInputViewShown()
     }
     override fun onCreate() {
@@ -67,20 +68,20 @@ class ImeService : InputMethodService() {
         addOnChangedListener(onThemeChangeListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
+        handleHardwareKeyboard()
     }
 
     override fun onCreateInputView(): View {
         LogUtil.d("111111111111", "ImwService   onCreateInputView")
         val inputView = InputView(baseContext, this)
-        mInputView = inputView
+        if(!isHardwareKeyboard)mInputView = inputView
         return inputView
     }
 
     override fun onCreateCandidatesView(): View {
-        LogUtil.d("111111111111", "ImwService   onCreateCandidatesView  isHardwareKeyboard:$isHardwareKeyboard")
-        val hardwareKeyboard = handleHardwareKeyboard()
+        LogUtil.d("111111111111", "ImwService   onCreateCandidatesView")
         val candidateView = CandidateView(baseContext, this)
-        if(hardwareKeyboard) mInputView = candidateView
+        if(isHardwareKeyboard) mInputView = candidateView
         return candidateView
     }
 
@@ -121,6 +122,7 @@ class ImeService : InputMethodService() {
         super.onConfigurationChanged(newConfig)
         CoroutineScope(Dispatchers.Main).launch {
             delay(200) //延时，解决获取屏幕尺寸不准确。
+            handleHardwareKeyboard()
             EnvironmentSingleton.instance.initData(baseContext)
                 KeyboardLoaderUtil.instance.clearKeyboardMap()
                 KeyboardManager.instance.clearKeyboard()
@@ -309,8 +311,12 @@ class ImeService : InputMethodService() {
             else if (newConfig != null) (newConfig.keyboard != Configuration.KEYBOARD_NOKEYS)
             else resources.configuration.keyboard != Configuration.KEYBOARD_NOKEYS
         isHardwareKeyboard = hardwareKeyboard
-        currentInputConnection.requestCursorUpdates(if(hardwareKeyboard)InputConnection.CURSOR_UPDATE_MONITOR else 0)
         return hardwareKeyboard
+    }
+
+    fun updateCandidatesViewShown(shown: Boolean) {
+        setCandidatesViewShown(shown)
+        currentInputConnection.requestCursorUpdates(if(shown)InputConnection.CURSOR_UPDATE_MONITOR else 0)
     }
 
 }

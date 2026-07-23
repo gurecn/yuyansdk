@@ -46,6 +46,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     private val mChoiceNotifier = ChoiceNotifier()
     var mSkbRoot: RelativeLayout
     var mSkbCandidatesBarView: FloatCandidateBar
+    var isCandidatesViewShown = false
 
     init {
         InputModeSwitcher.reset()
@@ -55,7 +56,11 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
         DictDecoder.candidatesLiveData.observe(this) {
-            service.setCandidatesViewShown(!DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate)
+            val shown = !DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate
+            if(isCandidatesViewShown != shown) {
+                service.updateCandidatesViewShown(shown)
+                isCandidatesViewShown = shown
+            }
             mSkbCandidatesBarView.showCandidates()
         }
         initView()
