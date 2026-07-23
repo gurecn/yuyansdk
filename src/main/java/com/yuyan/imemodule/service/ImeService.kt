@@ -160,11 +160,7 @@ class ImeService : InputMethodService() {
 
 
     override fun onComputeInsets(outInsets: Insets) {
-        LogUtil.d("111111111111", "ImwService   onComputeInsets")
         val (x, y, width, height) = if (::mInputView.isInitialized) mInputView.getKeyboardRect() else intArrayOf(0, 0, 0,0)
-        LogUtil.d("111111111111", "ImwService   onComputeInsets  mScreenWidth:${EnvironmentSingleton.instance.mScreenWidth}")
-        LogUtil.d("111111111111", "ImwService   onComputeInsets  x：$x   y:$y")
-        LogUtil.d("111111111111", "ImwService   onComputeInsets  width：${width}   height:${height}")
         outInsets.apply {
             if(EnvironmentSingleton.instance.keyboardModeFloat) {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight

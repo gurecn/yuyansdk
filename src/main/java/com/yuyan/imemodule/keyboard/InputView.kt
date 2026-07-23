@@ -52,7 +52,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.EditPhrasesView
@@ -93,7 +92,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private val textBeforeCursors = StringQueue(50)
 
     init {
-        LogUtil.d("1111111111111", "InputView init")
         initNavbarBackground(service)
         InputModeSwitcher.reset()
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
@@ -238,12 +236,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     override fun updateTheme() {
-        LogUtil.d("1111111111111", "InputView updateTheme")
         setBackgroundResource(android.R.color.transparent)
         val activeTheme = ThemeManager.activeTheme
         val keyTextColor = activeTheme.keyTextColor
         val env = EnvironmentSingleton.instance
-
         val background = activeTheme.backgroundDrawable(ThemeManager.prefs.keyBorder.getValue())
         if (background is BitmapDrawable) {
             val scaledBitmap = background.bitmap.scale(env.skbWidth, env.inputAreaHeight)
@@ -728,24 +724,11 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     override fun updatePosition(anchor: FloatArray) {}
-//
-//    override fun getLocationInWindow(): IntArray {
-//       return intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
-//    }
-//
-//    override fun getKeyboardWidth(): Int {
-//        return mSkbRoot.width
-//    }
-//
-//    override fun getKeyboardHeight(): Int {
-//        return mSkbRoot.height
-//    }
 
     override fun getKeyboardRect(): IntArray {
         val location = intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
-
-        LogUtil.d("111111111111", "InputView   getKeyboardRect")
-        return intArrayOf(location[0], location[1], mSkbRoot.width, mSkbRoot.height)
+        val height = EnvironmentSingleton.instance.systemNavbarWindowsBottom + EnvironmentSingleton.instance.heightForFullDisplayBar + EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
+        return intArrayOf(location[0], location[1], EnvironmentSingleton.instance.inputAreaWidth, height)
     }
 
     override fun setConfiguration(newConfig: Configuration) {}

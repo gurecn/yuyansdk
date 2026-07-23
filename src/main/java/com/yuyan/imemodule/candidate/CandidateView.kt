@@ -27,7 +27,6 @@ import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.StringUtils
-import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
 import splitties.dimensions.dp
 import splitties.views.bottomPadding
 import splitties.views.leftPadding
@@ -260,7 +259,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
 
     override fun getKeyboardRect(): IntArray {
         val location = intArrayOf(0, 0).also { mSkbRoot.getLocationInWindow(it) }
-        return intArrayOf(location[0], location[1], mSkbRoot.width, mSkbRoot.height)
+        return intArrayOf(location[0], location[1], mFloatCandidateBarWidth, (instance.heightForCandidatesArea * 1.2.toInt()))
     }
 
     override fun showSymbols(symbols: Array<String>) {}
