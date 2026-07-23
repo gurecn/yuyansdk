@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.callback
 
 import android.content.Context
-import android.content.res.Configuration
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.view.widget.LifecycleRelativeLayout
@@ -15,8 +14,6 @@ abstract class IKeyboardView(context: Context) : LifecycleRelativeLayout(context
     abstract fun onWindowHidden()
     abstract fun updatePosition(anchor: FloatArray)
     abstract fun getKeyboardRect():IntArray
-//    abstract fun getKeyboardWidth():Int
-//    abstract fun getKeyboardHeight():Int
     abstract fun updateTheme()
     abstract fun showSymbols(symbols: Array<String>)
     abstract fun setConfiguration(newConfig: android.content.res.Configuration)

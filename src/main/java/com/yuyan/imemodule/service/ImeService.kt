@@ -27,7 +27,6 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.LogUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
@@ -64,7 +63,6 @@ class ImeService : InputMethodService() {
     }
     override fun onCreate() {
         super.onCreate()
-        LogUtil.d("111111111111", "ImwService   onCreate")
         addOnChangedListener(onThemeChangeListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
@@ -72,27 +70,24 @@ class ImeService : InputMethodService() {
     }
 
     override fun onCreateInputView(): View {
-        LogUtil.d("111111111111", "ImwService   onCreateInputView")
         val inputView = InputView(baseContext, this)
+        KeyboardManager.instance.switchKeyboard()
         if(!isHardwareKeyboard)mInputView = inputView
         return inputView
     }
 
     override fun onCreateCandidatesView(): View {
-        LogUtil.d("111111111111", "ImwService   onCreateCandidatesView")
         val candidateView = CandidateView(baseContext, this)
         if(isHardwareKeyboard) mInputView = candidateView
         return candidateView
     }
 
     override fun onEvaluateInputViewShown(): Boolean {
-        LogUtil.d("111111111111", "ImwService   onEvaluateInputViewShown")
         super.onEvaluateInputViewShown()
         return if(showVirtualKeyboardOnPhysicalKeyboard) true else !isHardwareKeyboard
     }
 
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
-        LogUtil.d("111111111111", "ImwService   onStartInput")
         super.onStartInput(editorInfo, restarting)
         if(editorInfo != null) {
             YuyanEmojiCompat.setEditorInfo(editorInfo)
@@ -101,13 +96,11 @@ class ImeService : InputMethodService() {
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        LogUtil.d("111111111111", "ImwService   onStartInputView")
         mInputView.onStartInputView(editorInfo, restarting)
         super.onStartInputView(editorInfo, restarting)
     }
 
     override fun onDestroy() {
-        LogUtil.d("111111111111", "ImwService   onDestroy")
         super.onDestroy()
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         removeOnChangedListener(onThemeChangeListener)
@@ -118,7 +111,6 @@ class ImeService : InputMethodService() {
      * 横竖屏切换
      */
     override fun onConfigurationChanged(newConfig: Configuration) {
-        LogUtil.d("111111111111", "ImwService   onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
         CoroutineScope(Dispatchers.Main).launch {
             delay(200) //延时，解决获取屏幕尺寸不准确。
@@ -147,7 +139,6 @@ class ImeService : InputMethodService() {
     }
 
     override fun setInputView(view: View) {
-        LogUtil.d("111111111111", "ImwService   setInputView")
         super.setInputView(view)
         val layoutParams = view.layoutParams
         if (layoutParams != null && layoutParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
@@ -195,13 +186,11 @@ class ImeService : InputMethodService() {
     }
 
     override fun onWindowShown() {
-        LogUtil.d("111111111111", "ImwService   onWindowShown")
         mInputView.onWindowShown()
         super.onWindowShown()
     }
 
     override fun onWindowHidden() {
-        LogUtil.d("111111111111", "ImwService   onWindowHidden")
         mInputView.onWindowHidden()
         super.onWindowHidden()
     }
