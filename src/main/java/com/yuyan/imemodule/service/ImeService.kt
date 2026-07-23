@@ -71,7 +71,6 @@ class ImeService : InputMethodService() {
 
     override fun onCreateInputView(): View {
         val inputView = InputView(baseContext, this)
-        KeyboardManager.instance.switchKeyboard()
         if(!isHardwareKeyboard)mInputView = inputView
         return inputView
     }
@@ -87,15 +86,9 @@ class ImeService : InputMethodService() {
         return if(showVirtualKeyboardOnPhysicalKeyboard) true else !isHardwareKeyboard
     }
 
-    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
-        super.onStartInput(editorInfo, restarting)
-        if(editorInfo != null) {
-            YuyanEmojiCompat.setEditorInfo(editorInfo)
-            InputModeSwitcher.requestInputWithSkb(editorInfo)
-        }
-    }
-
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
+        YuyanEmojiCompat.setEditorInfo(editorInfo)
+        InputModeSwitcher.requestInputWithSkb(editorInfo)
         mInputView.onStartInputView(editorInfo, restarting)
         super.onStartInputView(editorInfo, restarting)
     }
@@ -169,7 +162,7 @@ class ImeService : InputMethodService() {
 
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
-        mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
+        if (::mInputView.isInitialized) mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
     }
 
     private val cursorAnchorPosition = FloatArray(2)
