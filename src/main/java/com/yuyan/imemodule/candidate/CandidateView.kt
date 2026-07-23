@@ -55,6 +55,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
         DictDecoder.candidatesLiveData.observe(this) {
+            service.setCandidatesViewShown(!DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate)
             mSkbCandidatesBarView.showCandidates()
         }
         initView()
