@@ -187,10 +187,10 @@ object RimeEngine {
         val rimeSchema = Rime.getCurrentRimeSchema()
         pinyins = when (rimeSchema) {
             CustomConstant.SCHEMA_ZH_T9 -> {
-                T9PinYinUtils.t9KeyToPinyin(compositionText.split('\'').firstOrNull { part -> part.isNotEmpty() && part.all { it.isUpperCase() } } ?: "")
+                T9PinYinUtils.t9KeyToPinyin(Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: "")
             }
             CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
-                LX17PinYinUtils.lx17KeyToPinyin(compositionText.split('\'').firstOrNull { part -> part.isNotEmpty() && part.all { it.isUpperCase() } } ?: "")
+                LX17PinYinUtils.lx17KeyToPinyin(Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: "")
             }
             else -> {
                 emptyArray()
