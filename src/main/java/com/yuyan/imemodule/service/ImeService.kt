@@ -42,7 +42,9 @@ import splitties.bitflags.hasFlag
 class ImeService : InputMethodService() {
     private var isHardwareKeyboard = false
     private var showVirtualKeyboardOnPhysicalKeyboard = false
-    private lateinit var mInputView: IKeyboardView
+    private lateinit var  candidateView:CandidateView
+    private lateinit var  inputView:InputView
+    private lateinit var mInputView:IKeyboardView
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> mInputView.updateTheme()}
     private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
         if(getInstance().clipboard.clipboardSuggestion.getValue()){
@@ -65,18 +67,18 @@ class ImeService : InputMethodService() {
         super.onCreate()
         addOnChangedListener(onThemeChangeListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
-        getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
         handleHardwareKeyboard()
+        candidateView = CandidateView(baseContext, this)
+        inputView = InputView(baseContext, this)
+        mInputView = candidateView
     }
 
     override fun onCreateInputView(): View {
-        val inputView = InputView(baseContext, this)
         if(!isHardwareKeyboard)mInputView = inputView
         return inputView
     }
 
     override fun onCreateCandidatesView(): View {
-        val candidateView = CandidateView(baseContext, this)
         if(isHardwareKeyboard) mInputView = candidateView
         return candidateView
     }
@@ -86,9 +88,15 @@ class ImeService : InputMethodService() {
         return if(showVirtualKeyboardOnPhysicalKeyboard) true else !isHardwareKeyboard
     }
 
+    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
+        super.onStartInput(editorInfo, restarting)
+        if(editorInfo != null) {
+            YuyanEmojiCompat.setEditorInfo(editorInfo)
+            InputModeSwitcher.requestInputWithSkb(editorInfo)
+        }
+    }
+
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        YuyanEmojiCompat.setEditorInfo(editorInfo)
-        InputModeSwitcher.requestInputWithSkb(editorInfo)
         mInputView.onStartInputView(editorInfo, restarting)
         super.onStartInputView(editorInfo, restarting)
     }
