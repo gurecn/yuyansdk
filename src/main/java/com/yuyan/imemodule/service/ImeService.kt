@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.CursorAnchorInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import androidx.lifecycle.Observer
 import com.yuyan.imemodule.callback.IKeyboardView
 import com.yuyan.imemodule.candidate.CandidateView
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
@@ -63,6 +64,10 @@ class ImeService : InputMethodService() {
         handleHardwareKeyboard()
         updateInputViewShown()
     }
+    private val candidatesObserver = Observer<Any?> { _ ->
+        mInputView.onCandidateChanged()
+    }
+
     override fun onCreate() {
         super.onCreate()
         addOnChangedListener(onThemeChangeListener)
@@ -71,6 +76,7 @@ class ImeService : InputMethodService() {
         candidateView = CandidateView(baseContext, this)
         inputView = InputView(baseContext, this)
         mInputView = candidateView
+        DictDecoder.candidatesLiveData.observeForever(candidatesObserver)
     }
 
     override fun onCreateInputView(): View {
@@ -103,6 +109,7 @@ class ImeService : InputMethodService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        DictDecoder.candidatesLiveData.removeObserver(candidatesObserver)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         removeOnChangedListener(onThemeChangeListener)
         getInstance().internal.clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)

@@ -54,15 +54,16 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_candidate_container, this, false) as RelativeLayout
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
-        DictDecoder.candidatesLiveData.observe(this) {
-            val shown = !DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate
-            if(isCandidatesViewShown != shown) {
-                service.updateCandidatesViewShown(shown)
-                isCandidatesViewShown = shown
-            }
-            mSkbCandidatesBarView.showCandidates()
-        }
         initView()
+    }
+
+    override fun onCandidateChanged() {
+        val shown = !DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate
+        if(isCandidatesViewShown != shown) {
+            service.updateCandidatesViewShown(shown)
+            isCandidatesViewShown = shown
+        }
+        mSkbCandidatesBarView.showCandidates()
     }
 
     private fun initDisplayCutout(service: ImeService) {
@@ -232,8 +233,6 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
 
         override fun onClickClearClipBoard() {}
     }
-
-    fun requestHideSelf() = service.requestHideSelf(0)
 
     private fun sendKeyEvent(keyCode: Int) {
         when (keyCode) {

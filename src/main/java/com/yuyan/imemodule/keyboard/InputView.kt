@@ -110,11 +110,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                 addRule(ALIGN_LEFT, mSkbRoot.id)
             })
         }
-        DictDecoder.candidatesLiveData.observe(this) {
-            updateCandidateBar()
-            (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
-        }
         initView(context)
+    }
+
+    override fun onCandidateChanged() {
+        updateCandidateBar()
+        (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
     }
 
     @SuppressLint("ClickableViewAccessibility")
