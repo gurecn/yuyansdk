@@ -190,6 +190,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
         }
+        KeyboardManager.instance.switchKeyboard()
         updateTheme()
     }
 

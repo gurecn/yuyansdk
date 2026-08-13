@@ -38,14 +38,12 @@ import kotlin.math.max
  */
 @SuppressLint("ViewConstructor")
 class CandidateView(context: Context, private val service: ImeService) : IKeyboardView(context) {
-
     private var mHorizontalCutoutWidth: Int = 0
     private var mFloatCandidateBarWidth: Int = 0
     private val appPrefs = getInstance()
     private val mChoiceNotifier = ChoiceNotifier()
     var mSkbRoot: RelativeLayout
     var mSkbCandidatesBarView: FloatCandidateBar
-    var isCandidatesViewShown = false
 
     init {
         InputModeSwitcher.reset()
@@ -58,11 +56,6 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     }
 
     override fun onCandidateChanged() {
-        val shown = !DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate
-        if(isCandidatesViewShown != shown) {
-            service.updateCandidatesViewShown(shown)
-            isCandidatesViewShown = shown
-        }
         mSkbCandidatesBarView.showCandidates()
     }
 

@@ -46,7 +46,7 @@ class ImeService : InputMethodService() {
     private lateinit var  candidateView:CandidateView
     private lateinit var  inputView:InputView
     private lateinit var mInputView:IKeyboardView
-    private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> mInputView.updateTheme()}
+    private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme()}
     private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
         if(getInstance().clipboard.clipboardSuggestion.getValue()){
             if(value.isNotBlank()) {
@@ -54,7 +54,7 @@ class ImeService : InputMethodService() {
                     && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard ){
                     (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
                 } else {
-                    mInputView.showSymbols(arrayOf(value))
+                    if (::mInputView.isInitialized) mInputView.showSymbols(arrayOf(value))
                 }
             }
         }
@@ -65,7 +65,7 @@ class ImeService : InputMethodService() {
         updateInputViewShown()
     }
     private val candidatesObserver = Observer<Any?> { _ ->
-        mInputView.onCandidateChanged()
+        if (::mInputView.isInitialized) mInputView.onCandidateChanged()
     }
 
     override fun onCreate() {
@@ -73,19 +73,19 @@ class ImeService : InputMethodService() {
         addOnChangedListener(onThemeChangeListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         handleHardwareKeyboard()
-        candidateView = CandidateView(baseContext, this)
-        inputView = InputView(baseContext, this)
-        mInputView = candidateView
         DictDecoder.candidatesLiveData.observeForever(candidatesObserver)
     }
 
     override fun onCreateInputView(): View {
+        if(!::inputView.isInitialized)inputView = InputView(baseContext, this)
         if(!isHardwareKeyboard)mInputView = inputView
         return inputView
     }
 
     override fun onCreateCandidatesView(): View {
+        if(!::candidateView.isInitialized)candidateView = CandidateView(baseContext, this)
         if(isHardwareKeyboard) mInputView = candidateView
+        currentInputConnection.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
         return candidateView
     }
 
@@ -100,10 +100,11 @@ class ImeService : InputMethodService() {
             YuyanEmojiCompat.setEditorInfo(editorInfo)
             InputModeSwitcher.requestInputWithSkb(editorInfo)
         }
+        if(isHardwareKeyboard)updateCandidatesViewShown(true)
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
-        mInputView.onStartInputView(editorInfo, restarting)
+        if (::mInputView.isInitialized) mInputView.onStartInputView(editorInfo, restarting)
         super.onStartInputView(editorInfo, restarting)
     }
 
@@ -124,10 +125,10 @@ class ImeService : InputMethodService() {
             delay(200) //延时，解决获取屏幕尺寸不准确。
             handleHardwareKeyboard()
             EnvironmentSingleton.instance.initData(baseContext)
-                KeyboardLoaderUtil.instance.clearKeyboardMap()
-                KeyboardManager.instance.clearKeyboard()
-                KeyboardManager.instance.switchKeyboard()
-                mInputView.setConfiguration(newConfig)
+            KeyboardLoaderUtil.instance.clearKeyboardMap()
+            KeyboardManager.instance.clearKeyboard()
+            KeyboardManager.instance.switchKeyboard()
+            if (::mInputView.isInitialized) mInputView.setConfiguration(newConfig)
         }
         onSystemDarkModeChange(newConfig.isDarkMode())
     }
@@ -176,7 +177,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
-        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+       super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
         if (::mInputView.isInitialized) mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
     }
 
@@ -190,7 +191,7 @@ class ImeService : InputMethodService() {
         if (matrix != null) {
             matrix.mapPoints(cursorAnchorPosition)
         }
-        mInputView.updatePosition(cursorAnchorPosition)
+        if (::mInputView.isInitialized) mInputView.updatePosition(cursorAnchorPosition)
     }
 
     override fun onWindowShown() {
@@ -199,7 +200,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onWindowHidden() {
-        mInputView.onWindowHidden()
+        if (::mInputView.isInitialized) mInputView.onWindowHidden()
         super.onWindowHidden()
     }
 
@@ -309,7 +310,6 @@ class ImeService : InputMethodService() {
 
     fun updateCandidatesViewShown(shown: Boolean) {
         setCandidatesViewShown(shown)
-        currentInputConnection.requestCursorUpdates(if(shown)InputConnection.CURSOR_UPDATE_MONITOR else 0)
     }
 
 }
