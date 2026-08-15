@@ -93,7 +93,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     init {
         initNavbarBackground(service)
-        InputModeSwitcher.reset()
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
