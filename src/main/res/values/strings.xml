@@ -69,6 +69,11 @@
     <string name="build_git_hash">构建哈希</string>
     <string name="build_time">构建时间</string>
     <string name="clipboard">剪贴板</string>
+    <string name="segment">分词</string>
+    <string name="segment_copy">分词复制</string>
+    <string name="segment_copied">已复制</string>
+    <string name="segment_no_selection">未选择词语</string>
+    <string name="segment_empty">无分词内容</string>
     <string name="full_display_keyboard">全面屏键盘优化</string>
     <string name="keyboard_full_display_advanced_tip">多功能键盘</string>
     <string name="keyboard_full_display_normal_tip">普通键盘</string>

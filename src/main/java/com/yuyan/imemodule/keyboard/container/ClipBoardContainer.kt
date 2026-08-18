@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
+import com.yuyan.imemodule.adapter.SegmentWordsAdapter
 import com.yuyan.imemodule.application.CustomConstant
+import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Clipboard
@@ -29,6 +31,10 @@ import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.imemodule.utils.segmentText
+import com.yuyan.imemodule.utils.mergeTokens
+import com.yuyan.imemodule.utils.clipboardManager
+import com.yuyan.imemodule.utils.toast
 import splitties.dimensions.dp
 import splitties.views.textResource
 import kotlin.math.ceil
@@ -44,6 +50,8 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     private val mRVSymbolsView: SwipeRecyclerView = SwipeRecyclerView(context)
     private var mTVLable: TextView? = null
     private var itemMode:SkbMenuMode? = null
+    private var segmentTokens: List<String> = emptyList()
+    private var segmentAdapter: SegmentWordsAdapter? = null
 
     init {
         mPaint.textSize = dp(22f)
@@ -69,6 +77,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     fun showClipBoardView(item: SkbMenuMode) {
         CustomConstant.lockClipBoardEnable = false
         itemMode = item
+        segmentTokens = emptyList()
+        segmentAdapter = null
+        mTVLable?.textResource = R.string.clipboard_empty_ltip
         mRVSymbolsView.setHasFixedSize(true)
         val copyContents : MutableList<Clipboard> =
             if(itemMode == SkbMenuMode.ClipBoard) {
@@ -80,7 +91,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             ClipboardLayoutMode.GridView -> CustomGridLayoutManager(context, 2)
             ClipboardLayoutMode.FlexboxView -> {
-                calculateColumn(copyContents)
+                calculateColumn(copyContents.map { it.content })
                 CustomGridLayoutManager(context, 6).apply {
                     spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                         override fun getSpanSize(i: Int) = mHashMapSymbols[i] ?: 1
@@ -115,6 +126,13 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                 image.setTint(activeTheme.keyTextColor)
             }
             rightMenu.addMenuItem(deleteItem)
+            if (itemMode == SkbMenuMode.ClipBoard) {
+                val segmentItem = SwipeMenuItem(mContext).apply {
+                    setImage(R.drawable.ic_menu_segment)
+                    image.setTint(activeTheme.keyTextColor)
+                }
+                rightMenu.addMenuItem(segmentItem)
+            }
         }
         mRVSymbolsView.setOnItemMenuClickListener { menuBridge: SwipeMenuBridge, position: Int ->
             menuBridge.closeMenu()
@@ -128,6 +146,8 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                     val data: Clipboard = copyContents.removeAt(position)
                     DataBaseKT.instance.clipboardDao().deleteByContent(data.content)
                     mRVSymbolsView.adapter?.notifyItemRemoved(position)
+                } else if (menuBridge.position == 2) {
+                    showSegmentView(copyContents[position].content)
                 }
             } else {
                 val content = copyContents[position].content
@@ -143,11 +163,11 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     }
 
     private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
-    private fun calculateColumn(data : MutableList<Clipboard>) {
+    private fun calculateColumn(data : List<String>) {
         mHashMapSymbols.clear()
         val itemWidth = instance.skbWidth/6 - dp(10)
         var mCurrentColumn = 0
-        val contents = data.map { it.content }
+        val contents = data
         contents.forEachIndexed { position, candidate ->
             var count = getSymbolsCount(candidate, itemWidth)
             var nextCount = 0
@@ -166,6 +186,63 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
     private fun getSymbolsCount(data: String, itemWidth:Int): Int {
         return if (!TextUtils.isEmpty(data)) ceil(mPaint.measureText(data).div(itemWidth)).toInt() else 0
     }
+
+    fun showSegmentView(content: String) {
+        CustomConstant.lockClipBoardEnable = false
+        itemMode = SkbMenuMode.Segment
+        segmentTokens = segmentText(content)
+        mRVSymbolsView.setHasFixedSize(true)
+
+        // Empty state label
+        mTVLable?.textResource = R.string.segment_empty
+        val viewParent = mTVLable?.parent
+        if (viewParent != null) {
+            (viewParent as ViewGroup).removeView(mTVLable)
+        }
+        if (segmentTokens.isEmpty()) {
+            this.addView(mTVLable, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        }
+
+        // Flexbox layout (same as clipboard flexbox mode)
+        calculateColumn(segmentTokens)
+        val manager = CustomGridLayoutManager(context, 6).apply {
+            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(i: Int) = mHashMapSymbols[i] ?: 1
+            }
+        }
+        mRVSymbolsView.setLayoutManager(manager)
+
+        segmentAdapter = SegmentWordsAdapter(context, segmentTokens)
+        // MUST setAdapter(null) first: clears mAdapterWrapper so setSwipeMenuCreator
+        // /setOnItemMenuClickListener don't throw IllegalStateException (B1 fix).
+        mRVSymbolsView.setAdapter(null)
+        // Now safe: install no-op swipe creator/listener to prevent stale closures
+        // from showClipBoardView causing IndexOutOfBoundsException (H1 fix).
+        mRVSymbolsView.setSwipeMenuCreator { _, _, _ -> }
+        mRVSymbolsView.setOnItemMenuClickListener { _, _ -> }
+        mRVSymbolsView.setOnItemClickListener { _, position: Int ->
+            segmentAdapter?.toggleSelection(position)
+        }
+        mRVSymbolsView.setAdapter(segmentAdapter)
+        inputView.updateCandidateBar()
+    }
+
+    fun copySelectedSegments() {
+        val selected = segmentAdapter?.getSelectedPositions() ?: emptySet()
+        if (selected.isEmpty()) {
+            mContext.toast(R.string.segment_no_selection)
+            return
+        }
+        val merged = mergeTokens(segmentTokens, selected)
+        Launcher.instance.context.clipboardManager.setPrimaryClip(
+            android.content.ClipData.newPlainText("segment", merged)
+        )
+        mContext.toast(R.string.segment_copied)
+        segmentAdapter?.clearSelection()
+        // 与点击剪贴板条目行为一致：未锁定时返回键盘，锁定键可保持面板
+        if(!CustomConstant.lockClipBoardEnable) KeyboardManager.instance.switchKeyboard()
+    }
+
     fun getMenuMode():SkbMenuMode? {
        return itemMode
     }
