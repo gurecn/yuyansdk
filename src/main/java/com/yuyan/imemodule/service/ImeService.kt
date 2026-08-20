@@ -273,6 +273,13 @@ class ImeService : InputMethodService() {
         currentInputConnection.commitText(StringUtils.converted2FlowerTypeface(text), newCursorPosition)
     }
 
+    /**
+     * 发送原始字符串给编辑框（不做花漾字转换）
+     */
+    fun commitRawText(text: String) {
+        currentInputConnection.commitText(text, 1)
+    }
+
     fun getTextBeforeCursor(length:Int) : String {
         return currentInputConnection.getTextBeforeCursor(length, 0).toString()
     }
