@@ -334,7 +334,14 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
             KeyEvent.KEYCODE_APOSTROPHE, KeyEvent.KEYCODE_SPACE,
-            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_BACK -> return true
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DEL -> return true
+            // 关键修复：Android 13+ 不得在 pre-IME 派发中消费 BACK 的 KEY_DOWN。
+            // 此处返回 true 会吞掉 DOWN（UP 侧不再消费时应用只会收到孤儿 UP；UP 侧消费时
+            // 应用收不到完整按键），在 HyperOS 上破坏返回仲裁与 insets 状态机：
+            // 搜索框弹出/收起键盘 + 连续快速返回即可使全局返回永久失效。
+            // 13+ 由系统返回仲裁（IME 显示时返回=收起键盘）完成，无需输入法参与。
+            // 13 以下保留旧行为（DOWN/UP 成对消费 + requestHideSelf）。
+            KeyEvent.KEYCODE_BACK -> return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
         }
         return false
     }
@@ -376,10 +383,13 @@ class InputView(context: Context, private val service: ImeService) : LifecycleRe
         return result
     }
 
-    // 系统按键只处理返回键，当点击返回键且软键盘显示时，隐藏键盘并消费事件
+    // 系统按键只处理返回键。注意：Android 13+ 上返回=收起键盘由系统的返回仲裁/insets 动画完成，
+    // 输入法在 pre-IME 派发里消费 BACK 并自行 requestHideSelf 会与系统的隐藏动画竞争，
+    // 连续快速返回时会在动画飞行途中再次触发隐藏，导致（HyperOS 上）insets 动画永不完成，
+    // 进而全局返回失效。因此 13+ 不再消费 BACK，事件交还系统处理。
     private fun processSystemKeys(event: KeyEvent): Boolean {
         return when (event.keyCode) {
-            KeyEvent.KEYCODE_BACK -> if (service.isInputViewShown) { requestHideSelf(); true } else false
+            KeyEvent.KEYCODE_BACK -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && service.isInputViewShown) { requestHideSelf(); true } else false
             else -> false
         }
     }

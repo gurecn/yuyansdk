@@ -31,14 +31,16 @@ class CrashHandler private constructor() : Thread.UncaughtExceptionHandler {
     }
 
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
-        if (!handleException(throwable) && mDefaultHandler != null) {
-            mDefaultHandler!!.uncaughtException(thread, throwable)
+        // 先落盘崩溃日志（内部已捕获自身异常，不会中断流程）
+        handleException(throwable)
+        // 必须交回系统默认处理器走标准崩溃流程：AMS 会以 "crash" 原因感知进程死亡，
+        // 并对被绑定的输入法服务执行标准的解绑/重绑恢复。
+        // 严禁自行 sleep + killProcess(SIGKILL)：那会把崩溃伪装成来源不明的 SIGKILL
+        // 死亡，且留下数秒不响应 binder 调用的僵尸进程，干扰系统恢复。
+        val handler = mDefaultHandler
+        if (handler != null) {
+            handler.uncaughtException(thread, throwable)
         } else {
-            try {
-                Thread.sleep(2000)
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
             android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(1)
         }
