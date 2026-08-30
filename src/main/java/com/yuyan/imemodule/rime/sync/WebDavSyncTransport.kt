@@ -88,7 +88,9 @@ class WebDavSyncTransport(
                     401 -> Result.failure(RimeSyncException.WebDavAuthFailed())
                     in 200..299, 404 -> Result.success(Unit)
                     else -> Result.failure(
-                        RimeSyncException.WebDavRemoteFailed("HTTP ${response.code}")
+                        RimeSyncException.WebDavRemoteFailed(
+                            "HTTP ${response.code} PROPFIND ${config.baseUrl}"
+                        )
                     )
                 }
             }
@@ -112,7 +114,13 @@ class WebDavSyncTransport(
         for (entry in rootEntries) {
             if (entry.relativePath.isEmpty()) continue
             if (entry.isDirectory) {
-                val children = propfind(childUrl(entry.relativePath))
+                val children = try {
+                    propfind(childUrl(entry.relativePath))
+                } catch (e: RimeSyncException.WebDavRemoteFailed) {
+                    // 目录在列目录与拉取之间被远端删除：跳过，不使整个同步失败
+                    Log.w(TAG, "webdav skip dir on pull: " + entry.relativePath + ", " + e.message)
+                    continue
+                }
                 for (child in children) {
                     if (child.isDirectory) continue
                     pullFile(child, report)
@@ -127,9 +135,9 @@ class WebDavSyncTransport(
     suspend fun pushInstallation(installationId: String): SyncCopyReport =
         withContext(Dispatchers.IO) {
             val report = MutableSyncCopyReport()
-            mkcolQuiet(config.baseUrl)
+            ensureCollection(config.baseUrl)
             val deviceDirUrl = childUrl(installationId)
-            mkcolQuiet(deviceDirUrl)
+            ensureCollection(deviceDirUrl)
             val sourceDir = File(StagingFileSink.root, installationId)
             if (!sourceDir.isDirectory) {
                 return@withContext SyncCopyReport(0, 0, 0)
@@ -210,7 +218,19 @@ class WebDavSyncTransport(
                 .execute().use { response ->
                     val code = response.code
                     if (code !in 200..299) {
-                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
+                        if (code == 404) {
+                            // 文件在列目录与下载之间消失：按跳过处理
+                            Log.w(TAG, "webdav GET 404, skip: " + entry.relativePath)
+                            report.skippedFiles++
+                            return
+                        }
+                        Log.e(
+                            TAG,
+                            "webdav GET failed: " + code + " " + childUrl(entry.relativePath)
+                        )
+                        throw RimeSyncException.WebDavRemoteFailed(
+                            "HTTP $code GET " + childUrl(entry.relativePath)
+                        )
                     }
                     val stream = response.body?.byteStream()
                         ?: throw RimeSyncException.WebDavNetworkFailed()
@@ -252,7 +272,8 @@ class WebDavSyncTransport(
                 .execute().use { response ->
                     val code = response.code
                     if (code !in 200..299) {
-                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
+                        Log.e(TAG, "webdav PUT failed: " + code + " " + url)
+                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code PUT $url")
                     }
                 }
         } catch (e: RimeSyncException) {
@@ -291,16 +312,48 @@ class WebDavSyncTransport(
         }
     }
 
-    private fun mkcolQuiet(url: String) {
-        try {
-            client.newCall(baseRequest(url).method("MKCOL", null).build())
-                .execute().use { response ->
-                    val code = response.code
-                    if (code in 200..299 || code == 405 || code == 301) {
-                        return
+    /**
+     * 确保远端目录存在：PROPFIND 探测，404 时 MKCOL 创建。
+     * 创建失败不再静默忽略，直接抛出带状态码与 URL 的异常。
+     */
+    private fun ensureCollection(url: String) {
+        val probe = propfindStatusCode(url)
+        if (probe in 200..299) return
+        if (probe == 404) {
+            try {
+                client.newCall(baseRequest(url).method("MKCOL", null).build())
+                    .execute().use { response ->
+                        val code = response.code
+                        if (code in 200..299 || code == 405 || code == 301) {
+                            return
+                        }
+                        Log.e(TAG, "webdav MKCOL failed: " + code + " " + url)
+                        throw RimeSyncException.WebDavRemoteFailed(
+                            "HTTP $code MKCOL $url"
+                        )
                     }
-                }
-        } catch (_: Exception) {
+            } catch (e: RimeSyncException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "webdav MKCOL failed: " + url, e)
+                throw RimeSyncException.WebDavNetworkFailed(e)
+            }
+            return
+        }
+        throw RimeSyncException.WebDavRemoteFailed("HTTP $probe PROPFIND $url")
+    }
+
+    private fun propfindStatusCode(url: String): Int {
+        return try {
+            client.newCall(
+                baseRequest(url)
+                    .method("PROPFIND", null)
+                    .header("Depth", "0")
+                    .build()
+            ).execute().use { it.code }
+        } catch (e: Exception) {
+            Log.w(TAG, "webdav PROPFIND probe failed: " + url, e)
+            throw RimeSyncException.WebDavNetworkFailed(e)
         }
     }
 
@@ -317,10 +370,12 @@ class WebDavSyncTransport(
             ).execute().use { response ->
                 val code = response.code
                 if (code == 401) {
+                    Log.e(TAG, "webdav PROPFIND 401: " + url)
                     throw RimeSyncException.WebDavAuthFailed()
                 }
                 if (code !in 200..299) {
-                    throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
+                    Log.e(TAG, "webdav PROPFIND failed: " + code + " " + url)
+                    throw RimeSyncException.WebDavRemoteFailed("HTTP $code PROPFIND $url")
                 }
                 val xml = response.body?.string() ?: ""
                 val basePath = URL(url).path.trimEnd('/')
