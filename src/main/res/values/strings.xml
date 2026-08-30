@@ -258,6 +258,7 @@
     <string name="rime_sync_retention">清理旧同步文件</string>
     <string name="rime_sync_retention_off">不清理</string>
     <string name="rime_sync_retention_days">保留 %1$d 天，更旧的删除</string>
+    <string name="user_data_backup_category">用户数据备份</string>
     <string name="restart_channel">应用重启</string>
     <string name="restart_notify_msg">应用已被重启，点击此处打开</string>
 

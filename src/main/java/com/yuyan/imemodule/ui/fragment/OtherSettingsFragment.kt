@@ -382,13 +382,19 @@ class OtherSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().ot
         }
         rimeSyncCategory.addPreference(retentionPreference!!)
 
-        screen.addPreference(R.string.export_user_data) {
+        val backupCategory = PreferenceCategory(ctx).apply {
+            title = getString(R.string.user_data_backup_category)
+            isIconSpaceReserved = false
+        }
+        screen.addPreference(backupCategory)
+
+        backupCategory.addPreference(R.string.export_user_data) {
             lifecycleScope.launch {
                 exportTimestamp = System.currentTimeMillis()
                 exportLauncher.launch("yuyanIme_${TimeUtils.iso8601UTCDateTime(exportTimestamp)}.zip")
             }
         }
-        screen.addPreference(R.string.import_user_data) {
+        backupCategory.addPreference(R.string.import_user_data) {
             AlertDialog.Builder(ctx)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.import_user_data)
@@ -502,10 +508,17 @@ class OtherSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().ot
             } else {
                 InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
             }
+            isSingleLine = true
             setSelection(text.length)
         }
-        val padding = DevicesUtils.dip2px(20)
-        editText.setPadding(padding, 0, padding, 0)
+        val horizontalPadding = DevicesUtils.dip2px(24)
+        val verticalPadding = DevicesUtils.dip2px(12)
+        editText.setPadding(
+            horizontalPadding,
+            verticalPadding,
+            horizontalPadding,
+            verticalPadding
+        )
         AlertDialog.Builder(ctx)
             .setTitle(title)
             .setView(editText)
@@ -535,7 +548,7 @@ class OtherSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().ot
         is RimeSyncException.WebDavAuthFailed ->
             getString(R.string.rime_sync_webdav_auth_failed)
         is RimeSyncException.WebDavNetworkFailed ->
-            getString(R.string.rime_sync_webdav_network_failed)
+            e.message ?: getString(R.string.rime_sync_webdav_network_failed)
         is RimeSyncException.WebDavRemoteFailed ->
             e.message ?: getString(R.string.rime_sync_webdav_remote_failed)
         else -> e.message ?: e.javaClass.simpleName

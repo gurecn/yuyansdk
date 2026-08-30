@@ -69,7 +69,10 @@ sealed class RimeSyncException(message: String) : Exception(message) {
         RimeSyncException("WebDAV 账号或应用密码错误")
 
     class WebDavNetworkFailed(cause: Throwable? = null) :
-        RimeSyncException("WebDAV 网络请求失败") {
+        RimeSyncException(
+            "WebDAV 网络请求失败" +
+                (cause?.message?.let { "：" + it } ?: "")
+        ) {
         init {
             cause?.let(::initCause)
         }

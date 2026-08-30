@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.rime.sync
 
 import android.util.Base64
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.w3c.dom.Element
@@ -73,6 +74,7 @@ class WebDavSyncTransport(
                     Result.failure(RimeSyncException.WebDavRemoteFailed("HTTP $code"))
             }
         } catch (e: Exception) {
+            Log.e(TAG, "webdav test failed: " + config.baseUrl, e)
             Result.failure(RimeSyncException.WebDavNetworkFailed(e))
         }
     }
@@ -199,6 +201,7 @@ class WebDavSyncTransport(
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
+            Log.e(TAG, "webdav GET failed: " + entry.relativePath, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
         } finally {
             conn.disconnect()
@@ -332,6 +335,7 @@ class WebDavSyncTransport(
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
+            Log.e(TAG, "webdav PROPFIND failed: " + url, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
         } finally {
             conn.disconnect()
@@ -428,6 +432,7 @@ class WebDavSyncTransport(
     }
 
     companion object {
+        private const val TAG = "YuyanRimeSync"
         private const val DAV_NS = "DAV:"
         private const val TEMP_SUFFIX = ".yuyan.tmp"
         private const val TEMP_GRACE_MILLIS = 24L * 60 * 60 * 1000

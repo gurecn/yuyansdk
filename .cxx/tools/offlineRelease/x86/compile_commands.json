@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/code/private/YuyanIme/yuyansdk/.cxx/RelWithDebInfo/6j1v1s5b/x86",
+  "command": "C:\\tool\\android-sdk\\ndk\\26.3.11579264\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android23 --sysroot=C:/tool/android-sdk/ndk/26.3.11579264/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dyuyansyncbridge_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O2 -g -DNDEBUG -fPIC -o CMakeFiles\\yuyansyncbridge.dir\\rime_sync_bridge.cpp.o -c C:\\code\\private\\YuyanIme\\yuyansdk\\src\\main\\cpp\\rime_sync_bridge.cpp",
+  "file": "C:\\code\\private\\YuyanIme\\yuyansdk\\src\\main\\cpp\\rime_sync_bridge.cpp"
+}
+]
