@@ -78,22 +78,30 @@ class WebDavSyncTransport(
      */
     suspend fun testConnection(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            client.newCall(
-                baseRequest(config.baseUrl)
-                    .method("PROPFIND", null)
-                    .header("Depth", "0")
-                    .build()
-            ).execute().use { response ->
-                when (response.code) {
-                    401 -> Result.failure(RimeSyncException.WebDavAuthFailed())
-                    in 200..299, 404 -> Result.success(Unit)
-                    else -> Result.failure(
-                        RimeSyncException.WebDavRemoteFailed(
-                            "HTTP ${response.code} PROPFIND ${config.baseUrl}"
-                        )
-                    )
+            val code = withRetry("PROPFIND", config.baseUrl) {
+                client.newCall(
+                    baseRequest(config.baseUrl)
+                        .method("PROPFIND", null)
+                        .header("Depth", "0")
+                        .build()
+                ).execute().use { response ->
+                    response.code.also {
+                        if (it in 500..599) throw HttpRetryable(it, "PROPFIND", config.baseUrl)
+                    }
                 }
             }
+            when (code) {
+                401 -> Result.failure(RimeSyncException.WebDavAuthFailed())
+                in 200..299, 404 -> Result.success(Unit)
+                else -> Result.failure(
+                    RimeSyncException.WebDavRemoteFailed(
+                        "HTTP $code PROPFIND ${config.baseUrl}"
+                    )
+                )
+            }
+        } catch (e: RimeSyncException) {
+            Log.e(TAG, "webdav test failed: " + config.baseUrl, e)
+            Result.failure(e)
         } catch (e: Exception) {
             Log.e(TAG, "webdav test failed: " + config.baseUrl, e)
             Result.failure(RimeSyncException.WebDavNetworkFailed(e))
@@ -214,39 +222,52 @@ class WebDavSyncTransport(
             return
         }
         try {
-            client.newCall(baseRequest(childUrl(entry.relativePath)).get().build())
-                .execute().use { response ->
-                    val code = response.code
-                    if (code !in 200..299) {
-                        if (code == 404) {
-                            // 文件在列目录与下载之间消失：按跳过处理
-                            Log.w(TAG, "webdav GET 404, skip: " + entry.relativePath)
-                            report.skippedFiles++
-                            return
+            val downloaded = withRetry("GET", childUrl(entry.relativePath)) {
+                var written = false
+                client.newCall(baseRequest(childUrl(entry.relativePath)).get().build())
+                    .execute().use { response ->
+                        val code = response.code
+                        when {
+                            code == 404 -> {
+                                // 文件在列目录与下载之间消失：按跳过处理
+                                Log.w(TAG, "webdav GET 404, skip: " + entry.relativePath)
+                                report.skippedFiles++
+                            }
+                            code in 500..599 -> throw HttpRetryable(
+                                code, "GET", childUrl(entry.relativePath)
+                            )
+                            code !in 200..299 -> {
+                                Log.e(
+                                    TAG,
+                                    "webdav GET failed: $code " + childUrl(entry.relativePath)
+                                )
+                                throw RimeSyncException.WebDavRemoteFailed(
+                                    "HTTP $code GET " + childUrl(entry.relativePath)
+                                )
+                            }
+                            else -> {
+                                val stream = response.body?.byteStream()
+                                    ?: throw RimeSyncException.WebDavNetworkFailed()
+                                stream.use { input ->
+                                    StagingFileSink.writeAtomically(entry.relativePath, input)
+                                }
+                                written = true
+                            }
                         }
-                        Log.e(
-                            TAG,
-                            "webdav GET failed: " + code + " " + childUrl(entry.relativePath)
-                        )
-                        throw RimeSyncException.WebDavRemoteFailed(
-                            "HTTP $code GET " + childUrl(entry.relativePath)
-                        )
                     }
-                    val stream = response.body?.byteStream()
-                        ?: throw RimeSyncException.WebDavNetworkFailed()
-                    stream.use { input ->
-                        StagingFileSink.writeAtomically(entry.relativePath, input)
-                    }
-                }
+                written
+            }
+            if (downloaded) {
+                val target = StagingFileSink.targetFor(entry.relativePath)
+                report.copiedFiles++
+                report.bytes += target.length()
+            }
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "webdav GET failed: " + entry.relativePath, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
         }
-        val target = StagingFileSink.targetFor(entry.relativePath)
-        report.copiedFiles++
-        report.bytes += target.length()
     }
 
     /**
@@ -266,16 +287,21 @@ class WebDavSyncTransport(
     }
 
     private fun putFile(url: String, source: File) {
-        val body = source.asRequestBody(OCTET_STREAM)
         try {
-            client.newCall(baseRequest(url).method("PUT", body).build())
-                .execute().use { response ->
-                    val code = response.code
-                    if (code !in 200..299) {
-                        Log.e(TAG, "webdav PUT failed: " + code + " " + url)
-                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code PUT $url")
+            withRetry("PUT", url) {
+                val body = source.asRequestBody(OCTET_STREAM)
+                client.newCall(baseRequest(url).method("PUT", body).build())
+                    .execute().use { response ->
+                        val code = response.code
+                        if (code in 500..599) {
+                            throw HttpRetryable(code, "PUT", url)
+                        }
+                        if (code !in 200..299) {
+                            Log.e(TAG, "webdav PUT failed: " + code + " " + url)
+                            throw RimeSyncException.WebDavRemoteFailed("HTTP $code PUT $url")
+                        }
                     }
-                }
+            }
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
@@ -313,6 +339,44 @@ class WebDavSyncTransport(
     }
 
     /**
+     * 网络异常与 5xx（坚果云账号级限流常见 503）做有限退避重试。
+     * 业务错误（401/404 等 RimeSyncException）不重试，立即抛出；
+     * 重试耗尽后把最后的 5xx 转为带状态码的 WebDavRemoteFailed 展示给用户。
+     */
+    private fun <T> withRetry(what: String, url: String, block: () -> T): T {
+        var lastRetryable: HttpRetryable? = null
+        repeat(MAX_RETRY_ATTEMPTS) { attempt ->
+            try {
+                return block()
+            } catch (e: RimeSyncException) {
+                throw e
+            } catch (e: HttpRetryable) {
+                lastRetryable = e
+                if (attempt < MAX_RETRY_ATTEMPTS - 1) {
+                    Log.w(
+                        TAG,
+                        "webdav $what retry ${attempt + 1}/$MAX_RETRY_ATTEMPTS: $url (${e.message})"
+                    )
+                    Thread.sleep(RETRY_BACKOFF_MS * (attempt + 1))
+                }
+            } catch (e: Exception) {
+                if (attempt >= MAX_RETRY_ATTEMPTS - 1) {
+                    Log.e(TAG, "webdav $what failed: $url", e)
+                    throw RimeSyncException.WebDavNetworkFailed(e)
+                }
+                Log.w(TAG, "webdav $what retry ${attempt + 1}/$MAX_RETRY_ATTEMPTS: $url", e)
+                Thread.sleep(RETRY_BACKOFF_MS * (attempt + 1))
+            }
+        }
+        throw RimeSyncException.WebDavRemoteFailed(
+            lastRetryable?.message ?: "HTTP 5xx $url"
+        )
+    }
+
+    private class HttpRetryable(code: Int, method: String, url: String) :
+        Exception("HTTP $code $method $url")
+
+    /**
      * 确保远端目录存在：PROPFIND 探测，404 时 MKCOL 创建。
      * 创建失败不再静默忽略，直接抛出带状态码与 URL 的异常。
      */
@@ -345,12 +409,20 @@ class WebDavSyncTransport(
 
     private fun propfindStatusCode(url: String): Int {
         return try {
-            client.newCall(
-                baseRequest(url)
-                    .method("PROPFIND", null)
-                    .header("Depth", "0")
-                    .build()
-            ).execute().use { it.code }
+            withRetry("PROPFIND", url) {
+                client.newCall(
+                    baseRequest(url)
+                        .method("PROPFIND", null)
+                        .header("Depth", "0")
+                        .build()
+                ).execute().use { response ->
+                    response.code.also {
+                        if (it in 500..599) throw HttpRetryable(it, "PROPFIND", url)
+                    }
+                }
+            }
+        } catch (e: RimeSyncException) {
+            throw e
         } catch (e: Exception) {
             Log.w(TAG, "webdav PROPFIND probe failed: " + url, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
@@ -362,24 +434,29 @@ class WebDavSyncTransport(
      */
     private fun propfind(url: String, parentRelative: String? = null): List<DavEntry> {
         try {
-            client.newCall(
-                baseRequest(url)
-                    .method("PROPFIND", null)
-                    .header("Depth", "1")
-                    .build()
-            ).execute().use { response ->
-                val code = response.code
-                if (code == 401) {
-                    Log.e(TAG, "webdav PROPFIND 401: " + url)
-                    throw RimeSyncException.WebDavAuthFailed()
+            val xml = withRetry("PROPFIND", url) {
+                client.newCall(
+                    baseRequest(url)
+                        .method("PROPFIND", null)
+                        .header("Depth", "1")
+                        .build()
+                ).execute().use { response ->
+                    val code = response.code
+                    if (code == 401) {
+                        Log.e(TAG, "webdav PROPFIND 401: " + url)
+                        throw RimeSyncException.WebDavAuthFailed()
+                    }
+                    if (code in 500..599) {
+                        throw HttpRetryable(code, "PROPFIND", url)
+                    }
+                    if (code !in 200..299) {
+                        Log.e(TAG, "webdav PROPFIND failed: " + code + " " + url)
+                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code PROPFIND $url")
+                    }
+                    response.body?.string() ?: ""
                 }
-                if (code !in 200..299) {
-                    Log.e(TAG, "webdav PROPFIND failed: " + code + " " + url)
-                    throw RimeSyncException.WebDavRemoteFailed("HTTP $code PROPFIND $url")
-                }
-                val xml = response.body?.string() ?: ""
-                return parsePropfind(xml, parentRelative)
             }
+            return parsePropfind(xml, parentRelative)
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
@@ -488,6 +565,8 @@ class WebDavSyncTransport(
         private const val TEMP_GRACE_MILLIS = 24L * 60 * 60 * 1000
         private const val CONNECT_TIMEOUT_SECONDS = 15L
         private const val READ_TIMEOUT_SECONDS = 60L
+        private const val MAX_RETRY_ATTEMPTS = 3
+        private const val RETRY_BACKOFF_MS = 3000L
         private val OCTET_STREAM = "application/octet-stream".toMediaType()
         private val RFC1123_FORMAT =
             SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
