@@ -19,6 +19,11 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
 object UserDataManager {
+    // UserDataManager = 语燕整应用备份（shared_prefs/databases/external 打进 ZIP）。
+    // RimeSyncManager = 跨 Rime 客户端用户词典同步，两个功能不能复用，
+    // 不要把 RimeSyncManager.synchronize() 塞进 export()/import()。
+    // Rime 同步状态保存在 noBackupFilesDir（RimeSyncStateStore），
+    // 因此整包导出不会携带 installation ID / SAF URI，这正是期望行为。
 
     private val json = Json { prettyPrint = true }
 
