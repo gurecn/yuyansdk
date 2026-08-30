@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.application
 
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
+import java.io.File
 
 /**
  * 用户自定义常量类
@@ -8,6 +9,21 @@ import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 object CustomConstant {
     var RIME_DICT_PATH = Launcher.instance.context.getExternalFilesDir("rime").toString()
     var HW_DICT_PATH: String  = Launcher.instance.context.getExternalFilesDir("hw").toString()
+    /**
+     * librime 真正使用的本地 sync_dir。
+     *
+     * 注意：
+     * 这里不能直接保存 SAF content:// URI。
+     * 用户选择的共享目录由 RimeSyncStorageBridge 负责与此目录双向交换。
+     */
+    val RIME_SYNC_STAGING_PATH: String
+        get() = File(
+            Launcher.instance.context.filesDir,
+            "rime-sync-staging"
+        ).absolutePath
+    /** 旧版本 APK 打包内置的公共 installation id，检测到即替换为设备独立 UUID。 */
+    const val LEGACY_BUNDLED_RIME_INSTALLATION_ID =
+        "7a4cf0ca-417a-4785-a62e-323e91f738f9"
     const val SCHEMA_ZH_T9 = "t9_pinyin" // 拼音九键
     const val SCHEMA_ZH_QWERTY = "pinyin" // 拼音全键
     const val SCHEMA_EN = "english"         // 英语方案

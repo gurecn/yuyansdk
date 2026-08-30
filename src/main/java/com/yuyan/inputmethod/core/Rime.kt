@@ -24,6 +24,11 @@ class Rime(fullCheck: Boolean) {
 
         init {
             System.loadLibrary("yuyanime")
+            try {
+                System.loadLibrary("yuyansyncbridge")
+            } catch (_: UnsatisfiedLinkError) {
+                // 可选 native 同步桥；缺失时 NativeRimeSyncEngine 降级为 NativeSyncUnavailable
+            }
         }
 
         fun startup(context: Context, fullCheck: Boolean) {
@@ -166,5 +171,15 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun selectRimeAssociate(index: Int): Boolean
+
+        /**
+         * 阻塞式执行 librime sync_user_data() 并等待 maintenance 线程结束。
+         *
+         * Java/Kotlin 层不做 start sync / polling / sleep；
+         * native 桥在返回前完成：
+         * 清理现有 session → sync_user_data() → join_maintenance_thread()。
+         */
+        @JvmStatic
+        external fun syncRimeUserDataBlocking(): Boolean
     }
 }

@@ -174,6 +174,16 @@ class ImeService : InputMethodService() {
         if (isSoftKeyboard) mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
     }
 
+    companion object {
+        /**
+         * 键盘窗口当前是否显示（正在输入）。供后台定时同步判断：
+         * 正在输入时跳过本轮自动同步，避免重置输入引擎打断候选。
+         */
+        @Volatile
+        var inputWindowShown: Boolean = false
+            private set
+    }
+
     private val cursorAnchorPosition = FloatArray(2)
     override fun onUpdateCursorAnchorInfo(cursorAnchorInfo: CursorAnchorInfo?) {
         super.onUpdateCursorAnchorInfo(cursorAnchorInfo)
@@ -188,11 +198,13 @@ class ImeService : InputMethodService() {
     }
 
     override fun onWindowShown() {
+        inputWindowShown = true
         if (isSoftKeyboard) mInputView.onWindowShown()
         super.onWindowShown()
     }
 
     override fun onWindowHidden() {
+        inputWindowShown = false
         if(isSoftKeyboard) mInputView.onWindowHidden()
         super.onWindowHidden()
     }

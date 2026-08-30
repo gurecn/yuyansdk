@@ -9,6 +9,8 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.rime.sync.RimeInstallationManager
+import com.yuyan.imemodule.rime.sync.RimeSyncScheduler
 import com.yuyan.imemodule.service.ClipboardHelper
 import com.yuyan.imemodule.utils.AssetUtils.copyFileOrDir
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
@@ -44,6 +46,11 @@ class Launcher {
                 copyFileOrDir(context, "hw", "", CustomConstant.HW_DICT_PATH, true)
                 AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
             }
+            // 修复 installation.yaml：独立 installation_id + 本地 staging sync_dir
+            // 顺序不可调整：必须先复制 assets，再修 installation.yaml，最后初始化 Rime
+            RimeInstallationManager.ensureInstallationConfig()
+            // 恢复定时同步任务（WebDAV 模式 + 周期 > 0 时生效）
+            RimeSyncScheduler.reschedule(context)
             Kernel.resetIme()  // 解决词库复制慢，导致先调用初始化问题
             YuyanEmojiCompat.init(context)
             //初始化键盘主题
