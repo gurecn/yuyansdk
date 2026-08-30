@@ -1,3 +1,0 @@
-C:/code/private/YuyanIme/yuyansdk/.cxx/Debug/x5r4k4l2/arm64-v8a/CMakeFiles/yuyansyncbridge.dir
-C:/code/private/YuyanIme/yuyansdk/.cxx/Debug/x5r4k4l2/arm64-v8a/CMakeFiles/edit_cache.dir
-C:/code/private/YuyanIme/yuyansdk/.cxx/Debug/x5r4k4l2/arm64-v8a/CMakeFiles/rebuild_cache.dir

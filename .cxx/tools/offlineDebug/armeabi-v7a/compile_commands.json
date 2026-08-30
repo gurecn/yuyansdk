@@ -1,7 +1,0 @@
-[
-{
-  "directory": "C:/code/private/YuyanIme/yuyansdk/.cxx/Debug/x5r4k4l2/armeabi-v7a",
-  "command": "C:\\tool\\android-sdk\\ndk\\26.3.11579264\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=armv7-none-linux-androideabi23 --sysroot=C:/tool/android-sdk/ndk/26.3.11579264/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dyuyansyncbridge_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security   -fno-limit-debug-info  -fPIC -o CMakeFiles\\yuyansyncbridge.dir\\rime_sync_bridge.cpp.o -c C:\\code\\private\\YuyanIme\\yuyansdk\\src\\main\\cpp\\rime_sync_bridge.cpp",
-  "file": "C:\\code\\private\\YuyanIme\\yuyansdk\\src\\main\\cpp\\rime_sync_bridge.cpp"
-}
-]
