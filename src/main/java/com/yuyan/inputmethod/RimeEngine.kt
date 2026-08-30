@@ -132,6 +132,16 @@ object RimeEngine {
 
     fun destroy() = Rime.destroy()
 
+    /**
+     * 用户数据同步前的轻量准备：清空当前输入状态。
+     * 真正的 Rime session 释放由 native 同步桥完成；
+     * 同步结束后调用方统一执行 Kernel.resetIme() 恢复引擎。
+     * 不要把 SAF 逻辑放这里。
+     */
+    fun prepareForUserDataSync() {
+        reset()
+    }
+
     fun processDelAction() {
         when (val lastKey = keyRecordStack.pop()) {
             is InputKey.PinyinKey -> {
