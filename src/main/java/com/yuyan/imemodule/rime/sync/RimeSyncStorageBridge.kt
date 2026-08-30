@@ -48,7 +48,12 @@ class RimeSyncStorageBridge(
      * 清除目录时释放持久化权限。
      */
     fun releaseTreePermission(treeUri: Uri) {
-        runCatching { resolver.releasePersistableUriPermission(treeUri) }
+        runCatching {
+            resolver.releasePersistableUriPermission(
+                treeUri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
     }
 
     /**
@@ -131,7 +136,7 @@ class RimeSyncStorageBridge(
         targetDir: DocumentFile,
         accumulator: MutableSyncCopyReport
     ) {
-        val children = sourceDir.listFiles()?.sortedBy { it.name } ?: emptyArray()
+        val children = sourceDir.listFiles()?.sortedBy { it.name }.orEmpty()
         for (file in children) {
             if (file.isDirectory) {
                 pushFiles(file, childDirectory(targetDir, file.name), accumulator)

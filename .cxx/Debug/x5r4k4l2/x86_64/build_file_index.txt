@@ -1,0 +1,1 @@
+C:\code\private\YuyanIme\yuyansdk\src\main\cpp\CMakeLists.txt
