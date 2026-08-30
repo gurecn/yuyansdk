@@ -115,7 +115,7 @@ class WebDavSyncTransport(
             if (entry.relativePath.isEmpty()) continue
             if (entry.isDirectory) {
                 val children = try {
-                    propfind(childUrl(entry.relativePath))
+                    propfind(childUrl(entry.relativePath), entry.relativePath)
                 } catch (e: RimeSyncException.WebDavRemoteFailed) {
                     // 目录在列目录与拉取之间被远端删除：跳过，不使整个同步失败
                     Log.w(TAG, "webdav skip dir on pull: " + entry.relativePath + ", " + e.message)
@@ -179,7 +179,7 @@ class WebDavSyncTransport(
             if (entry.isDirectory) {
                 if (entry.relativePath == ownInstallationId) continue
                 val dirUrl = childUrl(entry.relativePath)
-                val children = propfind(dirUrl)
+                val children = propfind(dirUrl, entry.relativePath)
                 for (child in children) {
                     if (child.isDirectory) continue
                     val fileUrl = childUrl(entry.relativePath, child.relativePath)
@@ -360,7 +360,7 @@ class WebDavSyncTransport(
     /**
      * PROPFIND Depth 1：返回目录下一级的条目（不含目录自身）。
      */
-    private fun propfind(url: String): List<DavEntry> {
+    private fun propfind(url: String, parentRelative: String? = null): List<DavEntry> {
         try {
             client.newCall(
                 baseRequest(url)
@@ -378,8 +378,7 @@ class WebDavSyncTransport(
                     throw RimeSyncException.WebDavRemoteFailed("HTTP $code PROPFIND $url")
                 }
                 val xml = response.body?.string() ?: ""
-                val basePath = URL(url).path.trimEnd('/')
-                return parsePropfind(xml, basePath)
+                return parsePropfind(xml, parentRelative)
             }
         } catch (e: RimeSyncException) {
             throw e
@@ -389,7 +388,17 @@ class WebDavSyncTransport(
         }
     }
 
-    private fun parsePropfind(xml: String, basePath: String): List<DavEntry> {
+    /**
+     * 解析 PROPFIND Depth 1 响应。
+     *
+     * 相对路径不再依赖「配置地址前缀」匹配：坚果云会把请求路径别名到
+     * /dav/ 真实前缀（如配置 /rimesyc，响应 href 却是 /dav/rimesyc/...），
+     * 前缀不匹配时旧实现会把全部条目静默丢弃，导致 pull 拉回 0 个文件，
+     * Windows 快照永远无法合并进 Android。
+     * 现在改用每条 href 的末段名称，并与父目录相对路径拼接，
+     * 对服务端 href 前缀/别名完全免疫；路径逃逸仍由 StagingFileSink 兜底。
+     */
+    private fun parsePropfind(xml: String, parentRelative: String?): List<DavEntry> {
         val factory = DocumentBuilderFactory.newInstance().apply {
             isNamespaceAware = true
         }
@@ -401,8 +410,9 @@ class WebDavSyncTransport(
             val response = responses.item(index) as? Element ?: continue
             val href = childText(response, "href") ?: continue
             val isDirectory = hasChild(response, "resourcetype", "collection")
-            val relative = toRelativePath(href, basePath) ?: continue
-            if (relative.isEmpty()) continue
+            val name = decodePath(hrefPath(href)).trimEnd('/').substringAfterLast('/')
+            if (name.isEmpty()) continue // 集合自身
+            val relative = if (parentRelative.isNullOrEmpty()) name else "$parentRelative/$name"
             entries.add(
                 DavEntry(
                     relativePath = relative,
@@ -414,16 +424,12 @@ class WebDavSyncTransport(
         return entries
     }
 
-    private fun toRelativePath(href: String, basePath: String): String? {
-        val path = try {
+    private fun hrefPath(href: String): String {
+        return try {
             URL(href).path
         } catch (_: Exception) {
             href.substringBefore('?')
         }
-        val decoded = decodePath(path)
-        val base = decodePath(basePath).trimEnd('/')
-        if (!decoded.startsWith(base)) return null
-        return decoded.removePrefix(base).trim('/')
     }
 
     private fun decodePath(path: String): String {
