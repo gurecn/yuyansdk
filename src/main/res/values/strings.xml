@@ -215,6 +215,24 @@
     <string name="exception_user_data_metadata">找不到用户数据的元数据</string>
     <string name="user_data_imported">已导入数据，请重启</string>
     <string name="confirm_import_user_data">导入用户数据会覆盖本地设置与输入历史，并且在重启应用后才能生效。继续吗？</string>
+    <string name="rime_sync_category">Rime 用户数据同步</string>
+    <string name="rime_sync_dir_pick">选择同步目录</string>
+    <string name="rime_sync_dir_not_set">未选择</string>
+    <string name="rime_sync_dir_invalid">同步目录授权已失效，请重新选择</string>
+    <string name="rime_sync_now">立即同步</string>
+    <string name="rime_sync_never">从未同步</string>
+    <string name="rime_sync_last_success">最近同步：%1$s</string>
+    <string name="rime_sync_last_error">最近同步失败：%1$s</string>
+    <string name="rime_sync_clear">清除同步目录</string>
+    <string name="rime_sync_clear_confirm">清除后需要重新选择目录才能再次同步，继续吗？</string>
+    <string name="rime_sync_success">Rime 用户数据同步完成</string>
+    <string name="rime_sync_failed">Rime 用户数据同步失败</string>
+    <string name="rime_sync_pick_hint">请选择一个其他应用也能够访问的目录。\n\n推荐：Documents/RimeSync、Syncthing/RimeSync\n\n不推荐：Android/data/...、Android/obb/...</string>
+    <string name="rime_sync_native_unavailable">当前版本缺少 Rime 原生同步接口</string>
+    <string name="rime_sync_native_failed">Rime 原生同步失败</string>
+    <string name="rime_sync_read_only">同步目录不可读或不可写</string>
+    <string name="rime_sync_read_failed">读取外部同步目录失败</string>
+    <string name="rime_sync_write_failed">写入外部同步目录失败</string>
     <string name="restart_channel">应用重启</string>
     <string name="restart_notify_msg">应用已被重启，点击此处打开</string>
 
