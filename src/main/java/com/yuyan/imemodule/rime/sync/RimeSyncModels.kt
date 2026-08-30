@@ -65,6 +65,9 @@ sealed class RimeSyncException(message: String) : Exception(message) {
     class WebDavNotConfigured :
         RimeSyncException("WebDAV 同步未配置")
 
+    class WebDavConsentRequired :
+        RimeSyncException("WebDAV 联网未获授权，请重新选择同步方式并同意联网说明")
+
     class WebDavAuthFailed :
         RimeSyncException("WebDAV 账号或应用密码错误")
 

@@ -19,6 +19,9 @@ class RimeSyncWorker(
         if (state.syncMode != RIME_SYNC_MODE_WEBDAV) {
             return Result.success()
         }
+        if (!state.webDavConsentGranted) {
+            return Result.success()
+        }
         return if (RimeSyncManager.synchronize().isSuccess) {
             Result.success()
         } else {

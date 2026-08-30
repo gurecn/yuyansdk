@@ -15,6 +15,7 @@ data class RimeSyncDeviceState(
     val installationId: String,
     val syncTreeUri: String? = null,
     val syncMode: String = RIME_SYNC_MODE_SAF,
+    val webDavConsentGranted: Boolean = false,
     val webDavUrl: String? = null,
     val webDavUsername: String? = null,
     val webDavPassword: String? = null,
@@ -86,6 +87,10 @@ class RimeSyncStateStore(
 
     fun setSyncMode(mode: String) {
         update { it.copy(syncMode = mode) }
+    }
+
+    fun setWebDavConsent(granted: Boolean) {
+        update { it.copy(webDavConsentGranted = granted) }
     }
 
     fun setWebDavConfig(url: String?, username: String?, password: String?) {

@@ -61,6 +61,9 @@ object RimeSyncManager {
             val cleanedFiles: Int
             when (state.syncMode) {
                 RIME_SYNC_MODE_WEBDAV -> {
+                    if (!stateStore.loadOrCreate().webDavConsentGranted) {
+                        throw RimeSyncException.WebDavConsentRequired()
+                    }
                     val config = WebDavSyncConfig.from(stateStore.loadOrCreate())
                         ?: throw RimeSyncException.WebDavNotConfigured()
                     val transport = WebDavSyncTransport(config)

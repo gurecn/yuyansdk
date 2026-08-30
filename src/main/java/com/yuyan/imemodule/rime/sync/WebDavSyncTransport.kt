@@ -4,14 +4,18 @@ import android.util.Base64
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.w3c.dom.Element
 import java.io.ByteArrayInputStream
 import java.io.File
-import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
@@ -43,7 +47,10 @@ internal data class DavEntry(
 )
 
 /**
- * WebDAV 同步通道。
+ * WebDAV 同步通道（OkHttp 实现）。
+ *
+ * Android 系统自带 HttpURLConnection 只允许标准 HTTP 方法，
+ * 会拒绝 PROPFIND/MKCOL/MOVE；OkHttp 4 原生支持这些 WebDAV 方法。
  *
  * 与 SAF 桥保持同样的数据层边界：
  * - pullAll：拉取远端全部设备 snapshot 到 staging（merge/overwrite）
@@ -59,19 +66,31 @@ class WebDavSyncTransport(
             Base64.NO_WRAP
         )
 
+    private val client: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .build()
+    }
+
     /**
      * 测试连接：PROPFIND 成功即通过；404 表示远端目录还没创建，同样视为可用。
      */
     suspend fun testConnection(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val code = propfindStatusCode(config.baseUrl)
-            when (code) {
-                HttpURLConnection.HTTP_UNAUTHORIZED ->
-                    Result.failure(RimeSyncException.WebDavAuthFailed())
-                in 200..299, HttpURLConnection.HTTP_NOT_FOUND ->
-                    Result.success(Unit)
-                else ->
-                    Result.failure(RimeSyncException.WebDavRemoteFailed("HTTP $code"))
+            client.newCall(
+                baseRequest(config.baseUrl)
+                    .method("PROPFIND", null)
+                    .header("Depth", "0")
+                    .build()
+            ).execute().use { response ->
+                when (response.code) {
+                    401 -> Result.failure(RimeSyncException.WebDavAuthFailed())
+                    in 200..299, 404 -> Result.success(Unit)
+                    else -> Result.failure(
+                        RimeSyncException.WebDavRemoteFailed("HTTP ${response.code}")
+                    )
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "webdav test failed: " + config.baseUrl, e)
@@ -155,8 +174,8 @@ class WebDavSyncTransport(
                 val children = propfind(dirUrl)
                 for (child in children) {
                     if (child.isDirectory) continue
-                    val childUrl = childUrl(entry.relativePath, child.relativePath)
-                    if (isExpired(child, now, retentionMillis) && deleteQuiet(childUrl)) {
+                    val fileUrl = childUrl(entry.relativePath, child.relativePath)
+                    if (isExpired(child, now, retentionMillis) && deleteQuiet(fileUrl)) {
                         cleaned++
                     }
                 }
@@ -186,26 +205,28 @@ class WebDavSyncTransport(
             report.skippedFiles++
             return
         }
-        val conn = openConnection(childUrl(entry.relativePath), "GET")
         try {
-            val code = conn.responseCode
-            if (code !in 200..299) {
-                throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
-            }
-            conn.inputStream.use { input ->
-                StagingFileSink.writeAtomically(entry.relativePath, input)
-            }
-            val target = StagingFileSink.targetFor(entry.relativePath)
-            report.copiedFiles++
-            report.bytes += target.length()
+            client.newCall(baseRequest(childUrl(entry.relativePath)).get().build())
+                .execute().use { response ->
+                    val code = response.code
+                    if (code !in 200..299) {
+                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
+                    }
+                    val stream = response.body?.byteStream()
+                        ?: throw RimeSyncException.WebDavNetworkFailed()
+                    stream.use { input ->
+                        StagingFileSink.writeAtomically(entry.relativePath, input)
+                    }
+                }
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "webdav GET failed: " + entry.relativePath, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
-        } finally {
-            conn.disconnect()
         }
+        val target = StagingFileSink.targetFor(entry.relativePath)
+        report.copiedFiles++
+        report.bytes += target.length()
     }
 
     /**
@@ -225,93 +246,61 @@ class WebDavSyncTransport(
     }
 
     private fun putFile(url: String, source: File) {
-        val conn = openConnection(url, "PUT")
+        val body = source.asRequestBody(OCTET_STREAM)
         try {
-            conn.doOutput = true
-            conn.setFixedLengthStreamingMode(source.length())
-            conn.outputStream.use { output ->
-                source.inputStream().use { input -> input.copyTo(output) }
-            }
-            val code = conn.responseCode
-            if (code !in 200..299) {
-                throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
-            }
+            client.newCall(baseRequest(url).method("PUT", body).build())
+                .execute().use { response ->
+                    val code = response.code
+                    if (code !in 200..299) {
+                        throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
+                    }
+                }
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
+            Log.e(TAG, "webdav PUT failed: " + url, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
-        } finally {
-            conn.disconnect()
         }
     }
 
     private fun putDirect(dirUrl: String, name: String, source: File) {
-        val conn = openConnection("$dirUrl/" + encode(name), "PUT")
-        try {
-            conn.doOutput = true
-            conn.setFixedLengthStreamingMode(source.length())
-            conn.outputStream.use { output ->
-                source.inputStream().use { input -> input.copyTo(output) }
-            }
-            val code = conn.responseCode
-            if (code !in 200..299) {
-                throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
-            }
-        } catch (e: RimeSyncException) {
-            throw e
-        } catch (e: Exception) {
-            throw RimeSyncException.WebDavNetworkFailed(e)
-        } finally {
-            conn.disconnect()
-        }
+        putFile("$dirUrl/" + encode(name), source)
     }
 
     private fun moveRemote(sourceUrl: String, targetDirUrl: String, targetName: String): Boolean {
-        val conn = openConnection(sourceUrl, "MOVE")
         return try {
-            conn.setRequestProperty("Destination", "$targetDirUrl/" + encode(targetName))
-            conn.setRequestProperty("Overwrite", "T")
-            val code = conn.responseCode
-            code in 200..299
+            client.newCall(
+                baseRequest(sourceUrl)
+                    .method("MOVE", null)
+                    .header("Destination", "$targetDirUrl/" + encode(targetName))
+                    .header("Overwrite", "T")
+                    .build()
+            ).execute().use { it.code in 200..299 }
         } catch (e: Exception) {
+            Log.w(TAG, "webdav MOVE failed", e)
             false
-        } finally {
-            conn.disconnect()
         }
     }
 
     private fun deleteQuiet(url: String): Boolean {
-        val conn = openConnection(url, "DELETE")
         return try {
-            val code = conn.responseCode
-            code in 200..299 || code == HttpURLConnection.HTTP_NOT_FOUND
+            client.newCall(baseRequest(url).delete().build())
+                .execute().use { it.code in 200..299 || it.code == 404 }
         } catch (e: Exception) {
             false
-        } finally {
-            conn.disconnect()
         }
     }
 
     private fun mkcolQuiet(url: String) {
-        val conn = openConnection(url, "MKCOL")
         try {
-            val code = conn.responseCode
-            if (code in 200..299 || code == 405 || code == 301) {
-                return
-            }
+            client.newCall(baseRequest(url).method("MKCOL", null).build())
+                .execute().use { response ->
+                    val code = response.code
+                    if (code in 200..299 || code == 405 || code == 301) {
+                        return
+                    }
+                }
         } catch (_: Exception) {
-        } finally {
-            conn.disconnect()
-        }
-    }
-
-    private fun propfindStatusCode(url: String): Int {
-        val conn = openConnection(url, "PROPFIND")
-        return try {
-            conn.setRequestProperty("Depth", "0")
-            conn.responseCode
-        } finally {
-            conn.disconnect()
         }
     }
 
@@ -319,26 +308,29 @@ class WebDavSyncTransport(
      * PROPFIND Depth 1：返回目录下一级的条目（不含目录自身）。
      */
     private fun propfind(url: String): List<DavEntry> {
-        val conn = openConnection(url, "PROPFIND")
         try {
-            conn.setRequestProperty("Depth", "1")
-            val code = conn.responseCode
-            if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                throw RimeSyncException.WebDavAuthFailed()
+            client.newCall(
+                baseRequest(url)
+                    .method("PROPFIND", null)
+                    .header("Depth", "1")
+                    .build()
+            ).execute().use { response ->
+                val code = response.code
+                if (code == 401) {
+                    throw RimeSyncException.WebDavAuthFailed()
+                }
+                if (code !in 200..299) {
+                    throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
+                }
+                val xml = response.body?.string() ?: ""
+                val basePath = URL(url).path.trimEnd('/')
+                return parsePropfind(xml, basePath)
             }
-            if (code !in 200..299) {
-                throw RimeSyncException.WebDavRemoteFailed("HTTP $code")
-            }
-            val xml = conn.inputStream.bufferedReader().readText()
-            val basePath = URL(url).path.trimEnd('/')
-            return parsePropfind(xml, basePath)
         } catch (e: RimeSyncException) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "webdav PROPFIND failed: " + url, e)
             throw RimeSyncException.WebDavNetworkFailed(e)
-        } finally {
-            conn.disconnect()
         }
     }
 
@@ -421,14 +413,11 @@ class WebDavSyncTransport(
         return URLEncoder.encode(segment, "UTF-8").replace("+", "%20")
     }
 
-    private fun openConnection(url: String, method: String): HttpURLConnection {
-        val conn = URL(url).openConnection() as HttpURLConnection
-        conn.requestMethod = method
-        conn.connectTimeout = CONNECT_TIMEOUT_MILLIS
-        conn.readTimeout = READ_TIMEOUT_MILLIS
-        conn.setRequestProperty("Authorization", authHeader)
-        conn.setRequestProperty("User-Agent", "YuyanIme-RimeSync/1.0")
-        return conn
+    private fun baseRequest(url: String): Request.Builder {
+        return Request.Builder()
+            .url(url)
+            .header("Authorization", authHeader)
+            .header("User-Agent", "YuyanIme-RimeSync/1.0")
     }
 
     companion object {
@@ -436,8 +425,9 @@ class WebDavSyncTransport(
         private const val DAV_NS = "DAV:"
         private const val TEMP_SUFFIX = ".yuyan.tmp"
         private const val TEMP_GRACE_MILLIS = 24L * 60 * 60 * 1000
-        private const val CONNECT_TIMEOUT_MILLIS = 15_000
-        private const val READ_TIMEOUT_MILLIS = 60_000
+        private const val CONNECT_TIMEOUT_SECONDS = 15L
+        private const val READ_TIMEOUT_SECONDS = 60L
+        private val OCTET_STREAM = "application/octet-stream".toMediaType()
         private val RFC1123_FORMAT =
             SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
     }

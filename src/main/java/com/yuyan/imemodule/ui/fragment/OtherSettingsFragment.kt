@@ -235,8 +235,32 @@ class OtherSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().ot
                         )
                     }
                     .setPositiveButton(android.R.string.ok) { _, _ ->
-                        rescheduleSync(ctx)
-                        refreshSyncPreferences()
+                        val currentState = RimeSyncStateStore(ctx).loadOrCreate()
+                        val selectedWebDav =
+                            currentState.syncMode == RIME_SYNC_MODE_WEBDAV
+                        if (selectedWebDav && !currentState.webDavConsentGranted) {
+                            AlertDialog.Builder(ctx)
+                                .setTitle(R.string.rime_sync_webdav_consent_title)
+                                .setMessage(R.string.rime_sync_webdav_consent_message)
+                                .setPositiveButton(
+                                    R.string.rime_sync_webdav_consent_agree
+                                ) { _, _ ->
+                                    RimeSyncStateStore(ctx).setWebDavConsent(true)
+                                    rescheduleSync(ctx)
+                                    refreshSyncPreferences()
+                                }
+                                .setNegativeButton(
+                                    R.string.rime_sync_webdav_consent_reject
+                                ) { _, _ ->
+                                    RimeSyncStateStore(ctx).setSyncMode(previousMode)
+                                    rescheduleSync(ctx)
+                                    refreshSyncPreferences()
+                                }
+                                .show()
+                        } else {
+                            rescheduleSync(ctx)
+                            refreshSyncPreferences()
+                        }
                     }
                     .setNegativeButton(android.R.string.cancel) { _, _ ->
                         store.setSyncMode(previousMode)
@@ -545,6 +569,8 @@ class OtherSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().ot
             getString(R.string.rime_sync_write_failed)
         is RimeSyncException.WebDavNotConfigured ->
             getString(R.string.rime_sync_webdav_incomplete)
+        is RimeSyncException.WebDavConsentRequired ->
+            getString(R.string.rime_sync_webdav_consent_required)
         is RimeSyncException.WebDavAuthFailed ->
             getString(R.string.rime_sync_webdav_auth_failed)
         is RimeSyncException.WebDavNetworkFailed ->

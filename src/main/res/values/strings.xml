@@ -250,6 +250,11 @@
     <string name="rime_sync_webdav_auth_failed">WebDAV 账号或应用密码错误</string>
     <string name="rime_sync_webdav_network_failed">WebDAV 网络请求失败</string>
     <string name="rime_sync_webdav_remote_failed">WebDAV 服务返回错误</string>
+    <string name="rime_sync_webdav_consent_title">WebDAV 联网说明</string>
+    <string name="rime_sync_webdav_consent_message">选择 WebDAV 同步后，应用只会在「立即同步」或按您设置的同步周期时联网访问坚果云，其他时间不联网。同意后授权将持久生效；如需停止联网同步，请切换回系统目录选择器。</string>
+    <string name="rime_sync_webdav_consent_agree">同意</string>
+    <string name="rime_sync_webdav_consent_reject">拒绝</string>
+    <string name="rime_sync_webdav_consent_required">WebDAV 联网未获授权，请重新选择同步方式并同意联网说明</string>
     <string name="rime_sync_interval">同步周期</string>
     <string name="rime_sync_interval_manual">手动（不自动同步）</string>
     <string name="rime_sync_interval_6h">每 6 小时</string>
