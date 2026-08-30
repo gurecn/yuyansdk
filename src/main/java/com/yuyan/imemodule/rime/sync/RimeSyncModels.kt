@@ -16,9 +16,16 @@ data class RimeSyncReport(
     val installationId: String,
     val pulledFiles: Int,
     val pushedFiles: Int,
+    val cleanedFiles: Int = 0,
     val startTime: Long,
     val endTime: Long
 )
+
+/** 同步方式：SAF 系统目录选择器。 */
+const val RIME_SYNC_MODE_SAF = "saf"
+
+/** 同步方式：WebDAV（推荐坚果云）。 */
+const val RIME_SYNC_MODE_WEBDAV = "webdav"
 
 /**
  * Rime 同步异常基类。
@@ -54,4 +61,20 @@ sealed class RimeSyncException(message: String) : Exception(message) {
             cause?.let(::initCause)
         }
     }
+
+    class WebDavNotConfigured :
+        RimeSyncException("WebDAV 同步未配置")
+
+    class WebDavAuthFailed :
+        RimeSyncException("WebDAV 账号或应用密码错误")
+
+    class WebDavNetworkFailed(cause: Throwable? = null) :
+        RimeSyncException("WebDAV 网络请求失败") {
+        init {
+            cause?.let(::initCause)
+        }
+    }
+
+    class WebDavRemoteFailed(message: String) :
+        RimeSyncException(message)
 }

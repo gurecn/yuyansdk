@@ -14,6 +14,12 @@ import java.util.UUID
 data class RimeSyncDeviceState(
     val installationId: String,
     val syncTreeUri: String? = null,
+    val syncMode: String = RIME_SYNC_MODE_SAF,
+    val webDavUrl: String? = null,
+    val webDavUsername: String? = null,
+    val webDavPassword: String? = null,
+    val syncIntervalHours: Int = 0,
+    val retentionDays: Int = 0,
     val lastSuccessTime: Long = 0L,
     val lastError: String? = null
 )
@@ -76,6 +82,28 @@ class RimeSyncStateStore(
 
     fun updateError(message: String) {
         update { it.copy(lastError = message) }
+    }
+
+    fun setSyncMode(mode: String) {
+        update { it.copy(syncMode = mode) }
+    }
+
+    fun setWebDavConfig(url: String?, username: String?, password: String?) {
+        update {
+            it.copy(
+                webDavUrl = url?.trim()?.takeIf(String::isNotEmpty),
+                webDavUsername = username?.trim()?.takeIf(String::isNotEmpty),
+                webDavPassword = password
+            )
+        }
+    }
+
+    fun setSyncIntervalHours(hours: Int) {
+        update { it.copy(syncIntervalHours = hours) }
+    }
+
+    fun setRetentionDays(days: Int) {
+        update { it.copy(retentionDays = days) }
     }
 
     private fun save(state: RimeSyncDeviceState) {

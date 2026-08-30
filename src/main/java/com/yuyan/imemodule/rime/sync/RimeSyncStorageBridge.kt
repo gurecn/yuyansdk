@@ -100,6 +100,57 @@ class RimeSyncStorageBridge(
         accumulator.toReport()
     }
 
+    /**
+     * 清理 SAF 同步目录中的旧同步文件（规则与 WebDAV 通道一致）：
+     * - .yuyan.tmp/.tmp 残留超过 24 小时删除
+     * - 其他文件最后修改时间超过 retentionDays 删除
+     * - 跳过本机 installation 目录；删空的其他设备目录一并删除
+     */
+    fun cleanupOldFiles(
+        treeUri: Uri,
+        retentionDays: Int,
+        ownInstallationId: String
+    ): Int {
+        if (retentionDays <= 0) return 0
+        val tree = DocumentFile.fromTreeUri(context, treeUri)
+            ?: return 0
+        if (!tree.exists() || !tree.isDirectory) return 0
+        val retentionMillis = retentionDays.toLong() * 24 * 60 * 60 * 1000
+        val now = System.currentTimeMillis()
+        var cleaned = 0
+        for (child in tree.listFiles()) {
+            val name = child.name ?: continue
+            if (child.isDirectory) {
+                if (name == ownInstallationId) continue
+                for (file in child.listFiles()) {
+                    if (file.isFile && isExpired(file, now, retentionMillis) && file.delete()) {
+                        cleaned++
+                    }
+                }
+                if (child.listFiles().isEmpty() && child.delete()) {
+                    // 已清空的旧设备目录一并删除
+                }
+            } else if (child.isFile && isExpired(child, now, retentionMillis) && child.delete()) {
+                cleaned++
+            }
+        }
+        return cleaned
+    }
+
+    private fun isExpired(
+        file: DocumentFile,
+        now: Long,
+        retentionMillis: Long
+    ): Boolean {
+        val lastModified = file.lastModified()
+        if (lastModified <= 0) return false
+        val isTemp = file.name?.let {
+            it.endsWith(TEMP_SUFFIX) || it.endsWith(".tmp")
+        } == true
+        val threshold = if (isTemp) TEMP_GRACE_MILLIS else retentionMillis
+        return now - lastModified > threshold
+    }
+
     private fun pullChildren(
         source: DocumentFile,
         targetDir: File,
@@ -228,11 +279,12 @@ class RimeSyncStorageBridge(
 
     companion object {
         private const val TEMP_SUFFIX = ".yuyan.tmp"
+        private const val TEMP_GRACE_MILLIS = 24L * 60 * 60 * 1000
         private const val MIME_OCTET_STREAM = "application/octet-stream"
     }
 }
 
-private class MutableSyncCopyReport {
+internal class MutableSyncCopyReport {
     var copiedFiles = 0
     var skippedFiles = 0
     var bytes = 0L

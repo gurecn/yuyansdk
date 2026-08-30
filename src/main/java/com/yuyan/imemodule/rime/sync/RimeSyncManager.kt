@@ -36,13 +36,14 @@ object RimeSyncManager {
      *
      * Mutex lock
      *   → 读取 RimeSyncState
-     *   → 验证 SAF URI 与持久化授权
+     *   → 按 syncMode 选择通道（SAF / WebDAV）并验证配置
      *   → ensureInstallationConfig()
-     *   → SAF → staging（拉取所有设备 snapshot）
+     *   → 远端全部设备 snapshot → staging
      *   → 释放/暂停 Rime session
      *   → librime sync_user_data() + join maintenance
      *   → 重新初始化 Rime
-     *   → staging/<installationId> → SAF/<installationId>
+     *   → staging/<installationId> → 远端
+     *   → 按保留天数清理远端与 staging 的旧同步文件
      *   → 记录 lastSuccess
      * Mutex unlock
      *
@@ -51,51 +52,54 @@ object RimeSyncManager {
      */
     suspend fun synchronize(): Result<RimeSyncReport> = syncMutex.withLock {
         val stateStore = store()
-        val storageBridge = bridge()
         val startTime = System.currentTimeMillis()
-        stateStore.loadOrCreate()
+        val state = stateStore.loadOrCreate()
         try {
-            val treeUri: Uri = stateStore.getTreeUri()
-                ?: return@withLock recordFailure(
-                    stateStore,
-                    RimeSyncException.SyncDirectoryNotConfigured()
-                )
-            if (!storageBridge.hasValidTreePermission(treeUri)) {
-                return@withLock recordFailure(
-                    stateStore,
-                    RimeSyncException.SyncDirectoryPermissionLost()
-                )
-            }
-
-            RimeInstallationManager.ensureInstallationConfig()
-            val installationId = stateStore.loadOrCreate().installationId
-
-            // 1. 先拉取远端全部设备 snapshot（Windows 新词必须先进 staging）
-            val pullReport = storageBridge.pullFromExternal(treeUri)
-
-            // 2. 释放输入状态 → native 清理 session → sync → join maintenance
-            var engineDisturbed = false
-            try {
-                RimeEngine.prepareForUserDataSync()
-                engineDisturbed = true
-                engine.synchronize().getOrThrow()
-            } finally {
-                // 无论成败都必须恢复输入引擎
-                if (engineDisturbed) {
-                    runCatching { Kernel.resetIme() }
+            val installationId: String
+            val pulledFiles: Int
+            val pushedFiles: Int
+            val cleanedFiles: Int
+            when (state.syncMode) {
+                RIME_SYNC_MODE_WEBDAV -> {
+                    val config = WebDavSyncConfig.from(stateStore.loadOrCreate())
+                        ?: throw RimeSyncException.WebDavNotConfigured()
+                    val transport = WebDavSyncTransport(config)
+                    RimeInstallationManager.ensureInstallationConfig()
+                    installationId = stateStore.loadOrCreate().installationId
+                    pulledFiles = transport.pullAll().copiedFiles
+                    runEnginePhase()
+                    pushedFiles = transport.pushInstallation(installationId).copiedFiles
+                    val retention = stateStore.loadOrCreate().retentionDays
+                    cleanedFiles = cleanupAfterSync(retention) {
+                        transport.cleanupOldFiles(retention, installationId)
+                    }
+                }
+                else -> {
+                    val treeUri: Uri = stateStore.getTreeUri()
+                        ?: throw RimeSyncException.SyncDirectoryNotConfigured()
+                    if (!bridge().hasValidTreePermission(treeUri)) {
+                        throw RimeSyncException.SyncDirectoryPermissionLost()
+                    }
+                    RimeInstallationManager.ensureInstallationConfig()
+                    installationId = stateStore.loadOrCreate().installationId
+                    pulledFiles = bridge().pullFromExternal(treeUri).copiedFiles
+                    runEnginePhase()
+                    pushedFiles =
+                        bridge().pushCurrentDeviceToExternal(treeUri, installationId).copiedFiles
+                    val retention = stateStore.loadOrCreate().retentionDays
+                    cleanedFiles = cleanupAfterSync(retention) {
+                        bridge().cleanupOldFiles(treeUri, retention, installationId)
+                    }
                 }
             }
-
-            // 3. 只推送本机 installation id 的快照
-            val pushReport =
-                storageBridge.pushCurrentDeviceToExternal(treeUri, installationId)
             val endTime = System.currentTimeMillis()
             stateStore.updateSuccess(endTime)
             Result.success(
                 RimeSyncReport(
                     installationId = installationId,
-                    pulledFiles = pullReport.copiedFiles,
-                    pushedFiles = pushReport.copiedFiles,
+                    pulledFiles = pulledFiles,
+                    pushedFiles = pushedFiles,
+                    cleanedFiles = cleanedFiles,
                     startTime = startTime,
                     endTime = endTime
                 )
@@ -103,6 +107,37 @@ object RimeSyncManager {
         } catch (e: Exception) {
             recordFailure(stateStore, e)
         }
+    }
+
+    /**
+     * 释放输入状态 → native 清理 session → sync → join maintenance，
+     * 无论成败都在 finally 中恢复输入引擎。
+     */
+    private suspend fun runEnginePhase() {
+        var engineDisturbed = false
+        try {
+            RimeEngine.prepareForUserDataSync()
+            engineDisturbed = true
+            engine.synchronize().getOrThrow()
+        } finally {
+            if (engineDisturbed) {
+                runCatching { Kernel.resetIme() }
+            }
+        }
+    }
+
+    /**
+     * 同步成功后按保留天数清理旧同步文件。
+     * 远端清理失败不影响同步结果；staging 缓存清理优先保证本地卫生。
+     */
+    private suspend fun cleanupAfterSync(
+        retentionDays: Int,
+        remoteCleanup: suspend () -> Int
+    ): Int {
+        if (retentionDays <= 0) return 0
+        var cleaned = StagingFileSink.cleanupOldFiles(retentionDays)
+        cleaned += runCatching { remoteCleanup() }.getOrDefault(0)
+        return cleaned
     }
 
     private fun recordFailure(
