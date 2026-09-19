@@ -46,7 +46,6 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     var mSkbCandidatesBarView: FloatCandidateBar
 
     init {
-        InputModeSwitcher.reset()
         initDisplayCutout(service)
         mFloatCandidateBarWidth = (if(instance.isLandscape)instance.mScreenHeight else instance.mScreenWidth) - dp(40)
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_candidate_container, this, false) as RelativeLayout
