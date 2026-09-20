@@ -92,7 +92,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         val bottom = instance.mScreenHeight - anchor[1].toInt()
         val diffHight = (instance.heightForCandidatesArea * 1.5).toInt()
         leftPadding = if(!instance.isLandscape) 0
-         else if(mHorizontalCutoutWidth - anchor[0] > mFloatCandidateBarWidth)anchor[0].toInt() - dp(20)
+        else if(mHorizontalCutoutWidth - anchor[0] > mFloatCandidateBarWidth)anchor[0].toInt() - dp(20)
         else mHorizontalCutoutWidth - mFloatCandidateBarWidth
         bottomPadding = if(bottom > diffHight) bottom - diffHight else bottom + instance.heightForCandidatesArea
     }
