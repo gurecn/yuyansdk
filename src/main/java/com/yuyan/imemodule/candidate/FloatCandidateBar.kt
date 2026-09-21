@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import com.yuyan.imemodule.adapter.CandidatesBarAdapter
+import com.yuyan.imemodule.adapter.FloatCandidatesBarAdapter
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
@@ -25,7 +25,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import splitties.dimensions.dp
 
 /**
- * 候选词集装箱
+ * 物理键盘候选词集装箱
  */
 class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
     private var mFloatCandidateBarWidth: Int = 0
@@ -34,7 +34,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
     private lateinit var mCandidatesDataContainer: LinearLayout //候选词视图
     private lateinit var mComposingView: TextView // 组成字符串的View，用于显示输入的拼音。
     private lateinit var mRVCandidates: RecyclerView    //候选词列表
-    private lateinit var mCandidatesAdapter: CandidatesBarAdapter
+    private lateinit var mCandidatesAdapter: FloatCandidatesBarAdapter
     private lateinit var candidatesData: LinearLayout //候选词视图
     private var activeCandNo:Int = 0
 
@@ -63,7 +63,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
                 layoutManager =
                     CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
-            mCandidatesAdapter = CandidatesBarAdapter(context)
+            mCandidatesAdapter = FloatCandidatesBarAdapter(context)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
                 mCvListener.onClickChoice(position)
             }
@@ -107,6 +107,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
             this.visibility = VISIBLE
         }
         activeCandNo = 0
+        pageStarts.clear()
         mCandidatesAdapter.activeCandidates(activeCandNo)
         mCandidatesAdapter.notifyChanged()
     }
@@ -135,6 +136,30 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
      */
     fun getActiveCandNo():Int {
         return if(activeCandNo > 0) activeCandNo - 1 else 0
+    }
+
+    private val pageStarts = ArrayDeque<Int>()   // 每页起点的历史记录
+    /**
+     * 翻页功能
+     */
+    fun pageChange(keyCode: Int) {
+        val lm = mRVCandidates.layoutManager as? LinearLayoutManager ?: return
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            val last = lm.findLastCompletelyVisibleItemPosition()
+            if (last != RecyclerView.NO_POSITION && last + 1 < mCandidatesAdapter.itemCount) {
+                pageStarts.addLast(lm.findFirstCompletelyVisibleItemPosition())
+                lm.scrollToPositionWithOffset(last + 1, 0)
+            }
+            activeCandNo = last + 1
+            mCandidatesAdapter.activeCandidates(activeCandNo)
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP){
+            if (pageStarts.isEmpty()) return
+            val preIndex = pageStarts.removeLast()
+            lm.scrollToPositionWithOffset(preIndex, 0)
+            activeCandNo = preIndex
+            mCandidatesAdapter.activeCandidates(preIndex)
+        }
+        mCandidatesAdapter.activeCandidates(activeCandNo)
     }
 
     /**

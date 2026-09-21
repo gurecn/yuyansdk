@@ -154,6 +154,10 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
                 }
                 true
             }
+            KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_UP -> {
+                mSkbCandidatesBarView.pageChange(keyCode)
+                true
+            }
             else -> false
         }
     }
