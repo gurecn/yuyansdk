@@ -92,8 +92,10 @@ class ImeService : InputMethodService() {
 
     override fun onCreateCandidatesView(): View {
         if(!::candidateView.isInitialized)candidateView = CandidateView(baseContext, this)
-        if(isHardwareKeyboard) mInputView = candidateView
-        currentInputConnection.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
+        if(isHardwareKeyboard) {
+            mInputView = candidateView
+            currentInputConnection.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
+        }
         return candidateView
     }
 
@@ -119,14 +121,6 @@ class ImeService : InputMethodService() {
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
         if (::mInputView.isInitialized) mInputView.onStartInputView(editorInfo, restarting)
         super.onStartInputView(editorInfo, restarting)
-    }
-
-    override fun onFinishInputView(finishingInput: Boolean) {
-        super.onFinishInputView(finishingInput)
-        if (cursorMonitoring) {
-            currentInputConnection?.requestCursorUpdates(0)
-            cursorMonitoring = false
-        }
     }
 
     override fun onDestroy() {
