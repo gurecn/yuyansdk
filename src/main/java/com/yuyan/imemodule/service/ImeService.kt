@@ -47,6 +47,8 @@ class ImeService : InputMethodService() {
     private lateinit var inputView: InputView
     private lateinit var mInputView: IKeyboardView
     private var cursorMonitoring = false
+    // 光标前文本缓存，避免在按键处理中同步跨进程取文本
+    private val textCache = EditorTextCache { currentInputConnection }
 
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? ->
         if (::mInputView.isInitialized) mInputView.updateTheme()
@@ -106,6 +108,8 @@ class ImeService : InputMethodService() {
 
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
         super.onStartInput(editorInfo, restarting)
+        textCache.onStartInput(editorInfo)
+        if (::inputView.isInitialized) inputView.clearDeletedTextHistory()
         if (editorInfo != null) {
             YuyanEmojiCompat.setEditorInfo(editorInfo)
             InputModeSwitcher.requestInputWithSkb(editorInfo)
@@ -123,8 +127,15 @@ class ImeService : InputMethodService() {
         super.onStartInputView(editorInfo, restarting)
     }
 
+    override fun onFinishInput() {
+        textCache.onFinishInput()
+        if (::inputView.isInitialized) inputView.clearDeletedTextHistory()
+        super.onFinishInput()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        textCache.onFinishInput()
         DictDecoder.candidatesLiveData.removeObserver(candidatesObserver)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         removeOnChangedListener(onThemeChangeListener)
@@ -194,6 +205,7 @@ class ImeService : InputMethodService() {
 
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        textCache.onUpdateSelection(newSelStart, newSelEnd) // 先校准缓存，再响应界面逻辑
         if (::mInputView.isInitialized) mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
     }
 
@@ -229,15 +241,15 @@ class ImeService : InputMethodService() {
      * 模拟 Enter 按键点击
      */
     fun sendEnterKeyEvent() {
-        val inputConnection = getCurrentInputConnection()
+        textCache.onEditorChanged()
         YuyanEmojiCompat.mEditorInfo?.run {
             if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
                 sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
             } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
-                inputConnection.performEditorAction(actionId)
+                withInputConnection { it.performEditorAction(actionId) }
             } else when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
                 EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
-                else -> inputConnection.performEditorAction(action)
+                else -> withInputConnection { it.performEditorAction(action) }
             }
         }
     }
@@ -256,27 +268,36 @@ class ImeService : InputMethodService() {
         if (shift) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
         if (ctrl) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
         if (alt) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
+        // 按键的实际编辑范围由应用决定，不能据此推算或记录删除的文本。
+        textCache.onEditorChanged()
     }
 
     fun sendDownKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
-        currentInputConnection?.sendKeyEvent(
-            KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyEventCode, 0, metaState,
-                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
-        )
+        withInputConnection {
+            it.sendKeyEvent(
+                KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyEventCode, 0, metaState,
+                    KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+            )
+        }
     }
 
     fun sendUpKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
-        currentInputConnection.sendKeyEvent(
-            KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
-                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
-        )
+        withInputConnection {
+            it.sendKeyEvent(
+                KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
+                    KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+            )
+        }
     }
 
     /**
      * 向输入框提交预选词
      */
     fun setComposingText(text: CharSequence) {
-        currentInputConnection.setComposingText(text, 1)
+        withInputConnection {
+            it.setComposingText(text, 1)
+            textCache.onSetComposingText(text)
+        }
     }
 
 
@@ -284,41 +305,102 @@ class ImeService : InputMethodService() {
      * 结束提交预选词
      */
     fun finishComposingText() {
-        currentInputConnection.finishComposingText()
+        withInputConnection {
+            it.finishComposingText()
+            textCache.onFinishComposingText()
+        }
     }
 
     /**
      * 发送字符串给编辑框
      */
     fun commitText(text: String) {
-        currentInputConnection.commitText(StringUtils.converted2FlowerTypeface(text), 1)
+        val content = StringUtils.converted2FlowerTypeface(text)
+        withInputConnection {
+            it.commitText(content, 1)
+            textCache.onCommitText(content)
+        }
     }
 
     /**
      * 发送字符串给编辑框
      */
     fun commitText(text: String, newCursorPosition: Int) {
-        currentInputConnection.commitText(StringUtils.converted2FlowerTypeface(text), newCursorPosition)
+        val content = StringUtils.converted2FlowerTypeface(text)
+        withInputConnection {
+            it.commitText(content, newCursorPosition)
+            if (newCursorPosition == 1) textCache.onCommitText(content) else textCache.onEditorChanged()
+        }
     }
 
-    fun getTextBeforeCursor(length: Int): String {
-        return currentInputConnection.getTextBeforeCursor(length, 0).toString()
+    /** 原样还原已删除内容，不再执行花漾字体转换。 */
+    fun restoreDeletedText(text: String): Boolean {
+        var accepted = false
+        withInputConnection {
+            accepted = it.commitText(text, 1)
+            if (accepted) textCache.onCommitText(text) else textCache.onEditorChanged()
+        }
+        return accepted
     }
+
+    /** 删除请求被接受后才返回用于还原的文本，不同步查询编辑器。 */
+    fun deleteLastCharBeforeCursor(): String? = textCache.deleteLastCharBeforeCursor()
+
+    fun deleteTextBeforeCursor(length: Int): String? = textCache.deleteTextBeforeCursor(length)
+
+    /**
+     * 读取缓存中光标前文本，不做跨进程调用，缓存不可用时返回空串
+     */
+    fun peekTextBeforeCursor(length: Int): String = textCache.peekTextBeforeCursor(length)
+
+    /**
+     * 读取缓存中光标前一个字符，emoji 等代理对按整体返回
+     */
+    fun peekLastCharBeforeCursor(): String = textCache.peekLastCharBeforeCursor()
+
+    /**
+     * 异步请求光标前文本，缓存可用时同步回调
+     */
+    fun requestTextBeforeCursor(length: Int, callback: (String) -> Unit) = textCache.requestTextBeforeCursor(length, callback)
 
     fun commitTextEditMenu(id: Int) {
-        currentInputConnection.performContextMenuAction(id)
+        withInputConnection {
+            it.performContextMenuAction(id)
+            textCache.onEditorChanged()
+        }
     }
 
     fun performEditorAction(editorAction: Int) {
-        currentInputConnection.performEditorAction(editorAction)
+        withInputConnection {
+            it.performEditorAction(editorAction)
+            textCache.onEditorChanged()
+        }
     }
 
     fun deleteSurroundingText(length: Int) {
-        currentInputConnection.deleteSurroundingText(length, 0)
+        withInputConnection {
+            if (it.deleteSurroundingText(length, 0)) textCache.onDeleteBeforeCursor(length)
+            else textCache.onEditorChanged()
+        }
     }
 
     fun setSelection(start: Int, end: Int) {
-        currentInputConnection.setSelection(start, end)
+        withInputConnection {
+            it.setSelection(start, end)
+            textCache.onEditorChanged()
+        }
+    }
+
+    /**
+     * 输入框连接可能已失效，调用前做空安全与异常保护
+     */
+    private fun withInputConnection(block: (InputConnection) -> Unit) {
+        val inputConnection = currentInputConnection ?: return
+        try {
+            block(inputConnection)
+        } catch (_: Exception) {
+            textCache.onEditorChanged()
+        }
     }
 
     fun handleHardwareKeyboard(newConfig: Configuration? = null): Boolean {

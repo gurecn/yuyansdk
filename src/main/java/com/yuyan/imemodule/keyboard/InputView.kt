@@ -292,12 +292,15 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             }
             PopupMenuMode.Clear -> {
                 if (isAddPhrases) mAddPhrasesLayout.clearPhrasesContent()
-                else service.getTextBeforeCursor(1000).takeIf { it.isNotEmpty() }?.let {
+                else service.deleteTextBeforeCursor(CLEAR_TEXT_LENGTH)?.takeIf { it.isNotEmpty() }?.let {
                     textBeforeCursors.push(it)
-                    service.deleteSurroundingText(1000)
                 }
             }
-            PopupMenuMode.Revertl -> textBeforeCursors.popInReverseOrder()?.takeIf { it.isNotEmpty() }?.let { commitText(it) }
+            PopupMenuMode.Revertl -> if (!isAddPhrases) {
+                textBeforeCursors.popInReverseOrder()?.takeIf { it.isNotEmpty() }?.let {
+                    if (!service.restoreDeletedText(it)) textBeforeCursors.push(it)
+                }
+            }
             PopupMenuMode.Enter -> commitText("\n")
             else -> {}
         }
@@ -359,10 +362,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         val label = keyChar.toChar().toString()
         var result = true
         when {
-            keyCode == KeyEvent.KEYCODE_DEL -> {
-                service.getTextBeforeCursor(1).takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
-                sendKeyEvent(keyCode)
-            }
+            keyCode == KeyEvent.KEYCODE_DEL -> deleteTextBeforeCursor()
             keyCode in (KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z) -> {
                 textBeforeCursors.clear()
                 commitText(label)
@@ -469,8 +469,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         return when {
             keyCode == KeyEvent.KEYCODE_DEL -> {
                 if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
-                    service.getTextBeforeCursor(1).takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
-                    sendKeyEvent(keyCode)
+                    deleteTextBeforeCursor()
                 } else {
                     InputDispatcher.deleteAction()
                     updateCandidate()
@@ -601,6 +600,22 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     fun requestHideSelf() = service.requestHideSelf(0)
+
+    fun clearDeletedTextHistory() = textBeforeCursors.clear()
+
+    private fun deleteTextBeforeCursor() {
+        if (isAddPhrases) {
+            sendKeyEvent(KeyEvent.KEYCODE_DEL)
+            return
+        }
+        val deletedText = service.deleteLastCharBeforeCursor()
+        if (deletedText == null) {
+            // 缓存不可靠、存在选区或接口不可用时，只删除，不记录推测的内容。
+            sendKeyEvent(KeyEvent.KEYCODE_DEL)
+        } else if (deletedText.isNotEmpty()) {
+            textBeforeCursors.push(deletedText)
+        }
+    }
 
     private fun sendKeyEvent(keyCode: Int) {
         if (isAddPhrases) {
@@ -751,13 +766,11 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
         if (oldSelStart == newSelStart) return
         when {
-            InputModeSwitcher.isNumberSkb -> {
-                val textBeforeCursor = service.getTextBeforeCursor(500)
+            InputModeSwitcher.isNumberSkb -> service.requestTextBeforeCursor(500) { textBeforeCursor ->
                 if (textBeforeCursor.isBlank()) resetCandidateWindow()
                 else CustomEngine.parseExpressionAtEnd(textBeforeCursor).let { CustomEngine.expressionCalculator(textBeforeCursor, it).let(::showSymbols) }
             }
-            chinesePrediction && InputModeSwitcher.isChinese-> {
-                val textBeforeCursor = service.getTextBeforeCursor(10)
+            chinesePrediction && InputModeSwitcher.isChinese-> service.requestTextBeforeCursor(10) { textBeforeCursor ->
                 if (textBeforeCursor.isBlank()) resetCandidateWindow()
                 else {
                     InputDispatcher.predictAssociationWords(textBeforeCursor)
@@ -766,5 +779,9 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             }
             else -> resetCandidateWindow()
         }
+    }
+
+    companion object {
+        private const val CLEAR_TEXT_LENGTH = 1000 // 删除键一次清除的最大字符数
     }
 }
