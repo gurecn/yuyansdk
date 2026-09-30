@@ -181,7 +181,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
                 true
             }
             label.isDigitsOnly() ->{
-                chooseAndUpdate(label.toInt() - 1)
+                chooseAndUpdate(mSkbCandidatesBarView.getVisibleCandPosition(label.toInt()))
                 true
             }
             Character.isLetter(keyChar) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON -> {

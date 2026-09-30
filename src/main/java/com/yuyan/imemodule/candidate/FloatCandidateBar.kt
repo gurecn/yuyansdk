@@ -36,7 +36,9 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
     private lateinit var mRVCandidates: RecyclerView    //候选词列表
     private lateinit var mCandidatesAdapter: FloatCandidatesBarAdapter
     private lateinit var candidatesData: LinearLayout //候选词视图
-    private var activeCandNo:Int = 0
+    private var activeCandidatePosition = RecyclerView.NO_POSITION
+    private var firstVisiblePosition = 0
+    private var displayedCandidates = DictDecoder.candidates
 
     fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
@@ -69,18 +71,24 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
             }
             mRVCandidates.setAdapter(mCandidatesAdapter)
             mRVCandidates.addOnScrollListener(object : OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    refreshVisibleCandidates()
+                }
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                         DictDecoder.activeCandidateBar =
                             layoutManager.findLastVisibleItemPosition()
                         val itemCount = recyclerView.adapter?.itemCount
-                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && DictDecoder.activeCandidateBar >= itemCount - 1) {
+                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && itemCount > 0 && DictDecoder.activeCandidateBar >= itemCount - 1) {
                             DictDecoder.nextPageCandidates
                         }
                     }
                 }
             })
+            mRVCandidates.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                refreshVisibleCandidates()
+            }
             mCandidatesDataContainer.addView(mComposingView)
             mCandidatesDataContainer.addView(candidatesData)
             this.addView(mCandidatesDataContainer, LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
@@ -99,43 +107,72 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
      * 显示候选词
      */
     fun showCandidates() {
-        mComposingView.text = DictDecoder.composingStrForDisplay
-        if (DictDecoder.isCandidatesEmpty) {
-            this.visibility = GONE
-        } else {
-            if (DictDecoder.candidateSize > DictDecoder.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DictDecoder.activeCandidateBar)
-            this.visibility = VISIBLE
+        val candidates = DictDecoder.candidates
+        val composing = DictDecoder.composingStrForDisplay
+        val isAppend = DictDecoder.activeCandidateBar > 0 &&
+            displayedCandidates.isNotEmpty() && candidates.size > displayedCandidates.size &&
+            composing == mComposingView.text.toString() &&
+            candidates.subList(0, displayedCandidates.size) == displayedCandidates
+        displayedCandidates = candidates
+        mComposingView.text = composing
+        if (!isAppend) {
+            activeCandidatePosition = RecyclerView.NO_POSITION
+            firstVisiblePosition = if (candidates.isEmpty()) 0 else {
+                DictDecoder.activeCandidateBar.coerceIn(0, candidates.lastIndex)
+            }
+            pageStarts.clear()
+            (mRVCandidates.layoutManager as? LinearLayoutManager)
+                ?.scrollToPositionWithOffset(firstVisiblePosition, 0)
         }
-        activeCandNo = 0
-        pageStarts.clear()
-        mCandidatesAdapter.activeCandidates(activeCandNo)
+        this.visibility = if (candidates.isEmpty()) GONE else VISIBLE
+        mCandidatesAdapter.updateCandidateState(firstVisiblePosition, activeCandidatePosition)
         mCandidatesAdapter.notifyChanged()
     }
+
+    private fun refreshVisibleCandidates() {
+        val lm = mRVCandidates.layoutManager as? LinearLayoutManager ?: return
+        val first = lm.findFirstVisibleItemPosition()
+        if (first != RecyclerView.NO_POSITION) firstVisiblePosition = first
+        mCandidatesAdapter.updateCandidateState(firstVisiblePosition, activeCandidatePosition)
+        mCandidatesAdapter.updateVisibleIndices(mRVCandidates)
+    }
+
+    private fun selectCandidate(position: Int) {
+        activeCandidatePosition = position
+        mCandidatesAdapter.updateCandidateState(firstVisiblePosition, activeCandidatePosition)
+        mCandidatesAdapter.updateVisibleIndices(mRVCandidates)
+    }
+
+    private val displayedActivePosition: Int
+        get() = if (isActiveCand()) activeCandidatePosition else firstVisiblePosition
 
     /**
      * 更新激活的候选词
      */
     fun updateActiveCandidateNo(keyCode: Int) {
-        if (!DictDecoder.isCandidatesEmpty) {
-            when(keyCode){
-                KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    if(--activeCandNo <= 0) activeCandNo = 0
-                }
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if(++activeCandNo > DictDecoder.candidateSize) activeCandNo = DictDecoder.candidateSize
-                }
-            }
-            mCandidatesAdapter.activeCandidates(activeCandNo)
-            mCandidatesAdapter.notifyChanged()
-            mRVCandidates.layoutManager?.scrollToPosition(if(activeCandNo - 1 > 0) activeCandNo - 1 else 0 )
+        if (DictDecoder.isCandidatesEmpty) return
+        val step = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_LEFT -> -1
+            KeyEvent.KEYCODE_DPAD_RIGHT -> 1
+            else -> return
         }
+        val target = (displayedActivePosition + step).coerceIn(0, DictDecoder.candidateSize - 1)
+        selectCandidate(target)
+        mRVCandidates.layoutManager?.scrollToPosition(target)
+    }
+
+    fun getVisibleCandPosition(visibleNo: Int): Int {
+        if (visibleNo < 1 || DictDecoder.isCandidatesEmpty) return -1
+        val position = firstVisiblePosition + visibleNo - 1
+        return if (position in 0 until DictDecoder.candidateSize) position else -1
     }
 
     /**
      * 获取激活的候选词
      */
-    fun getActiveCandNo():Int {
-        return if(activeCandNo > 0) activeCandNo - 1 else 0
+    fun getActiveCandNo(): Int {
+        if (DictDecoder.isCandidatesEmpty) return 0
+        return displayedActivePosition.coerceIn(0, DictDecoder.candidateSize - 1)
     }
 
     private val pageStarts = ArrayDeque<Int>()   // 每页起点的历史记录
@@ -143,30 +180,36 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
      * 翻页功能
      */
     fun pageChange(keyCode: Int) {
+        if (DictDecoder.isCandidatesEmpty) return
         val lm = mRVCandidates.layoutManager as? LinearLayoutManager ?: return
-        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-            val last = lm.findLastCompletelyVisibleItemPosition()
-            if (last != RecyclerView.NO_POSITION && last + 1 < mCandidatesAdapter.itemCount) {
-                pageStarts.addLast(lm.findFirstCompletelyVisibleItemPosition())
-                lm.scrollToPositionWithOffset(last + 1, 0)
+        val target = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                val first = lm.findFirstVisibleItemPosition()
+                if (first == RecyclerView.NO_POSITION) return
+                val last = lm.findLastCompletelyVisibleItemPosition().let {
+                    if (it == RecyclerView.NO_POSITION) first else it
+                }
+                val next = last + 1
+                if (next >= mCandidatesAdapter.itemCount) return
+                pageStarts.addLast(first)
+                next
             }
-            activeCandNo = last + 1
-            mCandidatesAdapter.activeCandidates(activeCandNo)
-        } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP){
-            if (pageStarts.isEmpty()) return
-            val preIndex = pageStarts.removeLast()
-            lm.scrollToPositionWithOffset(preIndex, 0)
-            activeCandNo = preIndex
-            mCandidatesAdapter.activeCandidates(preIndex)
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (pageStarts.isEmpty()) return
+                pageStarts.removeLast()
+            }
+            else -> return
         }
-        mCandidatesAdapter.activeCandidates(activeCandNo)
+        firstVisiblePosition = target
+        selectCandidate(target)
+        lm.scrollToPositionWithOffset(target, 0)
     }
 
     /**
      * 是否操作选词
      */
-    fun isActiveCand():Boolean {
-        return activeCandNo > 0
+    fun isActiveCand(): Boolean {
+        return activeCandidatePosition in 0 until DictDecoder.candidateSize
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

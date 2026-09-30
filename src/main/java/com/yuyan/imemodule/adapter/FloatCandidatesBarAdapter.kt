@@ -19,16 +19,12 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
  */
 class FloatCandidatesBarAdapter(context: Context?) :
     RecyclerView.Adapter<FloatCandidatesBarAdapter.SymbolHolder>() {
-    private val inflater: LayoutInflater
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
-    private var mActiveCandNo:Int = 0
+    private var activeCandidatePosition = RecyclerView.NO_POSITION
+    private var firstVisiblePosition = 0
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
-    }
-
-    init {
-        mActiveCandNo = 0
-        inflater = LayoutInflater.from(context)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
@@ -39,12 +35,7 @@ class FloatCandidatesBarAdapter(context: Context?) :
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         if(DictDecoder.isCandidatesEmpty) return
         holder.textViewCandidate.text = DictDecoder.candidates[position].text
-        holder.textViewIndex.text = buildString {
-            append(position+1)
-            append(". ")
-        }
-        holder.textViewIndex.setTextColor(if(mActiveCandNo-1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor)
-        holder.textViewCandidate.setTextColor(if(mActiveCandNo-1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.keyTextColor)
+        bindCandidateAppearance(holder, position)
         if (mOnItemClickListener != null) {
             holder.textViewCandidate.setOnClickListener { view: View? ->
                 mOnItemClickListener!!.onItemClick(this@FloatCandidatesBarAdapter, view, position)
@@ -52,13 +43,45 @@ class FloatCandidatesBarAdapter(context: Context?) :
         }
     }
 
+    fun updateVisibleIndices(recyclerView: RecyclerView) {
+        for (i in 0 until recyclerView.childCount) {
+            val holder = recyclerView.getChildViewHolder(recyclerView.getChildAt(i)) as? SymbolHolder ?: continue
+            val position = holder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                bindCandidateAppearance(holder, position)
+            }
+        }
+    }
+
+    private fun bindCandidateAppearance(holder: SymbolHolder, position: Int) {
+        val indexText = "${(position - firstVisiblePosition + 1).coerceAtLeast(1)}. "
+        if (holder.textViewIndex.text.toString() != indexText) {
+            holder.textViewIndex.text = indexText
+        }
+        val textColor = if (displayedActivePosition == position) {
+            activeTheme.accentKeyBackgroundColor
+        } else {
+            activeTheme.keyTextColor
+        }
+        holder.textViewIndex.setTextColor(textColor)
+        holder.textViewCandidate.setTextColor(textColor)
+    }
+
     override fun getItemCount(): Int {
         return DictDecoder.candidateSize
     }
 
-    fun activeCandidates(activeCandNo:Int) {
-        mActiveCandNo = activeCandNo
+    fun updateCandidateState(firstVisiblePosition: Int, activeCandidatePosition: Int) {
+        this.firstVisiblePosition = firstVisiblePosition
+        this.activeCandidatePosition = activeCandidatePosition
     }
+
+    private val displayedActivePosition: Int
+        get() = if (activeCandidatePosition != RecyclerView.NO_POSITION) {
+            activeCandidatePosition
+        } else {
+            firstVisiblePosition
+        }
 
     fun notifyChanged() {
         notifyDataSetChanged()
