@@ -145,6 +145,9 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
                 if(InputModeSwitcher.isTextEditSkb) InputModeSwitcher.USER_KEYCODE_RETURN
                 else InputModeSwitcher.USER_KEYCODE_TEXTEDIT)
         }
+        SkbMenuMode.SegmentCopy -> {
+            (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.copySelectedSegments()
+        }
         else ->{}
     }
 }
