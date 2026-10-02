@@ -73,6 +73,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private val appPrefs = getInstance()
     private val clipboardItemTimeout = appPrefs.clipboard.clipboardItemTimeout.getValue()
     private var chinesePrediction = true
+    private var emailSuggestion = false
     var isAddPhrases = false
     private val mChoiceNotifier = ChoiceNotifier()
     var mSkbRoot: RelativeLayout
@@ -507,6 +508,9 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         val candidate = DictDecoder.getCandidate(candId)
         if (candidate?.comment == "📋") {
             commitDecInfoText(candidate.text)
+        } else if (candidate != null && candidate.comment == "" && DecodingInfo.isAssociate
+            && CustomEngine.EMAIL_DOMAINS.contains(candidate.text)) {
+            commitEmailDomain(candidate.text)
         } else {
             val choice = DictDecoder.chooseDecodingCandidate(candId)
             if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
@@ -664,6 +668,22 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
     }
 
+    /**
+     * 上屏邮箱域名：删除@后已输入的部分域名，补全域名后缀（原样上屏，不转花漾字）
+     */
+    private fun commitEmailDomain(domain: String) {
+        if (isAddPhrases) return
+        service.finishComposingText()
+        val partial = CustomEngine.parseEmailAtEnd(service.getTextBeforeCursor(100))?.second
+        if (partial == null) { // 光标处已非邮箱输入状态，中止上屏
+            resetToIdleState()
+            return
+        }
+        if (partial.isNotEmpty()) service.deleteSurroundingText(partial.length)
+        service.commitRawText(domain)
+        resetToIdleState()
+    }
+
     private fun initNavbarBackground(service: ImeService) {
         service.window.window?.also { win ->
             WindowCompat.setDecorFitsSystemWindows(win, false)
@@ -712,6 +732,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     override fun onWindowShown() {
         chinesePrediction = appPrefs.input.chinesePrediction.getValue()
+        emailSuggestion = appPrefs.input.emailSuggestion.getValue()
     }
 
     override fun onWindowHidden() {
@@ -741,8 +762,16 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesEnd: Int) {
         selStart = newSelStart
         selEnd = newSelEnd
+        if (emailSuggestion && !isAddPhrases) {
+            val emails = CustomEngine.emailSuggestions(service.getTextBeforeCursor(100))
+            if (emails.isNotEmpty()) {
+                DecodingInfo.cacheCandidates(emails.map { CandidateListItem("", it) }.toTypedArray(), true)
+                oldCandidatesEnd = candidatesEnd
+                return
+            }
+        }
         if (InputModeSwitcher.isEnglish ) {
-            if (oldCandidatesEnd == candidatesEnd) {
+            if (oldCandidatesEnd == candidatesEnd || DecodingInfo.isAssociate) {
                 service.finishComposingText()
                 resetToIdleState()
             }

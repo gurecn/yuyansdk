@@ -52,6 +52,34 @@ object CustomEngine {
         return associations
     }
 
+    // 内置常见邮箱域名
+    val EMAIL_DOMAINS = arrayOf(
+        "qq.com", "163.com", "126.com", "gmail.com", "outlook.com", "foxmail.com",
+        "sina.com", "sohu.com", "139.com", "189.cn", "aliyun.com", "hotmail.com"
+    )
+
+    // 邮箱后缀匹配正则：本地部分（任意字符，可为空，支持中文）@域名部分（域名可含字母数字.-）
+    private val emailEndPattern = "(.*)@([A-Za-z0-9.-]*)\\z".toRegex()
+
+    /**
+     * 解析文本末尾的邮箱输入
+     * @return Pair(localPart, partialDomain) 或 null（无@或域名部分超长）
+     */
+    fun parseEmailAtEnd(text: String): Pair<String, String>? {
+        val match = emailEndPattern.find(text) ?: return null
+        val partial = match.groupValues[2]
+        if (partial.length >= EMAIL_DOMAINS.maxOf { it.length }) return null // 已超最长域名，无需联想
+        return Pair(match.groupValues[1], partial)
+    }
+
+    /**
+     * 获取邮箱域名联想列表：严格长于已输入部分的前缀匹配（忽略大小写）
+     */
+    fun emailSuggestions(text: String): List<String> {
+        val (_, partial) = parseEmailAtEnd(text) ?: return emptyList()
+        return EMAIL_DOMAINS.filter { it.length > partial.length && it.startsWith(partial, ignoreCase = true) }
+    }
+
     fun processPhrase(text: String):MutableList<String> {
         val phrases = mutableListOf<String>()
         val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()

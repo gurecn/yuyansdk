@@ -104,6 +104,11 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             abcSearchEnglishCell.getValue()
         }
 
+        // 邮箱联想
+        val emailSuggestion = switch(
+            R.string.email_suggestion, "email_suggestion_enable", true
+        )
+
         val titleEmoji = category(R.string.emoji_setting)
         val emojiInput = switch(
             R.string.emoji_input, "emoji_input_enable", true
