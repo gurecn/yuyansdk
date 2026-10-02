@@ -175,12 +175,18 @@ class ImeService : InputMethodService() {
     }
 
     override fun setInputView(view: View) {
+        (view.parent as? ViewGroup)?.removeView(view)
         super.setInputView(view)
         val layoutParams = view.layoutParams
         if (layoutParams != null && layoutParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             view.setLayoutParams(layoutParams)
         }
+    }
+
+    override fun setCandidatesView(view: View?) {
+        if (view != null) (view.parent as? ViewGroup)?.removeView(view)
+        super.setCandidatesView(view)
     }
 
     override fun onEvaluateFullscreenMode(): Boolean = false // 修复横屏之后输入框遮挡问题
