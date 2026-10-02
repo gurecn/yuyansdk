@@ -96,7 +96,7 @@ class ImeService : InputMethodService() {
         if(!::candidateView.isInitialized)candidateView = CandidateView(baseContext, this)
         if(isHardwareKeyboard) {
             mInputView = candidateView
-            currentInputConnection.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
+            currentInputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
         }
         return candidateView
     }
