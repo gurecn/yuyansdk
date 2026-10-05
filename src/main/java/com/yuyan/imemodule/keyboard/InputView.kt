@@ -40,6 +40,9 @@ import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
+import com.yuyan.imemodule.keyboard.target.ImeConnectionTarget
+import com.yuyan.imemodule.keyboard.target.PhraseEditTarget
+import com.yuyan.imemodule.keyboard.target.TextTarget
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -52,10 +55,9 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.view.CandidatesBar
-import com.yuyan.imemodule.view.EditPhrasesView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
+import com.yuyan.imemodule.view.PhraseEditorPanel
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.CustomEngine
@@ -73,14 +75,15 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private val appPrefs = getInstance()
     private val clipboardItemTimeout = appPrefs.clipboard.clipboardItemTimeout.getValue()
     private var chinesePrediction = true
-    var isAddPhrases = false
+    private val imeTarget: TextTarget = ImeConnectionTarget(service)
+    private var textTarget: TextTarget = imeTarget
+    private val phraseEditor: PhraseEditorPanel
     private val mChoiceNotifier = ChoiceNotifier()
     var mSkbRoot: RelativeLayout
     var mSkbCandidatesBarView: CandidatesBar
     private var mHoderLayoutLeft: LinearLayout
     private var mHoderLayoutRight: LinearLayout
     private lateinit var mOnehandHoderLayout: LinearLayout
-    var mAddPhrasesLayout: EditPhrasesView
     private var mLlKeyboardBottomHolder: LinearLayout
     private var mInputKeyboardContainer: RelativeLayout
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
@@ -94,12 +97,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     init {
         initNavbarBackground(service)
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_skb_container, this, false) as RelativeLayout
+        phraseEditor = PhraseEditorPanel(this, mSkbRoot)
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
         mHoderLayoutLeft = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_left)
         mHoderLayoutRight = mSkbRoot.findViewById(R.id.ll_skb_holder_layout_right)
         mInputKeyboardContainer = mSkbRoot.findViewById(R.id.ll_input_keyboard_container)
-        mAddPhrasesLayout = EditPhrasesView(context)
         mLlKeyboardBottomHolder = mSkbRoot.findViewById(R.id.iv_keyboard_holder)
         KeyboardManager.instance.setData(mSkbRoot.findViewById(R.id.skb_input_keyboard_view), this)
         PopupComponent.get().root.let { root ->
@@ -119,17 +122,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     @SuppressLint("ClickableViewAccessibility")
     fun initView(context: Context) {
-        if (isAddPhrases) {
-            if (mAddPhrasesLayout.parent == null) {
-                addView(mAddPhrasesLayout, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-                    addRule(ABOVE, mSkbRoot.id)
-                    addRule(ALIGN_LEFT, mSkbRoot.id)
-                })
-                mAddPhrasesLayout.handleAddPhrasesView()
-            }
-        } else {
-            removeView(mAddPhrasesLayout)
-        }
+        phraseEditor.syncVisibility()
         mSkbCandidatesBarView.initialize(mChoiceNotifier)
         val env = EnvironmentSingleton.instance
         val keyboardSetting = appPrefs.keyboardSetting
@@ -256,7 +249,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             (mOnehandHoderLayout[1] as ImageButton).drawable?.setTint(keyTextColor)
         }
         mFullDisplayKeyboardBar?.updateTheme(keyTextColor)
-        mAddPhrasesLayout.updateTheme(activeTheme)
+        phraseEditor.updateTheme(activeTheme)
     }
 
     private fun onClick(view: View) {
@@ -290,15 +283,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                 pref.setValue(!pref.getValue())
                 KeyboardManager.instance.switchKeyboard()
             }
-            PopupMenuMode.Clear -> {
-                if (isAddPhrases) mAddPhrasesLayout.clearPhrasesContent()
-                else service.deleteTextBeforeCursor(CLEAR_TEXT_LENGTH)?.takeIf { it.isNotEmpty() }?.let {
-                    textBeforeCursors.push(it)
-                }
-            }
-            PopupMenuMode.Revertl -> if (!isAddPhrases) {
+            PopupMenuMode.Clear -> textTarget.clear()?.takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
+            PopupMenuMode.Revertl -> if (!textTarget.isLocalEditor) {
                 textBeforeCursors.popInReverseOrder()?.takeIf { it.isNotEmpty() }?.let {
-                    if (!service.restoreDeletedText(it)) textBeforeCursors.push(it)
+                    if (!textTarget.restore(it)) textBeforeCursors.push(it)
                 }
             }
             PopupMenuMode.Enter -> commitText("\n")
@@ -433,24 +421,24 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             InputModeSwitcher.USER_KEYCODE_EMOJI -> onSettingsMenuClick(SkbMenuMode.Emojicon)
             in InputModeSwitcher.USER_KEYCODE_RETURN..InputModeSwitcher.USER_KEYCODE_LANG -> InputModeSwitcher.switchModeForUserKey(keyCode)
             in InputModeSwitcher.USER_KEYCODE_PASTE..InputModeSwitcher.USER_KEYCODE_CUT -> commitTextEditMenu(KeyPreset.textEditMenuPreset[keyCode])
-            InputModeSwitcher.USER_KEYCODE_MOVE_START -> service.setSelection(0, if (hasSelection) selEnd else 0)
+            InputModeSwitcher.USER_KEYCODE_MOVE_START -> textTarget.setSelection(0, if (hasSelection) selEnd else 0)
             InputModeSwitcher.USER_KEYCODE_MOVE_END -> {
                 if (hasSelection) {
                     val start = selStart
                     commitTextEditMenu(KeyPreset.textEditMenuPreset[InputModeSwitcher.USER_KEYCODE_SELECT_ALL])
-                    postDelayed(100) { service.setSelection(start, selEnd) }
+                    postDelayed(100) { textTarget.setSelection(start, selEnd) }
                 } else {
                     commitTextEditMenu(KeyPreset.textEditMenuPreset[InputModeSwitcher.USER_KEYCODE_SELECT_ALL])
-                    postDelayed(100) { service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)}
+                    postDelayed(100) { textTarget.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT) }
                 }
             }
             InputModeSwitcher.USER_KEYCODE_SELECT_MODE -> {
                 hasSelection = !hasSelection
-                if (!hasSelection) service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
+                if (!hasSelection) textTarget.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT)
             }
             InputModeSwitcher.USER_KEYCODE_SELECT_ALL -> {
                 hasSelectionAll = !hasSelectionAll
-                if (!hasSelectionAll) service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
+                if (!hasSelectionAll) textTarget.sendKey(KeyEvent.KEYCODE_DPAD_RIGHT)
                 else commitTextEditMenu(KeyPreset.textEditMenuPreset[keyCode])
             }
             else -> {
@@ -572,19 +560,31 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra: Phrase? = null) {
         if (skbMenuMode == SkbMenuMode.AddPhrases) {
-            isAddPhrases = true
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
-            initView(context)
-            if (extra != null) {
-                DataBaseKT.instance.phraseDao().deleteByContent(extra.content)
-                mAddPhrasesLayout.setExtraData(extra)
-            } else {
-                mAddPhrasesLayout.clearPhrasesContent()
-            }
+            enterPhrasesEditor(extra)
         } else {
             onSettingsMenuClick(this, skbMenuMode)
         }
         mSkbCandidatesBarView.initMenuView()
+    }
+
+    private fun enterPhrasesEditor(phrase: Phrase?) {
+        InputModeSwitcher.isPhrasesEditing = true
+        resetToIdleState()
+        KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
+        phrase?.let { DataBaseKT.instance.phraseDao().deleteByContent(it.content) }
+        val view = phraseEditor.show(phrase)
+        textTarget = PhraseEditTarget(view) { exitPhrasesEditor(returnToPhrases = true) }
+        initView(context)
+        view.requestEditorFocus()
+    }
+
+    private fun exitPhrasesEditor(returnToPhrases: Boolean) {
+        if (!phraseEditor.isShowing) return
+        phraseEditor.hideAndSave()
+        InputModeSwitcher.isPhrasesEditing = false
+        textTarget = imeTarget
+        initView(context)
+        if (returnToPhrases) onSettingsMenuClick(SkbMenuMode.Phrases)
     }
 
     fun selectPrefix(position: Int) {
@@ -604,78 +604,46 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     fun clearDeletedTextHistory() = textBeforeCursors.clear()
 
     private fun deleteTextBeforeCursor() {
-        if (isAddPhrases) {
-            sendKeyEvent(KeyEvent.KEYCODE_DEL)
-            return
-        }
-        val deletedText = service.deleteLastCharBeforeCursor()
-        if (deletedText == null) {
-            // 缓存不可靠、存在选区或接口不可用时，只删除，不记录推测的内容。
-            sendKeyEvent(KeyEvent.KEYCODE_DEL)
-        } else if (deletedText.isNotEmpty()) {
-            textBeforeCursors.push(deletedText)
-        }
+        textTarget.deleteBackward()?.takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
     }
 
     private fun sendKeyEvent(keyCode: Int) {
-        if (isAddPhrases) {
-            mAddPhrasesLayout.sendKeyEvent(keyCode)
-            if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                isAddPhrases = false
-                initView(context)
-                onSettingsMenuClick(SkbMenuMode.Phrases)
-            }
-        } else {
-            when (keyCode) {
-                KeyEvent.KEYCODE_ENTER -> service.sendEnterKeyEvent()
-                in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    service.sendCombinationKeyEvents(keyCode, shift = hasSelection)
-                    if (hasSelectionAll) hasSelectionAll = false
-                }
-                else -> service.sendCombinationKeyEvents(keyCode)
-            }
+        textTarget.sendKey(keyCode, shiftSelection = hasSelection)
+        if (keyCode in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT && hasSelectionAll) {
+            hasSelectionAll = false
         }
     }
 
     private fun setComposingText(text: CharSequence) {
-        if (!isAddPhrases) service.setComposingText(text)
+        textTarget.setComposing(text)
     }
 
     private fun commitText(text: String) {
-        if (isAddPhrases) mAddPhrasesLayout.commitText(text)
-        else service.commitText(StringUtils.converted2FlowerTypeface(text))
+        textTarget.commit(text)
     }
 
     private fun commitPairSymbol(text: String) {
-        if (isAddPhrases) {
-            mAddPhrasesLayout.commitText(text)
+        if (appPrefs.input.symbolPairInput.getValue()) {
+            textTarget.commit(text + SymbolPreset[text]!!)
+            postDelayed(300) { textTarget.sendKey(KeyEvent.KEYCODE_DPAD_LEFT) }
         } else {
-            if (appPrefs.input.symbolPairInput.getValue()) {
-                service.commitText(text + SymbolPreset[text]!!)
-                postDelayed(300) { service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT) }
-            } else {
-                service.commitText(text)
-            }
+            textTarget.commit(text)
         }
     }
 
     private fun commitTextEditMenu(id: Int?) {
-        id?.let { service.commitTextEditMenu(it) }
+        id?.let { textTarget.commitEditAction(it) }
     }
 
-    fun performEditorAction(editorAction: Int) = service.performEditorAction(editorAction)
+    fun performEditorAction(editorAction: Int) = textTarget.performEditorAction(editorAction)
 
     private fun commitDecInfoText(resultText: String?) {
         resultText ?: return
-        if (isAddPhrases) {
-            mAddPhrasesLayout.commitText(resultText)
-        } else {
-            service.commitText(StringUtils.converted2FlowerTypeface(resultText))
-            if (InputModeSwitcher.isEnglish){
-                service.finishComposingText()
-                if(appPrefs.input.abcSpaceAuto.getValue()) service.commitText(" ")
-                resetToIdleState()
-            }
+        textTarget.commit(resultText)
+        if (!textTarget.isLocalEditor && InputModeSwitcher.isEnglish) {
+            textTarget.finishComposing()
+            if(appPrefs.input.abcSpaceAuto.getValue()) textTarget.commit(" ")
+            resetToIdleState()
         }
     }
 
@@ -730,11 +698,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     override fun onWindowHidden() {
-        if (isAddPhrases) {
-            isAddPhrases = false
-            mAddPhrasesLayout.addPhrasesHandle()
-            initView(context)
-        }
+        exitPhrasesEditor(returnToPhrases = false)
         KeyboardManager.instance.switchKeyboard()
         resetToIdleState()
     }
@@ -742,7 +706,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun updatePosition(anchor: FloatArray) {}
 
     override fun getKeyboardRect(): IntArray {
-        val location = intArrayOf(0, 0).also {if(isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
+        val location = intArrayOf(0, 0).also { phraseEditor.visibleView ?: mSkbRoot.getLocationInWindow(it) }
         val height = EnvironmentSingleton.instance.systemNavbarWindowsBottom + EnvironmentSingleton.instance.heightForFullDisplayBar + EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
         return intArrayOf(location[0], location[1], EnvironmentSingleton.instance.inputAreaWidth, height)
     }
@@ -758,7 +722,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         selEnd = newSelEnd
         if (InputModeSwitcher.isEnglish ) {
             if (oldCandidatesEnd == candidatesEnd) {
-                service.finishComposingText()
+                textTarget.finishComposing()
                 resetToIdleState()
             }
             oldCandidatesEnd = candidatesEnd
@@ -779,9 +743,5 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             }
             else -> resetCandidateWindow()
         }
-    }
-
-    companion object {
-        private const val CLEAR_TEXT_LENGTH = 1000 // 删除键一次清除的最大字符数
     }
 }

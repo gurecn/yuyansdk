@@ -11,6 +11,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
 import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
@@ -79,7 +80,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
      */
     fun updateStates() {
         var softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_ENTER) as? SoftKeyToggle
-        softKey?.enableToggleState( if(mService!!.isAddPhrases)4 else InputModeSwitcher.mToggleStates.imeAction)
+        softKey?.enableToggleState(if (InputModeSwitcher.isPhrasesEditing) EditorInfo.IME_ACTION_DONE else InputModeSwitcher.mToggleStates.imeAction)
         softKey = mSoftKeyboard?.getKeyByCode(KeyEvent.KEYCODE_SHIFT_LEFT) as? SoftKeyToggle
         val isEnglishCell = AppPrefs.getInstance().input.abcSearchEnglishCell.getValue()
         softKey?.enableToggleState(InputModeSwitcher.mToggleStates.modifiers + if(isEnglishCell) 3 else 0)

@@ -64,21 +64,26 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
         }
         add(llTipContainer, lParams(width = matchParent,height = wrapContent, weight = 0f))
         add(mEtPhrases, lParams(width = matchParent,height = wrapContent, weight = 1f))
-    }
-
-    fun handleAddPhrasesView() {
-        mEtPhrases.requestFocus()
         mEtPhrases.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(editable: Editable) {
-                val pinYinHeadChar  = PinyinHelper.getPinYinHeadChar(editable.toString().take(4))
+                val pinYinHeadChar = PinyinHelper.getPinYinHeadChar(editable.toString().take(4))
                 if(pinYinHeadChar.isNotBlank()) {
                     mEtPhrasesQuickCode.setText(pinYinHeadChar)
                     mEtPhrasesQuickCode.setSelection(pinYinHeadChar.length)
                 }
             }
         })
+    }
+
+    fun requestEditorFocus() {
+        mEtPhrases.requestFocus()
+    }
+
+    fun clearEditorFocus() {
+        if (mEtPhrases.isFocused) mEtPhrases.clearFocus()
+        if (mEtPhrasesQuickCode.isFocused) mEtPhrasesQuickCode.clearFocus()
     }
 
     fun clearPhrasesContent() {
@@ -107,26 +112,39 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
         mEtPhrasesQuickCode.setSelection(qwerty.length)
     }
 
-    fun commitText(text:String) {
-        val currentView = if(mEtPhrasesQuickCode.isFocused)mEtPhrasesQuickCode else mEtPhrases
-        currentView.commitText(text)
+    private val focusedEditor: ImeEditText
+        get() = if (mEtPhrasesQuickCode.isFocused) mEtPhrasesQuickCode else mEtPhrases
+
+    fun commitText(text: String) {
+        focusedEditor.commitText(text)
     }
 
-    fun sendKeyEvent(keyCode: Int) {
-        val currentView = if(mEtPhrasesQuickCode.isFocused)mEtPhrasesQuickCode else mEtPhrases
-        when(keyCode){
-            KeyEvent.KEYCODE_DEL ->{
-                currentView.onKeyDown(keyCode, KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-                currentView.onKeyUp(keyCode, KeyEvent(KeyEvent.ACTION_UP, keyCode))
-            }
-            KeyEvent.KEYCODE_ENTER ->{
-                addPhrasesHandle()
-            }
-            else -> {
-                val unicodeChar: Char = KeyEvent(KeyEvent.ACTION_DOWN, keyCode).unicodeChar.toChar()
-                if (unicodeChar != Character.MIN_VALUE)currentView.commitText(unicodeChar.toString())
-            }
-        }
+    fun deleteBackward() {
+        val editor = focusedEditor
+        editor.onKeyDown(KeyEvent.KEYCODE_DEL, KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+        editor.onKeyUp(KeyEvent.KEYCODE_DEL, KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL))
+    }
+
+    fun deleteBackward(count: Int) {
+        val editor = focusedEditor
+        val editable = editor.text ?: return
+        val selStart = editor.selectionStart.coerceAtLeast(0)
+        val selEnd = editor.selectionEnd.coerceAtLeast(0)
+        val from = if (selStart != selEnd) minOf(selStart, selEnd)
+        else (minOf(selStart, selEnd) - count).coerceAtLeast(0)
+        val to = maxOf(selStart, selEnd)
+        if (from < to) editable.delete(from, to)
+    }
+
+    fun moveCursor(delta: Int) {
+        val editor = focusedEditor
+        val length = editor.text?.length ?: 0
+        editor.setSelection((editor.selectionStart + delta).coerceIn(0, length))
+    }
+
+    fun insertKeyChar(keyCode: Int) {
+        val unicodeChar = KeyEvent(KeyEvent.ACTION_DOWN, keyCode).unicodeChar.toChar()
+        if (unicodeChar != Character.MIN_VALUE) focusedEditor.commitText(unicodeChar.toString())
     }
 
     fun updateTheme(theme: Theme) {

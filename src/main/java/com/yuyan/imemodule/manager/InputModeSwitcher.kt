@@ -197,6 +197,9 @@ object InputModeSwitcher {
 	@JvmField
 	val mToggleStates = ToggleStates()
 
+    @JvmField
+    var isPhrasesEditing = false
+
     class ToggleStates {
         @JvmField
         var modifiers = MASK_CASE_LOWER
