@@ -34,20 +34,58 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private var itemHeight: Int = (instance.heightForCandidatesArea * 0.8f).toInt()
     private var mMenuPadding: Int = (instance.heightForCandidatesArea * 0.05f).toInt()
-    var items: List<SkbFunItem> = emptyList()
+    private val menuItems = mutableListOf<SkbFunItem>()
+    private val removeBadgeBackground = GradientDrawable().apply {
+        shape = GradientDrawable.OVAL
+        setColor(activeTheme.keyBackgroundColor)
+    }
+
+    var onRemoveListener: ((SkbFunItem, Int) -> Unit)? = null
+
+    var editMode: Boolean = false
         set(value) {
-            val diffResult = DiffUtil.calculateDiff(MyDiffCallback(field, value))
+            if (field == value) return
             field = value
+            notifyItemRangeChanged(0, itemCount)
+        }
+
+    var items: List<SkbFunItem>
+        get() = menuItems
+        set(value) {
+            val diffResult = DiffUtil.calculateDiff(MyDiffCallback(menuItems.toList(), value))
+            menuItems.clear()
+            menuItems.addAll(value)
             diffResult.dispatchUpdatesTo(this)
         }
+
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
 
+    fun getMenuMode(position: Int): SkbMenuMode? = menuItems.getOrNull(position)?.skbMenuMode
+
+    fun snapshot(): List<SkbFunItem> = menuItems.toList()
+
+    fun moveItem(fromPosition: Int, toPosition: Int): Boolean {
+        if (fromPosition !in menuItems.indices || toPosition !in menuItems.indices) return false
+        menuItems.add(toPosition, menuItems.removeAt(fromPosition))
+        notifyItemMoved(fromPosition, toPosition)
+        return true
+    }
+
+    fun removeItem(position: Int): SkbFunItem? {
+        if (position !in menuItems.indices) return null
+        val item = menuItems.removeAt(position)
+        notifyItemRemoved(position)
+        return item
+    }
+
     inner class SymbolHolder(view: View) : RecyclerView.ViewHolder(view) {
         var entranceIconImageView: ImageView? = null
+        var removeImageView: ImageView? = null
         init {
             entranceIconImageView = itemView.findViewById(R.id.candidates_menu_item)
+            removeImageView = itemView.findViewById(R.id.candidates_menu_remove)
         }
     }
 
@@ -55,10 +93,10 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
         return SymbolHolder(inflater.inflate(R.layout.sdk_item_recyclerview_candidates_menu, parent, false))
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = menuItems.size
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        val item = items[position]
+        val item = menuItems[position]
         holder.entranceIconImageView?.padding = mMenuPadding
         val layoutParams = holder.entranceIconImageView?.layoutParams
         layoutParams?.width = itemHeight
@@ -72,14 +110,26 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
             bg.shape = GradientDrawable.OVAL
             holder.entranceIconImageView?.background = bg
         }
-        if (mOnItemClickListener != null) {
-            holder.itemView.setOnClickListener { v: View? ->
-                mOnItemClickListener!!.onItemClick(this, v, position)
+        holder.removeImageView?.visibility = if (editMode) View.VISIBLE else View.GONE
+        if (editMode) {
+            holder.removeImageView?.background = removeBadgeBackground
+            holder.removeImageView?.getDrawable()?.setTint(activeTheme.accentKeyBackgroundColor)
+        }
+        val clickListener = View.OnClickListener { v: View ->
+            val currentPosition = holder.bindingAdapterPosition
+            if (currentPosition == RecyclerView.NO_POSITION) return@OnClickListener
+            if (editMode) {
+                onRemoveListener?.invoke(menuItems[currentPosition], currentPosition)
+            } else {
+                mOnItemClickListener?.onItemClick(this, v, currentPosition)
             }
         }
+        if (editMode || mOnItemClickListener != null) {
+            holder.itemView.setOnClickListener(clickListener)
+        } else {
+            holder.itemView.setOnClickListener(null)
+        }
     }
-
-    fun getMenuMode(position: Int): SkbMenuMode? = if(items.size > position)items[position].skbMenuMode else null
 
     private fun isSettingsMenuSelect(data: SkbFunItem): Boolean {
         val rimeValue = AppPrefs.getInstance().internal.pinyinModeRime.getValue()
@@ -116,15 +166,20 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
     class MyDiffCallback(private val oldList: List<SkbFunItem>, private val newList: List<SkbFunItem>) : DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldList.size
         override fun getNewListSize(): Int = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = true
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].skbMenuMode == newList[newItemPosition].skbMenuMode
+        }
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].funName == newList[newItemPosition].funName
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            return oldItem.funName == newItem.funName && oldItem.funImgResource == newItem.funImgResource
         }
     }
 
     fun notifyChanged() {
         itemHeight = (instance.heightForCandidatesArea * 0.8f).toInt()
         mMenuPadding = (instance.heightForCandidatesArea * 0.05f).toInt()
+        removeBadgeBackground.setColor(activeTheme.keyBackgroundColor)
         notifyDataSetChanged()
     }
 }

@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/candidates_menu_item"
     android:theme="@style/Theme.AppTheme"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginStart="4dp"
-    android:layout_marginEnd="4dp"
-    android:gravity="center"/>
+    android:layout_marginEnd="4dp">
+
+    <ImageView
+        android:id="@+id/candidates_menu_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"/>
+
+    <ImageView
+        android:id="@+id/candidates_menu_remove"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_gravity="top|end"
+        android:padding="2dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_menu_minus"
+        android:visibility="gone"/>
+</FrameLayout>

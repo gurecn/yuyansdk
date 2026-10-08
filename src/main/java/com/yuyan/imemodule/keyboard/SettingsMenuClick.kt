@@ -119,7 +119,7 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         }
         SkbMenuMode.Custom -> {
             KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.SETTINGS)
-            (KeyboardManager.instance.currentContainer as? SettingsContainer)?.enableDragItem(true)
+            (KeyboardManager.instance.currentContainer as? SettingsContainer)?.showSettingsView(true)
         }
         SkbMenuMode.CloseSKB -> {
             inputView.requestHideSelf()

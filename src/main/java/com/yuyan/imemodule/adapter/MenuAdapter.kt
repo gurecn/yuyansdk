@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -16,9 +15,9 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.manager.SkbMenuOrderManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -76,31 +75,35 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         holder.entranceIconImageView?.getDrawable()?.setTint(color)
         if (dragOverListener != null) {
             holder.entranceOption?.visibility = View.VISIBLE
-            if(DataBaseKT.instance.skbFunDao().getBarMenu(item.skbMenuMode.name) != null){
+            if (SkbMenuOrderManager.isInBarMenu(item.skbMenuMode)) {
                 holder.entranceOption?.setImageResource(R.drawable.ic_menu_minus)
             } else {
                 holder.entranceOption?.setImageResource(R.drawable.ic_menu_plus)
             }
-            holder.entranceIconImageView?.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    dragOverListener?.startDragItem(holder)
-                }
-                return@setOnTouchListener false
-            }
+            holder.entranceIconImageView?.setOnTouchListener(null)
             holder.entranceOption?.getDrawable()?.setTint(color)
-            holder.entranceOption?.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    dragOverListener?.onOptionClick(this, item, position)
+            holder.entranceOption?.setOnTouchListener(null)
+            holder.entranceOption?.setOnClickListener {
+                val currentPosition = holder.bindingAdapterPosition
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    dragOverListener?.onOptionClick(this, data[currentPosition], currentPosition)
                 }
-                return@setOnTouchListener false
             }
             holder.itemView.setOnClickListener(null)
         } else {
             holder.entranceOption?.visibility = View.GONE
+            holder.entranceIconImageView?.setOnTouchListener(null)
+            holder.entranceOption?.setOnTouchListener(null)
+            holder.entranceOption?.setOnClickListener(null)
             if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener { v: View? ->
-                    mOnItemClickListener!!.onItemClick(this, v, position)
+                    val currentPosition = holder.bindingAdapterPosition
+                    if (currentPosition != RecyclerView.NO_POSITION) {
+                        mOnItemClickListener!!.onItemClick(this, v, currentPosition)
+                    }
                 }
+            } else {
+                holder.itemView.setOnClickListener(null)
             }
         }
     }
@@ -133,7 +136,6 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
     }
 
     interface DragOverListener {
-        fun startDragItem(holder: RecyclerView.ViewHolder)
         fun onOptionClick(parent: RecyclerView.Adapter<*>?, v: SkbFunItem, position: Int)
     }
 }

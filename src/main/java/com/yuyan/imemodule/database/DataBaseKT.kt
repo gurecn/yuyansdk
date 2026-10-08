@@ -16,6 +16,7 @@ import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.database.entry.SkbFun
 import com.yuyan.imemodule.database.entry.UsedSymbol
+import com.yuyan.imemodule.manager.SkbMenuOrderManager
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 
@@ -93,9 +94,9 @@ abstract class DataBaseKT : RoomDatabase() {
             }
             if(instance.skbFunDao().getAllMenu().isEmpty()) {
                 val skbFuns = listOf(
-                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1),
-                    SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1),
-                    SkbFun(name = SkbMenuMode.TextEdit.name, isKeep = 1),
+                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1, position = 0),
+                    SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1, position = 1),
+                    SkbFun(name = SkbMenuMode.TextEdit.name, isKeep = 1, position = 2),
                     SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 0, position = 0),
                     SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 0, position = 1),
                     SkbFun(name = SkbMenuMode.KeyboardHeight.name, isKeep = 0, position = 2),
@@ -114,6 +115,7 @@ abstract class DataBaseKT : RoomDatabase() {
                     SkbFun(name = SkbMenuMode.TextEdit.name, isKeep = 0, position = 15),
                 )
                 instance.skbFunDao().insertAll(skbFuns)
+                SkbMenuOrderManager.invalidate()
             }
         }
     }

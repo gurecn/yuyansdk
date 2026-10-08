@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
 
 /**
@@ -31,9 +32,16 @@ class InputViewParent @JvmOverloads constructor(context: Context?, attrs: Attrib
             hideView(mLastContainer!!)
         }
         mLastContainer = child
+        child.animate().cancel()
+        child.alpha = 0f
+        child.animate().alpha(1f).setDuration(FADE_IN_DURATION).setInterpolator(DecelerateInterpolator()).start()
     }
 
     private fun hideView(child: View) {
         child.visibility = GONE
+    }
+
+    private companion object {
+        const val FADE_IN_DURATION = 120L
     }
 }

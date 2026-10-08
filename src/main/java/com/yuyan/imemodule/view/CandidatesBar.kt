@@ -13,6 +13,8 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
@@ -24,7 +26,6 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.flower.FlowerTypefaceMode
 import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -35,7 +36,9 @@ import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
+import com.yuyan.imemodule.manager.SkbMenuOrderManager
 import com.yuyan.imemodule.manager.layout.CustomLinearLayoutManager
+import com.yuyan.imemodule.utils.DevicesUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -62,6 +65,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     private lateinit var mCandidatesMenuAdapter: CandidatesMenuAdapter
     private lateinit var candidatesData: LinearLayout //候选词视图
     private var activeCandNo:Int = 0
+    private var mBarMenuTouchHelper: ItemTouchHelper? = null
+    private var isBarMenuEditMode: Boolean = false
+    private var isBarMenuDragging: Boolean = false
 
     fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
@@ -196,13 +202,22 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             }
             mLlContainer.addView(mFlowerType, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             mRVContainerMenu = RecyclerView(context).apply {
-                setItemAnimator(null)
+                itemAnimator = DefaultItemAnimator().apply {
+                    supportsChangeAnimations = false
+                    addDuration = 120L
+                    removeDuration = 120L
+                    moveDuration = 120L
+                    changeDuration = 120L
+                }
                 layoutManager = CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, true)
             }
             mCandidatesMenuAdapter = CandidatesMenuAdapter(context)
             mCandidatesMenuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, view: View?, position: Int ->
                 val skbMenuMode = mCandidatesMenuAdapter.getMenuMode(position)
                 if (skbMenuMode != null) onClickMenu(skbMenuMode, view)
+            }
+            mCandidatesMenuAdapter.onRemoveListener = { item: SkbFunItem, position: Int ->
+                removeBarMenuItem(item, position)
             }
             mRVContainerMenu.setAdapter(mCandidatesMenuAdapter)
             mMenuRightArrowBtn = ImageView(context).apply {
@@ -211,7 +226,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 setImageResource(R.drawable.ic_menu_arrow_down)
             }
             mMenuRightArrowBtn.setOnClickListener { _: View ->
-                mCvListener.onClickMenu(SkbMenuMode.CloseSKB)
+                mCvListener.onClickMenu(if (isBarMenuEditMode) SkbMenuMode.SettingsMenu else SkbMenuMode.CloseSKB)
             }
             mCandidatesMenuContainer.addView(mIvMenuSetting)
             mCandidatesMenuContainer.addView(mLlContainer)
@@ -228,10 +243,84 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(10) }
         mLlContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, menuHeight,0f)
         mRVContainerMenu.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, menuHeight, 1f)
+        updateBarMenuArrowIcon()
         mCandidatesMenuAdapter.notifyChanged()  // 点击下拉菜单后，需要刷新菜单栏
     }
 
+    /**
+     * 定制工具栏编辑态
+     */
+    fun setBarMenuEditMode(enable: Boolean) {
+        if (!::mCandidatesMenuAdapter.isInitialized || isBarMenuEditMode == enable) return
+        isBarMenuEditMode = enable
+        isBarMenuDragging = false
+        mCandidatesMenuAdapter.editMode = enable
+        if (enable) {
+            ensureBarMenuTouchHelper().attachToRecyclerView(mRVContainerMenu)
+        } else {
+            mBarMenuTouchHelper?.attachToRecyclerView(null)
+        }
+        updateBarMenuArrowIcon()
+        scheduleShowCandidates()
+    }
+
+    private fun updateBarMenuArrowIcon() {
+        mMenuRightArrowBtn.setImageResource(if (isBarMenuEditMode) R.drawable.ic_menu_done else R.drawable.ic_menu_arrow_down)
+        mMenuRightArrowBtn.drawable.setTint(ThemeManager.activeTheme.keyTextColor)
+    }
+
+    private fun ensureBarMenuTouchHelper(): ItemTouchHelper {
+        mBarMenuTouchHelper?.let { return it }
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                return makeMovementFlags(ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT, 0)
+            }
+
+            override fun isLongPressDragEnabled(): Boolean = true
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                val fromPosition = viewHolder.bindingAdapterPosition
+                val toPosition = target.bindingAdapterPosition
+                if (fromPosition == RecyclerView.NO_POSITION || toPosition == RecyclerView.NO_POSITION) return false
+                return mCandidatesMenuAdapter.moveItem(fromPosition, toPosition)
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = true
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                isBarMenuDragging = actionState == ItemTouchHelper.ACTION_STATE_DRAG
+                if (actionState != ItemTouchHelper.ACTION_STATE_DRAG) return
+                viewHolder?.itemView?.let { view ->
+                    view.animate().scaleX(1.15f).scaleY(1.15f).setDuration(120L).start()
+                    view.alpha = 0.9f
+                }
+                DevicesUtils.tryVibrate(this@CandidatesBar)
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                isBarMenuDragging = false
+                viewHolder.itemView.animate().scaleX(1f).scaleY(1f).setDuration(120L).start()
+                viewHolder.itemView.alpha = 1f
+                SkbMenuOrderManager.persistBarMenus(mCandidatesMenuAdapter.snapshot())
+            }
+        })
+        mBarMenuTouchHelper = itemTouchHelper
+        return itemTouchHelper
+    }
+
+    private fun removeBarMenuItem(item: SkbFunItem, position: Int) {
+        if (!SkbMenuOrderManager.removeBarMenu(item.skbMenuMode)) return
+        DevicesUtils.tryVibrate(this)
+        mCandidatesMenuAdapter.removeItem(position)
+        mCvListener.onBarMenuChanged()
+    }
+
     private fun onClickMenu(skbMenuMode: SkbMenuMode, view: View?) {
+        DevicesUtils.tryVibrate(this)
         if(skbMenuMode == SkbMenuMode.ClearClipBoard){
             val contextWrapper = ContextThemeWrapper(context, R.style.Theme_AppTheme)
             val popupMenu = PopupMenu(contextWrapper, view).apply {
@@ -276,26 +365,22 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mComposingView.text = DictDecoder.composingStrForDisplay
         val container = KeyboardManager.instance.currentContainer
         mIvMenuSetting.drawable.setLevel( if(container is InputBaseContainer) 0 else 1)
+        if (isBarMenuEditMode) {
+            showViewVisibility(mCandidatesMenuContainer)
+            if (!isBarMenuDragging) mCandidatesMenuAdapter.items = SkbMenuOrderManager.barMenus()
+            return
+        }
         if (container is ClipBoardContainer) {
             showViewVisibility(mCandidatesMenuContainer)
             mCandidatesMenuAdapter.items = if(container.getMenuMode() == SkbMenuMode.ClipBoard) {
-                listOf(menuSkbFunsPreset[SkbMenuMode.ClearClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!, menuSkbFunsPreset[SkbMenuMode.LockClipBoard]!!)
+                listOf(menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!, menuSkbFunsPreset[SkbMenuMode.ClearClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.LockClipBoard]!!)
             } else {
-                listOf(menuSkbFunsPreset[SkbMenuMode.AddPhrases]!!, menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!, menuSkbFunsPreset[SkbMenuMode.LockClipBoard]!!)
+                listOf(menuSkbFunsPreset[SkbMenuMode.ClipBoard]!!, menuSkbFunsPreset[SkbMenuMode.Phrases]!!, menuSkbFunsPreset[SkbMenuMode.AddPhrases]!!, menuSkbFunsPreset[SkbMenuMode.LockClipBoard]!!)
             }
         } else if (DictDecoder.isCandidatesEmpty) {
             mRightArrowBtn.drawable.setLevel(0)
             showViewVisibility(mCandidatesMenuContainer)
-            val mFunItems: MutableList<SkbFunItem> = mutableListOf()
-            val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
-            for (item in barMenus) {
-                val skbMenuMode = SkbMenuMode.decode(item.name)
-                val skbFunItem = menuSkbFunsPreset[skbMenuMode]
-                if (skbFunItem != null) {
-                    mFunItems.add(skbFunItem)
-                }
-            }
-            mCandidatesMenuAdapter.items = mFunItems
+            mCandidatesMenuAdapter.items = SkbMenuOrderManager.barMenus()
         } else {
             if (DictDecoder.candidateSize > DictDecoder.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DictDecoder.activeCandidateBar)
             showViewVisibility(mCandidatesDataContainer)
@@ -312,7 +397,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      */
     fun showEmoji() {
         showViewVisibility(mCandidatesMenuContainer)
-        mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.Emoticon]!!,menuSkbFunsPreset[SkbMenuMode.Emojicon]!!)
+        mCandidatesMenuAdapter.items = listOf(menuSkbFunsPreset[SkbMenuMode.Emojicon]!!,menuSkbFunsPreset[SkbMenuMode.Emoticon]!!)
         activeCandNo = 0
         mCandidatesAdapter.activeCandidates(activeCandNo)
         mCandidatesAdapter.notifyChanged()

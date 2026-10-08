@@ -38,6 +38,7 @@ import com.yuyan.imemodule.entity.StringQueue
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.keyboard.target.ImeConnectionTarget
@@ -341,7 +342,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             InputModeSwitcher.isEnglish || InputModeSwitcher.isChinese -> processInput(event)
             else -> processEnglishKey(event)
         }
-//        return if(appPrefs.input.abcSearchEnglishCell.getValue() || InputModeSwitcherManager.isChinese)processInput(event) else processEnglishKey(event)
     }
 
     private fun processEnglishKey(event: KeyEvent): Boolean {
@@ -556,6 +556,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             DataBaseKT.instance.clipboardDao().deleteAllExceptKeep()
             (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
+
+        override fun onBarMenuChanged() {
+            (KeyboardManager.instance.currentContainer as? SettingsContainer)?.refreshBarMenuState()
+        }
     }
 
     fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra: Phrase? = null) {
@@ -563,6 +567,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             enterPhrasesEditor(extra)
         } else {
             onSettingsMenuClick(this, skbMenuMode)
+            mSkbCandidatesBarView.setBarMenuEditMode(skbMenuMode == SkbMenuMode.Custom)
         }
         mSkbCandidatesBarView.initMenuView()
     }
@@ -700,6 +705,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun onWindowHidden() {
         exitPhrasesEditor(returnToPhrases = false)
         KeyboardManager.instance.switchKeyboard()
+        mSkbCandidatesBarView.setBarMenuEditMode(false)
         resetToIdleState()
     }
 

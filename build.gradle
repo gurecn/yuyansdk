@@ -83,6 +83,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
     implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
     implementation libs.androidx.constraintlayout
     implementation libs.google.material
     implementation libs.google.flexbox
