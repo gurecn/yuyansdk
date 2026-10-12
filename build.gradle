@@ -6,22 +6,31 @@ plugins {
     id 'kotlin-parcelize'
     id 'kotlinx-serialization'
 }
+
 static def versionNameDate() {
     return new Date().format("yyyyMMdd.HH", TimeZone.getTimeZone("GMT+8"))
 }
 
 static def getAppGitHead() {
-    return "git rev-parse HEAD".execute().text.trim()
+    try {
+        return "git rev-parse HEAD".execute().text.trim()
+    } catch (Exception e) {
+        return "unknown"
+    }
 }
 
 static def getAppBuildTime() {
-    return "git log -1 --pretty=%ai".execute().text.trim()
+    try {
+        return "git log -1 --pretty=%ai".execute().text.trim()
+    } catch (Exception e) {
+        return "unknown"
+    }
 }
-
 
 android {
     compileSdk 36
     namespace 'com.yuyan.imemodule'
+    
     defaultConfig {
         minSdk 23
         targetSdk 35
@@ -41,16 +50,11 @@ android {
         buildConfigField "String", "versionName", "\"${versionNameDate()}\""
         buildConfigField "String", "AppCommitHead", "\"${getAppGitHead()}\""
         buildConfigField "String", "AppBuildTime", "\"${getAppBuildTime()}\""
+        // 【核心修复】：将原本 offline 渠道的属性直接提到 defaultConfig 中，保持兼容
+        buildConfigField "Boolean", "offline", "true"
     }
 
-    //多渠道打包: app中多渠道配置要一致
-    flavorDimensions = ["default"]
-    productFlavors {
-        offline {
-            dimension "default"
-            buildConfigField "Boolean", "offline", "true"
-        }
-    }
+    // 【核心修复】：彻底移除冗余的 productFlavors，与主应用保持一致，解决变体不匹配问题
 
     buildFeatures {
         viewBinding = true
@@ -69,13 +73,14 @@ android {
             resValue("drawable", "app_icon", "@drawable/ic_sdk_launcher_debug")
         }
     }
+    
     sourceSets {
-        offline {
+        // 【核心修复】：将原先 offline 的 jniLibs 目录合并到 main 中
+        main {
             jniLibs.srcDirs = ['libs']
         }
     }
 
-    //第三方库使用java1.8
     compileOptions {
         sourceCompatibility 17
         targetCompatibility 17
