@@ -77,6 +77,7 @@ class ImeService : InputMethodService() {
 
     override fun onCreate() {
         super.onCreate()
+        showVirtualKeyboardOnPhysicalKeyboard = getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.getValue()
         addOnChangedListener(onThemeChangeListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)

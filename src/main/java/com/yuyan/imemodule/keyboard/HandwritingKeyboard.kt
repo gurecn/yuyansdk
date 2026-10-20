@@ -78,6 +78,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
 
     init {
         clear()
+        postDelayed({ HWEngine.prepare() }, PREPARE_DELAY_MS)
     }
 
     override fun setTheme(theme: Theme) {
@@ -522,6 +523,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     }
 
     companion object {
+        private const val PREPARE_DELAY_MS = 3000L     // 键盘出现后多久开始预热识别引擎
         private const val MIN_WIDTH_RATIO = 0.32f      // 最快时笔宽约占最大笔宽的比例
         private const val END_WIDTH_RATIO = 0.25f      // 收笔出锋处的笔宽比例
         private const val VELOCITY_FILTER_WEIGHT = 0.4f

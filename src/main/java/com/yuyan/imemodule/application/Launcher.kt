@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import com.yuyan.imemodule.handwriting.HandwritingRecognizer
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.prefs
@@ -41,8 +42,13 @@ class Launcher {
             if (dataDictVersion < CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM) {
                 //rime词库
                 copyFileOrDir(context, "rime", "", CustomConstant.RIME_DICT_PATH, true)
-                copyFileOrDir(context, "hw", "", CustomConstant.HW_DICT_PATH, true)
                 AppPrefs.getInstance().internal.dataDictVersion.setValue(CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM)
+            }
+            val hwModelVersion = AppPrefs.getInstance().internal.hwModelVersion.getValue()
+            if (hwModelVersion < CustomConstant.CURRENT_HANDWRITING_MODEL_VERSION) {
+                if (HandwritingRecognizer.prepareModel(context)) {
+                    AppPrefs.getInstance().internal.hwModelVersion.setValue(CustomConstant.CURRENT_HANDWRITING_MODEL_VERSION)
+                }
             }
             InputDispatcher.resetIme()  // 解决词库复制慢，导致先调用初始化问题
             YuyanEmojiCompat.init(context)
