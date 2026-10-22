@@ -71,23 +71,8 @@ object RimeEngine {
         return if (Rime.hasRight()) {
             Rime.processKey(keyRecordStack.getRimeKeycodeByName("Page_Down"), 0)
            val candidates = Rime.getRimeContext()!!.candidates
-            when (charCase) {
-                KeyEvent.META_SHIFT_ON -> {
-                    for (item in candidates) {
-                        item.text = item.text.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                    }
-                }
-                KeyEvent.META_CAPS_LOCK_ON -> {
-                    for (item in candidates) {
-                        item.text = item.text.uppercase()
-                    }
-                }
-                else -> {
-                    for (item in candidates) {
-                        item.text = item.text.lowercase()
-                    }
-                }
-            }
+            val englishSchema = isEnglishSchema
+            for (item in candidates) item.text = toCandidateCase(item.text, englishSchema)
             candidates
         } else emptyArray()
     }
@@ -136,14 +121,7 @@ object RimeEngine {
         val rimeCommit = Rime.getRimeCommit()
         if (rimeCommit != null) {
             keyRecordStack.clear()
-            preCommitText = rimeCommit.commitText
-            preCommitText = if (charCase == KeyEvent.META_SHIFT_ON) {
-                preCommitText.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            } else if (charCase == KeyEvent.META_CAPS_LOCK_ON) {
-                preCommitText.uppercase()
-            } else {
-                preCommitText.lowercase()
-            }
+            preCommitText = toCandidateCase(rimeCommit.commitText, isEnglishSchema)
             showComposition = ""
             showCandidates = emptyList()
             return preCommitText
@@ -169,22 +147,10 @@ object RimeEngine {
                 if (inputKey is InputKey.T9Key) inputKey.consumed = count-- <= 0
             }
         }
-        var composition = getCurrentComposition(candidates)
-        when (charCase) {
-            KeyEvent.META_SHIFT_ON -> {
-                for (item in showCandidates) item.text = item.text.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-                composition = composition.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            }
-            KeyEvent.META_CAPS_LOCK_ON -> {
-                for (item in showCandidates) item.text = item.text.uppercase()
-                composition = composition.uppercase()
-            }
-            else -> {
-                for (item in showCandidates) item.text = item.text.lowercase()
-                composition = composition.lowercase()
-            }
-        }
         val rimeSchema = Rime.getCurrentRimeSchema()
+        val composition = toCompositionCase(getCurrentComposition(candidates))
+        val englishSchema = rimeSchema == CustomConstant.SCHEMA_EN
+        for (item in showCandidates) item.text = toCandidateCase(item.text, englishSchema)
         pinyins = when (rimeSchema) {
             CustomConstant.SCHEMA_ZH_T9 -> {
                 T9PinYinUtils.t9KeyToPinyin(Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: "")
@@ -240,6 +206,30 @@ object RimeEngine {
 
     fun setCharCase(charCase: Int) {
         this.charCase = charCase
+    }
+
+    private val isEnglishSchema: Boolean
+        get() = Rime.getCurrentRimeSchema() == CustomConstant.SCHEMA_EN
+
+    /**
+     * 候选词与上屏文本的大小写转换。
+     */
+    private fun toCandidateCase(text: String, englishSchema: Boolean): String {
+        if (text.isEmpty() || text.any { it.code > 0x7F }) return text
+        return when (charCase) {
+            KeyEvent.META_SHIFT_ON -> text.lowercase(Locale.ENGLISH).replaceFirstChar { it.titlecase(Locale.ENGLISH) }
+            KeyEvent.META_CAPS_LOCK_ON -> text.uppercase(Locale.ENGLISH)
+            else -> if (englishSchema) text.lowercase(Locale.ENGLISH) else text
+        }
+    }
+
+    /**
+     * 候选词上方拼音（按键串）的大小写，始终跟随 Shift 状态显示
+     */
+    private fun toCompositionCase(text: String): String = when (charCase) {
+        KeyEvent.META_SHIFT_ON -> text.lowercase(Locale.ENGLISH).replaceFirstChar { it.titlecase(Locale.ENGLISH) }
+        KeyEvent.META_CAPS_LOCK_ON -> text.uppercase(Locale.ENGLISH)
+        else -> text.lowercase(Locale.ENGLISH)
     }
 
 }
