@@ -92,6 +92,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             R.string.chinese_association_date, "chinese_association_date_enable", true
         )
 
+        val cnEnInput = switch(R.string.cn_en_input, "cn_en_input_enable", true)
+
         val titleEnglish = category(R.string.EnglishInput)
 
         //输出英文单词:英文补全
