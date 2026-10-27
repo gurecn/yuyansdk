@@ -17,7 +17,7 @@ object CustomConstant {
     const val CURRENT_RIME_DICT_DATA_VERSIOM = 20260325
     const val CURRENT_HANDWRITING_MODEL_VERSION = 20261105
     const val YUYAN_IME_REPO = "https://github.com/gurecn/YuyanIme"
-    const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
+    const val LICENSE_URL = "https://opensource.org/license/bsd-3-clause"
     const val FEEDBACK_TXC_REPO = "https://github.com/gurecn/YuyanIme/issues"
 
     // 花漾字状态

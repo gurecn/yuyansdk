@@ -7,11 +7,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.BuildConfig
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.application.Launcher
+import com.yuyan.imemodule.ui.fragment.base.CsPreferenceFragment
 import com.yuyan.imemodule.utils.TimeUtils
 import com.yuyan.imemodule.utils.addCategory
 import com.yuyan.imemodule.utils.addPreference
@@ -26,7 +26,7 @@ import java.io.OutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class AboutFragment : PreferenceFragmentCompat() {
+class AboutFragment : CsPreferenceFragment() {
     private var exportTimestamp = System.currentTimeMillis()
     private lateinit var exportLauncher: ActivityResultLauncher<String>
 
@@ -76,7 +76,7 @@ class AboutFragment : PreferenceFragmentCompat() {
             addPreference(R.string.source_code, R.string.github_repo) {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.YUYAN_IME_REPO)))
             }
-            addPreference(R.string.license, "GPL-3.0 license ") {
+            addPreference(R.string.license, "BSD-3-Clause license ") {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.LICENSE_URL)))
             }
             addCategory(R.string.app_version) {
