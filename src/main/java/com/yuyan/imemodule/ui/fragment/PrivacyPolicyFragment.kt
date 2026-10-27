@@ -5,14 +5,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.entity.PrivacyPolicy
+import com.yuyan.imemodule.ui.fragment.base.CsPreferenceFragment
 import com.yuyan.imemodule.utils.addPreference
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
-class PrivacyPolicyFragment : PreferenceFragmentCompat() {
+class PrivacyPolicyFragment : CsPreferenceFragment() {
 
     override fun onResume() {
         super.onResume()
