@@ -36,10 +36,12 @@ import java.util.LinkedList
 class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
     private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
-    private var adapter:MenuAdapter? = null
+    private var settingsAdapter: MenuAdapter? = null //设置菜单网格适配器
+    private var selectModeAdapter: MenuAdapter? = null //切换键盘列表适配器
     private var itemTouchHelper: ItemTouchHelper? = null
     private var dragEnabled: Boolean = false
     val funItems: MutableList<SkbFunItem> = LinkedList()   //键盘菜单对象
+    private val selectModeItems: MutableList<SkbFunItem> = LinkedList()   //切换键盘列表数据
     init {
         initView(context)
     }
@@ -70,16 +72,16 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             val skbMenuMode = menuSkbFunsPreset[SkbMenuMode.decode(item.name)]
             if(skbMenuMode != null)funItems.add(skbMenuMode)
         }
-        val currentAdapter = adapter
+        val currentAdapter = settingsAdapter
         if (currentAdapter == null) {
             val menuAdapter = MenuAdapter(context, funItems)
             menuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
                 onMenuItemClick(position)
             }
-            adapter = menuAdapter
-            mRVMenuLayout?.adapter = menuAdapter
+            settingsAdapter = menuAdapter
+            showAdapter(menuAdapter)
         } else {
-            if (mRVMenuLayout?.adapter !== currentAdapter) mRVMenuLayout?.adapter = currentAdapter
+            showAdapter(currentAdapter)
             currentAdapter.notifyDataSetChanged()
         }
         enableDragItem(editMode)
@@ -95,7 +97,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
      * 候选栏菜单顺序/内容变化后刷新加减号状态
      */
     fun refreshBarMenuState() {
-        adapter?.notifyDataSetChanged()
+        settingsAdapter?.notifyDataSetChanged()
     }
 
     /**
@@ -107,8 +109,8 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         val recyclerView = mRVMenuLayout ?: return
         val touchHelper = ensureItemTouchHelper()
         touchHelper.attachToRecyclerView(if (enable) recyclerView else null)
-        adapter?.dragOverListener = if (enable) dragOverListener else null
-        adapter?.notifyItemRangeChanged(0, adapter?.itemCount ?: 0)
+        settingsAdapter?.dragOverListener = if (enable) dragOverListener else null
+        settingsAdapter?.notifyItemRangeChanged(0, settingsAdapter?.itemCount ?: 0)
     }
 
     private val dragOverListener = object : MenuAdapter.DragOverListener {
@@ -122,7 +124,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             if (!changed) return
             DevicesUtils.tryVibrate(mRVMenuLayout)
             inputView.updateCandidateBar()
-            adapter?.notifyDataSetChanged()
+            settingsAdapter?.notifyDataSetChanged()
         }
     }
 
@@ -147,7 +149,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                         Collections.swap(funItems, i, i - 1)
                     }
                 }
-                adapter?.notifyItemMoved(fromPosition, toPosition)
+                settingsAdapter?.notifyItemMoved(fromPosition, toPosition)
                 return true
             }
 
@@ -185,22 +187,22 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
      */
     fun showSkbSelelctModeView() {
         enableDragItem(false)
-        val funItems: MutableList<SkbFunItem> = LinkedList()
-        funItems.add(
+        selectModeItems.clear()
+        selectModeItems.add(
             SkbFunItem(
                 mContext.getString(R.string.keyboard_name_t9),
                 R.drawable.selece_input_mode_py9,
                 SkbMenuMode.PinyinT9
             )
         )
-        funItems.add(
+        selectModeItems.add(
             SkbFunItem(
                 mContext.getString(R.string.keyboard_name_cn26),
                 R.drawable.selece_input_mode_py26,
                 SkbMenuMode.Pinyin26Jian
             )
         )
-        funItems.add(
+        selectModeItems.add(
             SkbFunItem(
                 mContext.getString(R.string.keyboard_name_hand),
                 R.drawable.selece_input_mode_handwriting,
@@ -216,33 +218,44 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
             DoublePinyinSchemaMode.sogou -> R.string.double_pinyin_sougou
             DoublePinyinSchemaMode.ziguang -> R.string.double_pinyin_ziguang
         }
-        funItems.add(
+        selectModeItems.add(
             SkbFunItem(
                 mContext.getString(doublePinyinSchemaName),
                 R.drawable.selece_input_mode_dpy26,
                 SkbMenuMode.Pinyin26Double
             )
         )
-        funItems.add(
+        selectModeItems.add(
             SkbFunItem(
                 mContext.getString(R.string.keyboard_name_pinyin_lx_17),
                 R.drawable.selece_input_mode_lx17,
                 SkbMenuMode.PinyinLx17
             )
         )
-        funItems.add(
+        selectModeItems.add(
             SkbFunItem(
                 mContext.getString(R.string.keyboard_name_stroke),
                 R.drawable.selece_input_mode_stroke,
                 SkbMenuMode.PinyinStroke
             )
         )
-        val adapter = MenuAdapter(context, funItems)
-        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            DevicesUtils.tryVibrate(mRVMenuLayout)
-            onKeyboardMenuClick(funItems[position])
+        val currentAdapter = selectModeAdapter
+        if (currentAdapter == null) {
+            val menuAdapter = MenuAdapter(context, selectModeItems)
+            menuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
+                DevicesUtils.tryVibrate(mRVMenuLayout)
+                selectModeItems.getOrNull(position)?.let { onKeyboardMenuClick(it) }
+            }
+            selectModeAdapter = menuAdapter
+            showAdapter(menuAdapter)
+        } else {
+            showAdapter(currentAdapter)
+            currentAdapter.notifyDataSetChanged()
         }
-        mRVMenuLayout!!.setAdapter(adapter)
+    }
+
+    private fun showAdapter(menuAdapter: MenuAdapter) {
+        if (mRVMenuLayout?.adapter !== menuAdapter) mRVMenuLayout?.adapter = menuAdapter
     }
 
     private fun onKeyboardMenuClick(data: SkbFunItem) {

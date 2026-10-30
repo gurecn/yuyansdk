@@ -268,10 +268,10 @@ object InputModeSwitcher {
         val inputMode = value.first or MASK_LANGUAGE_CN
         getInstance().internal.inputMethodPinyinMode.setValue(inputMode)
         getInstance().internal.pinyinModeRime.setValue(value.second)
+        saveInputMode(inputMode)
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
-        saveInputMode(inputMode)
-        KeyboardManager.instance.switchKeyboard(skbImeLayout)
+        KeyboardManager.instance.switchKeyboard(inputMode and MASK_SKB_LAYOUT)
     }
 
     // 记录SHIFT点击时间，作为双击判断

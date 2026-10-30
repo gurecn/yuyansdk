@@ -42,6 +42,8 @@ import splitties.views.dsl.core.margin
 @SuppressLint("ViewConstructor")
 open class T9TextContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
     private var mSkbValue: Int = 0
+    val skbLayout: Int
+        get() = mSkbValue
     private val mSideSymbolsPinyin:List<SideSymbol>
     // 键盘、候选词界面上符号(T9左侧、手写右侧)、候选拼音ListView
     private val mRVLeftPrefix : SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView

@@ -12,7 +12,6 @@ import com.yuyan.imemodule.keyboard.container.QwertyContainer
 import com.yuyan.imemodule.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
-import com.yuyan.imemodule.prefs.AppPrefs
 
 /**
  * 键盘显示管理类
@@ -48,13 +47,15 @@ class KeyboardManager {
             0x8000 -> KeyboardType.TEXTEDIT
             else -> KeyboardType.T9
         }
-        switchKeyboard(keyboardName)
+        switchKeyboard(keyboardName, layout)
         if (::mInputView.isInitialized)mInputView.updateCandidateBar()
     }
 
-    fun switchKeyboard(keyboardName: KeyboardType) {
+    fun switchKeyboard(keyboardName: KeyboardType, layout: Int = InputModeSwitcher.skbLayout) {
         if (!::mKeyboardRootView.isInitialized) return
+        val targetLayout = layout and InputModeSwitcher.MASK_SKB_LAYOUT
         var container = keyboards[keyboardName]
+        if (container is T9TextContainer && container.skbLayout != targetLayout) container = null
         if (container == null) {
             container = when (keyboardName) {
                 KeyboardType.CANDIDATES ->  CandidatesContainer(Launcher.instance.context, mInputView)
@@ -67,7 +68,7 @@ class KeyboardManager {
                 KeyboardType.LX17 -> T9TextContainer(Launcher.instance.context, mInputView, InputModeSwitcher.MASK_SKB_LAYOUT_LX17)
                 KeyboardType.ClipBoard -> ClipBoardContainer(Launcher.instance.context, mInputView)
                 KeyboardType.TEXTEDIT -> QwertyContainer(Launcher.instance.context, mInputView, InputModeSwitcher.MASK_SKB_LAYOUT_TEXTEDIT)
-                else ->  T9TextContainer(Launcher.instance.context, mInputView, AppPrefs.getInstance().internal.inputDefaultMode.getValue() and InputModeSwitcher.MASK_SKB_LAYOUT)
+                else ->  T9TextContainer(Launcher.instance.context, mInputView, targetLayout)
             }
             container.updateSkbLayout()
             keyboards[keyboardName] = container
