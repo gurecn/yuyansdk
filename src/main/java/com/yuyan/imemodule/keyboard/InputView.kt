@@ -308,6 +308,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             sKey.label.takeIf(String::isNotEmpty)?.let {
                 if (SymbolPreset.containsKey(it)) commitPairSymbol(it) else commitText(it)
             }
+        } else if (keyCode in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9 && sKey.keyLabel.isNotEmpty()) {
+            commitText(sKey.keyLabel)
         } else {
             val metaState = when(InputDispatcher.getCurrentRimeSchema()) {
                 CustomConstant.SCHEMA_ZH_T9, CustomConstant.SCHEMA_ZH_STROKE, CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> KeyEvent.META_CAPS_LOCK_ON
