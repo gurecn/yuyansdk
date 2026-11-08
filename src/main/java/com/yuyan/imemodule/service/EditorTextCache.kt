@@ -22,13 +22,18 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     private var valid = false
     private var cachedCursorPos = -1   // 缓存内容对应的光标位置
     private var reportedCursorPos = -1 // 应用最近一次上报的光标位置
-    private var selectionActive = false
+    private var reportedSelEnd = -1    // 应用最近一次上报的选区末端
+    private val selectionActive: Boolean get() = reportedCursorPos != reportedSelEnd
     private val pendingCursorPositions = ArrayDeque<Int>()
     private var slowResponseCount = 0  // 连续慢响应次数，超限后不再校准
     private var refreshPending = false
     private var pendingLength = 0
     private var pendingCallback: ((String) -> Unit)? = null
     private val refreshTask = Runnable { refresh() }
+
+    /** 应用最近一次上报的选区，光标位置未知时为 -1 */
+    val selectionStart: Int get() = reportedCursorPos
+    val selectionEnd: Int get() = reportedSelEnd
 
     /**
      * 输入开始，优先从 EditorInfo 取初始文本，无需跨进程调用。
@@ -37,13 +42,12 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         cancelRefresh()
         slowResponseCount = 0
         reset()
-        val selStart = editorInfo?.initialSelStart ?: -1
-        reportedCursorPos = selStart
-        selectionActive = selStart != (editorInfo?.initialSelEnd ?: -1)
+        reportedCursorPos = editorInfo?.initialSelStart ?: -1
+        reportedSelEnd = editorInfo?.initialSelEnd ?: -1
         val initialText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             editorInfo?.getInitialTextBeforeCursor(MAX_CACHE_LENGTH, 0)
         } else null
-        if (initialText != null && selStart >= 0) fill(initialText, selStart)
+        if (initialText != null && reportedCursorPos >= 0) fill(initialText, reportedCursorPos)
         else scheduleRefresh()
     }
 
@@ -51,7 +55,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         cancelRefresh()
         reset()
         reportedCursorPos = -1
-        selectionActive = false
+        reportedSelEnd = -1
     }
 
     /**
@@ -59,7 +63,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
      */
     fun onUpdateSelection(newSelStart: Int, newSelEnd: Int) {
         reportedCursorPos = newSelStart
-        selectionActive = newSelStart != newSelEnd
+        reportedSelEnd = newSelEnd
         if (valid && !selectionActive && cachedCursorPos >= 0) {
             if (newSelStart == cachedCursorPos) {
                 pendingCursorPositions.clear()
@@ -158,6 +162,24 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
 
     /** 光标或内容被不可推算的操作改变，如方向键、选区编辑、粘贴等 */
     fun onEditorChanged() = invalidate()
+
+    /**
+     * 输入法自身用 setSelection 改变选区：文本内容未变，只同步镜像，
+     * 避免把连续的光标移动当成内容变化而丢弃缓存。
+     */
+    fun onSelectionMovedByIme(newSelStart: Int, newSelEnd: Int) {
+        reportedCursorPos = newSelStart
+        reportedSelEnd = newSelEnd
+        if (selectionActive || !valid || cachedCursorPos < 0) {
+            if (selectionActive) invalidate()
+            return
+        }
+        if (newSelStart == cachedCursorPos) {
+            pendingCursorPositions.clear()
+            return
+        }
+        moveCursor(newSelStart - cachedCursorPos)
+    }
 
     /**
      * 读取缓存中光标前 [length] 个字符，不做跨进程调用，缓存不可用时返回空串。

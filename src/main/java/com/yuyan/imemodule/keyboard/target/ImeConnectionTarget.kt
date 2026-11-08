@@ -17,7 +17,11 @@ class ImeConnectionTarget(private val service: ImeService) : TextTarget {
     override fun sendKey(keyCode: Int, shiftSelection: Boolean) {
         when (keyCode) {
             KeyEvent.KEYCODE_ENTER -> service.sendEnterKeyEvent()
-            in KeyEvent.KEYCODE_DPAD_UP..KeyEvent.KEYCODE_DPAD_RIGHT ->
+            // 左右移动光标用 setSelection 直接定位。
+            KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                if (shiftSelection) service.sendCombinationKeyEvents(keyCode, shift = true) else service.moveCursor(keyCode)
+            }
+            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN ->
                 service.sendCombinationKeyEvents(keyCode, shift = shiftSelection)
             else -> service.sendCombinationKeyEvents(keyCode)
         }

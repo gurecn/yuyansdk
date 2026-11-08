@@ -51,6 +51,8 @@ class ImeService : InputMethodService() {
     private var cursorMonitoring = false
     // 光标前文本缓存，避免在按键处理中同步跨进程取文本
     private val textCache = EditorTextCache { currentInputConnection }
+    // 方向键语义的光标移动，避免把按键事件交给宿主触发焦点导航
+    private val cursorMover = CursorMover({ currentInputConnection }, textCache) { sendCombinationKeyEvents(it) }
 
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? ->
         if (::mInputView.isInitialized) mInputView.updateTheme()
@@ -112,6 +114,7 @@ class ImeService : InputMethodService() {
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
         super.onStartInput(editorInfo, restarting)
         textCache.onStartInput(editorInfo)
+        cursorMover.onStartInput()
         if (::inputView.isInitialized) inputView.clearDeletedTextHistory()
         if (editorInfo != null) {
             YuyanEmojiCompat.setEditorInfo(editorInfo)
@@ -364,17 +367,6 @@ class ImeService : InputMethodService() {
         }
     }
 
-    /**
-     * 发送字符串给编辑框
-     */
-    fun commitText(text: String, newCursorPosition: Int) {
-        val content = StringUtils.converted2FlowerTypeface(text)
-        withInputConnection {
-            it.commitText(content, newCursorPosition)
-            if (newCursorPosition == 1) textCache.onCommitText(content) else textCache.onEditorChanged()
-        }
-    }
-
     /** 原样还原已删除内容，不再执行花漾字体转换。 */
     fun restoreDeletedText(text: String): Boolean {
         var accepted = false
@@ -389,16 +381,6 @@ class ImeService : InputMethodService() {
     fun deleteLastCharBeforeCursor(): String? = textCache.deleteLastCharBeforeCursor()
 
     fun deleteTextBeforeCursor(length: Int): String? = textCache.deleteTextBeforeCursor(length)
-
-    /**
-     * 读取缓存中光标前文本，不做跨进程调用，缓存不可用时返回空串
-     */
-    fun peekTextBeforeCursor(length: Int): String = textCache.peekTextBeforeCursor(length)
-
-    /**
-     * 读取缓存中光标前一个字符，emoji 等代理对按整体返回
-     */
-    fun peekLastCharBeforeCursor(): String = textCache.peekLastCharBeforeCursor()
 
     /**
      * 异步请求光标前文本，缓存可用时同步回调
@@ -419,19 +401,20 @@ class ImeService : InputMethodService() {
         }
     }
 
-    fun deleteSurroundingText(length: Int) {
+    /**
+     * 方向键语义的选区变更（setSelection），文本内容未变，不触发缓存失效
+     */
+    fun setSelection(start: Int, end: Int) {
         withInputConnection {
-            if (it.deleteSurroundingText(length, 0)) textCache.onDeleteBeforeCursor(length)
+            if (it.setSelection(start, end)) textCache.onSelectionMovedByIme(start, end)
             else textCache.onEditorChanged()
         }
     }
 
-    fun setSelection(start: Int, end: Int) {
-        withInputConnection {
-            it.setSelection(start, end)
-            textCache.onEditorChanged()
-        }
-    }
+    /**
+     * 方向键向左/右移动一格光标，活动实现见 [CursorMover]
+     */
+    fun moveCursor(keyCode: Int) = cursorMover.move(keyCode)
 
     /**
      * 输入框连接可能已失效，调用前做空安全与异常保护
