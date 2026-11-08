@@ -28,6 +28,10 @@ class KeyboardManager {
         private set
 
     fun setData(keyboardRootView: InputViewParent, inputView: InputView) {
+        if (::mInputView.isInitialized && mInputView !== inputView) {
+            keyboards.clear()
+            currentContainer = null
+        }
         mKeyboardRootView = keyboardRootView
         mInputView = inputView
     }
