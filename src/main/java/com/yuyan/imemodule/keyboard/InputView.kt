@@ -702,6 +702,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         chinesePrediction = appPrefs.input.chinesePrediction.getValue()
     }
 
+    fun applyFloatingWindowLayout() {
+        service.applyFloatingWindowLayout()
+    }
+
     override fun onWindowHidden() {
         exitPhrasesEditor(returnToPhrases = false)
         KeyboardManager.instance.switchKeyboard()

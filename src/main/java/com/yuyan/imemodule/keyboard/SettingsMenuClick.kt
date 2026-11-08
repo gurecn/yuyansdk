@@ -102,6 +102,7 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             val keyboardModeFloat = EnvironmentSingleton.instance.keyboardModeFloat
             EnvironmentSingleton.instance.keyboardModeFloat = !keyboardModeFloat
             EnvironmentSingleton.instance.initData()
+            inputView.applyFloatingWindowLayout()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
             KeyboardManager.instance.switchKeyboard()

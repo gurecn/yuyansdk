@@ -8,6 +8,7 @@ import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.inputmethod.CursorAnchorInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
@@ -36,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
+import androidx.core.view.isInvisible
 
 /**
  * Main class of the Pinyin input method. 输入法服务
@@ -124,6 +126,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
+        applyFloatingWindowLayout()
         if (::mInputView.isInitialized) mInputView.onStartInputView(editorInfo, restarting)
         super.onStartInputView(editorInfo, restarting)
     }
@@ -153,6 +156,7 @@ class ImeService : InputMethodService() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(200) // 延时，解决获取屏幕尺寸不准确
             EnvironmentSingleton.instance.initData(baseContext)
+            applyFloatingWindowLayout()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
             KeyboardManager.instance.switchKeyboard()
@@ -192,9 +196,40 @@ class ImeService : InputMethodService() {
 
     override fun onEvaluateFullscreenMode(): Boolean = false // 修复横屏之后输入框遮挡问题
 
+    override fun onConfigureWindow(win: Window, isFullscreen: Boolean, isCandidatesOnly: Boolean) {
+        super.onConfigureWindow(win, isFullscreen, isCandidatesOnly)
+        applyFloatingWindowLayout(win, isCandidatesOnly)
+    }
+
+    fun applyFloatingWindowLayout() {
+        val win = window?.window ?: return
+        applyFloatingWindowLayout(win, false)
+    }
+
+    private fun applyFloatingWindowLayout(win: Window, isCandidatesOnly: Boolean) {
+        val fillWindow = !isCandidatesOnly && EnvironmentSingleton.instance.keyboardModeFloat
+        win.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, if (fillWindow) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT)
+        val inputFrame = if (::inputView.isInitialized) inputView.parent as? ViewGroup else null
+        inputFrame?.layoutParams?.let { lp ->
+            val targetHeight = if (fillWindow) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+            if (lp.height != targetHeight) {
+                lp.height = targetHeight
+                inputFrame.layoutParams = lp
+            }
+        }
+        if (fillWindow) {
+            val panel = inputFrame?.parent as? ViewGroup
+            if (panel != null) {
+                for (i in 0 until panel.childCount) {
+                    val child = panel.getChildAt(i)
+                    if (child !== inputFrame && child.isInvisible) child.visibility = View.GONE
+                }
+            }
+        }
+    }
 
     override fun onComputeInsets(outInsets: Insets) {
-        val (x, y, width, height) = if(::mInputView.isInitialized) mInputView.getKeyboardRect() else intArrayOf(0, 0)
+        val (x, y, width, height) = if(::mInputView.isInitialized) mInputView.getKeyboardRect() else intArrayOf(0, 0, 0, 0)
         outInsets.apply {
             if(isHardwareKeyboard || EnvironmentSingleton.instance.keyboardModeFloat) {
                 contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
@@ -203,9 +238,9 @@ class ImeService : InputMethodService() {
                 touchableRegion.set(x, y, x + width, y + height)
             } else {
                 contentTopInsets = y
+                visibleTopInsets = y
                 touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
                 touchableRegion.setEmpty()
-                visibleTopInsets = y
             }
         }
     }
