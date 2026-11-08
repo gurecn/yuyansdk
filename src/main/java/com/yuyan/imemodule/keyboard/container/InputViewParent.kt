@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.widget.RelativeLayout
+import com.yuyan.imemodule.keyboard.InputView
 
 /**
  * 根布局集装箱，
@@ -16,8 +17,14 @@ import android.widget.RelativeLayout
  */
 class InputViewParent @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private var mLastContainer: View? = null
+    private var mHost: InputView? = null
+    fun attachHost(inputView: InputView) {
+        mHost = inputView
+    }
+
     fun showView(child: View?) {
         if (child == null) return
+        if (child is BaseContainer) mHost?.let(child::bindHost)
         (child as? InputBaseContainer)?.updateStates()
         if (child.parent == null) {
             super.addView(child)

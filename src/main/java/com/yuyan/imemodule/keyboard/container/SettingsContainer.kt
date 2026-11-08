@@ -20,7 +20,6 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
 import com.yuyan.imemodule.utils.DevicesUtils
 import splitties.dimensions.dp
@@ -33,7 +32,7 @@ import java.util.LinkedList
  * 设置键盘、切换键盘界面容器。使用RecyclerView + GridLayoutManager。
  */
 @SuppressLint("ViewConstructor")
-class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
+class SettingsContainer(context: Context) : BaseContainer(context) {
     private var mRVMenuLayout: RecyclerView? = null
     private var mTheme: Theme? = null
     private var settingsAdapter: MenuAdapter? = null //设置菜单网格适配器

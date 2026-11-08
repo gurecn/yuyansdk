@@ -20,7 +20,6 @@ import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import splitties.dimensions.dp
@@ -38,7 +37,7 @@ import splitties.views.dsl.core.matchParent
  * 与九宫格键盘容器[T9TextContainer]、九宫格候选词键盘容器[CandidatesContainer]不同的是，手写键盘容器拼音选择栏在键盘右侧。
  */
 @SuppressLint("ViewConstructor")
-class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
+class HandwritingContainer(context: Context?) : InputBaseContainer(context) {
     private val mSideSymbolsPinyin:List<SideSymbol>
     // 键盘界面上符号(T9左侧、手写右侧)
     private var mRVRightSymbols: SwipeRecyclerView = inflate(getContext(), R.layout.sdk_view_rv_prefix, null) as SwipeRecyclerView
@@ -71,7 +70,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
             mMajorView = HandwritingKeyboard(context)
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
-            (mMajorView as HandwritingKeyboard).setResponseKeyEvent(inputView)
+            onHostBound()
         }
         val softKeyboard = instance.getSoftKeyboard(InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING)
         mMajorView!!.setSoftKeyboard(softKeyboard)

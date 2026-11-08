@@ -22,7 +22,6 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.TextKeyboard
 import com.yuyan.imemodule.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
@@ -40,7 +39,7 @@ import splitties.views.dsl.core.margin
  *  拼音选择栏（无拼音时显示中文符号）位于键盘左上角，拼音选择栏占位按键正上方。
  */
 @SuppressLint("ViewConstructor")
-open class T9TextContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
+open class T9TextContainer(context: Context?, skbValue: Int = 0) : InputBaseContainer(context) {
     private var mSkbValue: Int = 0
     val skbLayout: Int
         get() = mSkbValue
@@ -78,7 +77,7 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
             mMajorView = HandwritingKeyboard(context)
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
-            mMajorView!!.setResponseKeyEvent(inputView)
+            onHostBound()
         }
         val softKeyboard = instance.getSoftKeyboard(mSkbValue)
         mMajorView!!.setSoftKeyboard(softKeyboard)

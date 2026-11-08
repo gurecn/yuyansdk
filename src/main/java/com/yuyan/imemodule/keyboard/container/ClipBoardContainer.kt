@@ -24,8 +24,6 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
@@ -39,7 +37,7 @@ import kotlin.math.ceil
  * 使用RecyclerView实现垂直ListView列表布局。
  */
 @SuppressLint("ViewConstructor")
-class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
+class ClipBoardContainer(context: Context) : BaseContainer(context) {
     private val mPaint : Paint = Paint() // 测量字符串长度
     private val mRVSymbolsView: SwipeRecyclerView = SwipeRecyclerView(context)
     private var mTVLable: TextView? = null

@@ -28,7 +28,6 @@ import com.yuyan.imemodule.database.entry.UsedSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.prefs.behavior.SymbolMode
 import com.yuyan.imemodule.utils.DevicesUtils
-import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +52,7 @@ import kotlin.random.Random
  * 符号类型行使用RecyclerView + LinearLayoutManager实现水平ListView效果。
  */
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
-class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
+class SymbolContainer(context: Context) : BaseContainer(context) {
     private var mShowType: SymbolMode = SymbolMode.Symbol
     private var mVPSymbolsView: ViewPager2
     private var tabLayout: TabLayout

@@ -24,9 +24,18 @@ import kotlin.math.absoluteValue
  * 所有软键盘（输入、符号、设置等）父容器View。
  */
 @SuppressLint("ViewConstructor")
-open class BaseContainer(@JvmField var mContext: Context, @JvmField protected var inputView: InputView) : ConstraintLayout(mContext) {
+open class BaseContainer(@JvmField var mContext: Context) : ConstraintLayout(mContext) {
+    protected lateinit var inputView: InputView
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
+
+    fun bindHost(inputView: InputView) {
+        if (::inputView.isInitialized && this.inputView === inputView) return
+        this.inputView = inputView
+        onHostBound()
+    }
+
+    protected open fun onHostBound() {}
 
     /**
      * 更新软键盘布局

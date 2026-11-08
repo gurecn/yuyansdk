@@ -54,7 +54,7 @@ import splitties.views.dsl.core.wrapContent
  * @see InputModeSwitcher.isChineseT9
  */
 @SuppressLint("ViewConstructor")
-class CandidatesContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
+class CandidatesContainer(context: Context) : BaseContainer(context) {
     private val mSideSymbolsPinyin:List<SideSymbol>
     private lateinit var mRVSymbolsView: SwipeRecyclerView
     private lateinit var mCandidatesAdapter: CandidatesAdapter

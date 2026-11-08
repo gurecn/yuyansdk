@@ -3,7 +3,6 @@ package com.yuyan.imemodule.keyboard.container
 import android.annotation.SuppressLint
 import android.content.Context
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
-import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.TextKeyboard
 import com.yuyan.imemodule.keyboard.HandwritingKeyboard
 
@@ -16,7 +15,7 @@ import com.yuyan.imemodule.keyboard.HandwritingKeyboard
  * 与九宫格键盘容器[T9TextContainer]相比，全键盘不包含拼音选择栏。
  */
 @SuppressLint("ViewConstructor")
-class QwertyContainer(context: Context?, inputView: InputView, skbValue: Int = 0) : InputBaseContainer(context, inputView) {
+class QwertyContainer(context: Context?, skbValue: Int = 0) : InputBaseContainer(context) {
     private var mSkbValue: Int = 0
     init {
         mSkbValue = skbValue
@@ -30,7 +29,7 @@ class QwertyContainer(context: Context?, inputView: InputView, skbValue: Int = 0
             mMajorView = HandwritingKeyboard(context)
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
-            mMajorView!!.setResponseKeyEvent(inputView)
+            onHostBound()
         }
         val softKeyboard = instance.getSoftKeyboard(mSkbValue)
         mMajorView!!.setSoftKeyboard(softKeyboard)
