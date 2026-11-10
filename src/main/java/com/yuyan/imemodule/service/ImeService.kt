@@ -383,6 +383,29 @@ class ImeService : InputMethodService() {
     fun deleteTextBeforeCursor(length: Int): String? = textCache.deleteTextBeforeCursor(length)
 
     /**
+     * 删除键交给宿主按自身语义删除，删掉的内容在光标回报后通过 [onDeleted] 回调。
+     * 不走 sendCombinationKeyEvents，否则发键后缓存会被整份作废。
+     */
+    fun deleteBackwardByKey(onDeleted: (String) -> Unit) {
+        if (currentInputConnection == null) return
+        textCache.beginKeyDelete(onDeleted)
+        val eventTime = SystemClock.uptimeMillis()
+        sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_DEL)
+        sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_DEL)
+    }
+
+    /** 当前输入框不响应删除键事件，需改用编辑命令删除 */
+    val keyDeleteUnsupported: Boolean get() = textCache.keyDeleteUnsupported
+
+    /** 不记录内容地删除光标前 [length] 个字符，返回编辑器是否接受 */
+    fun deleteSurroundingText(length: Int): Boolean {
+        var accepted = false
+        withInputConnection { accepted = it.deleteSurroundingText(length, 0) }
+        textCache.onEditorChanged()
+        return accepted
+    }
+
+    /**
      * 异步请求光标前文本，缓存可用时同步回调
      */
     fun requestTextBeforeCursor(length: Int, callback: (String) -> Unit) = textCache.requestTextBeforeCursor(length, callback)

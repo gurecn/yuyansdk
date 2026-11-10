@@ -611,7 +611,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     fun clearDeletedTextHistory() = textBeforeCursors.clear()
 
     private fun deleteTextBeforeCursor() {
-        textTarget.deleteBackward()?.takeIf { it.isNotEmpty() }?.let { textBeforeCursors.push(it) }
+        textTarget.deleteBackward { deleted -> if (deleted.isNotEmpty()) textBeforeCursors.push(deleted) }
     }
 
     private fun sendKeyEvent(keyCode: Int) {

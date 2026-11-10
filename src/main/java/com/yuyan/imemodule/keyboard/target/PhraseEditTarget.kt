@@ -24,10 +24,7 @@ class PhraseEditTarget(private val view: EditPhrasesView, private val onSubmit: 
             else -> view.insertKeyChar(keyCode)
         }
     }
-    override fun deleteBackward(): String? {
-        view.deleteBackward()
-        return null
-    }
+    override fun deleteBackward(onDeleted: (String) -> Unit) = view.deleteBackward()
 
     override fun deleteBackward(count: Int): String? {
         view.deleteBackward(count)

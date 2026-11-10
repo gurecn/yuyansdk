@@ -30,6 +30,16 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     private var pendingLength = 0
     private var pendingCallback: ((String) -> Unit)? = null
     private val refreshTask = Runnable { refresh() }
+    // 已发出、等待宿主回报光标的删除键，按发送顺序逐条认领回报
+    private val pendingKeyDeletes = ArrayDeque<(String) -> Unit>()
+    private var keyDeleteReported = false  // 本批删除键是否收到过删除回报
+    private var lastKeyDeleteAt = 0L       // 最近一次删除键时间，连删期间推迟校准
+    private var keyDeleteProbeText: String? = null // 删除键疑似无效时的原文，校准时比对确认
+    private val keyDeleteTimeoutTask = Runnable { onKeyDeleteTimeout() }
+
+    /** 当前输入会话中宿主不响应删除键，调用方应改用 deleteSurroundingText 路径 */
+    var keyDeleteUnsupported = false
+        private set
 
     /** 应用最近一次上报的选区，光标位置未知时为 -1 */
     val selectionStart: Int get() = reportedCursorPos
@@ -41,6 +51,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     fun onStartInput(editorInfo: EditorInfo?) {
         cancelRefresh()
         slowResponseCount = 0
+        resetKeyDeleteState()
         reset()
         reportedCursorPos = editorInfo?.initialSelStart ?: -1
         reportedSelEnd = editorInfo?.initialSelEnd ?: -1
@@ -53,6 +64,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
 
     fun onFinishInput() {
         cancelRefresh()
+        resetKeyDeleteState()
         reset()
         reportedCursorPos = -1
         reportedSelEnd = -1
@@ -76,6 +88,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
                 repeat(pendingIndex + 1) { pendingCursorPositions.removeFirst() }
                 return
             }
+            if (pendingKeyDeletes.isNotEmpty() && onKeyDeleted(newSelStart)) return
         }
         // 不属于本地编辑的变化意味着缓存已过期，校准前不能继续拿它记录删除内容。
         invalidate()
@@ -83,7 +96,8 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
 
     /** 提交文本，预编辑内容会被一并替换 */
     fun onCommitText(text: CharSequence) {
-        if (!valid || selectionActive) {
+        // 删除键结果未确认前又有本地编辑，光标基准已不可信
+        if (!valid || selectionActive || pendingKeyDeletes.isNotEmpty()) {
             invalidate()
             return
         }
@@ -94,7 +108,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     }
 
     fun onSetComposingText(text: CharSequence) {
-        if (!valid || selectionActive) {
+        if (!valid || selectionActive || pendingKeyDeletes.isNotEmpty()) {
             invalidate()
             return
         }
@@ -114,17 +128,73 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
      * InputConnection 的 true 仅代表请求被接受，不代表远端编辑器已执行完毕。
      */
     fun deleteLastCharBeforeCursor(): String? {
-        if (!canRecordDeletion()) return null
+        if (!canRecordDeletion() || pendingKeyDeletes.isNotEmpty()) return null
         return deleteCachedText(peekLastCharBeforeCursor())
     }
 
     fun deleteTextBeforeCursor(length: Int): String? {
-        if (length <= 0 || !canRecordDeletion()) return null
+        if (length <= 0 || !canRecordDeletion() || pendingKeyDeletes.isNotEmpty()) return null
         return deleteCachedText(peekTextBeforeCursor(length))
     }
 
     private fun canRecordDeletion(): Boolean =
         valid && !selectionActive && composingText.isEmpty() && cachedCursorPos >= 0
+
+    /**
+     * 删除键发出前登记，删除内容在光标回报后通过 [onDeleted] 回调。
+     * 只读本地状态，不做跨进程调用；无法记录时删除键照发，只是不进入还原记录。
+     */
+    fun beginKeyDelete(onDeleted: (String) -> Unit) {
+        lastKeyDeleteAt = SystemClock.uptimeMillis()
+        when {
+            // 长按连删时回报跟不上，超出部分不记录，回报认领不到时再作废缓存
+            pendingKeyDeletes.size >= MAX_PENDING_KEY_DELETES -> Unit
+            // 本地编辑的回报未到齐时，删除回报可能与之混淆，不记录
+            canRecordDeletion() && pendingCursorPositions.isEmpty() -> {
+                if (cachedCursorPos == 0) return // 光标在开头，删除不改变光标前文本
+                if (pendingKeyDeletes.isEmpty()) keyDeleteReported = false
+                pendingKeyDeletes.addLast(onDeleted)
+                restartKeyDeleteTimeout()
+            }
+            pendingKeyDeletes.isEmpty() -> invalidate()
+        }
+    }
+
+    private fun onKeyDeleted(newSelStart: Int): Boolean {
+        val length = cachedCursorPos - newSelStart
+        if (length <= 0 || length > committedText.length) return false
+        val onDeleted = pendingKeyDeletes.removeFirstOrNull() ?: return false
+        val deleted = committedText.substring(committedText.length - length)
+        committedText.setLength(committedText.length - length)
+        cachedCursorPos = newSelStart
+        keyDeleteReported = true
+        if (pendingKeyDeletes.isEmpty()) handler.removeCallbacks(keyDeleteTimeoutTask) else restartKeyDeleteTimeout()
+        onDeleted(deleted)
+        return true
+    }
+
+    private fun onKeyDeleteTimeout() {
+        if (pendingKeyDeletes.isEmpty()) return
+        // 回报被宿主合并时光标已对齐，只丢弃多余的等待项
+        if (keyDeleteReported && cachedCursorPos == reportedCursorPos) {
+            pendingKeyDeletes.clear()
+            return
+        }
+        // 一次回报都没有：可能宿主不处理删除键，也可能回报晚到，留待校准时比对原文确认
+        if (!keyDeleteReported) keyDeleteProbeText = committedText.toString()
+        invalidate()
+    }
+
+    private fun restartKeyDeleteTimeout() {
+        handler.removeCallbacks(keyDeleteTimeoutTask)
+        handler.postDelayed(keyDeleteTimeoutTask, KEY_DELETE_TIMEOUT)
+    }
+
+    private fun resetKeyDeleteState() {
+        keyDeleteUnsupported = false
+        keyDeleteProbeText = null
+        lastKeyDeleteAt = 0L
+    }
 
     private fun deleteCachedText(text: String): String? {
         if (text.isEmpty()) {
@@ -148,7 +218,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
 
     /** 删除光标前 [length] 个字符 */
     fun onDeleteBeforeCursor(length: Int) {
-        if (!valid || selectionActive || composingText.isNotEmpty()) {
+        if (!valid || selectionActive || composingText.isNotEmpty() || pendingKeyDeletes.isNotEmpty()) {
             invalidate()
             return
         }
@@ -170,6 +240,10 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     fun onSelectionMovedByIme(newSelStart: Int, newSelEnd: Int) {
         reportedCursorPos = newSelStart
         reportedSelEnd = newSelEnd
+        if (pendingKeyDeletes.isNotEmpty()) {
+            invalidate()
+            return
+        }
         if (selectionActive || !valid || cachedCursorPos < 0) {
             if (selectionActive) invalidate()
             return
@@ -232,14 +306,30 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     }
 
     private fun refresh() {
+        // 连删期间宿主可能正忙，此时同步取文本最容易卡住，推迟到删除停下后再校准
+        val idleWait = lastKeyDeleteAt + KEY_DELETE_IDLE - SystemClock.uptimeMillis()
+        if (lastKeyDeleteAt > 0 && idleWait > 0) {
+            handler.postDelayed(refreshTask, idleWait)
+            return
+        }
         refreshPending = false
         val callback = pendingCallback
         val callbackLength = pendingLength
         pendingCallback = null
         pendingLength = 0
         val text = fetchTextBeforeCursor()
+        checkKeyDeleteProbe(text)
         if (text != null) fill(text, reportedCursorPos) else reset()
         callback?.invoke(peekTextBeforeCursor(callbackLength))
+    }
+
+    // 删除键发出后原文毫无变化，才判定宿主不处理删除键，避免把回报晚到误判为不支持
+    private fun checkKeyDeleteProbe(text: CharSequence?) {
+        val probe = keyDeleteProbeText ?: return
+        keyDeleteProbeText = null
+        if (text != null && text.toString() == probe) {
+            keyDeleteUnsupported = true
+        }
     }
 
     private fun fetchTextBeforeCursor(): CharSequence? {
@@ -274,6 +364,8 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         composingText = ""
         cachedCursorPos = -1
         pendingCursorPositions.clear()
+        pendingKeyDeletes.clear()
+        handler.removeCallbacks(keyDeleteTimeoutTask)
         valid = false
     }
 
@@ -298,6 +390,9 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     }
 
     companion object {
+        internal const val MAX_PENDING_KEY_DELETES = 32 // 长按连删约 20 次/秒，可容纳 1.6 秒回报延迟
+        internal const val KEY_DELETE_TIMEOUT = 800L    // 删除键等待回报的超时
+        internal const val KEY_DELETE_IDLE = 300L       // 删除停下多久后才允许校准
         private const val MAX_CACHE_LENGTH = 1024
         private const val REFRESH_DELAY = 100L
         private const val SLOW_RESPONSE_TIMEOUT = 500L

@@ -27,10 +27,14 @@ class ImeConnectionTarget(private val service: ImeService) : TextTarget {
         }
     }
 
-    override fun deleteBackward(): String? {
+    override fun deleteBackward(onDeleted: (String) -> Unit) {
+        if (!service.keyDeleteUnsupported) {
+            service.deleteBackwardByKey(onDeleted)
+            return
+        }
         val deletedText = service.deleteLastCharBeforeCursor()
-        if (deletedText == null) service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DEL)
-        return deletedText
+        if (deletedText != null) onDeleted(deletedText)
+        else if (!service.deleteSurroundingText(1)) service.sendCombinationKeyEvents(KeyEvent.KEYCODE_DEL)
     }
 
     override fun deleteBackward(count: Int): String? = service.deleteTextBeforeCursor(count)

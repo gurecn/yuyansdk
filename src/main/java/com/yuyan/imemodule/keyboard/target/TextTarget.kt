@@ -16,7 +16,7 @@ interface TextTarget {
 
     fun sendKey(keyCode: Int, shiftSelection: Boolean = false)
 
-    fun deleteBackward(): String?
+    fun deleteBackward(onDeleted: (String) -> Unit)
 
     fun deleteBackward(count: Int): String?
 
