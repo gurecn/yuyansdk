@@ -37,7 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
-import androidx.core.view.isInvisible
+import androidx.core.view.isGone
 
 /**
  * Main class of the Pinyin input method. 输入法服务
@@ -49,6 +49,7 @@ class ImeService : InputMethodService() {
     private lateinit var inputView: InputView
     private lateinit var mInputView: IKeyboardView
     private var cursorMonitoring = false
+    private val suppressedFrames = mutableSetOf<View>()
     // 光标前文本缓存，避免在按键处理中同步跨进程取文本
     private val textCache = EditorTextCache { currentInputConnection }
     // 方向键语义的光标移动，避免把按键事件交给宿主触发焦点导航
@@ -74,6 +75,8 @@ class ImeService : InputMethodService() {
         handleHardwareKeyboard()
         updateCandidatesViewShown(isHardwareKeyboard)
         updateInputViewShown()
+        applyFloatingWindowLayout()
+        KeyboardManager.instance.switchKeyboard()
     }
     private val candidatesObserver = Observer<Any?> { _ ->
         if (::mInputView.isInitialized) mInputView.onCandidateChanged()
@@ -109,6 +112,15 @@ class ImeService : InputMethodService() {
     override fun onEvaluateInputViewShown(): Boolean {
         super.onEvaluateInputViewShown()
         return if (showVirtualKeyboardOnPhysicalKeyboard) true else !isHardwareKeyboard
+    }
+
+    /**
+     * 框架会根据系统设置 SHOW_IME_WITH_HARD_KEYBOARD 与 Configuration.keyboard 决定是否展示输入视图，
+     * 并在为 false 时把窗口按“只显示候选栏”配置。
+     */
+    override fun onShowInputRequested(flags: Int, configChange: Boolean): Boolean {
+        if (!isHardwareKeyboard || showVirtualKeyboardOnPhysicalKeyboard) return true
+        return super.onShowInputRequested(flags, configChange)
     }
 
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
@@ -156,14 +168,15 @@ class ImeService : InputMethodService() {
         super.onConfigurationChanged(newConfig)
         handleHardwareKeyboard(newConfig)
         updateCandidatesViewShown(isHardwareKeyboard)
+        updateInputViewShown()
         CoroutineScope(Dispatchers.Main).launch {
             delay(200) // 延时，解决获取屏幕尺寸不准确
             EnvironmentSingleton.instance.initData(baseContext)
-            applyFloatingWindowLayout()
             KeyboardLoaderUtil.instance.clearKeyboardMap()
             KeyboardManager.instance.clearKeyboard()
             KeyboardManager.instance.switchKeyboard()
             if (::mInputView.isInitialized) mInputView.setConfiguration(newConfig)
+            applyFloatingWindowLayout()
         }
         onSystemDarkModeChange(newConfig.isDarkMode())
     }
@@ -209,25 +222,44 @@ class ImeService : InputMethodService() {
         applyFloatingWindowLayout(win, false)
     }
 
+    /**
+     * 当前窗口是否需要在 inputArea 里显示 InputView。
+     * 物理键盘（未开启软键盘开关）时只显示悬浮候选栏，不能按键盘高度配置窗口。
+     */
+    private fun isInputViewRequired(): Boolean {
+        if (!::inputView.isInitialized || isHardwareKeyboard) return false
+        if (!onEvaluateInputViewShown()) return false
+        if (isShowInputRequested) return true
+        return (inputView.parent as? View)?.visibility == View.VISIBLE
+    }
+
     private fun applyFloatingWindowLayout(win: Window, isCandidatesOnly: Boolean) {
-        val fillWindow = !isCandidatesOnly && EnvironmentSingleton.instance.keyboardModeFloat
-        win.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, if (fillWindow) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT)
+        val inputViewRequired = isInputViewRequired()
+        val fillWindow = EnvironmentSingleton.instance.keyboardModeFloat &&
+                (inputViewRequired || !isCandidatesOnly)
+        val targetHeight = if (fillWindow) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+        win.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, targetHeight)
         val inputFrame = if (::inputView.isInitialized) inputView.parent as? ViewGroup else null
         inputFrame?.layoutParams?.let { lp ->
-            val targetHeight = if (fillWindow) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
             if (lp.height != targetHeight) {
                 lp.height = targetHeight
                 inputFrame.layoutParams = lp
             }
         }
-        if (fillWindow) {
+        if (fillWindow || inputViewRequired) {
             val panel = inputFrame?.parent as? ViewGroup
             if (panel != null) {
                 for (i in 0 until panel.childCount) {
                     val child = panel.getChildAt(i)
-                    if (child !== inputFrame && child.isInvisible) child.visibility = View.GONE
+                    if (child !== inputFrame && child.visibility != View.GONE) {
+                        suppressedFrames.add(child)
+                        child.visibility = View.GONE
+                    }
                 }
             }
+        } else if (suppressedFrames.isNotEmpty()) {
+            suppressedFrames.forEach { if (it.isGone) it.visibility = View.VISIBLE }
+            suppressedFrames.clear()
         }
     }
 
