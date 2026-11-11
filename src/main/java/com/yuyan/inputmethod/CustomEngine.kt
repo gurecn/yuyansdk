@@ -8,9 +8,18 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import kotlin.math.roundToInt
 
 object CustomEngine {
+    private val expressionEndPattern = "((φ|π|pi|sin|cos|tan|cot|asin|acos|atan|sinh|cosh|tanh|abs|log|log1p|ceil|floor|sqrt|cbrt|pow|exp|expm|signum|csc|sec|csch|sech|coth|toradian|todegree|\\(|\\)|^|%|\\+|-|\\*|/|\\.|e|E|\\d)+)$".toRegex()
+
     fun parseExpressionAtEnd(input: String): String? {
-        val expressionEndPattern = "((φ|π|pi|sin|cos|tan|cot|asin|acos|atan|sinh|cosh|tanh|abs|log|log1p|ceil|floor|sqrt|cbrt|pow|exp|expm|signum|csc|sec|csch|sech|coth|toradian|todegree|\\(|\\)|^|%|\\+|-|\\*|/|\\.|e|E|\\d)+)$".toRegex()
-        return expressionEndPattern.find(input.removeSuffix("="))?.value
+        val expression = expressionEndPattern.find(input.removeSuffix("="))?.value ?: return null
+        if (expression.length >= 500 || StringUtils.isNumber(expression) || StringUtils.isLetter(expression)) return null
+        return expression.takeIf(::isCalculable)
+    }
+
+    private fun isCalculable(expression: String): Boolean = try {
+        ExpressionBuilder(expression).build().evaluate().isFinite()
+    } catch (_: Exception) {
+        false
     }
 
     fun expressionCalculator(input: String, expression: String?):Array<String>{

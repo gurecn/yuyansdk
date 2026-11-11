@@ -743,8 +743,9 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         if (oldSelStart == newSelStart) return
         when {
             InputModeSwitcher.isNumberSkb -> service.requestTextBeforeCursor(500) { textBeforeCursor ->
-                if (textBeforeCursor.isBlank()) resetCandidateWindow()
-                else CustomEngine.parseExpressionAtEnd(textBeforeCursor).let { CustomEngine.expressionCalculator(textBeforeCursor, it).let(::showSymbols) }
+                val expression = textBeforeCursor.takeIf(String::isNotBlank)?.let(CustomEngine::parseExpressionAtEnd)
+                if (expression.isNullOrBlank()) resetCandidateWindow()
+                else showSymbols(CustomEngine.expressionCalculator(textBeforeCursor, expression))
             }
             chinesePrediction && InputModeSwitcher.isChinese-> service.requestTextBeforeCursor(10) { textBeforeCursor ->
                 if (textBeforeCursor.isBlank()) resetCandidateWindow()
