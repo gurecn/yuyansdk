@@ -133,7 +133,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     }
 
     fun deleteTextBeforeCursor(length: Int): String? {
-        if (length <= 0 || !canRecordDeletion() || pendingKeyDeletes.isNotEmpty()) return null
+        if (length <= 0 || !canRecordDeletion()) return null
         return deleteCachedText(peekTextBeforeCursor(length))
     }
 
@@ -197,11 +197,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     }
 
     private fun deleteCachedText(text: String): String? {
-        if (text.isEmpty()) {
-            if (cachedCursorPos == 0) return ""
-            invalidate()
-            return null
-        }
+        if (text.isEmpty()) return null
         val inputConnection = connection() ?: return null
         val accepted = try {
             inputConnection.deleteSurroundingText(text.length, 0)

@@ -50,6 +50,6 @@ class ImeConnectionTarget(private val service: ImeService) : TextTarget {
     override fun setSelection(start: Int, end: Int) = service.setSelection(start, end)
 
     companion object {
-        private const val CLEAR_TEXT_LENGTH = 1000
+        private const val CLEAR_TEXT_LENGTH = 128
     }
 }
