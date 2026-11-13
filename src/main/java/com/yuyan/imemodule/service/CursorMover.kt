@@ -16,7 +16,7 @@ class CursorMover(private val connection: () -> InputConnection?, private val ca
     private var webEditor = false        // WebView 内核编辑器，不认定位到文本末尾的命令
     private var caretPos = -1            // 宿主最近一次回报的光标位置，移动推算只认它
     private var pendingTarget = -1       // 已发出但还没被回报确认的目标位置
-    private var pendingRetries = 0       // 同一目标连续请求次数，用于识别不回报光标位置的宿主
+    private var pendingAttempts = 0      // 同一目标重复请求次数，用于识别被宿主静默忽略的定位
 
     /** 每次开始输入重置会话状态 */
     fun onStartInput(editorInfo: EditorInfo?) {
@@ -26,7 +26,7 @@ class CursorMover(private val connection: () -> InputConnection?, private val ca
         probeUnsupported = false
         caretPos = -1
         pendingTarget = -1
-        pendingRetries = 0
+        pendingAttempts = 0
         webEditor = editorInfo != null &&
             editorInfo.inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_CLASS_TEXT &&
             editorInfo.inputType and InputType.TYPE_MASK_VARIATION == InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT
@@ -44,7 +44,7 @@ class CursorMover(private val connection: () -> InputConnection?, private val ca
         val expected = pendingTarget
         caretPos = start
         pendingTarget = -1
-        pendingRetries = 0
+        pendingAttempts = 0
         if (expected >= 0 && start != expected) {
             cache.onSelectionMovedByIme(start, start) // 回正镜像，不把漂移带进后续推算
             remainingAfter = 0                       // 位置已重新校准，边界需要重新探测
@@ -55,55 +55,52 @@ class CursorMover(private val connection: () -> InputConnection?, private val ca
      * 移动一格光标
      */
     fun move(keyCode: Int) {
-        settlePendingRequest()
         val step = if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) 1 else -1
-        val selectionStart = cache.selectionStart
-        val selectionEnd = cache.selectionEnd
-        val hasSelection = selectionStart != selectionEnd
+        val hasSelection = cache.selectionStart != cache.selectionEnd
         val from = when {
-            hasSelection -> if (step > 0) selectionEnd else selectionStart
+            hasSelection -> if (step > 0) cache.selectionEnd else cache.selectionStart
             caretPos >= 0 -> caretPos
-            else -> selectionStart
+            else -> cache.selectionStart
         }
         if (from < 0) return // 宿主未上报光标位置，无法安全推算目标位置
         if (!hasSelection && step == blockedStep && from == blockedAt) return // 已确认无法继续移动
         val target = if (hasSelection) from else from + step
         if (target < 0) return
         val inputConnection = connection() ?: return
-        if (!hasSelection && step > 0 && !hasTextAfter(inputConnection)) {
-            block(step, from)
+        val unconfirmed = pendingTarget == target
+        if (unconfirmed) settleUnconfirmed() else pendingAttempts = 0
+        if (!hasSelection && step > 0 && !hasTextAfter(inputConnection) && !webEditor) {
+            block(step, from) // 宿主已在文本末尾，不再下发定位命令
             return
         }
-        // WebView 把插入符挪到文本末尾只能靠方向键，定位命令会收起输入法
-        val viaKey = !hasSelection && step > 0 && webEditor && remainingAfter == 1
+        val viaKey = webEditor && !probeUnsupported && !hasSelection &&
+            (unconfirmed || (step > 0 && remainingAfter <= 1))
         val accepted = if (viaKey) sendCaretKey(inputConnection, keyCode) else applySelection(inputConnection, target)
         if (accepted) {
-            onMoveAccepted(step, target, hasSelection)
+            onMoveAccepted(step, target, hasSelection, !unconfirmed)
         } else if (!hasSelection) {
             block(step, from)
         }
     }
 
-    /** 上一次请求还没被回报确认：优先用旧位置重发，多次无回报则退回按请求推算 */
-    private fun settlePendingRequest() {
-        if (pendingTarget < 0) return
-        if (pendingRetries >= MAX_PENDING_RETRIES) {
+    /** 上一次定位没被采纳：WebView 交给方向键兜底，其他宿主按请求推算位置以免卡死 */
+    private fun settleUnconfirmed() {
+        pendingAttempts++
+        if (!webEditor && pendingAttempts >= MAX_PENDING_ATTEMPTS) {
             caretPos = pendingTarget
             pendingTarget = -1
-            pendingRetries = 0
-        } else {
-            pendingRetries++
+            pendingAttempts = 0
         }
     }
 
-    /** 请求被宿主接受：余量按方向增减，目标位置等待回报确认 */
-    private fun onMoveAccepted(step: Int, target: Int, hasSelection: Boolean) {
+    /** 请求被宿主接受：目标位置等待回报确认 */
+    private fun onMoveAccepted(step: Int, target: Int, hasSelection: Boolean, consumesRemaining: Boolean) {
         blockedStep = 0
         blockedAt = -1
-        // 右移一步消耗一个已知光标后字符，左移一步因为刚离开的位置必然有效而多出一个
-        if (!hasSelection && !probeUnsupported) remainingAfter = (remainingAfter - step).coerceAtLeast(0)
+        if (consumesRemaining && !hasSelection && !probeUnsupported) {
+            remainingAfter = (remainingAfter - step).coerceAtLeast(0)
+        }
         pendingTarget = target
-        pendingRetries = 0
         cache.onSelectionMovedByIme(target, target)
     }
 
@@ -146,6 +143,6 @@ class CursorMover(private val connection: () -> InputConnection?, private val ca
 
     companion object {
         private const val PROBE_LENGTH = 64      // 一次探测覆盖的右移步数，避免每步一次跨进程取文本
-        private const val MAX_PENDING_RETRIES = 2 // 同一目标最多重发次数，超出后按请求推算位置
+        private const val MAX_PENDING_ATTEMPTS = 2 // 同一目标重复请求上限，超出后按请求推算位置
     }
 }
