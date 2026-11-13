@@ -53,7 +53,7 @@ class ImeService : InputMethodService() {
     // 光标前文本缓存，避免在按键处理中同步跨进程取文本
     private val textCache = EditorTextCache { currentInputConnection }
     // 方向键语义的光标移动，避免把按键事件交给宿主触发焦点导航
-    private val cursorMover = CursorMover({ currentInputConnection }, textCache) { sendCombinationKeyEvents(it) }
+    private val cursorMover = CursorMover({ currentInputConnection }, textCache)
 
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? ->
         if (::mInputView.isInitialized) mInputView.updateTheme()
@@ -126,7 +126,7 @@ class ImeService : InputMethodService() {
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
         super.onStartInput(editorInfo, restarting)
         textCache.onStartInput(editorInfo)
-        cursorMover.onStartInput()
+        cursorMover.onStartInput(editorInfo)
         if (::inputView.isInitialized) inputView.clearDeletedTextHistory()
         if (editorInfo != null) {
             YuyanEmojiCompat.setEditorInfo(editorInfo)
@@ -283,6 +283,7 @@ class ImeService : InputMethodService() {
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
         textCache.onUpdateSelection(newSelStart, newSelEnd) // 先校准缓存，再响应界面逻辑
+        cursorMover.onSelectionReported(newSelStart, newSelEnd)
         if (::mInputView.isInitialized) mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
     }
 
