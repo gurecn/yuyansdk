@@ -709,6 +709,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     override fun onWindowHidden() {
+        cancelAssociation()
         exitPhrasesEditor(returnToPhrases = false)
         KeyboardManager.instance.switchKeyboard()
         mSkbCandidatesBarView.setBarMenuEditMode(false)
@@ -729,6 +730,9 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private var selEnd = 0
     private var oldCandidatesEnd = 0
 
+    private var associationText: String? = null // 最近一次待联想的光标前文本，滑动光标时会被覆盖
+    private val associationTask = Runnable { runAssociation() }
+
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesEnd: Int) {
         selStart = newSelStart
         selEnd = newSelEnd
@@ -742,19 +746,48 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
         if (oldSelStart == newSelStart) return
         when {
-            InputModeSwitcher.isNumberSkb -> service.requestTextBeforeCursor(500) { textBeforeCursor ->
-                val expression = textBeforeCursor.takeIf(String::isNotBlank)?.let(CustomEngine::parseExpressionAtEnd)
-                if (expression.isNullOrBlank()) resetCandidateWindow()
-                else showSymbols(CustomEngine.expressionCalculator(textBeforeCursor, expression))
-            }
-            chinesePrediction && InputModeSwitcher.isChinese-> service.requestTextBeforeCursor(10) { textBeforeCursor ->
-                if (textBeforeCursor.isBlank()) resetCandidateWindow()
-                else {
-                    InputDispatcher.predictAssociationWords(textBeforeCursor)
-                    updateCandidate()
+            InputModeSwitcher.isNumberSkb -> {
+                cancelAssociation()
+                service.requestTextBeforeCursor(500) { textBeforeCursor ->
+                    val expression = textBeforeCursor.takeIf(String::isNotBlank)?.let(CustomEngine::parseExpressionAtEnd)
+                    if (expression.isNullOrBlank()) resetCandidateWindow()
+                    else showSymbols(CustomEngine.expressionCalculator(textBeforeCursor, expression))
                 }
             }
-            else -> resetCandidateWindow()
+            chinesePrediction && InputModeSwitcher.isChinese -> service.requestTextBeforeCursor(10) { textBeforeCursor ->
+                scheduleAssociation(textBeforeCursor)
+            }
+            else -> {
+                cancelAssociation()
+                resetCandidateWindow()
+            }
         }
+    }
+
+    /** 光标移动会连续产生选区回报，联想词查询合并到选区稳定后再执行 */
+    private fun scheduleAssociation(textBeforeCursor: String) {
+        associationText = textBeforeCursor
+        removeCallbacks(associationTask)
+        postDelayed(associationTask, ASSOCIATION_PREDICT_DELAY)
+    }
+
+    private fun cancelAssociation() {
+        associationText = null
+        removeCallbacks(associationTask)
+    }
+
+    private fun runAssociation() {
+        val textBeforeCursor = associationText ?: return
+        associationText = null
+        if (!chinesePrediction || !InputModeSwitcher.isChinese) return
+        if (textBeforeCursor.isBlank()) resetCandidateWindow()
+        else {
+            InputDispatcher.predictAssociationWords(textBeforeCursor)
+            updateCandidate()
+        }
+    }
+
+    private companion object {
+        const val ASSOCIATION_PREDICT_DELAY = 100L // 选区停止变化多久后才查联想词
     }
 }

@@ -19,6 +19,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     private val handler = Handler(Looper.getMainLooper())
     private val committedText = StringBuilder()
     private var composingText = ""
+    private val textAfterCursor = StringBuilder() // 光标后已知文本，光标回移时可以续回窗口
     private var valid = false
     private var cachedCursorPos = -1   // 缓存内容对应的光标位置
     private var reportedCursorPos = -1 // 应用最近一次上报的光标位置
@@ -58,8 +59,14 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         val initialText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             editorInfo?.getInitialTextBeforeCursor(MAX_CACHE_LENGTH, 0)
         } else null
-        if (initialText != null && reportedCursorPos >= 0) fill(initialText, reportedCursorPos)
-        else scheduleRefresh()
+        if (initialText != null && reportedCursorPos >= 0) {
+            val initialAfter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                editorInfo?.getInitialTextAfterCursor(MAX_CACHE_LENGTH, 0)
+            } else null
+            fill(initialText, reportedCursorPos, initialAfter)
+        } else {
+            scheduleRefresh()
+        }
     }
 
     fun onFinishInput() {
@@ -230,8 +237,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
     fun onEditorChanged() = invalidate()
 
     /**
-     * 输入法自身用 setSelection 改变选区：文本内容未变，只同步镜像，
-     * 避免把连续的光标移动当成内容变化而丢弃缓存。
+     * 输入法自身用 setSelection 改变选区：文本内容未变，只同步镜像
      */
     fun onSelectionMovedByIme(newSelStart: Int, newSelEnd: Int) {
         reportedCursorPos = newSelStart
@@ -248,7 +254,28 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
             pendingCursorPositions.clear()
             return
         }
-        moveCursor(newSelStart - cachedCursorPos)
+        onCaretMoved(newSelStart)
+    }
+
+    /**
+     * 光标被移动到 [newPos]（方向键语义的定位命令）：把窗口末尾对齐到新光标。
+     */
+    private fun onCaretMoved(newPos: Int) {
+        val offset = newPos - cachedCursorPos
+        // 预编辑期间光标由编辑器接管；移出缓存窗口时同样无法推算
+        if (composingText.isNotEmpty() || offset < -committedText.length || offset > textAfterCursor.length) {
+            reset()
+            return
+        }
+        if (offset < 0) {
+            val count = -offset
+            textAfterCursor.insert(0, committedText.substring(committedText.length - count))
+            committedText.setLength(committedText.length - count)
+        } else {
+            committedText.append(textAfterCursor, 0, offset)
+            textAfterCursor.delete(0, offset)
+        }
+        moveCursor(offset)
     }
 
     /**
@@ -256,8 +283,14 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
      */
     fun peekTextBeforeCursor(length: Int): String {
         if (!valid || length <= 0) return ""
-        val text = if (composingText.isEmpty()) committedText.toString() else committedText.toString() + composingText
-        return if (text.length <= length) text else text.substring(text.length - length)
+        val committed = committedText.length
+        val from = (committed + composingText.length - length).coerceAtLeast(0)
+        // 直接在 StringBuilder 上截取，不再把整个窗口拷贝成 String
+        return when {
+            from >= committed -> composingText.substring(from - committed)
+            composingText.isEmpty() -> committedText.substring(from)
+            else -> committedText.substring(from) + composingText
+        }
     }
 
     /**
@@ -315,7 +348,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         pendingLength = 0
         val text = fetchTextBeforeCursor()
         checkKeyDeleteProbe(text)
-        if (text != null) fill(text, reportedCursorPos) else reset()
+        if (text != null) fill(text, reportedCursorPos, fetchTextAfterCursor()) else reset()
         callback?.invoke(peekTextBeforeCursor(callbackLength))
     }
 
@@ -342,7 +375,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         return text
     }
 
-    private fun fill(text: CharSequence, cursorPos: Int) {
+    private fun fill(text: CharSequence, cursorPos: Int, textAfter: CharSequence?) {
         val fetched = text.toString()
         // 取到的文本含预编辑内容，拆分后分开保存，避免预编辑被当成已提交文本
         val composing = composingText.takeIf { it.isNotEmpty() && fetched.endsWith(it) } ?: ""
@@ -350,14 +383,24 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         committedText.append(fetched, 0, fetched.length - composing.length)
         trim()
         composingText = composing
+        textAfterCursor.setLength(0)
+        if (textAfter != null) textAfterCursor.append(textAfter)
         cachedCursorPos = cursorPos
         pendingCursorPositions.clear()
         valid = true
     }
 
+    // 光标后文本只用于光标回移时续回窗口，取不到（宿主不提供）时按空串处理，不影响已有能力
+    private fun fetchTextAfterCursor(): CharSequence? = try {
+        connection()?.getTextAfterCursor(MAX_CACHE_LENGTH, 0)
+    } catch (_: Exception) {
+        null
+    }
+
     private fun reset() {
         committedText.setLength(0)
         composingText = ""
+        textAfterCursor.setLength(0)
         cachedCursorPos = -1
         pendingCursorPositions.clear()
         pendingKeyDeletes.clear()
