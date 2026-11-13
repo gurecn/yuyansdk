@@ -432,7 +432,7 @@ class EditorTextCache(private val connection: () -> InputConnection?) {
         internal const val MAX_PENDING_KEY_DELETES = 32 // 长按连删约 20 次/秒，可容纳 1.6 秒回报延迟
         internal const val KEY_DELETE_TIMEOUT = 800L    // 删除键等待回报的超时
         internal const val KEY_DELETE_IDLE = 300L       // 删除停下多久后才允许校准
-        private const val MAX_CACHE_LENGTH = 1024
+        internal const val MAX_CACHE_LENGTH = 4096
         private const val REFRESH_DELAY = 100L
         private const val SLOW_RESPONSE_TIMEOUT = 500L
         private const val MAX_SLOW_RESPONSE_COUNT = 3

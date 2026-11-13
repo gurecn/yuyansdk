@@ -710,6 +710,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     override fun onWindowHidden() {
         cancelAssociation()
+        expressionToken++
         exitPhrasesEditor(returnToPhrases = false)
         KeyboardManager.instance.switchKeyboard()
         mSkbCandidatesBarView.setBarMenuEditMode(false)
@@ -732,10 +733,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     private var associationText: String? = null // 最近一次待联想的光标前文本，滑动光标时会被覆盖
     private val associationTask = Runnable { runAssociation() }
+    private var expressionToken = 0 // 公式扩窗的请求序号，产生新选区后旧回调作废
 
     override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesEnd: Int) {
         selStart = newSelStart
         selEnd = newSelEnd
+        expressionToken++
         if (InputModeSwitcher.isEnglish ) {
             if (oldCandidatesEnd == candidatesEnd) {
                 textTarget.finishComposing()
@@ -748,11 +751,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         when {
             InputModeSwitcher.isNumberSkb -> {
                 cancelAssociation()
-                service.requestTextBeforeCursor(500) { textBeforeCursor ->
-                    val expression = textBeforeCursor.takeIf(String::isNotBlank)?.let(CustomEngine::parseExpressionAtEnd)
-                    if (expression.isNullOrBlank()) resetCandidateWindow()
-                    else showSymbols(CustomEngine.expressionCalculator(textBeforeCursor, expression))
-                }
+                requestExpressionCandidates(CustomEngine.INITIAL_WINDOW)
             }
             chinesePrediction && InputModeSwitcher.isChinese -> service.requestTextBeforeCursor(10) { textBeforeCursor ->
                 scheduleAssociation(textBeforeCursor)
@@ -784,6 +783,31 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         else {
             InputDispatcher.predictAssociationWords(textBeforeCursor)
             updateCandidate()
+        }
+    }
+
+    /**
+     * 从窗口尾部取算式：表达式顶到窗口左边界就扩大窗口再取一次
+     */
+    private fun requestExpressionCandidates(window: Int) {
+        val token = expressionToken
+        service.requestTextBeforeCursor(window) { textBeforeCursor ->
+            if (token != expressionToken) return@requestTextBeforeCursor // 选区已变化，丢弃过期结果
+            val last = textBeforeCursor.lastOrNull()
+            if (last == null || !CustomEngine.isExpressionTail(last)) {
+                resetCandidateWindow()
+                return@requestTextBeforeCursor
+            }
+            when (val scan = CustomEngine.scanExpressionAtEnd(textBeforeCursor, window, selStart)) {
+                is CustomEngine.Scan.Found -> showSymbols(
+                    CustomEngine.expressionCalculator(textBeforeCursor, scan.expression)
+                )
+                CustomEngine.Scan.None -> resetCandidateWindow()
+                CustomEngine.Scan.NeedMore -> {
+                    val next = CustomEngine.nextWindow(window)
+                    if (next == null) resetCandidateWindow() else requestExpressionCandidates(next)
+                }
+            }
         }
     }
 

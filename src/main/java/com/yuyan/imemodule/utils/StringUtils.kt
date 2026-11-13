@@ -6,35 +6,42 @@ import com.yuyan.imemodule.data.flower.simplified2HotPreset
 import java.util.regex.Pattern
 
 object StringUtils {
+    private val englishWordPattern = Pattern.compile("[a-zA-Z ]*")
+    private val chineseEndPattern = Regex("[\\u4e00-\\u9fff]$")
+
     /**
      * 判断字符串是不是字母
      */
     @JvmStatic
     fun isLetter(str: String?): Boolean {
-        val pattern = Pattern.compile("[a-zA-Z]*")
-        return pattern.matcher(str.toString()).matches()
+        if (str.isNullOrEmpty()) return false
+        for (c in str) {
+            if (c !in 'a'..'z' && c !in 'A'..'Z') return false
+        }
+        return true
     }
 
     /**
      * 判断字符串是不是英文
      */
     @JvmStatic
-    fun isEnglishWord(str: String?): Boolean {
-        val pattern = Pattern.compile("[a-zA-Z ]*")
-        return pattern.matcher(str.toString()).matches()
-    }
+    fun isEnglishWord(str: String?): Boolean = englishWordPattern.matcher(str.toString()).matches()
+
 
     @JvmStatic
     fun isNumber(str: String?): Boolean {
-        if(str.isNullOrBlank())return false
-        val pattern = Pattern.compile("^[+-]?\\d*(\\.\\d*)?\$")
-        return pattern.matcher(str).matches()
+        if (str.isNullOrBlank()) return false
+        var index = 0
+        if (str[index] == '+' || str[index] == '-') index++
+        while (index < str.length && str[index].isDigit()) index++
+        if (index < str.length && str[index] == '.') {
+            index++
+            while (index < str.length && str[index].isDigit()) index++
+        }
+        return index == str.length
     }
 
-    fun isChineseEnd(input: String): Boolean {
-        val chineseEndPattern = "[\\u4e00-\\u9fff]\$".toRegex()
-        return chineseEndPattern.find(input) != null
-    }
+    fun isChineseEnd(input: String): Boolean = chineseEndPattern.containsMatchIn(input)
 
     // 标点全角半角关系
     // 1)半角字符(除空格外)是从33(0x21)开始到126(0x7E)结束;

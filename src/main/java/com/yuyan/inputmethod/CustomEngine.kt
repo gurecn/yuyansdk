@@ -8,42 +8,108 @@ import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import kotlin.math.roundToInt
 
 object CustomEngine {
-    private val expressionEndPattern = "((φ|π|pi|sin|cos|tan|cot|asin|acos|atan|sinh|cosh|tanh|abs|log|log1p|ceil|floor|sqrt|cbrt|pow|exp|expm|signum|csc|sec|csch|sech|coth|toradian|todegree|\\(|\\)|^|%|\\+|-|\\*|/|\\.|e|E|\\d)+)$".toRegex()
+    /** 首次读取的尾部窗口长度，覆盖绝大多数短算式 */
+    const val INITIAL_WINDOW = 64
+    /** 扩窗上限，与镜像缓存窗口等长 */
+    const val MAX_WINDOW = 4096
+    /** 从光标前文本尾部解析出的表达式及其求值结果 */
+    data class Expression(val text: String, val value: Double)
 
-    fun parseExpressionAtEnd(input: String): String? {
-        val expression = expressionEndPattern.find(input.removeSuffix("="))?.value ?: return null
-        if (expression.length >= 500 || StringUtils.isNumber(expression) || StringUtils.isLetter(expression)) return null
-        return expression.takeIf(::isCalculable)
+    /** 尾部扫描结果 */
+    sealed interface Scan {
+        class Found(val expression: Expression) : Scan
+        object None : Scan
+        object NeedMore : Scan
     }
 
-    private fun isCalculable(expression: String): Boolean = try {
-        ExpressionBuilder(expression).build().evaluate().isFinite()
+    private val expressionNames = listOf(
+        "φ", "π", "pi", "sin", "cos", "tan", "cot", "asin", "acos", "atan",
+        "sinh", "cosh", "tanh", "abs", "log", "log1p", "ceil", "floor", "sqrt",
+        "cbrt", "pow", "exp", "expm", "signum", "csc", "sec", "csch", "sech",
+        "coth", "toradian", "todegree", "e", "E",
+    )
+
+    /** 表达式可能出现的 ASCII 字符查表：数字、运算符、括号，以及函数名用到的字母 */
+    private val expressionAsciiChars = BooleanArray(128).apply {
+        "0123456789.+-*/%()".forEach { this[it.code] = true }
+        expressionNames.forEach { name -> name.forEach { if (it.code < 128) this[it.code] = true } }
+    }
+
+    /** 表达式里的非 ASCII 字符（φ、π），查表覆盖不到，单独保存 */
+    private val expressionWideChars: Set<Char> =
+        expressionNames.flatMap { it.toList() }.filter { it.code >= 128 }.toSet()
+
+    private fun isExpressionChar(c: Char): Boolean = when {
+        c.code < 128 -> expressionAsciiChars[c.code]
+        c.isDigit() -> true // 与旧正则的 \d 一致：ICU 正则同样接受全角等 Unicode 数字
+        else -> expressionWideChars.contains(c)
+    }
+
+    /**
+     * 从 [window] 个字符的尾部文本里扫描可计算的表达式。
+     */
+    fun scanExpressionAtEnd(text: String, window: Int, caret: Int = -1): Scan {
+        val content = text.removeSuffix("=")
+        val tail = tailExpression(content) ?: return Scan.None
+        if (StringUtils.isNumber(tail)) return Scan.None
+        if (tail.length == content.length) {
+            if (text.length >= window) return Scan.NeedMore
+            if (caret >= 0 && text.length < caret) return Scan.None
+        }
+        return calculate(tail)?.let { Scan.Found(it) } ?: Scan.None
+    }
+
+    fun calculateExpressionAtEnd(input: String): Expression? =
+        (scanExpressionAtEnd(input, Int.MAX_VALUE) as? Scan.Found)?.expression
+
+    fun nextWindow(window: Int): Int? =
+        if (window >= MAX_WINDOW) null else (window * 4).coerceAtMost(MAX_WINDOW)
+
+    fun isExpressionTail(last: Char): Boolean = last == '=' || isExpressionChar(last)
+
+    fun isExpressionTail(text: String): Boolean {
+        val last = text.lastOrNull() ?: return false
+        return last == '=' || isExpressionChar(last)
+    }
+
+    private fun calculate(text: String): Expression? {
+        if (StringUtils.isNumber(text) || StringUtils.isLetter(text)) return null
+        val value = evaluate(text) ?: return null
+        return Expression(text, value)
+    }
+
+    private fun tailExpression(input: String): String? {
+        var start = input.length
+        while (start > 0 && isExpressionChar(input[start - 1])) start--
+        return if (start == input.length) null else input.substring(start)
+    }
+
+    private fun evaluate(expression: String): Double? = try {
+        ExpressionBuilder(expression).build().evaluate().takeIf { it.isFinite() }
     } catch (_: Exception) {
-        false
+        null
     }
 
-    fun expressionCalculator(input: String, expression: String?):Array<String>{
+    fun expressionCalculator(input: String, expression: Expression?):Array<String>{
         val results = mutableListOf<String>()
-        if(!expression.isNullOrBlank() && expression.length < 500 && !StringUtils.isNumber(expression) && !StringUtils.isLetter(expression)){
-            try {
-                val evaluate = ExpressionBuilder(expression).build().evaluate()
-                val  resultFloat = evaluate.toFloat()
-                val  resultInt = evaluate.roundToInt()
-                if(evaluate.compareTo(resultInt) == 0){
-                    if(!input.endsWith("=")) results.add("=${resultInt}")
-                    else results.add(resultInt.toString())
+        if(expression != null){
+            val evaluate = expression.value
+            val  resultFloat = evaluate.toFloat()
+            val  resultInt = evaluate.roundToInt()
+            if(evaluate.compareTo(resultInt) == 0){
+                if(!input.endsWith("=")) results.add("=${resultInt}")
+                else results.add(resultInt.toString())
+            } else {
+                val resultPercentage = "${(evaluate * 100).roundToInt()}%"
+                if(!input.endsWith("=")) {
+                    results.add("=".plus(resultFloat))
+                    results.add("≈".plus(resultInt))
+                    if(evaluate < 10 && evaluate > 0.005) results.add("=${resultPercentage}")
                 } else {
-                    val resultPercentage = "${(evaluate * 100).roundToInt()}%"
-                    if(!input.endsWith("=")) {
-                        results.add("=".plus(resultFloat))
-                        results.add("≈".plus(resultInt))
-                        if(evaluate < 10 && evaluate > 0.005) results.add("=${resultPercentage}")
-                    } else {
-                        results.add(resultFloat.toString())
-                        if(evaluate < 10 && evaluate > 0.005) results.add(resultPercentage)
-                    }
+                    results.add(resultFloat.toString())
+                    if(evaluate < 10 && evaluate > 0.005) results.add(resultPercentage)
                 }
-            } catch (_:Exception){ }
+            }
         }
         results.addAll(arrayOf("=", "+", "-", "*", "/", "%", ".", ",", "'", "(", ")"))
         return results.toTypedArray()
