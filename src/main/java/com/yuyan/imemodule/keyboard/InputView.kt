@@ -559,6 +559,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
 
+        override fun isCandidatesRefreshPending(): Boolean = associationText != null
+
         override fun onBarMenuChanged() {
             (KeyboardManager.instance.currentContainer as? SettingsContainer)?.refreshBarMenuState()
         }
@@ -778,7 +780,11 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private fun runAssociation() {
         val textBeforeCursor = associationText ?: return
         associationText = null
-        if (!chinesePrediction || !InputModeSwitcher.isChinese) return
+        if (!chinesePrediction || !InputModeSwitcher.isChinese) {
+            // 联想被模式变化取消时不会再刷新候选，补一次候选栏重判，避免停在旧内容上
+            updateCandidateBar()
+            return
+        }
         if (textBeforeCursor.isBlank()) resetCandidateWindow()
         else {
             InputDispatcher.predictAssociationWords(textBeforeCursor)

@@ -13,4 +13,5 @@ interface CandidateViewListener {
     fun onClickClearCandidate()  //清空候选词
     fun onClickClearClipBoard() //清空剪切板
     fun onBarMenuChanged() {}  // 候选栏菜单顺序或内容变化
+    fun isCandidatesRefreshPending(): Boolean = false
 }

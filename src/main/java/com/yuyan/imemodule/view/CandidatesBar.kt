@@ -352,11 +352,13 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         }
         if (pendingMenuJob?.isActive == true) return
         pendingMenuJob = serviceScope.launch {
-            delay(100)
-            showCandidates()
+            delay(CANDIDATES_EMPTY_DELAY)
+            if (!isCandidatesRefreshPending()) showCandidates()
             pendingMenuJob = null
         }
     }
+
+    private fun isCandidatesRefreshPending(): Boolean = ::mCvListener.isInitialized && mCvListener.isCandidatesRefreshPending()
 
     /**
      * 显示候选词
@@ -478,5 +480,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mCandidatesAdapter.notifyChanged()
         mCandidatesMenuAdapter.notifyChanged()
         mFlowerType.setTextColor(textColor)
+    }
+
+    private companion object {
+        const val CANDIDATES_EMPTY_DELAY = 100L
     }
 }
