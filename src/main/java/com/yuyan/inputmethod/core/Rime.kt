@@ -3,6 +3,9 @@ package com.yuyan.inputmethod.core
 import android.content.Context
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.application.Launcher
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlin.system.measureTimeMillis
 
 class Rime(fullCheck: Boolean) {
@@ -15,6 +18,14 @@ class Rime(fullCheck: Boolean) {
         private var instance: Rime? = null
         private var mContext: RimeContext? = null
         private var mStatus: RimeStatus? = null
+
+        private val notificationFlow_ = MutableSharedFlow<RimeNotification>(
+            extraBufferCapacity = 8,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+
+        /** 部署进度等引擎通知，UI 层通过该 Flow 观察 */
+        val notificationFlow = notificationFlow_.asSharedFlow()
 
         @JvmStatic
         fun getInstance(fullCheck: Boolean = false): Rime {
@@ -166,5 +177,11 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun selectRimeAssociate(index: Int): Boolean
+
+        /** 由 native 维护线程回调，只做分发，禁止在此操作 UI */
+        @JvmStatic
+        fun handleRimeNotification(messageType: String, messageValue: String) {
+            notificationFlow_.tryEmit(RimeNotification.create(messageType, messageValue))
+        }
     }
 }
