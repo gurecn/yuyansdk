@@ -48,13 +48,17 @@ abstract class PopupContainerUi(override val ctx: Context, val bounds: Rect, val
             val sign = if (i % 2 == 0) -1 else 1
             val delta = (i / 2f).roundToInt()
             val nextColumn = initialFocus + sign * delta
-            if (nextColumn < 0 || nextColumn >= columnCount) continue
+            if (nextColumn !in 0..<columnCount) continue
             it[nextColumn] = order++
         }
     }
 
+    /**
+     * @param x 相对按下点的水平位移，右为正
+     * @param y 相对按下点的垂直位移，下为正
+     */
     fun changeFocus(x: Float, y: Float): Boolean {
-        return onChangeFocus(x - offsetX, y - offsetY)
+        return onChangeFocus(x, y)
     }
 
     abstract fun onChangeFocus(x: Float, y: Float): Boolean
@@ -68,7 +72,8 @@ abstract class PopupContainerUi(override val ctx: Context, val bounds: Rect, val
      */
     open fun isTriggerSelected(): Boolean = false
 
-    companion object {
-        fun limitIndex(i: Int, limit: Int) = if (i < 0) 0 else if (i >= limit) limit - 1 else i
-    }
+    /**
+     * 容器从缓存中被复用时重置交互状态（焦点、选中态等），View 树无需重建
+     */
+    open fun resetForReuse() {}
 }

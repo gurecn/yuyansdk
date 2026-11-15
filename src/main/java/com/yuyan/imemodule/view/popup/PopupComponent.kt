@@ -22,6 +22,17 @@ class PopupComponent private constructor(){
 
     private var showingContainerUi:PopupContainerUi? = null
 
+    /**
+     * 弹窗容器缓存：长按同一个键时直接复用已构建好的 View 树，
+     * 只需重置焦点状态并重新挂载，避免每次长按重建全套 TextView。
+     * accessOrder = true，按最近使用淘汰。
+     */
+    private val containerCache = object : LinkedHashMap<String, PopupContainerUi>(4, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, PopupContainerUi>?): Boolean {
+            return size > MAX_CACHED_CONTAINERS
+        }
+    }
+
     private val popupRadius by lazy {
         ThemeManager.prefs.keyRadius.getValue().toFloat()
     }
@@ -43,6 +54,8 @@ class PopupComponent private constructor(){
         fun get():PopupComponent{
             return instance!!
         }
+
+        private const val MAX_CACHED_CONTAINERS = 3
     }
 
     fun showPopup(content: String, bounds: Rect) {
@@ -66,15 +79,18 @@ class PopupComponent private constructor(){
         showingEntryUi = popup
     }
 
-    fun showKeyboard(label: String, labelSmall: String, bounds: Rect) {
-        showingEntryUi?.setText("") ?: showPopup("", bounds)
+    /**
+     * @return 是否真的弹出了符号弹窗（预设为空时不会显示）
+     */
+    fun showKeyboard(label: String, labelSmall: String, bounds: Rect): Boolean {
         var labels =  (PopupSmallPreset[labelSmall] ?: emptyArray<String>()).plus(PopupPreset[label] ?: emptyArray())
         if(labels.isEmpty())labels = PopupPreset[labelSmall] ?: emptyArray()
         if(labels.isNotEmpty()) {
             reallyShowKeyboard(labels, bounds)
-        } else {
-            dismissPopup()
+            return true
         }
+        dismissPopup()
+        return false
     }
 
     fun showKeyboardMenu(mCurrentKey: SoftKey, bounds: Rect, distanceY: Float) {
@@ -88,7 +104,6 @@ class PopupComponent private constructor(){
             InputModeSwitcher.USER_KEYCODE_CURSOR_DIRECTION -> Pair(PopupMenuMode.Move,  "")
             else ->  Pair(PopupMenuMode.Enter,  "↩️ 换行")
         }
-        showingEntryUi?.setText("") ?: showPopup("", bounds)
         reallyMenuKeyboard(key, bounds, mCurrentKey.code != KeyEvent.KEYCODE_DEL)
     }
 
@@ -98,28 +113,57 @@ class PopupComponent private constructor(){
 
     private fun reallyMenuKeyboard(key: Pair<PopupMenuMode, String>, bounds: Rect, isSelect: Boolean,) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10) * key.second.length / 2
-        val keyboardUi = PopupKeyboardMenuUi(bounds, { dismissPopup() }, popupRadius, popupWidth, isSelect, key)
-        root.apply {
-            add(keyboardUi.root, lParams {
-                bottomMargin = EnvironmentSingleton.instance.skbAreaHeight - (bounds.top + bounds.bottom)/2
-                leftMargin = EnvironmentSingleton.instance.leftMarginWidth + bounds.left + keyboardUi.offsetX
-            })
+        val signature = containerSignature('M', bounds) { "${key.first}|${key.second}|$isSelect|$popupWidth" }
+        val keyboardUi = obtainContainer(signature) {
+            PopupKeyboardMenuUi(bounds, { dismissPopup() }, popupRadius, popupWidth, isSelect, key)
         }
-        dismissPopup()
-        showingContainerUi= keyboardUi
+        attachContainer(keyboardUi, bounds)
     }
 
     private fun reallyShowKeyboard(keys: Array<String>, bounds: Rect) {
         val popupWidth = EnvironmentSingleton.instance.skbWidth.div(10)
-        val keyboardUi = PopupKeyboardUi(bounds, { dismissPopup() }, popupRadius, popupWidth, keys)
+        val signature = containerSignature('S', bounds) { keys.joinToString("\u0001") }
+        val keyboardUi = obtainContainer(signature) {
+            PopupKeyboardUi(bounds, { dismissPopup() }, popupRadius, popupWidth, keys)
+        }
+        attachContainer(keyboardUi, bounds)
+    }
+
+    /**
+     * 容器挂载：先卸下旧容器与气泡再上新，避免瞬间存在两个容器触发多余的一轮布局
+     */
+    private fun attachContainer(containerUi: PopupContainerUi, bounds: Rect) {
+        dismissPopup()
         root.apply {
-            add(keyboardUi.root, lParams {
+            add(containerUi.root, lParams {
                 bottomMargin = EnvironmentSingleton.instance.skbAreaHeight - (bounds.top + bounds.bottom)/2
-                leftMargin = EnvironmentSingleton.instance.leftMarginWidth + bounds.left + keyboardUi.offsetX
+                leftMargin = EnvironmentSingleton.instance.leftMarginWidth + bounds.left + containerUi.offsetX
             })
         }
-        dismissPopup()
-        showingContainerUi= keyboardUi
+        showingContainerUi = containerUi
+    }
+
+    private fun obtainContainer(signature: String, factory: () -> PopupContainerUi): PopupContainerUi {
+        containerCache[signature]?.let {
+            it.resetForReuse()
+            return it
+        }
+        return factory().also { containerCache[signature] = it }
+    }
+
+    /**
+     * 容器复用签名：位置、键盘尺寸、字号、主题或内容任一变化都需要重建
+     */
+    private fun containerSignature(tag: Char, bounds: Rect, content: () -> String): String {
+        val env = EnvironmentSingleton.instance
+        return buildString(64) {
+            append(tag).append('|')
+            append(bounds.left).append(',').append(bounds.top).append(',')
+            append(bounds.right).append(',').append(bounds.bottom).append('|')
+            append(env.skbWidth).append('|').append(env.keyTextSize).append('|')
+            append(System.identityHashCode(ThemeManager.activeTheme)).append('|')
+            append(content())
+        }
     }
 
     fun changeFocus(x: Float, y: Float): Boolean {

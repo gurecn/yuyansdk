@@ -7,8 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.text.TextUtils
-import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -37,7 +35,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private val popupComponent: PopupComponent = get()
     protected var mSoftKeyboard: SoftKeyboard? = null
     private var mCurrentKey: SoftKey? = null
-    private var mGestureDetector: GestureDetector? = null
     protected var mLongPressKey = false
     private var mAbortKey = false
     private var mHandler: Handler? = null
@@ -49,7 +46,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        initGestureDetector()
         if (mHandler == null) {
             mHandler = object : Handler(Looper.getMainLooper()) {
                 override fun handleMessage(msg: Message) {
@@ -68,23 +64,6 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         }
     }
 
-    private fun initGestureDetector() {
-        if (mGestureDetector == null) {
-            mGestureDetector = GestureDetector(context, object : SimpleOnGestureListener() {
-                override fun onScroll(downEvent: MotionEvent?, currentEvent: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                    if (currentEvent.pointerCount <= 1) updateGestureOffset(currentEvent.x, currentEvent.y)
-                    if(mLongPressKey && mCurrentKey?.getkeyLabel()?.isNotBlank() == true){
-                        popupComponent.changeFocus(currentEvent.x - downEvent!!.x, currentEvent.y - downEvent.y)
-                    } else {
-                        dispatchGestureEvent(downEvent, currentEvent)
-                    }
-                    return true
-                }
-            })
-            mGestureDetector!!.setIsLongpressEnabled(false)
-        }
-    }
-
     fun invalidateKey() {
         mDrawPending = true
         invalidate()
@@ -100,7 +79,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 val designPreset = setOf("，", "。", ",", ".")
                 val smallLabel = if(designPreset.any { it == keyLabel } || !keyboardSymbol) "" else softKey.getmKeyLabelSmall()
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
-                popupComponent.showKeyboard(keyLabel, smallLabel, bounds)
+                if (popupComponent.showKeyboard(keyLabel, smallLabel, bounds)) {
+                    gestureMode = GestureMode.PopupSymbol
+                }
                 mLongPressKey = true
             } else if (softKey.code == InputModeSwitcher.USER_KEYCODE_LANG ||
                 softKey.code == InputModeSwitcher.USER_KEYCODE_COMMA_EMOJI ||
@@ -110,10 +91,12 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 val bounds = Rect(softKey.mLeft, softKey.mTop, softKey.mRight, softKey.mBottom)
                 popupComponent.showKeyboardMenu(softKey, bounds, totalDistanceY)
                 mLongPressKey = true
+                gestureMode = GestureMode.PopupMenu
             } else {
                 mLongPressKey = true
                 mAbortKey = true
                 dismissPreview()
+                gestureMode = GestureMode.Aborted
             }
         }
     }
@@ -123,11 +106,8 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(me: MotionEvent): Boolean {
         var result = false
-        if (mGestureDetector!!.onTouchEvent(me)) {
-            return true
-        }
         when (val action = me.actionMasked) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+            MotionEvent.ACTION_DOWN -> {
                 val actionIndex = me.actionIndex
                 val x = me.getX(actionIndex)
                 val y = me.getY(actionIndex)
@@ -142,6 +122,15 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 }
                 showPreview(keyIndex)
             }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                mAbortKey = true
+                removeMessages()
+                result = true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                handleMove(me)
+                result = true
+            }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
                 val now = me.eventTime
                 val act = if(action == MotionEvent.ACTION_CANCEL)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP
@@ -151,7 +140,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                         result = onModifiedTouchEvent(MotionEvent.obtain(now, now, act, first.x, first.y, me.metaState))
                     }
                 }
-                dismissPreview(commit = action != MotionEvent.ACTION_CANCEL)
+                dismissPreview(commit = action == MotionEvent.ACTION_UP)
             }
             else -> {
                 result = onModifiedTouchEvent(me)
@@ -170,7 +159,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 downY = me.y
                 lastStepX = me.x
                 resetGestureState()
+                downKey = mCurrentKey
                 if(mCurrentKey != null){
+                    gestureConfig = GestureConfig.load()
                     if (mCurrentKey!!.repeatable()) {
                         val msg = mHandler!!.obtainMessage(MSG_REPEAT)
                         mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY)
@@ -183,7 +174,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 mCurrentKey?.onReleased()
                 mCurrentKey = getKeyIndices(me.x.toInt(), me.y.toInt())
                 removeMessages()
-                if (!mAbortKey && !mLongPressKey && mCurrentKey != null) {
+                if (!mAbortKey && !mLongPressKey && gestureMode == GestureMode.None && mCurrentKey != null) {
                     mService?.responseKeyEvent(mCurrentKey!!)
                 }
                 resetGestureState()
@@ -205,6 +196,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private var fastDeleteLatched = false
     private var fastDeleteSwipeAccum = 0f
     private var lastFastDeleteDx = 0f
+    private var downKey: SoftKey? = null
+    private var gestureMode = GestureMode.None
+    private var gestureConfig: GestureConfig? = null
     private val touchSlop: Float by lazy { ViewConfiguration.get(context).scaledTouchSlop.toFloat() }
     // 左滑超过该距离进入加速删除
     private val fastDeleteThreshold: Float
@@ -218,6 +212,41 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
 
     private enum class RepeatDirection { None, Delete, DeleteFast, Revert, CursorLeft, CursorRight, CursorUp, CursorDown }
 
+    /**
+     * 手势模式
+     */
+    private enum class GestureMode {
+        None,        // 尚未形成手势，抬手按普通按键上屏
+        SwipeCursor, // 空格左右滑动移光标
+        PopupSymbol, // 符号弹窗内选格
+        PopupMenu,   // 菜单弹窗（清空/还原等）
+        SwipeSymbol, // 上滑直接上屏符号
+        Aborted      // 本次按下已放弃上屏
+    }
+
+    /**
+     * 手势相关配置在按下时快照，滑动过程中只读快照，避免逐帧访问 prefs
+     */
+    private class GestureConfig(val symbolSlideUp: Float, val keyboardSymbolEnabled: Boolean, val spaceCursorEnabled: Boolean, val spaceCursorSpeed: Float) {
+        companion object {
+            fun load(): GestureConfig {
+                val slideUp = EnvironmentSingleton.instance.heightForCandidatesArea /
+                    when (ThemeManager.prefs.symbolSlideUpMod.getValue()) {
+                        KeyboardSymbolSlideUpMod.SHORT -> 3
+                        KeyboardSymbolSlideUpMod.MEDIUM -> 2
+                        else -> 1
+                    }
+                val setting = AppPrefs.getInstance().keyboardSetting
+                return GestureConfig(
+                    symbolSlideUp = slideUp.toFloat(),
+                    keyboardSymbolEnabled = ThemeManager.prefs.keyboardSymbol.getValue(),
+                    spaceCursorEnabled = setting.spaceSwipeMoveCursor.getValue(),
+                    spaceCursorSpeed = setting.spaceSwipeMoveCursorSpeed.getValue().toFloat()
+                )
+            }
+        }
+    }
+
     private fun resetGestureState() {
         totalDistanceX = 0f
         totalDistanceY = 0f
@@ -225,13 +254,93 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         fastDeleteSwipeAccum = 0f
         lastFastDeleteDx = 0f
         repeatDirection = RepeatDirection.None
+        gestureMode = GestureMode.None
+        downKey = null
+        gestureConfig = null
     }
 
-    private fun updateGestureOffset(x: Float, y: Float) {
-        totalDistanceX = downX - x
-        totalDistanceY = downY - y
+    /**
+     * MOVE 唯一入口：先更新位移与重复方向，再按当前手势模式分发
+     */
+    private fun handleMove(me: MotionEvent) {
+        if (me.pointerCount > 1) return // 多指时不做手势，避免第二根手指干扰
+        if (downKey == null) return
+        totalDistanceX = downX - me.x
+        totalDistanceY = downY - me.y
         updateFastDeleteLatch()
         repeatDirection = calcRepeatDirection()
+        when (gestureMode) {
+            GestureMode.SwipeCursor -> handleSpaceCursor(me.x)
+            GestureMode.PopupSymbol -> popupComponent.changeFocus(me.x - downX, me.y - downY)
+            GestureMode.PopupMenu -> handleMenuGesture()
+            GestureMode.SwipeSymbol, GestureMode.Aborted -> Unit // 已经处理过，等待抬手
+            GestureMode.None -> resolveGesture(me)
+        }
+    }
+
+    /**
+     * 尚未形成手势时判定进入哪种模式
+     */
+    private fun resolveGesture(me: MotionEvent) {
+        val key = downKey ?: return
+        val config = gestureConfig ?: return
+        val dx = totalDistanceX
+        val dy = totalDistanceY
+        val absDx = abs(dx)
+        val absDy = abs(dy)
+        // 小于 touchSlop 的位移不算手势，避免轻微抖动打断按键上屏
+        if (absDx < touchSlop && absDy < touchSlop) return
+        val isVertical = absDx * 1.5 < absDy // 横向、竖向累计位移接近时，优先触发左右滑动
+        if (!isVertical) {
+            // 左右滑动：空格/0 移光标
+            if (config.spaceCursorEnabled && (key.code == KeyEvent.KEYCODE_SPACE || key.code == KeyEvent.KEYCODE_0)) {
+                gestureMode = GestureMode.SwipeCursor
+                mAbortKey = true
+                handleSpaceCursor(me.x)
+            }
+            return
+        }
+        if (dy <= 0) return // 下滑：删除还原由 repeatDirection 处理，其它键忽略
+        val smallLabel = key.getmKeyLabelSmall()
+        if (smallLabel.isNotBlank()) {
+            // 有符号预设的键：上滑直接上屏符号
+            if (dy > config.symbolSlideUp && config.keyboardSymbolEnabled) {
+                gestureMode = GestureMode.SwipeSymbol
+                mLongPressKey = true
+                mAbortKey = true
+                removeMessages()
+                mService?.responseLongKeyEvent(Pair(PopupMenuMode.Text, smallLabel))
+            }
+            return
+        }
+        // 无符号预设的键交给菜单弹窗做上滑确认
+        if (mLongPressKey) handleMenuGesture()
+    }
+
+    /**
+     * 菜单弹窗的滑动确认：只有上滑为主（或已选中）时才参与，
+     * 避免左滑加速时手指难免上抬，导致误选“清空”而暂停重复删除
+     */
+    private fun handleMenuGesture() {
+        val isVertical = abs(totalDistanceX) * 1.5 < abs(totalDistanceY)
+        if (isVertical || popupComponent.isTriggerSelected()) {
+            popupComponent.onGestureEvent(totalDistanceY)
+        }
+    }
+
+    /**
+     * 空格左右滑动移光标，每走一段距离移一格
+     */
+    private fun handleSpaceCursor(currentX: Float) {
+        val speed = gestureConfig?.spaceCursorSpeed ?: return
+        if (speed <= 0f) return
+        val step = currentX - lastStepX
+        if (abs(step) < speed) return
+        val stepSign = if (step < 0) -1 else 1
+        lastStepX = currentX - stepSign * speed
+        removeMessages()
+        mAbortKey = true
+        mService?.responseKeyEvent(SoftKey(code = if (stepSign < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT))
     }
 
     /**
@@ -240,7 +349,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
      * - 向右滑回一段时间（[fastDeleteExitBand]）→ 退出加速，恢复普通删除。
      */
     private fun updateFastDeleteLatch() {
-        if (mCurrentKey?.code != KeyEvent.KEYCODE_DEL) return
+        if (downKey?.code != KeyEvent.KEYCODE_DEL) return
         val dx = totalDistanceX
         val deltaX = dx - lastFastDeleteDx // 正值=继续向左，负值=向右
         lastFastDeleteDx = dx
@@ -266,7 +375,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
      * 默认及微小抖动继续删除，保证“滑出按键范围”也不会中断删除
      */
     private fun calcRepeatDirection(): RepeatDirection {
-        val softKey = mCurrentKey ?: return RepeatDirection.None
+        val softKey = downKey ?: return RepeatDirection.None
         val dx = totalDistanceX
         val dy = totalDistanceY
         return when (softKey.code) {
@@ -287,72 +396,30 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     /**
-     * 重复触发的间隔，左滑加速时缩短
+     * 重复触发的间隔：左滑加速删除时缩短，长按删除按下滑还原时放慢
      */
-    private fun nextRepeatInterval(): Long = when (repeatDirection) {
-        RepeatDirection.DeleteFast -> FAST_REPEAT_INTERVAL
+    private fun nextRepeatInterval(): Long = when {
+        repeatDirection == RepeatDirection.DeleteFast -> FAST_REPEAT_INTERVAL
+        repeatDirection == RepeatDirection.Revert && mLongPressKey -> REVERT_REPEAT_INTERVAL
         else -> REPEAT_INTERVAL
     }
 
-    // 处理手势滑动
-    private fun dispatchGestureEvent(downEvent: MotionEvent?, currentEvent: MotionEvent) : Boolean {
-        var result = false
-        if(currentEvent.pointerCount > 1) return false    // 避免多指触控导致上屏
-        val currentX = currentEvent.x
-        val absDistanceX = abs(totalDistanceX)
-        val absDistanceY = abs(totalDistanceY)
-        val isVertical = absDistanceX * 1.5 < absDistanceY  //横向、竖向累计位移接近时，优先触发左右滑动
-        val keyLableSmall = mCurrentKey?.getmKeyLabelSmall()
-        val symbolSlideUp = EnvironmentSingleton.instance.heightForCandidatesArea / when(ThemeManager.prefs.symbolSlideUpMod.getValue()){
-            KeyboardSymbolSlideUpMod.SHORT -> 3;KeyboardSymbolSlideUpMod.MEDIUM -> 2;else -> 1
-        }
-        val spaceSwipeMoveCursorSpeed = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursorSpeed.getValue()
-        if (!isVertical) {  // 左右滑动
-            val isSwipeKey = mCurrentKey?.code == KeyEvent.KEYCODE_SPACE || mCurrentKey?.code == KeyEvent.KEYCODE_0
-            if (isSwipeKey && AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursor.getValue()) {  // 左右滑动移光标
-                val step = currentX - lastStepX
-                if (abs(step) >= spaceSwipeMoveCursorSpeed) {
-                    val stepSign = if (step < 0) -1 else 1
-                    lastStepX = currentX - stepSign * spaceSwipeMoveCursorSpeed
-                    removeMessages()
-                    mAbortKey = true
-                    mService?.responseKeyEvent(SoftKey(code = if (stepSign < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT))
-                    result = true
-                }
-            }
-        } else if(keyLableSmall?.isNotBlank() == true){
-            if (totalDistanceY > 0 && absDistanceY > symbolSlideUp && ThemeManager.prefs.keyboardSymbol.getValue()){   // 向上滑动
-                mLongPressKey = true
-                removeMessages()
-                mService?.responseLongKeyEvent(Pair(PopupMenuMode.Text, keyLableSmall))
-                result = true
-            }
-        } else {  // 菜单
-            if (isVertical && totalDistanceY > symbolSlideUp) {   // 向上滑动
-                mLongPressKey = true
-            } else if (downEvent != null) {
-                popupComponent.changeFocus(currentEvent.x - downEvent.x, currentEvent.y - downEvent.y)
-            }
-            // 只有上滑为主（或已选中）时才参与菜单确认
-            if (isVertical || popupComponent.isTriggerSelected()) {
-                popupComponent.onGestureEvent(totalDistanceY)
-            }
-        }
-        return result
-    }
-
+    /**
+     * 执行一次重复触发。
+     */
     private fun repeatKey(): Boolean {
-        val softKey = mCurrentKey ?: return true
-        if (!softKey.repeatable()) return true
+        val service = mService ?: return false
+        val softKey = downKey ?: return false
+        if (!softKey.repeatable()) return false
         if (softKey.code == KeyEvent.KEYCODE_DEL && mLongPressKey) {
-            // 上滑已选中“清空”时暂停删除，避免边删边等清空；回落取消选中后自动恢复
             if (popupComponent.isTriggerSelected()) return true
-            when (repeatDirection) {
-                RepeatDirection.Revert -> mService?.responseLongKeyEvent(Pair(PopupMenuMode.Revertl, ""))
-                else -> mService?.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+            if (repeatDirection == RepeatDirection.Revert) {
+                service.responseLongKeyEvent(Pair(PopupMenuMode.Revertl, ""))
+            } else {
+                service.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
             }
         } else if (softKey.code == InputModeSwitcher.USER_KEYCODE_CURSOR_DIRECTION) {
-            mService?.responseKeyEvent(
+            service.responseKeyEvent(
                 SoftKey(
                     when (repeatDirection) {
                         RepeatDirection.CursorLeft -> KeyEvent.KEYCODE_DPAD_LEFT
@@ -363,7 +430,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 )
             )
         } else {
-            mService?.responseKeyEvent(softKey)
+            service.responseKeyEvent(softKey)
         }
         return true
     }
@@ -443,6 +510,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         private const val MSG_LONGPRESS = 4
         private const val REPEAT_INTERVAL = 50L // ~20 keys per second
         private const val FAST_REPEAT_INTERVAL = 25L // 左滑加速删除
+        private const val REVERT_REPEAT_INTERVAL = 150L // 下滑持续还原删除历史
         private const val REPEAT_START_DELAY = 400L
         private const val FAST_DELETE_DP = 20f
         private const val FAST_DELETE_EXIT_DP = 16f

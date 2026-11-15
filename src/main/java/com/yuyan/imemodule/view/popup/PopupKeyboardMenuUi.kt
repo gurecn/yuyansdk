@@ -72,9 +72,8 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
 
     private val focusRow: Int
     private val focusColumn: Int
-    private var popupMenuMode: PopupMenuMode = PopupMenuMode.None
-
     private var keys:Array<String> = arrayOf(popupMenuPair.second)
+    private val initialSelect = isSelect
 
     init {
         val keyCount: Float = keys.size.toFloat()
@@ -150,6 +149,11 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
     }
     override fun onChangeFocus(x: Float, y: Float): Boolean {
         return false
+    }
+
+    override fun resetForReuse() {
+        isSelect = initialSelect
+        if (isSelect) markFocus(focusedIndex) else markInactive(focusedIndex)
     }
 
     override fun isTriggerSelected(): Boolean {

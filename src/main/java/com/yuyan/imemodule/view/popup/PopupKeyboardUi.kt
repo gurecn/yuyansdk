@@ -3,8 +3,10 @@ package com.yuyan.imemodule.view.popup
 
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
+import android.view.View
 import android.view.ViewOutlineProvider
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.Theme
@@ -30,19 +32,9 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-/**
- * @param theme [Theme]
- * @param bounds bound [Rect] of popup trigger view. Used to calculate free space of both sides and
- * determine column order. See [focusColumn].
- * @param onDismissSelf callback when popup keyboard wants to close
- * @param radius popup keyboard and key radius
- * @param keyWidth key width in popup keyboard
- * trigger view to popup keyboard view. See [offsetX] and [offsetY].
- * @param keys character to commit when triggered
- */
 class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit = {}, private val radius: Float, private val keyWidth: Int, private val keys: Array<String>) : PopupContainerUi(Launcher.instance.context, bounds, onDismissSelf) {
 
-    class PopupKeyUi(override val ctx: Context, val theme: Theme, val text: String) : Ui {
+    class PopupKeyUi(override val ctx: Context, val theme: Theme, val text: String, highlight: Drawable) : Ui {
 
         val textView = view(::AutoScaleTextView) {
             text = this@PopupKeyUi.text
@@ -59,7 +51,17 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
             setTextColor(theme.keyTextColor)
         }
 
+        /**
+         * 高亮层：换格时只切换可见性，不改 background，
+         * 避免每次换格都触发一次 requestLayout
+         */
+        val highlightView = View(ctx).apply {
+            background = highlight
+            visibility = View.INVISIBLE
+        }
+
         override val root = frameLayout {
+            add(highlightView, lParams(width = matchParent, height = matchParent))
             add(textView, lParams {
                 gravity = gravityCenter
             })
@@ -84,12 +86,13 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
     private val rowCount: Int
     private val columnCount: Int
 
-    private var lastX: Float
-    private var lastY: Float
-
     // those 2 variables meas initial focus row/column during initialization
     private val focusRow: Int
     private val focusColumn: Int
+
+    // 当前焦点所在的逻辑行/列，与 focusRow/focusColumn 一起构成格坐标映射
+    private var currentRow: Int
+    private var currentColumn: Int
 
     init {
         val keyCount: Float = keys.size.toFloat()
@@ -97,64 +100,35 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
         columnCount = (keyCount / rowCount).roundToInt()
         focusRow = 0
         focusColumn = calcInitialFocusedColumn(columnCount, keyWidth, bounds)
-        lastX = 0f
-        lastY = 0f
+        currentRow = focusRow
+        currentColumn = focusColumn
     }
 
-    /**
-     * Offset on X axis made up of 2 parts:
-     *  1. from trigger view bounds left to popup entry view left
-     *  2. from left-most column to initial focused column
-     *
-     * Offset on Y axis made up of 2 parts as well:
-     *  1. from trigger view top to popup entry view top
-     *  2. from top-most row to initial focused row (bottom row)
-     *
-     * ```
-     *                    c───┬───┬───┐
-     *                    │   │ 4 │ 5 │
-     *                 ┌─ ├───p───┼───┤ ─┐
-     *   popupKeyHeight│  │ 3 │ 1 │ 2 │  │
-     *                 └─ └───┼───┼───┘  │
-     *                        │   │      │popupHeight
-     *                 ┌───── │o─┐│      │
-     *  bounds.height()│      ││a││      │
-     *                 └───── └┴─┴┘ ─────┘
-     * ```
-     * o: trigger view top-left origin
-     *
-     * p: popup preview ([PopupEntryUi]) top-left origin
-     *
-     * c: container view top-left origin
-     *
-     * Applying only `1.` parts of both X and Y offset, the origin should transform from `o` to `p`.
-     * `2.` parts of both offset transform it from `p` to `c`.
-     */
     override val offsetY = 0 - bounds.height() * (rowCount - 1)
 
     private val columnOrder = createColumnOrder(columnCount, focusColumn)
 
-    /**
-     * row with smaller index displays at bottom.
-     * for example, keyOrders array:
-     * ```
-     * [[2, 0, 1, 3], [6, 4, 5, 7]]
-     * ```
-     * displays as
-     * ```
-     * | 6 | 4 | 5 | 7 |
-     * | 2 | 0 | 1 | 3 |
-     * ```
-     * in which `0` indicates default focus
-     */
     private val keyOrders = Array(rowCount) { row ->
         IntArray(columnCount) { col -> row * columnCount + columnOrder[col] }
+    }
+
+    /**
+     * 每行的视觉槽位表：视觉列 -> 键索引，-1 表示该列没有键。
+     */
+    private val slotKeys = Array(rowCount) { row ->
+        val order = keyOrders[row]
+        val visible = order.filter { it < keys.size }
+        val start = if (order[0] < keys.size) 0 else columnCount - visible.size
+        IntArray(columnCount) { col ->
+            val offset = col - start
+            if (offset in visible.indices) visible[offset] else -1
+        }
     }
 
     private var focusedIndex = keyOrders[focusRow][focusColumn]
 
     private val keyUis = keys.map {
-        PopupKeyUi(ctx, ThemeManager.activeTheme, it)
+        PopupKeyUi(ctx, ThemeManager.activeTheme, it, focusBackground)
     }
 
     init {
@@ -185,42 +159,41 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
     }
 
     private fun markFocus(index: Int) {
-        keyUis.getOrNull(index)?.apply {
-            root.background = focusBackground
-            textView.setTextColor(theme.keyTextColor)
-            textViewSdb.setTextColor(theme.keyTextColor)
-        }
+        keyUis.getOrNull(index)?.highlightView?.visibility = View.VISIBLE
     }
 
     private fun markInactive(index: Int) {
-        keyUis.getOrNull(index)?.apply {
-            root.background = null
-            textView.setTextColor(theme.keyTextColor)
-            textViewSdb.setTextColor(theme.keyTextColor)
-        }
+        keyUis.getOrNull(index)?.highlightView?.visibility = View.INVISIBLE
     }
 
     override fun onGestureEvent(distance: Float) {}
 
+    /**
+     * 复用前把焦点带回初始格，并清除上一次滑动留下的高亮
+     */
+    override fun resetForReuse() {
+        currentRow = focusRow
+        currentColumn = focusColumn
+        keyUis.indices.forEach { markInactive(it) }
+        focusedIndex = keyOrders[focusRow][focusColumn]
+        markFocus(focusedIndex)
+    }
+
     override fun onChangeFocus(x: Float, y: Float): Boolean {
-        if(lastX == 0f){
-            lastX = x
-            lastY = y
-            return false
-        }
-        // move to next row when gesture moves above 30% from bottom of current row
-        var newRow = focusRow - ((y-lastY) / bounds.height() - 0.2).roundToInt()
-        // move to next column when gesture moves out of current column
-        var newColumn = focusColumn + floor((x-lastX) / keyWidth).toInt()
-        // retain focus when gesture moves between ±2 rows/columns of range
-        if (newRow < -2 || newRow > rowCount + 1 || newColumn < -2 || newColumn > columnCount + 1) {
+        val columnFloat = focusColumn + x / keyWidth
+        val rowFloat = focusRow - y / bounds.height()
+        if (columnFloat < -2f || columnFloat > columnCount + 1f || rowFloat < -2f || rowFloat > rowCount + 1f) {
             onDismissSelf(this)
             return true
         }
-        newRow = limitIndex(newRow, rowCount)
-        newColumn = limitIndex(newColumn, columnCount)
-        val newFocus = keyOrders[newRow][newColumn]
-        if (newFocus < keyUis.size) {
+        val newRow = settleIndex(currentRow, rowFloat, rowCount)
+        val newColumn = settleIndex(currentColumn, columnFloat, columnCount)
+        if (newRow == currentRow && newColumn == currentColumn) return false
+        val newFocus = slotKeys[newRow][newColumn]
+        currentRow = newRow
+        currentColumn = newColumn
+        if (newFocus < 0) return false
+        if (newFocus != focusedIndex) {
             markInactive(focusedIndex)
             markFocus(newFocus)
             focusedIndex = newFocus
@@ -228,8 +201,22 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
         return false
     }
 
+    private fun settleIndex(current: Int, target: Float, limit: Int): Int {
+        var next = current
+        if (target > next + SWITCH_GATE) {
+            next = ceil(target - SWITCH_GATE).toInt().coerceAtMost(limit - 1)
+        } else if (target < next - SWITCH_GATE) {
+            next = floor(target + SWITCH_GATE).toInt().coerceAtLeast(0)
+        }
+        return next
+    }
+
     override fun onTrigger(): Pair<PopupMenuMode, String> {
         return Pair(PopupMenuMode.Text, keys[focusedIndex])
+    }
+
+    private companion object {
+        const val SWITCH_GATE = 0.55f
     }
 
 }
