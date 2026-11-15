@@ -11,6 +11,7 @@ import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.utils.DevicesUtils
 import splitties.dimensions.dp
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.add
@@ -24,6 +25,7 @@ import splitties.views.gravityCenter
 import splitties.views.gravityEnd
 import splitties.views.gravityStart
 import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit = {}, private val radius: Float, private val keyWidth: Int, private var isSelect: Boolean, private var popupMenuPair: Pair<PopupMenuMode, String>) : PopupContainerUi(Launcher.instance.context, bounds, onDismissSelf) {
@@ -57,6 +59,10 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
         cornerRadius = radius
         setColor(ctx.getColor(R.color.red_400))
     }
+
+    // 清空菜单采用双阈值（相对按下点的累计上滑距离）：越过 arm 才选中，回落到 disarm 以下撤销
+    private val armThreshold = max(bounds.height() * 0.6f, 24f * ctx.resources.displayMetrics.density)
+    private val disarmThreshold = max(bounds.height() * 0.4f, 16f * ctx.resources.displayMetrics.density)
 
     private val rowCount: Int
     private val columnCount: Int
@@ -124,19 +130,30 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
         }
     }
 
-    private fun markInactive() {
-        keyUis.getOrNull(0)?.apply {
+    private fun markInactive(index: Int) {
+        keyUis.getOrNull(index)?.apply {
             root.background = null
             textView.setTextColor(ThemeManager.activeTheme.keyTextColor)
         }
     }
 
+    /**
+     * @param distance 相对按下点的累计上滑距离（px，正值表示上滑）
+     */
     override fun onGestureEvent(distance: Float) {
-        isSelect = distance > 5
-        if(isSelect)markFocus(0) else markInactive()
+        if (popupMenuPair.first != PopupMenuMode.Clear) return
+        val selected = if (isSelect) distance > disarmThreshold else distance >= armThreshold
+        if (selected == isSelect) return
+        isSelect = selected
+        if (selected) markFocus(focusedIndex) else markInactive(focusedIndex)
+        DevicesUtils.tryVibrate(root)
     }
     override fun onChangeFocus(x: Float, y: Float): Boolean {
         return false
+    }
+
+    override fun isTriggerSelected(): Boolean {
+        return popupMenuPair.first == PopupMenuMode.Clear && isSelect
     }
 
     override fun onTrigger(): Pair<PopupMenuMode, String> {

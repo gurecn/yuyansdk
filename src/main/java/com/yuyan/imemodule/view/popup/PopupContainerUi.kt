@@ -63,6 +63,11 @@ abstract class PopupContainerUi(override val ctx: Context, val bounds: Rect, val
 
     abstract fun onTrigger(): Pair<PopupMenuMode, String>
 
+    /**
+     * 当前手势是否已选中菜单项（仅清空菜单这类需要滑动确认的菜单有意义）
+     */
+    open fun isTriggerSelected(): Boolean = false
+
     companion object {
         fun limitIndex(i: Int, limit: Int) = if (i < 0) 0 else if (i >= limit) limit - 1 else i
     }

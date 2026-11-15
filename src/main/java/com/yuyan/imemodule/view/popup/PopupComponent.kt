@@ -130,6 +130,10 @@ class PopupComponent private constructor(){
         return showingContainerUi?.onTrigger()?:Pair(PopupMenuMode.None, "")
     }
 
+    fun isTriggerSelected(): Boolean {
+        return showingContainerUi?.isTriggerSelected() ?: false
+    }
+
     fun dismissPopup() {
         dismissPopupContainer()
         showingEntryUi?.also {

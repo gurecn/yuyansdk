@@ -200,7 +200,7 @@ class PopupKeyboardUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Unit =
         }
     }
 
-    override fun onGestureEvent(distanceX: Float) {}
+    override fun onGestureEvent(distance: Float) {}
 
     override fun onChangeFocus(x: Float, y: Float): Boolean {
         if(lastX == 0f){
