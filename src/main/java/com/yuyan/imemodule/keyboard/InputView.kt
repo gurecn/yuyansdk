@@ -496,6 +496,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         val candidate = DictDecoder.getCandidate(candId)
         if (candidate?.comment == "📋") {
             commitDecInfoText(candidate.text)
+            if (!DictDecoder.isAssociate) resetToIdleState()
         } else {
             val choice = DictDecoder.chooseDecodingCandidate(candId)
             if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {

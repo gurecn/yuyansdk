@@ -62,8 +62,13 @@ object RimeEngine {
 
     fun selectCandidate(index: Int): String? {
         val indexReal = index - customPhraseSize
-        Rime.selectCandidate(indexReal)
-        keyRecordStack.pushCandidateSelectAction()
+        if (indexReal < 0) {
+            Rime.clearComposition()
+            keyRecordStack.clear()
+        } else {
+            Rime.selectCandidate(indexReal)
+            keyRecordStack.pushCandidateSelectAction()
+        }
         return updateCandidatesOrCommitText()
     }
 
@@ -110,6 +115,7 @@ object RimeEngine {
         pinyins = emptyArray()
         showComposition = ""
         preCommitText = ""
+        customPhraseSize = 0
         keyRecordStack.clear()
         Rime.clearComposition()
         if(charCase == KeyEvent.META_SHIFT_ON) charCase = MASK_CASE_LOWER
