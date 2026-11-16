@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.RelativeLayout
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.database.entry.Phrase
+import com.yuyan.inputmethod.PhraseStore
 
 /**
  * 常用语编辑器面板。
@@ -21,11 +21,11 @@ class PhraseEditorPanel(private val container: RelativeLayout, private val ancho
     /**
      * 显示编辑器并填充内容。
      */
-    fun show(phrase: Phrase?): EditPhrasesView {
+    fun show(entry: PhraseStore.Entry?): EditPhrasesView {
         val view = ensureView()
         isShowing = true
         view.visibility = View.VISIBLE
-        if (phrase != null) view.setExtraData(phrase) else view.clearPhrasesContent()
+        if (entry != null) view.setExtraData(entry) else view.clearPhrasesContent()
         return view
     }
 

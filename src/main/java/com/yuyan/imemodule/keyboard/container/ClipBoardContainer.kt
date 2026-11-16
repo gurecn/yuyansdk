@@ -27,6 +27,7 @@ import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import com.yuyan.inputmethod.PhraseStore
 import splitties.dimensions.dp
 import splitties.views.textResource
 import kotlin.math.ceil
@@ -72,7 +73,7 @@ class ClipBoardContainer(context: Context) : BaseContainer(context) {
             if(itemMode == SkbMenuMode.ClipBoard) {
                 DataBaseKT.instance.clipboardDao().getAll().toMutableList()
             } else {
-                DataBaseKT.instance.phraseDao().getAll().map { line -> Clipboard(line.content) }.toMutableList()
+                PhraseStore.list().map { line -> Clipboard(line.content) }.toMutableList()
             }
         val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
             ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -130,9 +131,9 @@ class ClipBoardContainer(context: Context) : BaseContainer(context) {
             } else {
                 val content = copyContents[position].content
                 if(menuBridge.position == 0) {
-                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, DataBaseKT.instance.phraseDao().queryByContent(content))
+                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, PhraseStore.list().firstOrNull { it.content == content })
                 } else if(menuBridge.position == 1){
-                    DataBaseKT.instance.phraseDao().deleteByContent(content)
+                    PhraseStore.remove(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
             }

@@ -12,12 +12,11 @@ import androidx.core.view.setPadding
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.database.DataBaseKT
-import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.libs.pinyin4j.PinyinHelper
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.ImeEditText
+import com.yuyan.inputmethod.PhraseStore
 import com.yuyan.inputmethod.util.LX17PinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import splitties.dimensions.dp
@@ -97,15 +96,14 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
             val pinYinHeadChar  = mEtPhrasesQuickCode.text.toString()
             val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
             val pinYinHeadLX17 = pinYinHeadChar.map { LX17PinYinUtils.pinyin2Lx17Key(it)}.joinToString("")
-            val phrase =  Phrase(content = content, t9 = pinYinHeadT9, qwerty = pinYinHeadChar, lx17 = pinYinHeadLX17)
-            DataBaseKT.instance.phraseDao().insert(phrase)
+            PhraseStore.add(listOf(pinYinHeadChar, pinYinHeadT9, pinYinHeadLX17), content)
             KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
         }
     }
 
-    fun setExtraData(extra:Phrase) {
-        val content = extra.content
-        val qwerty = extra.qwerty
+    fun setExtraData(entry: PhraseStore.Entry) {
+        val content = entry.content
+        val qwerty = entry.qwerty
         mEtPhrases.setText(content)
         mEtPhrases.setSelection(content.length)
         mEtPhrasesQuickCode.setText(qwerty)

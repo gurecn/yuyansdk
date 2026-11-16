@@ -130,6 +130,21 @@ class Rime(fullCheck: Boolean) {
             return selectRimeAssociate(index)
         }
 
+        /**
+         * 扫描文本尾部的算式并求值。返回 "0" 表示没有算式，"2" 表示需要更大窗口，
+         * "1\n<候选>" 表示表达式候选（首行后每行一个候选）。
+         */
+        fun getExpressionCandidates(text: String, window: Int): String {
+            return getYuyanExpressionCandidates(text, window)
+        }
+
+        fun getPhrases(): String = getYuyanPhrases()
+
+        fun addPhrase(codes: String, content: String, keep: Boolean): Boolean =
+            addYuyanPhrase(codes, content, keep)
+
+        fun removePhrase(content: String): Boolean = removeYuyanPhrase(content)
+
         @JvmStatic
         external fun startupRime(context: Context, sharedDir: String, userDir: String, fullCheck: Boolean, )
 
@@ -177,6 +192,18 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun selectRimeAssociate(index: Int): Boolean
+
+        @JvmStatic
+        external fun getYuyanExpressionCandidates(text: String, window: Int): String
+
+        @JvmStatic
+        external fun getYuyanPhrases(): String
+
+        @JvmStatic
+        external fun addYuyanPhrase(codes: String, content: String, keep: Boolean): Boolean
+
+        @JvmStatic
+        external fun removeYuyanPhrase(content: String): Boolean
 
         /** 由 native 维护线程回调，只做分发，禁止在此操作 UI */
         @JvmStatic

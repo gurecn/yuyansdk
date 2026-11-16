@@ -3,9 +3,7 @@ package com.yuyan.inputmethod
 import android.view.KeyEvent
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.application.Launcher
-import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.data.InputKey
@@ -17,14 +15,25 @@ import com.yuyan.inputmethod.util.T9PinYinUtils
 import java.util.Locale
 
 object RimeEngine {
+    private const val YUYAN_CANDIDATE_COMMENT = "📋"
+    const val EXPRESSION_INITIAL_WINDOW = 64
+    const val EXPRESSION_MAX_WINDOW = 4096
+
     private val keyRecordStack = KeyRecordStack()
     private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
-    private var customPhraseSize: Int = 0 // 自定义引擎候选词长度
     const val MASK_CASE_LOWER = 0
     private var charCase = 0x0000
+
+    /** 引擎公式扫描结果 */
+    sealed interface ExpressionResponse {
+        data object None : ExpressionResponse
+        data object NeedMore : ExpressionResponse
+        class Candidates(val values: List<String>) : ExpressionResponse
+    }
+
     fun init() {
         Rime.getInstance(false)
     }
@@ -61,14 +70,8 @@ object RimeEngine {
     }
 
     fun selectCandidate(index: Int): String? {
-        val indexReal = index - customPhraseSize
-        if (indexReal < 0) {
-            Rime.clearComposition()
-            keyRecordStack.clear()
-        } else {
-            Rime.selectCandidate(indexReal)
-            keyRecordStack.pushCandidateSelectAction()
-        }
+        Rime.selectCandidate(index)
+        keyRecordStack.pushCandidateSelectAction()
         return updateCandidatesOrCommitText()
     }
 
@@ -91,23 +94,18 @@ object RimeEngine {
     fun predictAssociationWords(text: String) {
         pinyins = emptyArray()
         if (text.isNotEmpty()) {
-            showCandidates = buildList {
-                val words = Rime.getAssociateList(text)
-                val firstFive = words.take(5)
-                addAll(firstFive.filterNotNull().map { CandidateListItem("", it) })
-                addAll(CustomEngine.predictAssociationWordsChinese(text).map { CandidateListItem("", it) })
-                val remaining = words.drop(5)
-                addAll(remaining.filterNotNull().map { CandidateListItem("", it) })
-            }
+            showCandidates = Rime.getAssociateList(text)
+                .filterNotNull()
+                .map { CandidateListItem("", it) }
             showComposition = ""
         }
     }
 
     fun selectAssociation(index: Int) {
-        val indexReal = index - customPhraseSize
-        Rime.chooseAssociate(indexReal)
+        val content = showCandidates.getOrNull(index)?.text.orEmpty()
+        Rime.chooseAssociate(index)
         updateCandidatesOrCommitText()
-        preCommitText = showCandidates.getOrNull(indexReal)?.text?:""
+        preCommitText = content
     }
 
     fun reset() {
@@ -115,7 +113,6 @@ object RimeEngine {
         pinyins = emptyArray()
         showComposition = ""
         preCommitText = ""
-        customPhraseSize = 0
         keyRecordStack.clear()
         Rime.clearComposition()
         if(charCase == KeyEvent.META_SHIFT_ON) charCase = MASK_CASE_LOWER
@@ -133,20 +130,8 @@ object RimeEngine {
             return preCommitText
         }
         val candidates = Rime.getRimeContext()?.candidates?.asList() ?: emptyList()
-        customPhraseSize = 0
         val compositionText = Rime.compositionText
-        showCandidates = when {
-            compositionText.isNotBlank() -> {
-                val phrase = CustomEngine.processPhrase(compositionText.replace("\'", ""))
-                if(InputModeSwitcher.isEnglish && StringUtils.isLetter(compositionText) &&
-                    !compositionText.equals(candidates.first().text, ignoreCase = true) ){
-                    phrase.add(0, compositionText)
-                }
-                customPhraseSize = phrase.size
-                phrase.map { content -> CandidateListItem("📋", content) }.toMutableList().plus(candidates)
-            }
-            else -> candidates
-        }
+        showCandidates = candidates
         var count = Rime.compositionText.count { it in 'A'..'Z' }
         if (count > 0) {
             keyRecordStack.forEachReversed { inputKey ->
@@ -186,7 +171,8 @@ object RimeEngine {
         if(rimeSchema == CustomConstant.SCHEMA_EN) return ""
         if(composition.isEmpty()) return ""
         if(candidates.isEmpty()) return composition
-        val comment = candidates.first().comment
+        val comment = candidates.firstOrNull { it.comment != YUYAN_CANDIDATE_COMMENT }?.comment
+            ?: return composition
         val result =  when {
             comment.isNotBlank() && comment.startsWith("~") -> composition
             rimeSchema == CustomConstant.SCHEMA_ZH_T9 -> {
@@ -209,6 +195,25 @@ object RimeEngine {
     fun setImeOption(option: String, value: Boolean) {
         Rime.setOption(option, value)
     }
+
+    /**
+     * 扫描 [text] 尾部算式并求值，[window] 为调用方取到的文本窗口大小。
+     */
+    fun getExpressionCandidates(text: String, window: Int): ExpressionResponse {
+        val raw = Rime.getExpressionCandidates(text, window)
+        return when {
+            raw == "1" -> ExpressionResponse.None
+            raw.startsWith("1\n") -> ExpressionResponse.Candidates(
+                raw.substring(2).lineSequence().filter { it.isNotEmpty() }.toList()
+            )
+            raw == "2" -> ExpressionResponse.NeedMore
+            else -> ExpressionResponse.None
+        }
+    }
+
+    fun nextExpressionWindow(window: Int): Int? =
+        if (window >= EXPRESSION_MAX_WINDOW) null
+        else (window * 4).coerceAtMost(EXPRESSION_MAX_WINDOW)
 
     fun setCharCase(charCase: Int) {
         this.charCase = charCase

@@ -33,7 +33,6 @@ import com.yuyan.imemodule.callback.IResponseKeyEvent
 import com.yuyan.imemodule.data.emojicon.EmojiconData.SymbolPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
-import com.yuyan.imemodule.database.entry.Phrase
 import com.yuyan.imemodule.entity.StringQueue
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
@@ -61,7 +60,8 @@ import com.yuyan.imemodule.view.FullDisplayKeyboardBar
 import com.yuyan.imemodule.view.PhraseEditorPanel
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
-import com.yuyan.inputmethod.CustomEngine
+import com.yuyan.inputmethod.PhraseStore
+import com.yuyan.inputmethod.RimeEngine
 import com.yuyan.inputmethod.core.CandidateListItem
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
@@ -567,7 +567,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
     }
 
-    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra: Phrase? = null) {
+    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra: PhraseStore.Entry? = null) {
         if (skbMenuMode == SkbMenuMode.AddPhrases) {
             enterPhrasesEditor(extra)
         } else {
@@ -577,12 +577,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         mSkbCandidatesBarView.initMenuView()
     }
 
-    private fun enterPhrasesEditor(phrase: Phrase?) {
+    private fun enterPhrasesEditor(entry: PhraseStore.Entry?) {
         InputModeSwitcher.isPhrasesEditing = true
         resetToIdleState()
         KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
-        phrase?.let { DataBaseKT.instance.phraseDao().deleteByContent(it.content) }
-        val view = phraseEditor.show(phrase)
+        entry?.let { PhraseStore.remove(it.content) }
+        val view = phraseEditor.show(entry)
         textTarget = PhraseEditTarget(view) { exitPhrasesEditor(returnToPhrases = true) }
         initView(context)
         view.requestEditorFocus()
@@ -754,7 +754,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         when {
             InputModeSwitcher.isNumberSkb -> {
                 cancelAssociation()
-                requestExpressionCandidates(CustomEngine.INITIAL_WINDOW)
+                requestExpressionCandidates(RimeEngine.EXPRESSION_INITIAL_WINDOW)
             }
             chinesePrediction && InputModeSwitcher.isChinese -> service.requestTextBeforeCursor(10) { textBeforeCursor ->
                 scheduleAssociation(textBeforeCursor)
@@ -800,18 +800,11 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         val token = expressionToken
         service.requestTextBeforeCursor(window) { textBeforeCursor ->
             if (token != expressionToken) return@requestTextBeforeCursor // 选区已变化，丢弃过期结果
-            val last = textBeforeCursor.lastOrNull()
-            if (last == null || !CustomEngine.isExpressionTail(last)) {
-                resetCandidateWindow()
-                return@requestTextBeforeCursor
-            }
-            when (val scan = CustomEngine.scanExpressionAtEnd(textBeforeCursor, window, selStart)) {
-                is CustomEngine.Scan.Found -> showSymbols(
-                    CustomEngine.expressionCalculator(textBeforeCursor, scan.expression)
-                )
-                CustomEngine.Scan.None -> resetCandidateWindow()
-                CustomEngine.Scan.NeedMore -> {
-                    val next = CustomEngine.nextWindow(window)
+            when (val response = RimeEngine.getExpressionCandidates(textBeforeCursor, window)) {
+                is RimeEngine.ExpressionResponse.Candidates -> showSymbols(response.values.toTypedArray())
+                RimeEngine.ExpressionResponse.None -> resetCandidateWindow()
+                RimeEngine.ExpressionResponse.NeedMore -> {
+                    val next = RimeEngine.nextExpressionWindow(window)
                     if (next == null) resetCandidateWindow() else requestExpressionCandidates(next)
                 }
             }

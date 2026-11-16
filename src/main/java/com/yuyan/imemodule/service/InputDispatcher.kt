@@ -71,6 +71,8 @@ object InputDispatcher {
         RimeEngine.setImeOption("emoji", emojiInput)
         val cnEnInput = AppPrefs.getInstance().input.cnEnInput.getValue()
         RimeEngine.setImeOption("echo", cnEnInput)
+        val chinesePredictionDate = AppPrefs.getInstance().input.chinesePredictionDate.getValue()
+        RimeEngine.setImeOption("yuyan_date", chinesePredictionDate)
     }
 
     fun setCharCase(charCase: Int) {
