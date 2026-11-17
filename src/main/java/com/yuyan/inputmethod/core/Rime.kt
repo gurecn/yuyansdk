@@ -145,6 +145,20 @@ class Rime(fullCheck: Boolean) {
 
         fun removePhrase(content: String): Boolean = removeYuyanPhrase(content)
 
+        fun keyToPinyin(schemaId: String, keySequence: String): Array<String> {
+            if (keySequence.isEmpty()) return emptyArray()
+            val result = getYuyanKeyToPinyin(schemaId, keySequence)
+            return if (result.isEmpty()) emptyArray() else result.split("\n").toTypedArray()
+        }
+
+        fun pinyinToKey(schemaId: String, pinyin: String): String {
+            return getYuyanPinyinToKey(schemaId, pinyin)
+        }
+
+        fun pinyinKeyChar(schemaId: String, pinyinLetter: Char): String {
+            return getYuyanPinyinKeyChar(schemaId, pinyinLetter)
+        }
+
         @JvmStatic
         external fun startupRime(context: Context, sharedDir: String, userDir: String, fullCheck: Boolean, )
 
@@ -192,6 +206,15 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun selectRimeAssociate(index: Int): Boolean
+
+        @JvmStatic
+        external fun getYuyanKeyToPinyin(schemaId: String, keySequence: String): String
+
+        @JvmStatic
+        external fun getYuyanPinyinToKey(schemaId: String, pinyin: String): String
+
+        @JvmStatic
+        external fun getYuyanPinyinKeyChar(schemaId: String, pinyinLetter: Char): String
 
         @JvmStatic
         external fun getYuyanExpressionCandidates(text: String, window: Int): String

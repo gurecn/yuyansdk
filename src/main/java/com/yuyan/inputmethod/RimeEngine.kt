@@ -9,7 +9,6 @@ import com.yuyan.inputmethod.core.Rime
 import com.yuyan.inputmethod.data.InputKey
 import com.yuyan.inputmethod.data.KeyRecordStack
 import com.yuyan.inputmethod.util.DoublePinYinUtils
-import com.yuyan.inputmethod.util.LX17PinYinUtils
 import com.yuyan.inputmethod.util.QwertyPinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils
 import java.util.Locale
@@ -142,12 +141,11 @@ object RimeEngine {
         val composition = toCompositionCase(getCurrentComposition(candidates))
         val englishSchema = rimeSchema == CustomConstant.SCHEMA_EN
         for (item in showCandidates) item.text = toCandidateCase(item.text, englishSchema)
+        val keySequence = Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: ""
         pinyins = when (rimeSchema) {
-            CustomConstant.SCHEMA_ZH_T9 -> {
-                T9PinYinUtils.t9KeyToPinyin(Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: "")
-            }
+            CustomConstant.SCHEMA_ZH_T9,
             CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
-                LX17PinYinUtils.lx17KeyToPinyin(Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: "")
+                Rime.keyToPinyin(rimeSchema, keySequence)
             }
             else -> {
                 emptyArray()
