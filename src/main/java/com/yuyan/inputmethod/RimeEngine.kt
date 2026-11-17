@@ -6,8 +6,6 @@ import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.core.CandidateListItem
 import com.yuyan.inputmethod.core.Rime
-import com.yuyan.inputmethod.data.InputKey
-import com.yuyan.inputmethod.data.KeyRecordStack
 import com.yuyan.inputmethod.util.DoublePinYinUtils
 import com.yuyan.inputmethod.util.QwertyPinYinUtils
 import com.yuyan.inputmethod.util.T9PinYinUtils
@@ -17,8 +15,6 @@ object RimeEngine {
     private const val YUYAN_CANDIDATE_COMMENT = "📋"
     const val EXPRESSION_INITIAL_WINDOW = 64
     const val EXPRESSION_MAX_WINDOW = 4096
-
-    private val keyRecordStack = KeyRecordStack()
     private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
@@ -38,7 +34,6 @@ object RimeEngine {
     }
 
     fun selectSchema(mod: String): Boolean {
-        keyRecordStack.clear()
         charCase = MASK_CASE_LOWER
         Rime.startup(Launcher.instance.context, false)
         return Rime.selectSchema(mod)
@@ -52,31 +47,30 @@ object RimeEngine {
      * 是否输入完毕
      */
     fun isFinish(): Boolean {
-        return keyRecordStack.isEmpty()
+        return !Rime.isComposing
     }
 
     fun onNormalKey(event: KeyEvent) {
         val keyCode = event.keyCode
         val keyChar = if(keyCode == KeyEvent.KEYCODE_APOSTROPHE) if(isFinish()) '/'.code else '\''.code
             else event.unicodeChar
-        if (keyRecordStack.pushKey(event))Rime.processKey(keyChar, event.action)
+        Rime.processKey(keyChar, event.action)
         updateCandidatesOrCommitText()
     }
 
     fun onDeleteKey() {
-        keyRecordStack.processDelAction()
+        Rime.processKey(Rime.getRimeKeycodeByName("BackSpace"), 0)
         updateCandidatesOrCommitText()
     }
 
     fun selectCandidate(index: Int): String? {
         Rime.selectCandidate(index)
-        keyRecordStack.pushCandidateSelectAction()
         return updateCandidatesOrCommitText()
     }
 
     fun getNextPageCandidates(): Array<CandidateListItem> {
         return if (Rime.hasRight()) {
-            Rime.processKey(keyRecordStack.getRimeKeycodeByName("Page_Down"), 0)
+            Rime.processKey(Rime.getRimeKeycodeByName("Page_Down"), 0)
            val candidates = Rime.getRimeContext()!!.candidates
             val englishSchema = isEnglishSchema
             for (item in candidates) item.text = toCandidateCase(item.text, englishSchema)
@@ -85,8 +79,7 @@ object RimeEngine {
     }
 
     fun selectPinyin(index: Int) {
-        val pinyinKey = keyRecordStack.pushPinyinSelectAction(pinyins[index]) ?: return
-        Rime.replaceKey(pinyinKey.posInInput, pinyinKey.t9Keys().length, pinyinKey.pinyin())
+        Rime.selectPinyin(index)
         updateCandidatesOrCommitText()
     }
 
@@ -112,7 +105,6 @@ object RimeEngine {
         pinyins = emptyArray()
         showComposition = ""
         preCommitText = ""
-        keyRecordStack.clear()
         Rime.clearComposition()
         if(charCase == KeyEvent.META_SHIFT_ON) charCase = MASK_CASE_LOWER
     }
@@ -122,35 +114,18 @@ object RimeEngine {
     private fun updateCandidatesOrCommitText(): String? {
         val rimeCommit = Rime.getRimeCommit()
         if (rimeCommit != null) {
-            keyRecordStack.clear()
             preCommitText = toCandidateCase(rimeCommit.commitText, isEnglishSchema)
             showComposition = ""
             showCandidates = emptyList()
             return preCommitText
         }
         val candidates = Rime.getRimeContext()?.candidates?.asList() ?: emptyList()
-        val compositionText = Rime.compositionText
         showCandidates = candidates
-        var count = Rime.compositionText.count { it in 'A'..'Z' }
-        if (count > 0) {
-            keyRecordStack.forEachReversed { inputKey ->
-                if (inputKey is InputKey.T9Key) inputKey.consumed = count-- <= 0
-            }
-        }
         val rimeSchema = Rime.getCurrentRimeSchema()
         val composition = toCompositionCase(getCurrentComposition(candidates))
         val englishSchema = rimeSchema == CustomConstant.SCHEMA_EN
         for (item in showCandidates) item.text = toCandidateCase(item.text, englishSchema)
-        val keySequence = Regex("[A-Z]+").find(compositionText.replace("'", ""))?.value ?: ""
-        pinyins = when (rimeSchema) {
-            CustomConstant.SCHEMA_ZH_T9,
-            CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> {
-                Rime.keyToPinyin(rimeSchema, keySequence)
-            }
-            else -> {
-                emptyArray()
-            }
-        }
+        pinyins = Rime.pinyins()
         showComposition = composition
         preCommitText = ""
         return null

@@ -92,6 +92,18 @@ class Rime(fullCheck: Boolean) {
         }
 
         @JvmStatic
+        fun selectPinyin(index: Int): Boolean {
+            return selectRimePinyin(index).also {
+                updateContext()
+            }
+        }
+
+        fun pinyins(): Array<String> {
+            val result = getRimePinyins()
+            return if (result.isEmpty()) emptyArray() else result.split("\n").toTypedArray()
+        }
+
+        @JvmStatic
         fun replaceKey(caretPos: Int, length: Int, key: String): Boolean {
             return replaceRimeKey(caretPos, length, key).also {
                 updateContext()
@@ -144,16 +156,6 @@ class Rime(fullCheck: Boolean) {
             addYuyanPhrase(codes, content, keep)
 
         fun removePhrase(content: String): Boolean = removeYuyanPhrase(content)
-
-        fun keyToPinyin(schemaId: String, keySequence: String): Array<String> {
-            if (keySequence.isEmpty()) return emptyArray()
-            val result = getYuyanKeyToPinyin(schemaId, keySequence)
-            return if (result.isEmpty()) emptyArray() else result.split("\n").toTypedArray()
-        }
-
-        fun pinyinToKey(schemaId: String, pinyin: String): String {
-            return getYuyanPinyinToKey(schemaId, pinyin)
-        }
 
         fun pinyinKeyChar(schemaId: String, pinyinLetter: Char): String {
             return getYuyanPinyinKeyChar(schemaId, pinyinLetter)
@@ -208,10 +210,10 @@ class Rime(fullCheck: Boolean) {
         external fun selectRimeAssociate(index: Int): Boolean
 
         @JvmStatic
-        external fun getYuyanKeyToPinyin(schemaId: String, keySequence: String): String
+        external fun getRimePinyins(): String
 
         @JvmStatic
-        external fun getYuyanPinyinToKey(schemaId: String, pinyin: String): String
+        external fun selectRimePinyin(index: Int): Boolean
 
         @JvmStatic
         external fun getYuyanPinyinKeyChar(schemaId: String, pinyinLetter: Char): String
