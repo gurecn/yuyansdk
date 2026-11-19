@@ -494,7 +494,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
         val candidate = DictDecoder.getCandidate(candId)
-        if (candidate?.comment == "📋") {
+        if (candidate?.comment == SYMBOL_CANDIDATE_MARK) {
             commitDecInfoText(candidate.text)
             if (!DictDecoder.isAssociate) resetToIdleState()
         } else {
@@ -511,6 +511,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                     resetToIdleState()
                 }
             }
+        }
+        // 候选已结束就立即查联想，不必等选区回报的防抖
+        if (DictDecoder.isCandidatesEmpty && chinesePrediction && InputModeSwitcher.isChinese && !textTarget.isLocalEditor) {
+            service.requestTextBeforeCursor(10) { runAssociation(it) }
         }
     }
 
@@ -529,6 +533,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private fun resetCandidateWindow() {
         DictDecoder.reset()
         InputDispatcher.reset()
+        lastAssociationText = null // 候选已清，记录的联想文本随之失效
         (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
     }
 
@@ -560,7 +565,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             (KeyboardManager.instance.currentContainer as? ClipBoardContainer)?.showClipBoardView(SkbMenuMode.ClipBoard)
         }
 
-        override fun isCandidatesRefreshPending(): Boolean = associationText != null
+        override fun isCandidatesRefreshPending(): Boolean = pendingAssociationText != null
 
         override fun onBarMenuChanged() {
             (KeyboardManager.instance.currentContainer as? SettingsContainer)?.refreshBarMenuState()
@@ -605,7 +610,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     override fun showSymbols(symbols: Array<String>) {
-        val list = symbols.map { CandidateListItem("📋", it) }.toTypedArray()
+        val list = symbols.map { CandidateListItem(SYMBOL_CANDIDATE_MARK, it) }.toTypedArray()
         DictDecoder.cacheCandidates(list, true)
     }
 
@@ -734,7 +739,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private var selEnd = 0
     private var oldCandidatesEnd = 0
 
-    private var associationText: String? = null // 最近一次待联想的光标前文本，滑动光标时会被覆盖
+    private var pendingAssociationText: String? = null // 排队待查的光标前文本，滑动光标时被覆盖；非空时候选栏得等结果
+    private var lastAssociationText: String? = null    // 最近一次已查联想的文本，迟到的选区回报命中时不再重复查
     private val associationTask = Runnable { runAssociation() }
     private var expressionToken = 0 // 公式扩窗的请求序号，产生新选区后旧回调作废
 
@@ -768,24 +774,27 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     /** 光标移动会连续产生选区回报，联想词查询合并到选区稳定后再执行 */
     private fun scheduleAssociation(textBeforeCursor: String) {
-        associationText = textBeforeCursor
+        if (textBeforeCursor == lastAssociationText) return
+        pendingAssociationText = textBeforeCursor
         removeCallbacks(associationTask)
         postDelayed(associationTask, ASSOCIATION_PREDICT_DELAY)
     }
 
     private fun cancelAssociation() {
-        associationText = null
+        pendingAssociationText = null
+        lastAssociationText = null
         removeCallbacks(associationTask)
     }
 
-    private fun runAssociation() {
-        val textBeforeCursor = associationText ?: return
-        associationText = null
+    private fun runAssociation(textBeforeCursor: String? = pendingAssociationText) {
+        pendingAssociationText = null
+        removeCallbacks(associationTask)
+        textBeforeCursor ?: return
         if (!chinesePrediction || !InputModeSwitcher.isChinese) {
-            // 联想被模式变化取消时不会再刷新候选，补一次候选栏重判，避免停在旧内容上
             updateCandidateBar()
             return
         }
+        lastAssociationText = textBeforeCursor
         if (textBeforeCursor.isBlank()) resetCandidateWindow()
         else {
             InputDispatcher.predictAssociationWords(textBeforeCursor)
@@ -813,5 +822,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     private companion object {
         const val ASSOCIATION_PREDICT_DELAY = 100L // 选区停止变化多久后才查联想词
+        const val SYMBOL_CANDIDATE_MARK = "symbol"
     }
 }

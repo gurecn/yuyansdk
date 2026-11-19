@@ -12,7 +12,7 @@ import com.yuyan.inputmethod.util.T9PinYinUtils
 import java.util.Locale
 
 object RimeEngine {
-    private const val YUYAN_CANDIDATE_COMMENT = "📋"
+    private const val YUYAN_CANDIDATE_PREFIX = "yuyan:"
     const val EXPRESSION_INITIAL_WINDOW = 64
     const val EXPRESSION_MAX_WINDOW = 4096
     private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
@@ -144,7 +144,7 @@ object RimeEngine {
         if(rimeSchema == CustomConstant.SCHEMA_EN) return ""
         if(composition.isEmpty()) return ""
         if(candidates.isEmpty()) return composition
-        val comment = candidates.firstOrNull { it.comment != YUYAN_CANDIDATE_COMMENT }?.comment
+        val comment = candidates.firstOrNull { !it.comment.startsWith(YUYAN_CANDIDATE_PREFIX) }?.comment
             ?: return composition
         val result =  when {
             comment.isNotBlank() && comment.startsWith("~") -> composition
