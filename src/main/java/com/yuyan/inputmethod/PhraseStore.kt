@@ -7,6 +7,8 @@ import com.yuyan.inputmethod.core.Rime
  */
 object PhraseStore {
 
+    private val t9KeyLetters = "adgjmptw".toSet()
+
     data class Entry(
         val content: String,
         val codes: List<String>,
@@ -15,8 +17,11 @@ object PhraseStore {
     ) {
         /** 编辑器展示用的字母编码 */
         val qwerty: String
-            get() = codes.firstOrNull { code -> code.any { it in 'a'..'z' } }
-                ?: codes.firstOrNull().orEmpty()
+            get() {
+                val pinyin = codes.filter { code -> code.all { it in 'a'..'z' } }
+                return pinyin.firstOrNull { code -> code.any { it !in t9KeyLetters } }
+                    ?: pinyin.firstOrNull().orEmpty()
+            }
     }
 
     fun list(): List<Entry> = Rime.getPhrases().lineSequence()

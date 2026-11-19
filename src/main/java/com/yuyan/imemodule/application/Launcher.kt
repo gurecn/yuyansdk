@@ -74,7 +74,7 @@ class Launcher {
         DataBaseKT.instance.phraseDao().getAll()
             .filterNot { it.content in existing }
             .forEach { phrase ->
-                PhraseStore.add(listOf(phrase.qwerty, phrase.t9, phrase.lx17), phrase.content, phrase.isKeep == 1)
+                PhraseStore.add(listOf(phrase.qwerty), phrase.content, phrase.isKeep == 1)
             }
         prefs.edit().putBoolean(KEY_PHRASE_MIGRATED, true).apply()
     }

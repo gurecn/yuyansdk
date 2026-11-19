@@ -17,7 +17,6 @@ import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.ImeEditText
 import com.yuyan.inputmethod.PhraseStore
-import com.yuyan.inputmethod.core.Rime
 import splitties.dimensions.dp
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.lParams
@@ -92,10 +91,7 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
     fun addPhrasesHandle() {
         val content = mEtPhrases.text.toString()
         if(content.isNotBlank()) {
-            val pinYinHeadChar  = mEtPhrasesQuickCode.text.toString()
-            val pinYinHeadT9 = pinYinHeadChar.map { Rime.pinyinKeyChar("t9_pinyin", it).firstOrNull() ?: it }.joinToString("")
-            val pinYinHeadLX17 = pinYinHeadChar.map { Rime.pinyinKeyChar("double_pinyin_ls17", it) }.joinToString("")
-            PhraseStore.add(listOf(pinYinHeadChar, pinYinHeadT9, pinYinHeadLX17), content)
+            PhraseStore.add(listOf(mEtPhrasesQuickCode.text.toString()), content)
             KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
         }
     }
