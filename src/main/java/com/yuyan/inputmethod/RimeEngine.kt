@@ -15,7 +15,6 @@ object RimeEngine {
     private const val YUYAN_CANDIDATE_PREFIX = "yuyan:"
     const val EXPRESSION_INITIAL_WINDOW = 64
     const val EXPRESSION_MAX_WINDOW = 4096
-    private var pinyins: Array<String> = emptyArray() // 候选词界面的候选拼音列表
     var showCandidates: List<CandidateListItem> = emptyList() // 所有待展示的候选词
     var showComposition: String = "" // 候选词上方展示的拼音
     var preCommitText: String = "" // 待提交的文字
@@ -84,7 +83,6 @@ object RimeEngine {
     }
 
     fun predictAssociationWords(text: String) {
-        pinyins = emptyArray()
         if (text.isNotEmpty()) {
             showCandidates = Rime.getAssociateList(text)
                 .filterNotNull()
@@ -102,7 +100,6 @@ object RimeEngine {
 
     fun reset() {
         showCandidates = emptyList()
-        pinyins = emptyArray()
         showComposition = ""
         preCommitText = ""
         Rime.clearComposition()
@@ -125,7 +122,6 @@ object RimeEngine {
         val composition = toCompositionCase(getCurrentComposition(candidates))
         val englishSchema = rimeSchema == CustomConstant.SCHEMA_EN
         for (item in showCandidates) item.text = toCandidateCase(item.text, englishSchema)
-        pinyins = Rime.pinyins()
         showComposition = composition
         preCommitText = ""
         return null
@@ -135,7 +131,7 @@ object RimeEngine {
      * 拿到候选词拼音组合
      */
     fun getPrefixs(): Array<String> {
-        return pinyins
+        return Rime.pinyins()
     }
 
     private fun getCurrentComposition(candidates: List<CandidateListItem>): String {
