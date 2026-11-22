@@ -56,6 +56,8 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
     private var mShowType: SymbolMode = SymbolMode.Symbol
     private var mVPSymbolsView: ViewPager2
     private var tabLayout: TabLayout
+    private val stickerGrid = com.yuyan.imemodule.stickers.StickerGrid(context) { inputView.insertSticker(it) }
+    private val stickersButton = android.widget.TextView(context)
     private val ivDelete: ImageView
     var isLockSymbol = false
     private var mHandler: Handler? = null
@@ -156,6 +158,25 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
             }
             true
         }
+        stickersButton.apply {
+            text = "我的表情"
+            gravity = android.view.Gravity.CENTER
+            setTextColor(activeTheme.keyTextColor)
+            setPadding(dp(4))
+            setOnClickListener {
+                val opening = stickerGrid.visibility != VISIBLE
+                stickerGrid.visibility = if (opening) VISIBLE else GONE
+                mVPSymbolsView.visibility = if (opening) GONE else VISIBLE
+                text = if (opening) "返回分类" else "我的表情"
+                if (opening) stickerGrid.refresh()
+            }
+        }
+        mLLSymbolType.addView(stickersButton, 1)
+        stickerGrid.visibility = GONE
+        add(stickerGrid, lParams(matchParent, 0) {
+            topToTop = 0
+            bottomToTop = mLLSymbolType.id
+        })
         add(mLLSymbolType, lParams(matchParent, wrapContent){
             bottomOfParent(0)
         })
@@ -200,6 +221,10 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
      * 切换显示界面
      */
     fun setSymbolsView() {
+        stickerGrid.visibility = GONE
+        mVPSymbolsView.visibility = VISIBLE
+        stickersButton.text = "我的表情"
+        stickersButton.visibility = GONE
         mShowType = SymbolMode.Symbol
         isLockSymbol = false   // 符号键默认未锁定，表情键盘默认锁定
         ivDelete.setImageResource(R.drawable.icon_symbol_lock)
@@ -225,6 +250,10 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
      * 切换显示界面
      */
     fun setEmojisView(showType: SymbolMode) {
+        stickerGrid.visibility = GONE
+        mVPSymbolsView.visibility = VISIBLE
+        stickersButton.text = "我的表情"
+        stickersButton.visibility = VISIBLE
         mShowType = showType
         isLockSymbol = true   // 符号键默认未锁定，表情键盘默认锁定
         ivDelete.setImageResource(R.drawable.sdk_skb_key_delete_icon)
