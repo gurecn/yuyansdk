@@ -39,6 +39,13 @@
             android:name=".libs.cropper.CropImageActivity"
             android:exported="false"
             android:theme="@style/Theme.CropActivityTheme"/>
+        <activity android:name=".stickers.StickerImportActivity" android:exported="false"
+            android:taskAffinity="" android:excludeFromRecents="true" />
+        <provider android:name=".stickers.StickerProvider"
+            android:authorities="${applicationId}.stickers" android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/sticker_paths" />
+        </provider>
         <provider
             android:name=".libs.cropper.CropFileProvider"
             android:authorities="${applicationId}.cropper.fileprovider"

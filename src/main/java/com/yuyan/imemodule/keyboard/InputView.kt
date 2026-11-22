@@ -2,6 +2,12 @@ package com.yuyan.imemodule.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.core.view.inputmethod.InputConnectionCompat
+import androidx.core.view.inputmethod.InputContentInfoCompat
+import androidx.core.view.inputmethod.EditorInfoCompat
+import androidx.core.content.FileProvider
+import android.content.ClipDescription
+import java.io.File
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -660,6 +666,19 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             if(appPrefs.input.abcSpaceAuto.getValue()) textTarget.commit(" ")
             resetToIdleState()
         }
+    }
+
+    fun insertSticker(file: File): Boolean {
+        if (textTarget.isLocalEditor || Build.VERSION.SDK_INT < 25) return false
+        val editor = service.currentInputEditorInfo ?: return false
+        val connection = service.currentInputConnection ?: return false
+        val types = EditorInfoCompat.getContentMimeTypes(editor)
+        if (types.none { ClipDescription.compareMimeTypes("image/png", it) }) return false
+        val uri = FileProvider.getUriForFile(context, context.packageName + ".stickers", file)
+        val content = InputContentInfoCompat(uri,
+            ClipDescription("表情", arrayOf("image/png")), null)
+        return InputConnectionCompat.commitContent(connection, editor, content,
+            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null)
     }
 
     private fun initNavbarBackground(service: ImeService) {
