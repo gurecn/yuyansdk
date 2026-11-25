@@ -14,6 +14,8 @@ import kotlin.math.max
  */
 object ClipboardHelper : OnPrimaryClipChangedListener {
 
+    var onClipCopied: ((String) -> Unit)? = null
+
     fun init() {
         Launcher.instance.context.clipboardManager.addPrimaryClipChangedListener(this)
     }
@@ -28,8 +30,7 @@ object ClipboardHelper : OnPrimaryClipChangedListener {
                     val num = max(DataBaseKT.instance.clipboardDao().getCount() - AppPrefs.getInstance().clipboard.clipboardHistoryLimit.getValue(), 0)
                     DataBaseKT.instance.clipboardDao().deleteOldest(num)
                     if (AppPrefs.getInstance().clipboard.clipboardSuggestion.getValue()) {
-                        AppPrefs.getInstance().internal.clipboardUpdateTime.setValue(System.currentTimeMillis())
-                        AppPrefs.getInstance().internal.clipboardUpdateContent.setValue(data)
+                        onClipCopied?.invoke(data)
                     }
                 }
         }

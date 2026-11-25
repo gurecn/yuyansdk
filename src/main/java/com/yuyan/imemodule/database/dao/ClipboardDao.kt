@@ -11,6 +11,9 @@ interface ClipboardDao : BaseDao<Clipboard> {
     @Query("select * from clipboard ORDER BY isKeep DESC, time DESC")
     fun getAll(): List<Clipboard>
 
+    @Query("select * from clipboard ORDER BY time DESC LIMIT 1")
+    fun getLatest(): Clipboard?
+
     @Query("delete from clipboard where content = :content")
     fun deleteByContent(content: String)
 

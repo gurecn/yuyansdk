@@ -693,14 +693,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             resetToIdleState()
             val clipboard = appPrefs.clipboard
             if (clipboard.clipboardSuggestion.getValue()) {
-                val internal = appPrefs.internal
-                val lastTime = internal.clipboardUpdateTime.getValue()
-                if (System.currentTimeMillis() - lastTime <= clipboardItemTimeout * 1000) {
-                    val content = internal.clipboardUpdateContent.getValue()
-                    if (content.isNotBlank()) {
-                        showSymbols(arrayOf(content))
-                        internal.clipboardUpdateTime.setValue(0L)
-                    }
+                val latest = DataBaseKT.instance.clipboardDao().getLatest()
+                val shownTime = appPrefs.internal.clipboardSuggestShownTime.getValue()
+                if (latest != null && latest.time > shownTime
+                    && System.currentTimeMillis() - latest.time <= clipboardItemTimeout * 1000L) {
+                    showSymbols(arrayOf(latest.content))
+                    appPrefs.internal.clipboardSuggestShownTime.setValue(latest.time)
                 }
             }
         }

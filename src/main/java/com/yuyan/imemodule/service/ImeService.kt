@@ -59,15 +59,11 @@ class ImeService : InputMethodService() {
         if (::mInputView.isInitialized) mInputView.updateTheme()
     }
 
-    private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
-        if (getInstance().clipboard.clipboardSuggestion.getValue()) {
-            if (value.isNotBlank()) {
-                if (KeyboardManager.instance.currentContainer is ClipBoardContainer && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard) {
-                    (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
-                } else {
-                    if (::mInputView.isInitialized) mInputView.showSymbols(arrayOf(value))
-                }
-            }
+    private val onClipCopiedListener: (String) -> Unit = { value ->
+        if (KeyboardManager.instance.currentContainer is ClipBoardContainer && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard) {
+            (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
+        } else {
+            if (::mInputView.isInitialized) mInputView.showSymbols(arrayOf(value))
         }
     }
     private val showVirtualKeyboardOnPhysicalKeyboardListener = ManagedPreference.OnChangeListener<Boolean> { _, value ->
@@ -86,7 +82,7 @@ class ImeService : InputMethodService() {
         super.onCreate()
         showVirtualKeyboardOnPhysicalKeyboard = getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.getValue()
         addOnChangedListener(onThemeChangeListener)
-        getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
+        ClipboardHelper.onClipCopied = onClipCopiedListener
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         if (!::inputView.isInitialized) inputView = InputView(baseContext, this)
         if (!::candidateView.isInitialized) candidateView = CandidateView(baseContext, this)
@@ -158,7 +154,7 @@ class ImeService : InputMethodService() {
         DictDecoder.candidatesLiveData.removeObserver(candidatesObserver)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         removeOnChangedListener(onThemeChangeListener)
-        getInstance().internal.clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
+        ClipboardHelper.onClipCopied = null
     }
 
     /**

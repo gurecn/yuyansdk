@@ -39,8 +39,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardRightPaddingLandscapeFloat = int("keyboard_padding_right_landscape", DevicesUtils.dip2px(20))     //横屏悬浮模式右边距
         val keyboardBottomPadding = int("keyboard_padding_bottom_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮底边距
         val keyboardRightPadding = int("keyboard_padding_right_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮右边距
-        val clipboardUpdateTime = long("clipboard_update_time", 0)     //剪切板更新时间
-        val clipboardUpdateContent = string("clipboard_update_content","")     //剪切板更新内容
+        val clipboardSuggestShownTime = long("clipboard_suggest_shown_time", 0)     //剪切板联想已展示内容的复制时间水位
         val fullDisplayKeyboardEnable = bool("full_display_keyboard_enable", true)     //全面屏键盘优化
         val fullDisplayKeyModeLeft = string("full_display_key_mode_left", FullDisplayKeyMode.SwitchIme.name)     //全面屏键盘优化:左键盘
         val fullDisplayKeyModeRight = string("full_display_key_mode_right", FullDisplayKeyMode.Clipboard.name)     //全面屏键盘优化：右键盘
