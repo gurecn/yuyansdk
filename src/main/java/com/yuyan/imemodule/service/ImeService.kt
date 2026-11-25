@@ -182,19 +182,19 @@ class ImeService : InputMethodService() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return if (::mInputView.isInitialized && !mInputView.isKeyEventForIme(keyCode, event)) false
-        else if (0 != event.repeatCount || event.isShiftPressed || event.isMetaPressed) super.onKeyDown(keyCode, event)
-        else if (event.isCtrlPressed && keyCode != KeyEvent.KEYCODE_SPACE) super.onKeyDown(keyCode, event)
-        else if (::mInputView.isInitialized) mInputView.processKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
-        else super.onKeyDown(keyCode, event)
+        if (!::mInputView.isInitialized) return super.onKeyDown(keyCode, event)
+        if (!mInputView.isKeyEventForIme(keyCode, event)) return false
+        if (event.repeatCount != 0 || event.isShiftPressed || event.isMetaPressed) return super.onKeyDown(keyCode, event)
+        if (event.isCtrlPressed && keyCode != KeyEvent.KEYCODE_SPACE) return super.onKeyDown(keyCode, event)
+        return mInputView.processKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        return if (::mInputView.isInitialized && !mInputView.isKeyEventForIme(keyCode, event)) false
-        else if (0 != event.repeatCount || event.isShiftPressed || event.isMetaPressed) super.onKeyUp(keyCode, event)
-        else if (event.isCtrlPressed && keyCode != KeyEvent.KEYCODE_SPACE) super.onKeyUp(keyCode, event)
-        else if (::mInputView.isInitialized) mInputView.processKeyUp(event) || super.onKeyUp(keyCode, event)
-        else super.onKeyUp(keyCode, event)
+        if (!::mInputView.isInitialized) return super.onKeyUp(keyCode, event)
+        if (!mInputView.isKeyEventForIme(keyCode, event)) return false
+        if (event.repeatCount != 0 || event.isShiftPressed || event.isMetaPressed) return super.onKeyUp(keyCode, event)
+        if (event.isCtrlPressed && keyCode != KeyEvent.KEYCODE_SPACE) return super.onKeyUp(keyCode, event)
+        return mInputView.processKeyUp(event) || super.onKeyUp(keyCode, event)
     }
 
     override fun setInputView(view: View) {
