@@ -11,10 +11,8 @@ import com.yuyan.imemodule.utils.audioManager
 import com.yuyan.imemodule.utils.vibrator
 
 object InputFeedbacks {
-
     private val soundOnKeyPress by AppPrefs.getInstance().internal.soundOnKeyPress
     private val vibrationAmplitude by AppPrefs.getInstance().internal.vibrationAmplitude
-
     private val vibrator = Launcher.instance.context.vibrator
     private val hasAmplitudeControl = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && vibrator.hasAmplitudeControl()
     private val audioManager = Launcher.instance.context.audioManager
@@ -48,7 +46,6 @@ object InputFeedbacks {
 
     enum class SoundEffect {
         Standard, SpaceBar, Delete, Return;
-
         companion object {
             fun fromKeyCode(keyCode: Int): SoundEffect = when (keyCode) {
                 KeyEvent.KEYCODE_DEL -> Delete
@@ -60,18 +57,18 @@ object InputFeedbacks {
     }
 
     fun soundEffect(effect: SoundEffect) {
+        val progress = soundOnKeyPress
+        if (progress in 5..10) return
         val fx = when (effect) {
             SoundEffect.Standard -> AudioManager.FX_KEYPRESS_STANDARD
             SoundEffect.SpaceBar -> AudioManager.FX_KEYPRESS_SPACEBAR
             SoundEffect.Delete -> AudioManager.FX_KEYPRESS_DELETE
             SoundEffect.Return -> AudioManager.FX_KEYPRESS_RETURN
         }
-        if (soundOnKeyPress < 5) {
+        if (progress < 5) {
             audioManager.playSoundEffect(fx, -1f)
-        } else if (soundOnKeyPress < 10) {
-            return
         } else {
-            audioManager.playSoundEffect(fx, (soundOnKeyPress - 10) / 30f)
+            audioManager.playSoundEffect(fx, (progress - 10) / 30f)
         }
     }
 
