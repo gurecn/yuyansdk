@@ -16,10 +16,10 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.popup.PopupComponent.Companion.get
 import java.util.LinkedList
@@ -117,8 +117,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 result = onModifiedTouchEvent(me)
                 val keyIndex = getKeyIndices(x.toInt(), y.toInt())
                 if(keyIndex != null) {
-                    DevicesUtils.tryPlayKeyDown(keyIndex.code)
-                    DevicesUtils.tryVibrate(this)
+                    InputFeedbacks.clickFeedback(this, keyIndex.code)
                 }
                 showPreview(keyIndex)
             }

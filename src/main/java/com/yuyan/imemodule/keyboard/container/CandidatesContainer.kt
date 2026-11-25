@@ -26,10 +26,10 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.AppUtil
-import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.keyboard.InputView
@@ -144,8 +144,7 @@ class CandidatesContainer(context: Context) : BaseContainer(context) {
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // 播放按键声音和震动
-                    DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                    DevicesUtils.tryVibrate(this)
+                    InputFeedbacks.clickFeedback(this, KeyEvent.KEYCODE_DEL)
                 }
                 MotionEvent.ACTION_MOVE -> { }
                 MotionEvent.ACTION_UP -> {
@@ -175,8 +174,7 @@ class CandidatesContainer(context: Context) : BaseContainer(context) {
             if(DictDecoder.activeCandidate == 0){
                 mCandidatesAdapter = CandidatesAdapter(context)
                 mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-                    DevicesUtils.tryPlayKeyDown()
-                    DevicesUtils.tryVibrate(this)
+                    InputFeedbacks.clickFeedback(this)
                     inputView.chooseAndUpdate(position)
                 }
                 mRVSymbolsView.setAdapter(mCandidatesAdapter)
@@ -207,8 +205,7 @@ class CandidatesContainer(context: Context) : BaseContainer(context) {
                 inputView.selectPrefix(position)
             } else {
                 val softKey = SoftKey(label = mSideSymbolsPinyin.map { it.symbolValue }[position])
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
+                InputFeedbacks.clickFeedback(this)
                 inputView.responseKeyEvent(softKey)
             }
         }

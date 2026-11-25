@@ -17,10 +17,10 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.utils.AppUtil
-import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.keyboard.TextKeyboard
 import com.yuyan.imemodule.keyboard.HandwritingKeyboard
@@ -127,8 +127,7 @@ open class T9TextContainer(context: Context?, skbValue: Int = 0) : InputBaseCont
                 val symbol = mSideSymbolsPinyin.map { it.symbolValue }[position]
                 val softKey = SoftKey(label = symbol)
                 // 播放按键声音和震动
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
+                InputFeedbacks.clickFeedback(this)
                 inputView.responseKeyEvent(softKey)
             } else {
                 inputView.selectPrefix(position)

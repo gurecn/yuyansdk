@@ -17,11 +17,11 @@ import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.manager.SkbMenuOrderManager
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
-import com.yuyan.imemodule.utils.DevicesUtils
 import splitties.dimensions.dp
 import java.util.Collections
 import java.util.LinkedList
@@ -88,7 +88,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
 
     private fun onMenuItemClick(position: Int) {
         val item = funItems.getOrNull(position) ?: return
-        DevicesUtils.tryVibrate(mRVMenuLayout)
+        InputFeedbacks.hapticFeedback(mRVMenuLayout)
         inputView.onSettingsMenuClick(item.skbMenuMode)
     }
 
@@ -121,7 +121,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                 SkbMenuOrderManager.addBarMenu(v.skbMenuMode)
             }
             if (!changed) return
-            DevicesUtils.tryVibrate(mRVMenuLayout)
+            InputFeedbacks.hapticFeedback(mRVMenuLayout)
             inputView.updateCandidateBar()
             settingsAdapter?.notifyDataSetChanged()
         }
@@ -166,7 +166,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
                     view.animate().scaleX(1.05f).scaleY(1.05f).setDuration(120L).start()
                     view.alpha = 0.95f
                 }
-                DevicesUtils.tryVibrate(mRVMenuLayout)
+                InputFeedbacks.hapticFeedback(mRVMenuLayout)
             }
 
             override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
@@ -242,7 +242,7 @@ class SettingsContainer(context: Context) : BaseContainer(context) {
         if (currentAdapter == null) {
             val menuAdapter = MenuAdapter(context, selectModeItems)
             menuAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-                DevicesUtils.tryVibrate(mRVMenuLayout)
+                InputFeedbacks.hapticFeedback(mRVMenuLayout)
                 selectModeItems.getOrNull(position)?.let { onKeyboardMenuClick(it) }
             }
             selectModeAdapter = menuAdapter

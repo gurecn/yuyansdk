@@ -26,8 +26,8 @@ import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.UsedSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.SymbolMode
-import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -124,8 +124,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // 播放按键声音和震动
-                    DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                    DevicesUtils.tryVibrate(this)
+                    InputFeedbacks.clickFeedback(this, KeyEvent.KEYCODE_ENTER)
                 }
                 MotionEvent.ACTION_UP -> {
                     KeyboardManager.instance.switchKeyboard()
@@ -137,8 +136,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // 播放按键声音和震动
-                    DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                    DevicesUtils.tryVibrate(this)
+                    InputFeedbacks.clickFeedback(this, KeyEvent.KEYCODE_DEL)
                     if(isLockSymbol) {
                         mHandler?.sendEmptyMessageDelayed(MSG_REPEAT, REPEAT_START_DELAY)
                     }
@@ -167,8 +165,7 @@ class SymbolContainer(context: Context) : BaseContainer(context) {
     private fun onItemClickOperate(value: String) {
         val result = value.replace("[ \\r]".toRegex(), "")
         val softKey = SoftKey(label = result)
-        DevicesUtils.tryPlayKeyDown()
-        DevicesUtils.tryVibrate(this)
+        InputFeedbacks.clickFeedback(this)
         if (mShowType == SymbolMode.Symbol) {  // 非表情键盘
             DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result))
             val num = max(DataBaseKT.instance.usedSymbolDao().getCount("symbol") - 50, 0)

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.utils.DevicesUtils.sp2px
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
@@ -75,7 +75,7 @@ class KeyboardFeedbacksFragment : Fragment(){
             override fun getProgressOnFinally(signSeekBar: SignSeekBar, progress: Int, progressFloat: Float, fromUser: Boolean) {}
             override fun getProgressOnActionUp(signSeekBar: SignSeekBar, progress: Int, progressFloat: Float) {
                 AppPrefs.getInstance().internal.soundOnKeyPress.setValue(progress)
-                DevicesUtils.tryPlayKeyDown()
+                InputFeedbacks.soundEffect(InputFeedbacks.SoundEffect.Standard)
             }
         })
 
@@ -119,7 +119,7 @@ class KeyboardFeedbacksFragment : Fragment(){
 
             override fun getProgressOnFinally(signSeekBar: SignSeekBar, progress: Int, progressFloat: Float, fromUser: Boolean) {
                 AppPrefs.getInstance().internal.vibrationAmplitude.setValue(progress)
-                DevicesUtils.tryVibrate(signSeekBar)
+                InputFeedbacks.hapticFeedback(signSeekBar)
             }
         })
 

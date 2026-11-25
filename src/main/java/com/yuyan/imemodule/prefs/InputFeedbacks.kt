@@ -4,6 +4,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.view.HapticFeedbackConstants
+import android.view.KeyEvent
 import android.view.View
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.utils.audioManager
@@ -18,7 +19,11 @@ object InputFeedbacks {
     private val hasAmplitudeControl = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && vibrator.hasAmplitudeControl()
     private val audioManager = Launcher.instance.context.audioManager
 
-    fun hapticFeedback(view: View) {
+    /**
+     * 触感反馈
+     */
+    fun hapticFeedback(view: View?) {
+        view ?: return
         val duration = when (vibrationAmplitude) {
             0 -> {
                 @Suppress("DEPRECATION")
@@ -42,7 +47,16 @@ object InputFeedbacks {
     }
 
     enum class SoundEffect {
-        Standard, SpaceBar, Delete, Return
+        Standard, SpaceBar, Delete, Return;
+
+        companion object {
+            fun fromKeyCode(keyCode: Int): SoundEffect = when (keyCode) {
+                KeyEvent.KEYCODE_DEL -> Delete
+                KeyEvent.KEYCODE_SPACE -> SpaceBar
+                KeyEvent.KEYCODE_ENTER -> Return
+                else -> Standard
+            }
+        }
     }
 
     fun soundEffect(effect: SoundEffect) {
@@ -59,6 +73,14 @@ object InputFeedbacks {
         } else {
             audioManager.playSoundEffect(fx, (soundOnKeyPress - 10) / 30f)
         }
+    }
+
+    /**
+     * 点击反馈：音效 + 触感，键盘按键、候选词、符号等点击统一走这里
+     */
+    fun clickFeedback(view: View?, keyCode: Int = KeyEvent.KEYCODE_UNKNOWN) {
+        soundEffect(SoundEffect.fromKeyCode(keyCode))
+        hapticFeedback(view)
     }
 
 }

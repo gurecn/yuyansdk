@@ -20,12 +20,12 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
-import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.StringUtils
 import splitties.dimensions.dp
 import splitties.views.bottomPadding
@@ -216,8 +216,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
 
     inner class ChoiceNotifier internal constructor() : CandidateViewListener {
         override fun onClickChoice(choiceId: Int) {
-            DevicesUtils.tryPlayKeyDown()
-            DevicesUtils.tryVibrate(KeyboardManager.instance.currentContainer)
+            InputFeedbacks.clickFeedback(KeyboardManager.instance.currentContainer)
             chooseAndUpdate(choiceId)
         }
 

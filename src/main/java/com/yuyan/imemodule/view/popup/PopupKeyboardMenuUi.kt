@@ -9,9 +9,9 @@ import android.view.ViewOutlineProvider
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.utils.DevicesUtils
 import splitties.dimensions.dp
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.add
@@ -145,7 +145,7 @@ class PopupKeyboardMenuUi(bounds: Rect, onDismissSelf: PopupContainerUi.() -> Un
         if (selected == isSelect) return
         isSelect = selected
         if (selected) markFocus(focusedIndex) else markInactive(focusedIndex)
-        DevicesUtils.tryVibrate(root)
+        InputFeedbacks.hapticFeedback(root)
     }
     override fun onChangeFocus(x: Float, y: Float): Boolean {
         return false

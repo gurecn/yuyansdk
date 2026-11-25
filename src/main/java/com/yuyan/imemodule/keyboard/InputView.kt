@@ -45,6 +45,7 @@ import com.yuyan.imemodule.keyboard.target.PhraseEditTarget
 import com.yuyan.imemodule.keyboard.target.TextTarget
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -52,7 +53,6 @@ import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.service.ImeService
 import com.yuyan.imemodule.service.InputDispatcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
-import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.view.CandidatesBar
@@ -539,8 +539,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     inner class ChoiceNotifier internal constructor() : CandidateViewListener {
         override fun onClickChoice(choiceId: Int) {
-            DevicesUtils.tryPlayKeyDown()
-            DevicesUtils.tryVibrate(KeyboardManager.instance.currentContainer)
+            InputFeedbacks.clickFeedback(KeyboardManager.instance.currentContainer)
             chooseAndUpdate(choiceId)
         }
 
@@ -603,8 +602,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     fun selectPrefix(position: Int) {
-        DevicesUtils.tryPlayKeyDown()
-        DevicesUtils.tryVibrate(this)
+        InputFeedbacks.clickFeedback(this)
         InputDispatcher.selectPrefix(position)
         updateCandidate()
     }

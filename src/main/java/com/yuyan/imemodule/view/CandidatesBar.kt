@@ -28,6 +28,7 @@ import com.yuyan.imemodule.data.menuSkbFunsPreset
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.SkbFunItem
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.service.DictDecoder
@@ -38,7 +39,6 @@ import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.manager.SkbMenuOrderManager
 import com.yuyan.imemodule.manager.layout.CustomLinearLayoutManager
-import com.yuyan.imemodule.utils.DevicesUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -297,7 +297,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                     view.animate().scaleX(1.15f).scaleY(1.15f).setDuration(120L).start()
                     view.alpha = 0.9f
                 }
-                DevicesUtils.tryVibrate(this@CandidatesBar)
+                InputFeedbacks.hapticFeedback(this@CandidatesBar)
             }
 
             override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
@@ -314,13 +314,13 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     private fun removeBarMenuItem(item: SkbFunItem, position: Int) {
         if (!SkbMenuOrderManager.removeBarMenu(item.skbMenuMode)) return
-        DevicesUtils.tryVibrate(this)
+        InputFeedbacks.hapticFeedback(this)
         mCandidatesMenuAdapter.removeItem(position)
         mCvListener.onBarMenuChanged()
     }
 
     private fun onClickMenu(skbMenuMode: SkbMenuMode, view: View?) {
-        DevicesUtils.tryVibrate(this)
+        InputFeedbacks.hapticFeedback(this)
         if(skbMenuMode == SkbMenuMode.ClearClipBoard){
             val contextWrapper = ContextThemeWrapper(context, R.style.Theme_AppTheme)
             val popupMenu = PopupMenu(contextWrapper, view).apply {

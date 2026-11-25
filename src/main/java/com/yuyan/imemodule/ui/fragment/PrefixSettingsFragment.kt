@@ -21,7 +21,7 @@ import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
-import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenu
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
@@ -117,7 +117,7 @@ class PrefixSettingsFragment(type:String) : Fragment(){
             layoutManager = LinearLayoutManager(context)
             setLongPressDragEnabled(true)
             setOnItemLongClickListener{ _, _ ->
-              DevicesUtils.tryVibrate(this)
+              InputFeedbacks.hapticFeedback(this)
             }
             setOnItemMoveListener(mItemMoveListener)
         }
