@@ -26,7 +26,11 @@ object DoublePinYinUtils {
     )
 
     val doublePinyinMap = mapOf(
-        "double_pinyin_ziguang" to double_pinyin_abc,
+        "double_pinyin_flypy" to double_pinyin,
+        "double_pinyin_natural" to double_pinyin,
+        "double_pinyin_mspy" to double_pinyin,
+        "double_pinyin_sogou" to double_pinyin,
+        "double_pinyin_abc" to double_pinyin_abc,
         "double_pinyin_ziguang" to double_pinyin_ziguang,
         "double_pinyin_ls17" to double_pinyin_ls17,
     )

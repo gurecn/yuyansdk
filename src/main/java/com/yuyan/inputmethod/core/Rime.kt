@@ -104,13 +104,6 @@ class Rime(fullCheck: Boolean) {
         }
 
         @JvmStatic
-        fun replaceKey(caretPos: Int, length: Int, key: String): Boolean {
-            return replaceRimeKey(caretPos, length, key).also {
-                updateContext()
-            }
-        }
-
-        @JvmStatic
         fun clearComposition() { clearRimeComposition()
             updateContext()
         }
@@ -157,10 +150,6 @@ class Rime(fullCheck: Boolean) {
 
         fun removePhrase(content: String): Boolean = removeYuyanPhrase(content)
 
-        fun pinyinKeyChar(schemaId: String, pinyinLetter: Char): String {
-            return getYuyanPinyinKeyChar(schemaId, pinyinLetter)
-        }
-
         @JvmStatic
         external fun startupRime(context: Context, sharedDir: String, userDir: String, fullCheck: Boolean, )
 
@@ -172,9 +161,6 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun processRimeKey(keycode: Int, mask: Int): Boolean
-
-        @JvmStatic
-        external fun replaceRimeKey(caretPos: Int, length: Int, key: String?): Boolean
 
         @JvmStatic
         external fun clearRimeComposition()
@@ -214,9 +200,6 @@ class Rime(fullCheck: Boolean) {
 
         @JvmStatic
         external fun selectRimePinyin(index: Int): Boolean
-
-        @JvmStatic
-        external fun getYuyanPinyinKeyChar(schemaId: String, pinyinLetter: Char): String
 
         @JvmStatic
         external fun getYuyanExpressionCandidates(text: String, window: Int): String

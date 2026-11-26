@@ -45,8 +45,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val fullDisplayKeyModeRight = string("full_display_key_mode_right", FullDisplayKeyMode.Clipboard.name)     //全面屏键盘优化：右键盘
         val fullDisplayCenterMode = string("full_display_center_mode", FullDisplayCenterMode.MoveCursor.name)     //全面屏键盘优化：中间区域
 
-        val soundOnKeyPress = int("key_press_vibration_amplitude",0)     //按键音量
-        val vibrationAmplitude = int("key_press_sound_volume", 0)     //触感强度
+        val soundOnKeyPress = int("key_press_sound_volume",0)     //按键音量
+        val vibrationAmplitude = int("key_press_vibration_amplitude", 0)     //触感强度
 
         val privacyPolicySure = bool("privacy_policy_sure", false) //是否同意隐私政策
     }
@@ -343,12 +343,29 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     companion object {
         private var instance: AppPrefs? = null
 
+        private const val feedbackKeysMigrated = "key_press_feedback_keys_migrated"
+
+        // 音量与触感曾经写反了键名，改名后把老数据换到各自的键上，只搬一次
+        private fun migrateFeedbackKeys(sharedPreferences: SharedPreferences) {
+            if (sharedPreferences.getBoolean(feedbackKeysMigrated, false)) {
+                return
+            }
+            val sound = sharedPreferences.getInt("key_press_vibration_amplitude", 0)
+            val vibration = sharedPreferences.getInt("key_press_sound_volume", 0)
+            sharedPreferences.edit {
+                putInt("key_press_sound_volume", sound)
+                putInt("key_press_vibration_amplitude", vibration)
+                putBoolean(feedbackKeysMigrated, true)
+            }
+        }
+
         /**
          * MUST call before use
          */
         fun init(sharedPreferences: SharedPreferences) {
             if (instance != null)
                 return
+            migrateFeedbackKeys(sharedPreferences)
             instance = AppPrefs(sharedPreferences)
             sharedPreferences.registerOnSharedPreferenceChangeListener(getInstance().onSharedPreferenceChangeListener)
         }
